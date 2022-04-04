@@ -1,20 +1,284 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index ba741e23a..f2e98298d 100644
+index f2e98298d..08872d04e 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -2299,10 +2299,13 @@ expandcmd({string})					*expandcmd()*
+@@ -161,7 +161,8 @@ exists_compiled({expr})		Number	|TRUE| if {expr} exists at compile time
+ exp({expr})			Float	exponential of {expr}
+ expand({expr} [, {nosuf} [, {list}]])
+ 				any	expand special keywords in {expr}
+-expandcmd({expr})		String	expand {expr} like with `:edit`
++expandcmd({string} [, {options}])
++				String	expand {string} like with `:edit`
+ extend({expr1}, {expr2} [, {expr3}])
+ 				List/Dict insert items of {expr2} into {expr1}
+ extendnew({expr1}, {expr2} [, {expr3}])
+@@ -2293,18 +2294,27 @@ expand({string} [, {nosuf} [, {list}]])				*expand()*
+ 		Can also be used as a |method|: >
+ 			Getpattern()->expand()
+ 
+-expandcmd({string})					*expandcmd()*
++expandcmd({string} [, {options}])			*expandcmd()*
+ 		Expand special items in String {string} like what is done for
+ 		an Ex command such as `:edit`.  This expands special keywords,
  		like with |expand()|, and environment variables, anywhere in
  		{string}.  "~user" and "~/path" are only expanded at the
  		start.
--		Returns the expanded string.  Example: >
-+		Returns the expanded string.  If an error is encountered
-+		during expansion, the unmodified {string} is returned.
-+		Example: >
++
++		The following items are supported in the {options} Dict
++		argument:
++		    errmsg	If set to TRUE, error messages are displayed
++				if an error is encountered during expansion.
++				By default, error messages are not displayed.
++
+ 		Returns the expanded string.  If an error is encountered
+ 		during expansion, the unmodified {string} is returned.
++
+ 		Example: >
  			:echo expandcmd('make %<.o')
-+<			make /path/runtime/doc/builtin.o ~
- 
--<		Can also be used as a |method|: >
-+		Can also be used as a |method|: >
+-<			make /path/runtime/doc/builtin.o ~
+-
++			make /path/runtime/doc/builtin.o
++			:echo expandcmd('make %<.o', {'errmsg': v:true})
++<
+ 		Can also be used as a |method|: >
  			GetCommand()->expandcmd()
  <
- extend({expr1}, {expr2} [, {expr3}])			*extend()*
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index d4c24bfcb..df812c9e7 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
+@@ -25,7 +25,7 @@ Other GUI documentation:
+ 
+ First you must make sure you actually have a version of Vim with the GUI code
+ included.  You can check this with the ":version" command, it says "with xxx
+-GUI", where "xxx" is X11-Motif, X11-Athena, Photon, GTK2, GTK3, etc., or
++GUI", where "xxx" is X11-Motif, Photon, GTK2, GTK3, etc., or
+ "MS-Windows 32 bit GUI version".
+ 
+ How to start the GUI depends on the system used.  Mostly you can run the
+@@ -108,7 +108,7 @@ There are a number of options which only have meaning in the GUI version of
+ Vim.  These are 'guicursor', 'guifont', 'guipty' and 'guioptions'.  They are
+ documented in |options.txt| with all the other options.
+ 
+-If using the Motif or Athena version of the GUI (but not for the GTK+ or
++If using the Motif version of the GUI (but not for the GTK+ or
+ Win32 version), a number of X resources are available.  See |gui-resources|.
+ 
+ Another way to set the colors for different occasions is with highlight
+@@ -236,7 +236,7 @@ takes too much time or you don't like the cursor jumping to another line,
+ include the 'h' flag in 'guioptions'.  Then the scrolling is limited by the
+ text of the current cursor line.
+ 
+-							*athena-intellimouse*
++							*motif-intellimouse*
+ If you have an Intellimouse and an X server that supports using the wheel,
+ then you can use the wheel to scroll the text up and down in gvim.  This works
+ with XFree86 4.0 and later, and with some older versions when you add patches.
+@@ -261,6 +261,7 @@ Other options that are relevant:
+ 'mousefocus'	window focus follows mouse pointer |gui-mouse-focus|
+ 'mousemodel'	what mouse button does which action
+ 'mousehide'	hide mouse pointer while typing text
++'mousemoveevent' enable mouse move events so that <MouseMove> can be mapped
+ 'selectmode'	whether to start Select mode or Visual mode
+ 
+ A quick way to set these is with the ":behave" command.
+@@ -406,6 +407,9 @@ These mappings make selection work the way it probably should in a Motif
+ application, with shift-left mouse allowing for extending the visual area
+ rather than the right mouse button.
+ 
++<MouseMove> may be mapped, but 'mousemoveevent' must be enabled to use the
++mapping.
++
+ Mouse mapping with modifiers does not work for modeless selection.
+ 
+ 
+@@ -742,7 +746,7 @@ because the item will never be selected.  Use a single colon to keep it
+ simple.
+ 
+ 							*gui-toolbar*
+-The toolbar is currently available in the Win32, Athena, Motif, GTK+ (X11),
++The toolbar is currently available in the Win32, Motif, GTK+ (X11),
+ and Photon GUI.  It should turn up in other GUIs in due course.  The
+ default toolbar is setup in menu.vim.
+ The display of the toolbar is controlled by the 'guioptions' letter 'T'.  You
+@@ -858,7 +862,7 @@ The window toolbar uses the ToolbarLine and ToolbarButton highlight groups.
+ When splitting the window the window toolbar is not copied to the new window.
+ 
+ 							*popup-menu*
+-In the Win32, GTK+, Motif, Athena and Photon GUI, you can define the
++In the Win32, GTK+, Motif and Photon GUI, you can define the
+ special menu "PopUp".  This is the menu that is displayed when the right mouse
+ button is pressed, if 'mousemodel' is set to popup or popup_setpos.
+ Example: >
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 25cf898aa..5b75fe29f 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
+@@ -1,11 +1,11 @@
+-*gui_x11.txt*   For Vim version 8.2.  Last change: 2020 Jun 05
++*gui_x11.txt*   For Vim version 8.2.  Last change: 2022 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+ 
+ 
+ Vim's Graphical User Interface				*gui-x11* *GUI-X11*
+-							*Athena* *Motif*
++							*Motif*
+ 1. Starting the X11 GUI		|gui-x11-start|
+ 2. GUI Resources		|gui-resources|
+ 3. Shell Commands		|gui-pty|
+@@ -64,7 +64,7 @@ flag in 'guioptions'.  |-f|.
+ ==============================================================================
+ 2. GUI Resources			*gui-resources* *.Xdefaults*
+ 
+-If using the Motif or Athena version of the GUI (not for the KDE, GTK+ or Win32
++If using the Motif version of the GUI (not for the KDE, GTK+ or Win32
+ version), a number of X resources are available.  You should use Vim's class
+ "Vim" when setting these.  They are as follows:
+ 
+@@ -96,7 +96,6 @@ version), a number of X resources are available.  You should use Vim's class
+ 			is same size as terminal that started it).
+     scrollbarWidth	Thickness of scrollbars.
+     borderWidth		Thickness of border around text area.
+-    menuHeight		Height of the menu bar (only for Athena).
+ 
+ A special font for italic, bold, and italic-bold text will only be used if
+ the user has specified one via a resource.  No attempt is made to guess what
+@@ -135,12 +134,9 @@ which make Motif applications look even better, highly recommended!
+ 
+ The "Vim*fontList" is to set the menu font for Motif.  Example: >
+ 	Vim*menuBar*fontList:	     -*-courier-medium-r-*-*-10-*-*-*-*-*-*-*
+-With Athena: >
+-	Vim*menuBar*SmeBSB*font:     -*-courier-medium-r-*-*-10-*-*-*-*-*-*-*
+-	Vim*menuBar*MenuButton*font: -*-courier-medium-r-*-*-10-*-*-*-*-*-*-*
+ 
+ NOTE: A more portable, and indeed more correct, way to specify the menu font
+-in either Motif or Athena is through the resource: >
++in Motif is through the resource: >
+ 	Vim.menuFont:	     -*-courier-medium-r-*-*-10-*-*-*-*-*-*-*
+ Or, when compiled with the |+xfontset| feature: >
+ 	Vim.menuFontSet:     -*-courier-medium-r-*-*-10-*-*-*-*-*-*-*
+@@ -255,7 +251,7 @@ For example: >
+   :10vmenu File.Print :w !lpr -Php3
+ <
+ 							*X11-icon*
+-Vim uses a black&white icon by default when compiled with Motif or Athena.  A
++Vim uses a black&white icon by default when compiled with Motif.  A
+ colored Vim icon is included as $VIMRUNTIME/vim32x32.xpm.  For GTK+, this is
+ the builtin icon used.  Unfortunately, how you should install it depends on
+ your window manager.  When you use this, remove the 'i' flag from
+@@ -594,8 +590,7 @@ GTK+ files on your system.  When both GTK+ 2 and GTK+ 3 are available, GTK+ 2
+ will be chosen unless --enable-gui=gtk3 is passed explicitly to configure.
+ 
+ If the GTK+ files cannot be found, then the Motif files will be searched for.
+-Finally, if this fails, the Athena files will be searched for.  If all three
+-fail, the GUI will be disabled.
++If both fail, the GUI will be disabled.
+ 
+ For GTK+, Vim's configuration process uses pkg-config(1) to check if the
+ GTK+ required for a specified build is properly installed and usable.
+@@ -621,10 +616,10 @@ explicitly to configure, and avoid passing --enable-gnome-check to that, as
+ the functionality of the GNOME 2 support has already been consolidated in
+ GTK+ 3.
+ 
+-Otherwise, if you are using Motif or Athena, when you have the Motif or Athena
+-files in a directory where configure doesn't look, edit the Makefile to enter
+-the names of the directories.  Search for "GUI_INC_LOC" for an example to set
+-the Motif directories, "CONF_OPT_X" for Athena.
++Otherwise, if you are using Motif, when you have the Motif files in a
++directory where configure doesn't look, edit the Makefile to enter the names
++of the directories.  Search for "GUI_INC_LOC" for an example to set
++the Motif directories.
+ 
+ 							*gui-x11-gtk*
+ Currently, Vim supports both GTK+ 2 and GTK+ 3.
+@@ -643,18 +638,11 @@ few problems, but you might make it compile and run with a bit of work, please
+ send me the patches if you do).  The newest releases of LessTif have been
+ reported to work fine too.
+ 
+-							*gui-x11-athena*
+-The Athena version uses the Xaw widget set by default.  If you have the 3D
+-version, you might want to link with Xaw3d instead.  This will make the
+-menus look a bit better.  Edit the Makefile and look for "XAW_LIB".  The
+-scrollbars will remain the same, because Vim has its own, which are already
+-3D (in fact, they look more like Motif).
+-
+-							*gui-x11-neXtaw*
+-The neXtaw version is mostly like Athena, but uses different widgets.
++					    *gui-x11-athena* *gui-x11-neXtaw*
++Support for the Athena GUI and neXtaw was removed in patch 8.2.4677.
+ 
+ 							*gui-x11-misc*
+-In general, do not try to mix files from different GTK+, Motif, Athena and X11
++In general, do not try to mix files from different GTK+, Motif and X11
+ versions.  This will cause problems.  For example, using header files for
+ X11R5 with a library for X11R6 probably doesn't work (although the linking
+ won't give an error message, Vim will crash later).
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index bdc25223f..d5e5e6834 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -5517,6 +5517,18 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	The 'mousemodel' option is set by the |:behave| command.
+ 
++						*'mousemoveevent'* *'mousemev'*
++'mousemoveevent' 'mousemev'  boolean	(default off)
++			global
++			{only works in the GUI}
++	When on, mouse move events are delivered to the input queue and are
++	available for mapping. The default, off, avoids the mouse movement
++	overhead except when needed. See |gui-mouse-mapping|.
++	Warning: Setting this option can make pending mappings to be aborted
++	when the mouse is moved.
++	Currently only works in the GUI, may be made to work in a terminal
++	later.
++
+ 					*'mouseshape'* *'mouses'* *E547*
+ 'mouseshape' 'mouses'	string	(default "i-r:beam,s:updown,sd:udsizing,
+ 					vs:leftright,vd:lrsizing,m:no,
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 2a74883a9..1b726f739 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -131,8 +131,8 @@ test_gui_event({event}, {args})
+ 		    forward:	set to 1 for forward search.
+ 
+ 		"mouse":
+-		  Inject a mouse button click event.  The supported items in
+-		  {args} are:
++		  Inject either a mouse button click, or a mouse move, event.
++		  The supported items in {args} are:
+ 		    button:	mouse button.  The supported values are:
+ 				    0	right mouse button
+ 				    1	middle mouse button
+@@ -151,6 +151,28 @@ test_gui_event({event}, {args})
+ 				    4	shift is pressed
+ 				    8	alt is pressed
+ 				   16	ctrl is pressed
++		    move:	Optional; if used and TRUE then a mouse move
++			        event can be generated.
++				Only {args} row: and col: are used and
++				required; they are interpreted as pixels.
++				Only results in an event when 'mousemoveevent'
++				is set or a popup uses mouse move events.
++
++		"scrollbar":
++		  Set or drag the left, right or horizontal scrollbar.  Only
++		  works when the scrollbar actually exists.  The supported
++		  items in {args} are:
++		    which:	scrollbar. The supported values are:
++				    left  Left scrollbar of the current window
++				    right Right scrollbar of the current window
++				    hor   Horizontal scrollbar
++		    value:	amount to scroll.  For the vertical scrollbars
++				the value can be 1 to the line-count of the
++				buffer.  For the horizontal scrollbar the
++				value can be between 1 and the maximum line
++				length, assuming 'wrap' is not set.
++		    dragging:	1 to drag the scrollbar and 0 to click in the
++				scrollbar.
+ 
+ 		"scrollbar":
+ 		  Set or drag the left, right or horizontal scrollbar.  Only
