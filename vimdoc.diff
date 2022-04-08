@@ -1,68 +1,72 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index f112119dc..47cda3ff1 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -119,10 +119,13 @@ To open a channel: >
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 6e8f35b2d..69a03f977 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -42,11 +42,12 @@ is not a C compiler: it does not recognize all syntax.  One requirement is
+ that toplevel functions have a '{' in the first column.  Otherwise they are
+ easily confused with declarations.
  
- Use |ch_status()| to see if the channel could be opened.
+-These four options control C program indenting:
++These five options control C program indenting:
+ 'cindent'	Enables Vim to perform C program indenting automatically.
+ 'cinkeys'	Specifies which keys trigger reindenting in insert mode.
+ 'cinoptions'	Sets your preferred indent style.
+ 'cinwords'	Defines keywords that start an extra indent in the next line.
++'cinscopedecls'	Defines strings that are recognized as a C++ scope declaration.
  
--{address} has the form "hostname:port".  E.g., "localhost:8765".
--
--When using an IPv6 address, enclose it within square brackets.  E.g.,
--"[2001:db8::1]:8765".
-+					*channel-address*
-+{address} can be a domain name or an IP address, followed by a port number, or
-+a Unix-domain socket path prefixed by "unix:".  E.g. >
-+    www.example.com:80   " domain + port
-+    127.0.0.1:1234       " IPv4 + port
-+    [2001:db8::1]:8765   " IPv6 + port
-+    unix:/tmp/my-socket  " Unix-domain socket path
+ If 'lisp' is not on and 'equalprg' is empty, the "=" operator indents using
+ Vim's built-in algorithm rather than calling an external program.
+@@ -293,8 +294,9 @@ The examples below assume a 'shiftwidth' of 4.
+ <
+ 							*cino-g*
+ 	gN    Place C++ scope declarations N characters from the indent of the
+-	      block they are in.  (default 'shiftwidth').  A scope declaration
+-	      can be "public:", "protected:" or "private:".
++	      block they are in.  (default 'shiftwidth'). By default, a scope 
++	      declaration is "public:", "protected:" or "private:". This can
++	      be adjusted with the 'cinscopedecls' option.
  
- {options} is a dictionary with optional entries:	*channel-open-options*
+ 		cino=		    cino=g0 >
+ 		  {		      {
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index d5e5e6834..8b2021107 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1661,13 +1661,23 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	matter, include the keyword both the uppercase and lowercase:
+ 	"if,If,IF".
  
-@@ -579,10 +582,15 @@ ch_info({handle})						*ch_info()*
- 		When opened with ch_open():
- 		   "hostname"	  the hostname of the address
- 		   "port"	  the port of the address
-+		   "path"	  the path of the Unix-domain socket
- 		   "sock_status"  "open" or "closed"
- 		   "sock_mode"	  "NL", "RAW", "JSON" or "JS"
- 		   "sock_io"	  "socket"
- 		   "sock_timeout" timeout in msec
+-						*'clipboard'* *'cb'*
++						*'cinscopedecls'* *'cinsd'*
++'cinscopedecls' 'cinsd'	string	(default "public,protected,private")
++			local to buffer
++			{not available when compiled without the |+cindent|
++			feature}
++	Keywords that are interpreted as a C++ scope declaration by |cino-g|.
++	Useful e.g. for working with the Qt framework that defines additional
++	scope declarations "signals", "public slots" and "private slots": >
++		set cinscopedecls+=signals,public\ slots,private\ slots
 +
-+		Note that "pair" is only present for Unix-domain sockets, for
-+		regular ones "hostname" and "port" are present instead.
-+
- 		When opened with job_start():
- 		   "out_status"	  "open", "buffered" or "closed"
- 		   "out_mode"	  "NL", "RAW", "JSON" or "JS"
-@@ -641,11 +649,8 @@ ch_open({address} [, {options}])				*ch_open()*
- 		Open a channel to {address}.  See |channel|.
- 		Returns a Channel.  Use |ch_status()| to check for failure.
- 
--		{address} is a String and has the form "hostname:port", e.g.,
--		"localhost:8765".
--
--		When using an IPv6 address, enclose it within square brackets.
--		E.g., "[2001:db8::1]:8765".
-+		{address} is a String, see |channel-address| for the possible
-+		accepted forms.
- 
- 		If {options} is given it must be a |Dictionary|.
- 		See |channel-open-options|.
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 6645a7b2d..dcde185e9 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
-@@ -271,6 +271,11 @@ popup_create({what}, {options})				*popup_create()*
- 		'buftype' set to "popup".  That buffer will be wiped out once
- 		the popup closes.
- 
-+		if {what} is a buffer number and loading the buffer runs into
-+		an existing swap file, it is silently opened read-only, as if
-+		a |SwapExists| autocommand had set |v:swapchoice| to 'o'.
-+		This is because we assume the buffer is only used for viewing.
-+
- 		{options} is a dictionary with many possible entries.
- 		See |popup_create-arguments| for details.
- 
++<						*'clipboard'* *'cb'*
+ 'clipboard' 'cb'	string	(default "autoselect,exclude:cons\|linux"
+ 						  for X-windows, "" otherwise)
+ 			global
+ 			{only in GUI versions or when the |+xterm_clipboard|
+ 			feature is included}
+-	This option is a list of comma separated names.
++	This option is a list of comma-separated names.
+ 	Note: if one of the items is "exclude:", then you can't add an item
+ 	after that.  Therefore do append an item with += but use ^= to
+ 	prepend, e.g.: >
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index e53294291..279e3d56c 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -643,6 +643,7 @@ Short explanation of each option:		*option-list*
+ 'cinkeys'	  'cink'    keys that trigger indent when 'cindent' is set
+ 'cinoptions'	  'cino'    how to do indenting when 'cindent' is set
+ 'cinwords'	  'cinw'    words where 'si' and 'cin' add an indent
++'cinscopedecls'	  'cinsd'   words that are recognized by 'cino-g' 
+ 'clipboard'	  'cb'	    use the clipboard as the unnamed register
+ 'cmdheight'	  'ch'	    number of lines to use for the command-line
+ 'cmdwinheight'	  'cwh'     height of the command-line window
