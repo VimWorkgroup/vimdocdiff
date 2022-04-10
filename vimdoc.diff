@@ -1,98 +1,39 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 8421f77af..3b738b744 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -1205,6 +1205,9 @@ TextYankPost			After text has been yanked or deleted in the
- 				current buffer.  The following values of
- 				|v:event| can be used to determine the operation
- 				that triggered this autocmd:
-+				   inclusive	TRUE if the motion is
-+						|inclusive| else the motion is
-+						|exclusive|.
- 				   operator	The operation performed.
- 				   regcontents	Text that was stored in the
- 						register, as a list of lines,
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 0867c47fa..cd9b988a7 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -939,7 +939,7 @@ Note: these are typed literally, they are not special keys!
- 		   file name of the sourced file.  *E498*
- 		   When executing a legacy function, is replaced with the call
- 		   stack, as with <stack> (this is for backwards
--		   compatibility, using <stack> is preferred).
-+		   compatibility, using <stack> or <script> is preferred).
- 		   In Vim9 script using <sfile> in a function gives error
- 		   *E1245* .
- 		   Note that filename-modifiers are useless when <sfile> is
-@@ -951,6 +951,12 @@ Note: these are typed literally, they are not special keys!
- 		   ".." in between items.  E.g.:
- 		   "function {function-name1}[{lnum}]..{function-name2}[{lnum}]"
- 		   If there is no call stack you get error *E489* .
-+							*:<script>* *<script>*
-+	<script>   When executing a `:source` command, is replaced with the file
-+		   name of the sourced file.  When executing a function, is
-+		   replaced with the file name of the script where it is
-+		   defined.
-+		   If the file name cannot be determined you get error *E1274* .
- 							*:<slnum>* *<slnum>*
- 	<slnum>	   When executing a ":source" command, is replaced with the
- 		   line number.  *E842*
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index aa8e995ea..b921c3db0 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -142,12 +142,14 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.asm		g:asmsyntax	|ft-asm-syntax|
- 	*.asp		g:filetype_asp	|ft-aspvbs-syntax| |ft-aspperl-syntax|
- 	*.bas		g:filetype_bas	|ft-basic-syntax|
-+	*.cfg		g:filetype_cfg
- 	*.dat		g:filetype_dat
- 	*.frm		g:filetype_frm	|ft-form-syntax|
- 	*.fs		g:filetype_fs	|ft-forth-syntax|
- 	*.i		g:filetype_i	|ft-progress-syntax|
- 	*.inc		g:filetype_inc
- 	*.m		g:filetype_m	|ft-mathematica-syntax|
-+	*.mod		g:filetype_mod
- 	*.p		g:filetype_p	|ft-pascal-syntax|
- 	*.pl		g:filetype_pl
- 	*.pp		g:filetype_pp	|ft-pascal-syntax|
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 7946a133e..ede51125f 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
-@@ -1077,6 +1077,9 @@ The "file/text" column shows the file name, or the text at the jump if it is
- in the current file (an indent is removed and a long line is truncated to fit
- in the window).
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 2bba058a7..74e1d9268 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1224,7 +1224,7 @@ Examples: >
  
-+The marker ">" indicates the current position in the jumplist.  It may not be
-+shown when filtering the |:jump| command using |:filter|
-+
- You are currently in line 1167.  If you then use the CTRL-O command, the
- cursor is put in line 1154.  This results in:
+ If you want to always use ":confirm", set the 'confirm' option.
  
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 443175a85..ddd5af08e 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -4165,6 +4165,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	|hl-ErrorMsg|	 e  error messages
- 			 h  (obsolete, ignored)
- 	|hl-IncSearch|	 i  'incsearch' highlighting
-+	|hl-CurSearch|	 y  current instance of last search pattern
- 	|hl-Search|	 l  last search pattern highlighting (see 'hlsearch')
- 	|hl-MoreMsg|	 m  |more-prompt|
- 	|hl-ModeMsg|	 M  Mode (e.g., "-- INSERT --")
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 826a0b47a..dfb0fb775 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -5318,6 +5318,8 @@ QuickFixLine	Current |quickfix| item in the quickfix window.
- 							*hl-Search*
- Search		Last search pattern highlighting (see 'hlsearch').
- 		Also used for similar items that need to stand out.
-+							*hl-CurSearch*
-+CurSearch	Current match for the last search pattern (see 'hlsearch').
- 							*hl-SpecialKey*
- SpecialKey	Meta and special keys listed with ":map", also for text used
- 		to show unprintable characters in the text, 'listchars'.
+-			*:browse* *:bro* *E338* *E614* *E615* *E616*
++			*:browse* *:bro* *E338*
+ :bro[wse] {command}	Open a file selection dialog for an argument to
+ 			{command}.  At present this works for |:e|, |:w|,
+ 			|:wall|, |:wq|, |:wqall|, |:x|, |:xall|, |:exit|,
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index fa3e8e944..6e7090acd 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -181,7 +181,7 @@ You will not get an error if you try to change the type of a variable.
+ 
+ 
+ 1.2 Function references ~
+-				*Funcref* *E695* *E718* *E1086* *E1192*
++				*Funcref* *E695* *E718* *E1192*
+ A Funcref variable is obtained with the |function()| function, the |funcref()|
+ function or created with the lambda expression |expr-lambda|.  It can be used
+ in an expression in the place of a function name, before the parenthesis
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index ce5e5078f..5020bcf90 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -378,7 +378,7 @@ And with autocommands: >
+ Although using a :def function probably works better.
+ 
+ 				*E1022* *E1103* *E1130* *E1131* *E1133*
+-				*E1134* *E1235*
++				*E1134*
+ Declaring a variable with a type but without an initializer will initialize to
+ false (for bool), empty (for string, list, dict, etc.) or zero (for number,
+ any, etc.).  This matters especially when using the "any" type, the value will
