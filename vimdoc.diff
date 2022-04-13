@@ -1,39 +1,54 @@
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index 2bba058a7..74e1d9268 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -1224,7 +1224,7 @@ Examples: >
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 4fb12ff86..f6a791d9f 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -2270,6 +2270,9 @@ expand({string} [, {nosuf} [, {list}]])				*expand()*
+ 		is not defined, an empty string is used.  Using "%:p" in a
+ 		buffer with no name, results in the current directory, with a
+ 		'/' added.
++		When 'verbose' is set then expanding '%', '#' and <> items
++		will result in an error message if the argument cannot be
++		expanded.
  
- If you want to always use ":confirm", set the 'confirm' option.
+ 		When {string} does not start with '%', '#' or '<', it is
+ 		expanded like a file name is expanded on the command line.
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index a306abb48..01756f145 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -633,8 +633,8 @@ ch_logfile({fname} [, {mode}])					*ch_logfile()*
+ 		is going on in real time.
  
--			*:browse* *:bro* *E338* *E614* *E615* *E616*
-+			*:browse* *:bro* *E338*
- :bro[wse] {command}	Open a file selection dialog for an argument to
- 			{command}.  At present this works for |:e|, |:w|,
- 			|:wall|, |:wq|, |:wqall|, |:x|, |:xall|, |:exit|,
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index fa3e8e944..6e7090acd 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -181,7 +181,7 @@ You will not get an error if you try to change the type of a variable.
+ 		To enable the log very early, to see what is received from a
+-		terminal during startup, use |--cmd|: >
+-			vim --cmd "call ch_logfile('logfile', 'w')"
++		terminal during startup, use |--log|: >
++			vim --log logfile
+ <
+ 		This function is not available in the |sandbox|.
+ 		NOTE: the channel communication is stored in the file, be
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 16004412a..9a4014b04 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -344,6 +344,12 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ 		Example: >
+ 			vim -V20vimlog foobar
+ <
++--log {filename}					*--log*
++		Start logging and write entries to {filename}.
++		This works like calling `ch_logfile({filename}, 'a')` very
++		early during startup.
++		{only available with the +channel feature}
++
+ 							*-D*
+ -D		Debugging.  Go to debugging mode when executing the first
+ 		command from a script. |debug-mode|
+@@ -564,6 +570,7 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ 		{scriptout} cannot start with a digit.
+ 		If you want to record what is typed in a human readable for
+ 		you can use |ch_logfile()|, It adds "raw key input" lines.
++		Also see |--log|.
  
- 
- 1.2 Function references ~
--				*Funcref* *E695* *E718* *E1086* *E1192*
-+				*Funcref* *E695* *E718* *E1192*
- A Funcref variable is obtained with the |function()| function, the |funcref()|
- function or created with the lambda expression |expr-lambda|.  It can be used
- in an expression in the place of a function name, before the parenthesis
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index ce5e5078f..5020bcf90 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -378,7 +378,7 @@ And with autocommands: >
- Although using a :def function probably works better.
- 
- 				*E1022* *E1103* *E1130* *E1131* *E1133*
--				*E1134* *E1235*
-+				*E1134*
- Declaring a variable with a type but without an initializer will initialize to
- false (for bool), empty (for string, list, dict, etc.) or zero (for number,
- any, etc.).  This matters especially when using the "any" type, the value will
+ 							*-W*
+ -W {scriptout}	Like -w, but do not append, overwrite an existing file.
