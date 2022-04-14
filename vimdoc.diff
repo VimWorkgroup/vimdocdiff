@@ -1,54 +1,32 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 4fb12ff86..f6a791d9f 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -2270,6 +2270,9 @@ expand({string} [, {nosuf} [, {list}]])				*expand()*
- 		is not defined, an empty string is used.  Using "%:p" in a
- 		buffer with no name, results in the current directory, with a
- 		'/' added.
-+		When 'verbose' is set then expanding '%', '#' and <> items
-+		will result in an error message if the argument cannot be
-+		expanded.
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index b921c3db0..f538329df 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -155,6 +155,7 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.pp		g:filetype_pp	|ft-pascal-syntax|
+ 	*.prg		g:filetype_prg
+ 	*.src		g:filetype_src
++	*.sys		g:filetype_sys
+ 	*.sh		g:bash_is_sh	|ft-sh-syntax|
+ 	*.tex		g:tex_flavor	|ft-tex-plugin|
+ 	*.w		g:filetype_w	|ft-cweb-syntax|
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index ddd5af08e..2ed4a8f31 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1265,6 +1265,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	separated list of items. For each item that is present, the bell
+ 	will be silenced. This is most useful to specify specific events in
+ 	insert mode to be silenced.
++	You can also make it flash by using 'visualbell'.
  
- 		When {string} does not start with '%', '#' or '<', it is
- 		expanded like a file name is expanded on the command line.
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index a306abb48..01756f145 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -633,8 +633,8 @@ ch_logfile({fname} [, {mode}])					*ch_logfile()*
- 		is going on in real time.
+ 	item	    meaning when present	~
+ 	all	    All events.
+@@ -1290,6 +1291,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	register    Unknown register after <C-R> in |Insert-mode|.
+ 	shell	    Bell from shell output |:!|.
+ 	spell	    Error happened on spell suggest.
++	term	    Bell from |:terminal| output.
+ 	wildmode    More matches in |cmdline-completion| available
+ 		    (depends on the 'wildmode' setting).
  
- 		To enable the log very early, to see what is received from a
--		terminal during startup, use |--cmd|: >
--			vim --cmd "call ch_logfile('logfile', 'w')"
-+		terminal during startup, use |--log|: >
-+			vim --log logfile
- <
- 		This function is not available in the |sandbox|.
- 		NOTE: the channel communication is stored in the file, be
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 16004412a..9a4014b04 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -344,6 +344,12 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 		Example: >
- 			vim -V20vimlog foobar
- <
-+--log {filename}					*--log*
-+		Start logging and write entries to {filename}.
-+		This works like calling `ch_logfile({filename}, 'a')` very
-+		early during startup.
-+		{only available with the +channel feature}
-+
- 							*-D*
- -D		Debugging.  Go to debugging mode when executing the first
- 		command from a script. |debug-mode|
-@@ -564,6 +570,7 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 		{scriptout} cannot start with a digit.
- 		If you want to record what is typed in a human readable for
- 		you can use |ch_logfile()|, It adds "raw key input" lines.
-+		Also see |--log|.
- 
- 							*-W*
- -W {scriptout}	Like -w, but do not append, overwrite an existing file.
