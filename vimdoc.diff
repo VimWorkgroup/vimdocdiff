@@ -1,49 +1,12 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index bfb18eda6..1b091b16f 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -295,6 +295,7 @@ inputsecret({prompt} [, {text}]) String	like input() but hiding the text
- insert({object}, {item} [, {idx}]) List	insert {item} in {object} [before {idx}]
- interrupt()			none	interrupt script execution
- invert({expr})			Number	bitwise invert
-+isabsolutepath({path})		Number	|TRUE| if {path} is an absolute path
- isdirectory({directory})	Number	|TRUE| if {directory} is a directory
- isinf({expr})			Number	determine if {expr} is infinity value
- 					(positive or negative)
-@@ -4672,6 +4673,24 @@ invert({expr})						*invert()*
- <		Can also be used as a |method|: >
- 			:let bits = bits->invert()
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 2ef09fa5b..8b491345a 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -87,6 +87,7 @@ CTRL-Q		Same as CTRL-V.  But with some terminals it is used for
+ CTRL-SHIFT-V				*c_CTRL-SHIFT-V* *c_CTRL-SHIFT-Q*
+ CTRL-SHIFT-Q	Works just like CTRL-V, unless |modifyOtherKeys| is active,
+ 		then it inserts the Escape sequence for a key with modifiers.
++		In the GUI the |key-notation| is inserted without simplifying.
  
-+isabsolutepath({directory})				*isabsolutepath()*
-+		The result is a Number, which is |TRUE| when {path} is an
-+		absolute path.
-+<		On Unix, a path is considered absolute when it starts with '/'.
-+		On MS-Windows, it is considered absolute when it starts with an
-+		optional drive prefix and is followed by a '\' or '/'. UNC paths
-+		are always absolute.
-+		Example: >
-+			echo isabsolutepath('/usr/share/')	" 1
-+			echo isabsolutepath('./foobar')		" 0
-+			echo isabsolutepath('C:\Windows')	" 1
-+			echo isabsolutepath('foobar')		" 0
-+			echo isabsolutepath('\\remote\file')	" 1
-+
-+		Can also be used as a |method|: >
-+			GetName()->isabsolutepath()
-+
-+
- isdirectory({directory})				*isdirectory()*
- 		The result is a Number, which is |TRUE| when a directory
- 		with the name {directory} exists.  If {directory} doesn't
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index e9e16fe54..a9a1fcd88 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -904,6 +904,7 @@ System functions and manipulation of files:
- 	getfperm()		get the permissions of a file
- 	setfperm()		set the permissions of a file
- 	getftype()		get the kind of a file
-+	isabsolutepath()	check if a path is absolute
- 	isdirectory()		check if a directory exists
- 	getfsize()		get the size of a file
- 	getcwd()		get the current working directory
+ 							*c_<Left>* *c_Left*
+ <Left>		cursor left
