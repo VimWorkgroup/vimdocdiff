@@ -1,12 +1,17 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 2ef09fa5b..8b491345a 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -87,6 +87,7 @@ CTRL-Q		Same as CTRL-V.  But with some terminals it is used for
- CTRL-SHIFT-V				*c_CTRL-SHIFT-V* *c_CTRL-SHIFT-Q*
- CTRL-SHIFT-Q	Works just like CTRL-V, unless |modifyOtherKeys| is active,
- 		then it inserts the Escape sequence for a key with modifiers.
-+		In the GUI the |key-notation| is inserted without simplifying.
- 
- 							*c_<Left>* *c_Left*
- <Left>		cursor left
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 1b091b16f..beeb73649 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -2016,8 +2016,10 @@ executable({expr})					*executable()*
+ 		On MS-Windows it only checks if the file exists and is not a
+ 		directory, not if it's really executable.
+ 		On MS-Windows an executable in the same directory as Vim is
+-		always found.  Since this directory is added to $PATH it
+-		should also work to execute it |win32-PATH|.
++		normally found.  Since this directory is added to $PATH it
++		should also work to execute it |win32-PATH|.  This can be
++		disabled by setting the $NoDefaultCurrentDirectoryInExePath
++		environment variable.  *NoDefaultCurrentDirectoryInExePath*
+ 		The result is a Number:
+ 			1	exists
+ 			0	does not exist
