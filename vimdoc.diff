@@ -1,59 +1,110 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index beeb73649..12fb509a7 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -5310,6 +5310,7 @@ maparg({name} [, {mode} [, {abbr} [, {dict}]]])			*maparg()*
- 		  "lnum"     The line number in "sid", zero if unknown.
- 		  "nowait"   Do not wait for other, longer mappings.
- 			     (|:map-<nowait>|).
-+		  "abbr"     True if this is an |abbreviation|.
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index fdae0da95..6278b7dca 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1177,14 +1177,15 @@ register.  With blockwise selection it also depends on the size of the block
+ and whether the corners are on an existing character.  (Implementation detail:
+ it actually works by first putting the register after the selection and then
+ deleting the selection.)
+-With 'p' the previously selected text is put in the unnamed register.  This is
+-useful if you want to put that text somewhere else.  But you cannot repeat the
+-same change.
+-With 'P' the unnamed register is not changed, you can repeat the same change.
+-But the deleted text cannot be used.  If you do need it you can use 'p' with
+-another register.  E.g., yank the text to copy, Visually select the text to
+-replace and use "0p .  You can repeat this as many times as you like, and the
+-unnamed register will be changed each time.
++With |p| the previously selected text is put in the unnamed register (and
++possibly the selection and/or clipboard).  This is useful if you want to put
++that text somewhere else.  But you cannot repeat the same change.
++With |P| the unnamed register is not changed (and neither the selection or
++clipboard), you can repeat the same change. But the deleted text cannot be
++used.  If you do need it you can use |p| with another register.  E.g., yank
++the text to copy, Visually select the text to replace and use "0p .  You can
++repeat this as many times as you like, and the unnamed register will be
++changed each time.
  
- 		The dictionary can be used to restore a mapping with
- 		|mapset()|.
-@@ -5380,9 +5381,18 @@ mapnew({expr1}, {expr2})					*mapnew()*
+ When you use a blockwise Visual mode command and yank only a single line into
+ a register, a paste on a visual selected area will paste that single line on
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 953227d21..39208e48d 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1523,6 +1523,25 @@ to be doubled.  These two commands are equivalent: >
+ 	if a =~ '\s*'
  
  
- mapset({mode}, {abbr}, {dict})					*mapset()*
--		Restore a mapping from a dictionary returned by |maparg()|.
--		{mode} and {abbr} should be the same as for the call to
--		|maparg()|. *E460*
-+mapset({dict})
-+		Restore a mapping from a dictionary, possibly returned by
-+		|maparg()| or |maplist()|.  A buffer mapping, when dict.buffer
-+		is true, is set on the current buffer; it is up to the caller
-+		to insure that the intended buffer is the current buffer. This
-+		feature allows copying mappings from one buffer to another.
-+		The dict.mode value may restore a single mapping that covers
-+		more than one mode, like with mode values of '!', ' ', 'nox',
-+		or 'v'. *E1276*
++interpolated-string					*interp-string* *E256*
++--------------------
++$"string"		interpolated string constant		*expr-$quote*
++$'string'		interpolated literal string constant	*expr-$'*
 +
-+		In the first form, {mode} and {abbr} should be the same as
-+		for the call to |maparg()|. *E460*
- 		{mode} is used to define the mode in which the mapping is set,
- 		not the "mode" entry in {dict}.
- 		Example for saving and restoring a mapping: >
-@@ -5391,8 +5401,22 @@ mapset({mode}, {abbr}, {dict})					*mapset()*
- 			...
- 			call mapset('n', 0, save_map)
- <		Note that if you are going to replace a map in several modes,
--		e.g. with `:map!`, you need to save the mapping for all of
--		them, since they can differ.
-+		e.g. with `:map!`, you need to save/restore the mapping for
-+		all of them, when they might differ.
++Interpolated strings are an extension of the |string| and |literal-string|,
++allowing the inclusion of Vim script expressions (see |expr1|).  Any
++expression returning a value can be enclosed between curly braces.  The value
++is converted to a string.  All the text and results of the expressions
++are concatenated to make a new string.
 +
-+		In the second form, with {dict} as the only argument, mode
-+		and abbr are taken from the dict.
-+		Example: >
-+			vim9script
-+			var save_maps = maplist()->filter(
-+						(_, m) => m.lhs == 'K')
-+			nnoremap K somethingelse
-+			cnoremap K somethingelse2
-+			# ...
-+			unmap K
-+			for d in save_maps
-+			    mapset(d)
-+			endfor
++To include an opening brace '{' or closing brace '}' in the string content
++double it.
++
++Examples: >
++	let your_name = input("What's your name? ")
++	echo $"Hello, {your_name}!"
++	echo $"The square root of 9 is {sqrt(9)}"
++
+ option						*expr-option* *E112* *E113*
+ ------
+ &option			option value, local value if possible
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index 58a4861f4..190ce7c55 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -939,7 +939,7 @@ tag		command	      note action in Visual mode	~
+ |v_K|		K		   run 'keywordprg' on the highlighted area
+ |v_O|		O		   move horizontally to other corner of area
+ |v_P|		P		   replace highlighted area with register
+-				   contents; unnamed register is unchanged
++				   contents; registers are unchanged
+ 		Q		   does not start Ex mode
+ |v_R|		R		2  delete the highlighted lines and start
+ 				   insert
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index cd048456d..689c9a28c 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1392,14 +1392,20 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			    characters.  It permits dynamic French paragraph
+ 			    indentation (negative) or emphasizing the line
+ 			    continuation (positive).
++			    (default: 0)
+ 		sbr	    Display the 'showbreak' value before applying the
+ 			    additional indent.
++			    (default: off)
+ 		list:{n}    Adds an additional indent for lines that match a
+ 			    numbered or bulleted list (using the
+ 			    'formatlistpat' setting).
+ 		list:-1	    Uses the length of a match with 'formatlistpat'
+ 			    for indentation.
+-	The default value for min is 20, shift and list is 0.
++			    (default: 0)
++		column:{n}  Indent at column {n}. Will overrule the other
++			    sub-options. Note: an additional indent may be
++			    added for the 'showbreak' setting.
++			    (default: off)
  
- 
- match({expr}, {pat} [, {start} [, {count}]])			*match()*
+ 						*'browsedir'* *'bsdir'*
+ 'browsedir' 'bsdir'	string	(default: "last")
+diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
+index d61d5d8bb..e9862b1b2 100644
+--- a/runtime/doc/visual.txt
++++ b/runtime/doc/visual.txt
+@@ -265,7 +265,7 @@ Additionally the following commands can be used:
+ 	X	delete (2)					|v_X|
+ 	Y	yank (2)					|v_Y|
+ 	p	put						|v_p|
+-	P	put without unnamed register overwrite		|v_P|
++	P	put without overwriting registers		|v_P|
+ 	J	join (1)					|v_J|
+ 	U	make uppercase					|v_U|
+ 	u	make lowercase					|v_u|
