@@ -1,438 +1,125 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 12fb509a7..cd6604102 100644
+index cd6604102..f6da0cfd8 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 8.2.  Last change: 2022 Apr 25
-+*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 04
+-*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 04
++*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -213,8 +213,12 @@ getcharmod()			Number	modifiers for the last typed character
- getcharpos({expr})		List	position of cursor, mark, etc.
- getcharsearch()			Dict	last character search
- getcharstr([expr])		String	get one character from the user
-+getcmdcompltype()		String	return the type of the current
-+					command-line completion
- getcmdline()			String	return the current command-line
- getcmdpos()			Number	return cursor position in command-line
-+getcmdscreenpos()		Number	return cursor screen position in
-+					command-line
- getcmdtype()			String	return current command-line type
- getcmdwintype()			String	return current command-line window type
- getcompletion({pat}, {type} [, {filtered}])
-@@ -2421,7 +2425,7 @@ feedkeys({string} [, {mode}])				*feedkeys()*
- 			all typeahead will be consumed by the last call.
- 		'c'	Remove any script context when executing, so that
- 			legacy script syntax applies, "s:var" does not work,
--			etc.  Note that if the keys being using set a script
-+			etc.  Note that if the string being fed sets a script
- 			context this still applies.
- 		'!'	When used with 'x' will not end Insert mode. Can be
- 			used in a test when a timer is set to exit Insert mode
-@@ -3208,6 +3212,13 @@ getcharstr([expr])					*getcharstr()*
- 		Otherwise this works like |getchar()|, except that a number
- 		result is converted to a string.
- 
-+getcmdcompltype()					*getcmdcompltype()*
-+		Return the type of the current command-line completion.
-+		Only works when the command line is being edited, thus
-+		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
-+		See |command-completion| for the return string.
-+		Also see |getcmdtype()|, |setcmdpos()| and |getcmdline()|.
-+		Returns an empty string when completion is not defined.
- 
- getcmdline()						*getcmdline()*
- 		Return the current command-line.  Only works when the command
-@@ -3227,6 +3238,15 @@ getcmdpos()						*getcmdpos()*
- 		Returns 0 otherwise.
+@@ -3216,7 +3216,7 @@ getcmdcompltype()					*getcmdcompltype()*
+ 		Return the type of the current command-line completion.
+ 		Only works when the command line is being edited, thus
+ 		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
+-		See |command-completion| for the return string.
++		See |:command-completion| for the return string.
  		Also see |getcmdtype()|, |setcmdpos()| and |getcmdline()|.
+ 		Returns an empty string when completion is not defined.
  
-+getcmdscreenpos()					*getcmdscreenpos()*
-+		Return the screen position of the cursor in the command line
-+		as a byte count.  The first column is 1.
-+		Instead of |getcmdpos()|, it adds the prompt position.
-+		Only works when editing the command line, thus requires use of
-+		|c_CTRL-\_e| or |c_CTRL-R_=| or an expression mapping.
-+		Returns 0 otherwise.
-+		Also see |getcmdpos()|, |setcmdpos()|.
-+
- getcmdtype()						*getcmdtype()*
- 		Return the current command-line type. Possible return values
- 		are:
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 6278b7dca..d3e0a9ca1 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+@@ -5330,7 +5330,7 @@ maparg({name} [, {mode} [, {abbr} [, {dict}]]])			*maparg()*
+ 		  "lnum"     The line number in "sid", zero if unknown.
+ 		  "nowait"   Do not wait for other, longer mappings.
+ 			     (|:map-<nowait>|).
+-		  "abbr"     True if this is an |abbreviation|.
++		  "abbr"     True if this is an abbreviation |abbreviations|.
+ 
+ 		The dictionary can be used to restore a mapping with
+ 		|mapset()|.
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 3823a962d..8808e4363 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*change.txt*    For Vim version 8.2.  Last change: 2022 Mar 05
-+*change.txt*    For Vim version 8.2.  Last change: 2022 May 07
+-*map.txt*       For Vim version 8.2.  Last change: 2022 Apr 14
++*map.txt*       For Vim version 8.2.  Last change: 2022 May 09
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1673,9 +1673,9 @@ readability.
+@@ -120,7 +120,8 @@ modes.
+ 			command applies.
+ 			Use the <buffer> argument to remove buffer-local
+ 			mappings |:map-<buffer>|
+-			Warning: This also removes the default mappings.
++			Warning: This also removes the |mac-standard-mappings|
++			and the |dos-standard-mappings|.
  
- letter	 meaning when present in 'formatoptions'    ~
- 							*fo-t*
--t	Auto-wrap text using textwidth
-+t	Auto-wrap text using 'textwidth'
- 							*fo-c*
--c	Auto-wrap comments using textwidth, inserting the current comment
-+c	Auto-wrap comments using 'textwidth', inserting the current comment
- 	leader automatically.
- 							*fo-r*
- r	Automatically insert the current comment leader after hitting
-@@ -1684,6 +1684,9 @@ r	Automatically insert the current comment leader after hitting
- o	Automatically insert the current comment leader after hitting 'o' or
- 	'O' in Normal mode.  In case comment is unwanted in a specific place
- 	use CTRL-U to quickly delete it. |i_CTRL-U|
-+							*fo-/*
-+/	When 'o' is included: do not insert the comment leader for a //
-+	comment after a statement, only when // is at the start of the line.
- 							*fo-q*
- q	Allow formatting of comments with "gq".
- 	Note that formatting will not change blank lines or lines containing
-@@ -1746,8 +1749,8 @@ B	When joining lines, don't insert a space between two multibyte
- 1	Don't break a line after a one-letter word.  It's broken before it
- 	instead (if possible).
- 							*fo-]*
--]	Respect textwidth rigorously. With this flag set, no line can be
--	longer than textwidth, unless line-break-prohibition rules make this
-+]	Respect 'textwidth' rigorously. With this flag set, no line can be
-+	longer than 'textwidth', unless line-break-prohibition rules make this
- 	impossible.  Mainly for CJK scripts and works only if 'encoding' is
- 	"utf-8".
- 							*fo-j*
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 8b491345a..b2928a5e8 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+ :map				|mapmode-nvo|
+ :nm[ap]				|mapmode-n|
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 27b1b1b24..3ec5a9992 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*   For Vim version 8.2.  Last change: 2022 Apr 09
-+*cmdline.txt*   For Vim version 8.2.  Last change: 2022 Apr 29
+-*starting.txt*  For Vim version 8.2.  Last change: 2022 Apr 12
++*starting.txt*  For Vim version 8.2.  Last change: 2022 May 09
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 39208e48d..ac6102361 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 8.2.  Last change: 2022 Apr 17
-+*eval.txt*	For Vim version 8.2.  Last change: 2022 May 06
+@@ -764,6 +764,8 @@ Additionally:
+ One hint: If you want to go to Normal mode to be able to type a sequence of
+ commands, use CTRL-L. |i_CTRL-L|
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -523,8 +523,8 @@ only appear once.  Examples: >
- A key is always a String.  You can use a Number, it will be converted to a
- String automatically.  Thus the String '4' and the number 4 will find the same
- entry.  Note that the String '04' and the Number 04 are different, since the
--Number will be converted to the String '4'.  The empty string can also be used
--as a key.
-+Number will be converted to the String '4', leading zeros are dropped.  The
-+empty string can also be used as a key.
- 
- In |Vim9| script literaly keys can be used if the key consists of alphanumeric
- characters, underscore and dash, see |vim9-literal-dict|.
-@@ -534,7 +534,8 @@ legacy script.  This does require the key to consist only of ASCII letters,
- digits, '-' and '_'.  Example: >
- 	:let mydict = #{zero: 0, one_key: 1, two-key: 2, 333: 3}
- Note that 333 here is the string "333".  Empty keys are not possible with #{}.
--In |Vim9| script the #{} form cannot be used.
-+In |Vim9| script the #{} form cannot be used because it can be confused with
-+the start of a comment.
- 
- A value can be any expression.  Using a Dictionary for a value creates a
- nested Dictionary: >
-@@ -3252,20 +3253,20 @@ text...
- 			{endmarker}.
- 
- 			If "eval" is not specified, then each line of text is
--			used as a |literal-string|.  If "eval" is specified,
--			then any Vim expression in the form ``={expr}`` is
--			evaluated and the result replaces the expression.
-+			used as a |literal-string|, except that single quotes
-+			doe not need to be doubled.
-+			If "eval" is specified, then any Vim expression in the
-+			form {expr} is evaluated and the result replaces the
-+			expression, like with |interp-string|.
- 			Example where $HOME is expanded: >
- 				let lines =<< trim eval END
- 				  some text
--				  See the file `=$HOME`/.vimrc
-+				  See the file {$HOME}/.vimrc
- 				  more text
- 				END
- <			There can be multiple Vim expressions in a single line
- 			but an expression cannot span multiple lines.  If any
- 			expression evaluation fails, then the assignment fails.
--			once the "`=" has been found {expr} and a backtick
--			must follow.  {expr} cannot be empty.
- 
- 			{endmarker} must not contain white space.
- 			{endmarker} cannot start with a lower case character.
-@@ -3318,10 +3319,10 @@ text...
- 				DATA
- 
- 				let code =<< trim eval CODE
--				   let v = `=10 + 20`
--				   let h = "`=$HOME`"
--				   let s = "`=Str1()` abc `=Str2()`"
--				   let n = `=MyFunc(3, 4)`
-+				   let v = {10 + 20}
-+				   let h = "{$HOME}"
-+				   let s = "{Str1()} abc {Str2()}"
-+				   let n = {MyFunc(3, 4)}
- 				CODE
- <
- 								*E121*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 689c9a28c..866823341 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 8.2.  Last change: 2022 Apr 13
-+*options.txt*	For Vim version 8.2.  Last change: 2022 May 07
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8079,6 +8079,13 @@ A jump table for the options with a short description can be found at |Q_op|.
- <	This requires Vim to be built with the |+vtp| feature.
- 
- 	Note that the "cterm" attributes are still used, not the "gui" ones.
++There is no way to stop "easy mode", you need to exit Vim.
 +
-+	When using Vim with Windows Terminal, the background of Windows
-+	Terminal is normally filled with the Vim background color.  Setting
-+	'termguicolors' and the guibg of the Normal highlight group to NONE
-+	will make the background transparent: >
-+		:hi Normal guibg=NONE
-+<
- 	NOTE: This option is reset when 'compatible' is set.
+ ==============================================================================
+ 4. Initialization				*initialization* *startup*
  
- 						*'termwinkey'* *'twk'*
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index f8b5cacef..09549b50b 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -1,4 +1,4 @@
--*quickref.txt*  For Vim version 8.2.  Last change: 2022 Apr 06
-+*quickref.txt*  For Vim version 8.2.  Last change: 2022 May 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1350,7 +1350,7 @@ Context-sensitive completion on the command-line:
- |CTRL-W_^|	CTRL-W ^		split window and edit alternate file
- |CTRL-W_n|	CTRL-W n  or  :new	create new empty window
- |CTRL-W_q|	CTRL-W q  or  :q[uit]	quit editing and close window
--|CTRL-W_c|	CTRL-W c  or  :cl[ose]	make buffer hidden and close window
-+|CTRL-W_c|	CTRL-W c  or  :clo[se]	make buffer hidden and close window
- |CTRL-W_o|	CTRL-W o  or  :on[ly]	make current window only one on the
- 					   screen
- 
-diff --git a/runtime/doc/scroll.txt b/runtime/doc/scroll.txt
-index 941e5bd1f..8035d3cfd 100644
---- a/runtime/doc/scroll.txt
-+++ b/runtime/doc/scroll.txt
-@@ -1,4 +1,4 @@
--*scroll.txt*    For Vim version 8.2.  Last change: 2022 Apr 03
-+*scroll.txt*    For Vim version 8.2.  Last change: 2022 May 07
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -237,31 +237,34 @@ it works depends on your system.  It might also work in an xterm
- |xterm-mouse-wheel|.  By default only vertical scroll wheels are supported,
- but some GUIs also support horizontal scroll wheels.
- 
--For the Win32 GUI the scroll action is hard coded.  It works just like
--dragging the scrollbar of the current window.  How many lines are scrolled
--depends on your mouse driver.  If the scroll action causes input focus
--problems, see |intellimouse-wheel-problems|.
-+On MS-Windows, if the scroll action causes input focus -problems, see
-+|intellimouse-wheel-problems|.
- 
--For the X11 GUIs (Motif and GTK) scrolling the wheel generates key
-+For Win32 and the X11 GUIs (Motif and GTK) scrolling the wheel generates key
- presses <ScrollWheelUp>, <ScrollWheelDown>, <ScrollWheelLeft> and
- <ScrollWheelRight>.  For example, if you push the scroll wheel upwards a
- <ScrollWheelUp> key press is generated causing the window to scroll upwards
- (while the text is actually moving downwards).  The default action for these
- keys are:
--    <ScrollWheelUp>	    scroll three lines up	*<ScrollWheelUp>*
-+    <ScrollWheelUp>	    scroll N lines up	        *<ScrollWheelUp>*
-     <S-ScrollWheelUp>	    scroll one page up		*<S-ScrollWheelUp>*
-     <C-ScrollWheelUp>	    scroll one page up		*<C-ScrollWheelUp>*
--    <ScrollWheelDown>	    scroll three lines down	*<ScrollWheelDown>*
-+    <ScrollWheelDown>	    scroll N lines down	        *<ScrollWheelDown>*
-     <S-ScrollWheelDown>	    scroll one page down	*<S-ScrollWheelDown>*
-     <C-ScrollWheelDown>	    scroll one page down	*<C-ScrollWheelDown>*
--    <ScrollWheelLeft>	    scroll six columns left	*<ScrollWheelLeft>*
-+    <ScrollWheelLeft>	    scroll N columns left	*<ScrollWheelLeft>*
-     <S-ScrollWheelLeft>	    scroll one page left	*<S-ScrollWheelLeft>*
-     <C-ScrollWheelLeft>	    scroll one page left	*<C-ScrollWheelLeft>*
--    <ScrollWheelRight>	    scroll six columns right	*<ScrollWheelRight>*
-+    <ScrollWheelRight>	    scroll N columns right	*<ScrollWheelRight>*
-     <S-ScrollWheelRight>    scroll one page right	*<S-ScrollWheelRight>*
-     <C-ScrollWheelRight>    scroll one page right	*<C-ScrollWheelRight>*
- This should work in all modes, except when editing the command line.
- 
-+The value of N depends on the system.  By default Vim scrolls three lines when
-+moving vertically, and six columns when moving horizontally.  On MS-Windows
-+the amount of lines and columns for each scroll action is taken from the
-+system-wide settings.
-+
- Note that horizontal scrolling only works if 'nowrap' is set.  Also, unless
- the "h" flag in 'guioptions' is set, the cursor moves to the longest visible
- line if the cursor line is about to be scrolled off the screen (similarly to
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index e0919b84f..9e9a0f166 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 8.2.  Last change: 2022 Apr 24
-+*syntax.txt*	For Vim version 8.2.  Last change: 2022 May 06
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5238,6 +5238,9 @@ These are the default highlighting groups.  These groups are used by the
- 'highlight' option default.  Note that the highlighting depends on the value
- of 'background'.  You can see the current settings with the ":highlight"
- command.
-+When possible the name is highlighted in the used colors.  If this makes it
-+unreadable use Visual selection.
-+
- 							*hl-ColorColumn*
- ColorColumn	used for the columns set with 'colorcolumn'
- 							*hl-Conceal*
-@@ -5329,6 +5332,8 @@ Search		Last search pattern highlighting (see 'hlsearch').
- 		Also used for similar items that need to stand out.
- 							*hl-CurSearch*
- CurSearch	Current match for the last search pattern (see 'hlsearch').
-+		Note: this is correct after a search, but may get outdated if
-+		changes are made or the screen is redrawn. 
- 							*hl-SpecialKey*
- SpecialKey	Meta and special keys listed with ":map", also for text used
- 		to show unprintable characters in the text, 'listchars'.
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 1a84eb425..5bf28e250 100644
+index 5bf28e250..f7a3d350f 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 Apr 27
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 May 07
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 May 07
++*todo.txt*      For Vim version 8.2.  Last change: 2022 May 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -41,7 +41,6 @@ browser use: https://github.com/vim/vim/issues/1234
- Once Vim9 is stable:
- - Use Vim9 for more runtime files.
- - Check code coverage, add more tests if needed.
--	vim9execute.c  line 3500
- 	vim9expr.c
- 	vim9instr.c
- 	vim9script.c
-@@ -128,6 +127,9 @@ Text properties:
- - Popup attached to text property stays visible when text is deleted with
-   "cc". (#7737)  "C" works OK.  "dd" also files in a buffer with a single
-   line.
-+- Add text property that shifts text to make room for annotation (e.g.
-+  variable type).  Like the opposite of conceal.  Requires fixing the cursor
-+  positioning and mouse clicks as with conceal mode.
- - Auto-indenting may cause highlighting to shift. (#7719)
- - "cc" does not call inserted_bytes(). (Axel Forsman, #5763)
- - Combining text property with 'cursorline' does not always work (Billie
-@@ -152,6 +154,7 @@ Terminal debugger:
- - Make prompt-buffer variant work better.
- - Add option to not open the program window.  It's not used when attaching to
-   an already running program. (M. Kelly)
-+- Use the optional token on requests, match the result with it. #10300
- - When only gdb window exists, on "quit" edit another buffer.
- - Termdebug does not work when Vim was built with mzscheme: gdb hangs just
-   after "run".  Everything else works, including communication channel.  Not
-@@ -203,7 +206,11 @@ Terminal emulator window:
- - When 'encoding' is not utf-8, or the job is using another encoding, setup
-   conversions.
+@@ -38,6 +38,9 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
  
 +String interpolation: Handle backslash and quotes in the expression normally,
 +do not require escaping.
 +
+ Once Vim9 is stable:
+ - Use Vim9 for more runtime files.
+ - Check code coverage, add more tests if needed.
+@@ -206,15 +209,15 @@ Terminal emulator window:
+ - When 'encoding' is not utf-8, or the job is using another encoding, setup
+   conversions.
+ 
+-String interpolation: Handle backslash and quotes in the expression normally,
+-do not require escaping.
+-
  Add autocmd functions. PR #10291
-+  a couple of outstanding comments, wait for Yegappan to respond
+   a couple of outstanding comments, wait for Yegappan to respond
  
  Can deref_func_name() and deref_function_name() be merged?
  
-@@ -223,9 +230,6 @@ pass it on with modifications.
- Test_communicate_ipv6(): is flaky on many systems
- Fails in line 64 of Ch_communicate, no exception is thrown.
- 
--Patch for Template string: #4634
--Have another look at the implementation.
--
- Rename getdigraphlist -> digraph_getlist() etc.
- 
- Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
-@@ -328,6 +332,8 @@ Missing filetype test for bashrc, PKGBUILD, etc.
- Add an option to not fetch terminal codes in xterm, to avoid flicker when t_Co
- changes.
- 
-+Add ??= operator, "a ??= b" works like "a = a ?? b". #10343
+-Some prompts are not translated: #9495
++Add mode bits to maparg() dict?  PR #10356
 +
- Add an option to start_timer() to return from the input loop with K_IGNORE.
- This is useful e.g. when a popup was created that disables mappings, we need
- to return from vgetc() to make this happen.  #7011
++After patch 8.2.4915 w_botline is computed much more often. Can this be
++reduced?
+ 
+ NFA regexp does not handle composing characters well: #10286
+     [ɔ̃] matches both ɔ and ɔ̃
 diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index a9a1fcd88..1102f7e1a 100644
+index 1102f7e1a..eca2d06b4 100644
 --- a/runtime/doc/usr_41.txt
 +++ b/runtime/doc/usr_41.txt
-@@ -976,8 +976,12 @@ Buffers, windows and the argument list:
- 	swapname()		get the swap file path of a buffer
- 
- Command line:					*command-line-functions*
-+	getcmdcompltype()	get the type of the current command line
-+				completion
- 	getcmdline()		get the current command line
- 	getcmdpos()		get position of the cursor in the command line
-+	getcmdscreenpos()	get screen position of the cursor in the
-+				command line
- 	setcmdpos()		set position of the cursor in the command line
- 	getcmdtype()		return the current command-line type
- 	getcmdwintype()		return the current command-line window type
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index adf03537b..187712904 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 8.2.  Last change: 2022 Apr 14
-+*vim9.txt*	For Vim version 8.2.  Last change: 2022 Apr 28
+-*usr_41.txt*	For Vim version 8.2.  Last change: 2022 Apr 25
++*usr_41.txt*	For Vim version 8.2.  Last change: 2022 May 09
  
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -857,10 +857,16 @@ like in JavaScript: >
- 	var dict = {["key" .. nr]: value}
+@@ -2570,6 +2570,7 @@ Type `:next` to go to the next plugin file.
+ There are two special items about these files.  First is a mechanism to allow
+ a user to overrule or add to the default file.  The default files start with: >
  
- The key type can be string, number, bool or float.  Other types result in an
--error.  A number can be given with and without the []: >
--	var dict = {123: 'without', [456]: 'with'}
-+error.  Without using [] the value is used as a string, keeping leading zeros.
-+An expression given with [] is evaluated and then converted to a string.
-+Leading zeros will then be dropped: >
-+	var dict = {000123: 'without', [000456]: 'with'}
- 	echo dict
--	{'456': 'with', '123': 'without'}
-+	{'456': 'with', '000123': 'without'}
-+A float only works inside [] because the dot is not accepted otherwise: >
-+	var dict = {[00.013]: 'float'}
-+	echo dict
-+	{'0.013': 'float'}
- 
- 
- No :xit, :t, :k, :append, :change or :insert ~
-diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
-index e9862b1b2..d703d986c 100644
---- a/runtime/doc/visual.txt
-+++ b/runtime/doc/visual.txt
-@@ -1,4 +1,4 @@
--*visual.txt*    For Vim version 8.2.  Last change: 2022 Jan 20
-+*visual.txt*    For Vim version 8.2.  Last change: 2022 May 06
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
++	vim9script
+ 	if exists("g:current_compiler")
+ 	  finish
+ 	endif
