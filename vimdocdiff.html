@@ -47,8 +47,8 @@
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
       </svg>      <a href="#d2h-229033" class="d2h-file-name">runtime/doc/builtin.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+26</span>
-          <span class="d2h-lines-deleted">-0</span>
+          <span class="d2h-lines-added">+3</span>
+          <span class="d2h-lines-deleted">-4</span>
       </span>
     </span>
 </li>
@@ -74,81 +74,11 @@
                     <tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -5331,6 +5331,10 @@ maparg({name} [, {mode} [, {abbr} [, {dict}]]])			*maparg()*</div>
+        <div class="d2h-code-side-line">@@ -5682,10 +5682,9 @@ matchfuzzy({list}, {str} [, {dict}])			*matchfuzzy()*</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5331
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  &quot;nowait&quot;   Do not wait for other, longer mappings.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5332
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			     (|:map-&lt;nowait&gt;|).</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5333
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  &quot;abbr&quot;     True if this is an abbreviation |abbreviations|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5334
+      5682
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -158,282 +88,67 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5335
+      5683
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		The dictionary can be used to restore a mapping with</span>
+            <span class="d2h-code-line-ctn">		The optional {dict} argument always supports the following</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5336
+      5684
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		|mapset()|.</span>
+            <span class="d2h-code-line-ctn">		items:</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -5391,6 +5395,28 @@ maplist([{abbr}])					*maplist()*</div>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      5685
     </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5391
-    </td>
-    <td class="d2h-cntx">
+    <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			vim9script</span>
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		    matchseq	When this item is present <del>and</del> <del>{str}</del> <del>contains</del></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5392
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      5686
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			echo maplist()-&gt;filter(</span>
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">				<del>multiple</del> <del>words</del> <del>separated</del> <del>by</del> <del>white</del> <del>space,</del> <del>then</del></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5393
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      5687
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">				(_, m) =&gt; match(m.rhs, &#x27;MultiMatch&#x27;) &gt;= 0)</span>
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">				<del>returns</del> <del>only matches that contain the words in</del></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del">
+      5688
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">				the given sequence.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5394
+      5689
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -443,22 +158,22 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5395
+      5690
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">		If {list} is a list of dictionaries, then the optional {dict}</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5396
+      5691
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">mapnew({expr1}, {expr2})					*mapnew()*</span>
+            <span class="d2h-code-line-ctn">		argument supports the following additional items:</span>
         </div>
     </td>
 </tr>
@@ -477,77 +192,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5331
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  &quot;nowait&quot;   Do not wait for other, longer mappings.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5332
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			     (|:map-&lt;nowait&gt;|).</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5333
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  &quot;abbr&quot;     True if this is an abbreviation |abbreviations|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5334
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		  &quot;mode_bits&quot; Vim&#x27;s internal binary representation of &quot;mode&quot;.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5335
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			     |mapset()| ignores this; only &quot;mode&quot; is used.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5336
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			     See |maplist()| for usage examples. The values</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5337
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			     are from src&#x2F;vim.h and may change in the future.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5338
+      5682
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -557,282 +202,67 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5339
+      5683
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		The dictionary can be used to restore a mapping with</span>
+            <span class="d2h-code-line-ctn">		The optional {dict} argument always supports the following</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5340
+      5684
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		|mapset()|.</span>
+            <span class="d2h-code-line-ctn">		items:</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line"></div>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      5685
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">		    matchseq	When this item is present <ins>return</ins> <ins>only</ins> <ins>matches</ins></span>
+        </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5395
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      5686
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">				<ins>that</ins> <ins>contain</ins> <ins>the</ins> <ins>characters</ins> <ins>in</ins> <ins>{str}</ins> <ins>in the</ins></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      5687
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">				<ins>given</ins> <ins>sequence.</ins></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			vim9script</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5396
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			echo maplist()-&gt;filter(</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5397
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">				(_, m) =&gt; match(m.rhs, &#x27;MultiMatch&#x27;) &gt;= 0)</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5398
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">&lt;		It can be tricky to find mappings for particular |:map-modes|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5399
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		|mapping-dict|&#x27;s &quot;mode_bits&quot; can simplify this. For example,</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5400
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		the mode_bits for Normal, Insert or Command-line modes are</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5401
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		0x19. To find all the mappings available in those modes you</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5402
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		can do: &gt;</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5403
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			vim9script</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5404
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			var saved_maps = []</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5405
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			for m in maplist()</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5406
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			    if and(m.mode_bits, 0x19) != 0</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5407
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">				saved_maps-&gt;add(m)</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5408
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			    endif</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5409
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			endfor</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5410
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			echo saved_maps-&gt;mapnew((_, m) =&gt; m.lhs)</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5411
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">&lt;		The values of the mode_bits are defined in Vim&#x27;s src&#x2F;vim.h</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5412
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		file and they can be discovered at runtime using</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5413
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		|:map-commands| and &quot;maplist()&quot;. Example: &gt;</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5414
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			vim9script</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5415
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			omap xyzzy &lt;Nop&gt;</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5416
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			var op_bit = maplist()-&gt;filter(</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5417
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			    (_, m) =&gt; m.lhs == &#x27;xyzzy&#x27;)[0].mode_bits</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5418
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			ounmap xyzzy</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      5419
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">			echo printf(&quot;Operator-pending mode bit: 0x%x&quot;, op_bit)</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      5420
+      5688
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -842,22 +272,22 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5421
+      5689
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">		If {list} is a list of dictionaries, then the optional {dict}</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      5422
+      5690
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">mapnew({expr1}, {expr2})					*mapnew()*</span>
+            <span class="d2h-code-line-ctn">		argument supports the following additional items:</span>
         </div>
     </td>
 </tr>
