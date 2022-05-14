@@ -1,598 +1,1338 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 7d62583d6..538f099cb 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 09
-+*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 10
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
 diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index ac6102361..db70b711a 100644
+index db70b711a..86b968634 100644
 --- a/runtime/doc/eval.txt
 +++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 8.2.  Last change: 2022 May 06
-+*eval.txt*	For Vim version 8.2.  Last change: 2022 May 11
+-*eval.txt*	For Vim version 8.2.  Last change: 2022 May 11
++*eval.txt*	For Vim version 8.2.  Last change: 2022 May 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1534,14 +1534,22 @@ allowing the inclusion of Vim script expressions (see |expr1|).  Any
- expression returning a value can be enclosed between curly braces.  The value
- is converted to a string.  All the text and results of the expressions
- are concatenated to make a new string.
--
-+								*E1278*
- To include an opening brace '{' or closing brace '}' in the string content
--double it.
-+double it.  For double quoted strings using a backslash also works.  A single
-+closing brace '}' will result in an error.
+@@ -2960,7 +2960,7 @@ the "autoload" directory in 'runtimepath'.
  
- Examples: >
- 	let your_name = input("What's your name? ")
-+<	What's your name?  Peter ~
-+>
-+	echo
- 	echo $"Hello, {your_name}!"
--	echo $"The square root of 9 is {sqrt(9)}"
-+<	Hello, Peter! ~
-+>
-+	echo $"The square root of {{9}} is {sqrt(9)}"
-+<	The square root of {9} is 3.0 ~
-+
+ Using an autocommand ~
  
- option						*expr-option* *E112* *E113*
- ------
-@@ -3538,8 +3546,8 @@ text...
- :for {var} in {object}					*:for* *E690* *E732*
- :endfo[r]						*:endfo* *:endfor*
- 			Repeat the commands between `:for` and `:endfor` for
--			each item in {object}.  {object} can be a |List| or
--			a |Blob|. *E1177*
-+			each item in {object}.  {object} can be a |List|,
-+			a |Blob| or a |String|. *E1177*
+-This is introduced in the user manual, section |41.14|.
++This is introduced in the user manual, section |51.4|.
  
- 			Variable {var} is set to the value of each item.
- 			In |Vim9| script the loop variable must not have been
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 3ec5a9992..f5b33a888 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+ The autocommand is useful if you have a plugin that is a long Vim script file.
+ You can define the autocommand and quickly quit the script with `:finish`.
+@@ -2978,7 +2978,7 @@ The file "~/vim/bufnetfuncs.vim" should then define functions that start with
+ 
+ Using an autoload script ~
+ 							*autoload* *E746*
+-This is introduced in the user manual, section |41.15|.
++This is introduced in the user manual, section |51.5|.
+ 
+ Using a script in the "autoload" directory is simpler, but requires using
+ exactly the right file name.  A function that can be autoloaded has a name
+diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
+index 14cf1309b..2adf65117 100644
+--- a/runtime/doc/help.txt
++++ b/runtime/doc/help.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 8.2.  Last change: 2022 May 09
-+*starting.txt*  For Vim version 8.2.  Last change: 2022 May 10
+-*help.txt*	For Vim version 8.2.  Last change: 2022 Feb 26
++*help.txt*	For Vim version 8.2.  Last change: 2022 May 13
  
+ 			VIM - main help file
+ 									 k
+@@ -88,12 +88,15 @@ Tuning Vim ~
+ |usr_43.txt|  Using filetypes
+ |usr_44.txt|  Your own syntax highlighted
+ |usr_45.txt|  Select your language
+-|usr_46.txt|  Write plugins using Vim9 script
++
++Writing Vim scripts ~
++|usr_50.txt|  Advanced Vim script writing
++|usr_51.txt|  Create a plugin
++|usr_52.txt|  Write plugins using Vim9 script
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -737,6 +737,7 @@ In Evim these options are changed from their default value:
- 	:set guioptions-=a	non-Unix only: don't do auto-select
+ Making Vim Run ~
+ |usr_90.txt|  Installing Vim
  
- Key mappings:
-+	<CTRL-Q>	quit, using `:confirm` prompt if there are changes
- 	<Down>		moves by screen lines rather than file lines
- 	<Up>		idem
- 	Q		does "gq", formatting, instead of Ex mode
-@@ -747,7 +748,6 @@ Key mappings:
- 	<C-Insert>	idem
- 	CTRL-V		Pastes from the clipboard (in any mode)
- 	<S-Insert>	idem
--	CTRL-Q		do what CTRL-V used to do
- 	CTRL-Z		undo
- 	CTRL-Y		redo
- 	<M-Space>	system menu
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 9e9a0f166..fd783288a 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -488,7 +488,7 @@ your own highlight colors for the progress bar. Example: >
- 	hi TOhtmlProgress guifg=#c0ffee ctermbg=7
- <
- 							 *g:html_number_lines*
--Default: current 'number' setting.
-+Default: Current 'number' setting.
- When 0, buffer text is displayed in the generated HTML without line numbering.
- When 1, a column of line numbers is added to the generated HTML with the same
- highlighting as the line number column in Vim (|hl-LineNr|).
-@@ -577,7 +577,7 @@ folded text will open the fold as if |g:html_hover_unfold| were set.
-    :let g:html_no_foldcolumn = 1
- <
- 				*TOhtml-uncopyable-text* *g:html_prevent_copy*
--Default: empty string.
-+Default: Empty string.
- This option prevents certain regions of the generated HTML from being copied,
- when you select all text in document rendered in a browser and copy it. Useful
- for allowing users to copy-paste only the source text even if a fold column or
-@@ -603,7 +603,7 @@ uncopyable regions. In some browsers, especially older browsers, after
- selecting an entire page and copying the selection, the <input> tags are not
- pasted with the page text. If |g:html_no_invalid| is 0, the <input> tags have
- invalid type; this works in more browsers, but the page will not validate.
--Note: this method does NOT work in recent versions of Chrome and equivalent
-+Note: This method does NOT work in recent versions of Chrome and equivalent
- browsers; the <input> tags get pasted with the text.
+-
+ REFERENCE MANUAL: These files explain every detail of Vim.	*reference_toc*
  
- When "fallback" (default value), the same <input> elements are generated for
-@@ -659,12 +659,12 @@ To append a string "_mystring" to the end of each ID: >
- 
- 	:let g:html_id_expr = '"_mystring"'
- <
--Note, when converting a diff view to HTML, the expression will only be
-+Note: When converting a diff view to HTML, the expression will only be
- evaluated for the first window in the diff, and the result used for all the
- windows.
- 
- 					  *TOhtml-wrap-text* *g:html_pre_wrap*
--Default: current 'wrap' setting.
-+Default: Current 'wrap' setting.
- When 0, if |g:html_no_pre| is 0 or unset, the text in the generated HTML does
- not wrap at the edge of the browser window.
- When 1, if |g:html_use_css| is 1, the CSS 2.0 "white-space:pre-wrap" value is
-@@ -724,7 +724,7 @@ wide browser support. However, you can override this to support specific
- encodings that may not be automatically detected by default (see options
- below). See http://www.iana.org/assignments/character-sets for the IANA names.
- 
--Note, by default all Unicode encodings are converted to UTF-8 with no BOM in
-+Note: By default all Unicode encodings are converted to UTF-8 with no BOM in
- the generated HTML, as recommended by W3C:
- 
- 	http://www.w3.org/International/questions/qa-choosing-encodings
-@@ -1328,8 +1328,8 @@ the global or buffer-local variable load_doxygen_syntax.  This is done by
- adding the following to your .vimrc. >
- 	:let g:load_doxygen_syntax=1
- 
--There are a couple of variables that have an effect on syntax highlighting, and
--are to do with non-standard highlighting options.
-+There are a couple of variables that have an effect on syntax highlighting,
-+and are to do with non-standard highlighting options.
- 
- Variable			Default	Effect ~
- g:doxygen_enhanced_color
-@@ -1471,8 +1471,8 @@ To enable highlighting some special atoms, put this in your vimrc: >
- 
- ELIXIR						*elixir.vim* *ft-elixir-syntax*
- 
--Elixir is a dynamic, functional language for building scalable and maintainable
--applications.
-+Elixir is a dynamic, functional language for building scalable and
-+maintainable applications.
- 
- The following file extensions are auto-detected as Elixir file types:
- 
-@@ -1488,7 +1488,7 @@ Elixir.
- FLEXWIKI				*flexwiki.vim* *ft-flexwiki-syntax*
- 
- FlexWiki is an ASP.NET-based wiki package available at http://www.flexwiki.com
--NOTE: this site currently doesn't work, on Wikipedia is mentioned that
-+NOTE: This site currently doesn't work, on Wikipedia is mentioned that
- development stopped in 2009.
- 
- Syntax highlighting is available for the most common elements of FlexWiki
-@@ -1568,8 +1568,8 @@ syntax highlighting will not be correct if the form is incorrectly set.
- When you create a new fortran file, the syntax script assumes fixed source
- form.  If you always use free source form, then >
-     :let fortran_free_source=1
--in your .vimrc prior to the :syntax on command.  If you always use fixed source
--form, then >
-+in your .vimrc prior to the :syntax on command.  If you always use fixed
-+source form, then >
-     :let fortran_fixed_source=1
- in your .vimrc prior to the :syntax on command.
- 
-@@ -1840,8 +1840,8 @@ ends with -->) you can define >
- 
- JavaScript and Visual Basic embedded inside HTML documents are highlighted as
- 'Special' with statements, comments, strings and so on colored as in standard
--programming languages.  Note that only JavaScript and Visual Basic are currently
--supported, no other scripting language has been added yet.
-+programming languages.  Note that only JavaScript and Visual Basic are
-+currently supported, no other scripting language has been added yet.
- 
- Embedded and inlined cascading style sheets (CSS) are highlighted too.
- 
-@@ -1945,8 +1945,8 @@ The java.vim syntax highlighting file offers several options:
- 
- In Java 1.0.2 it was never possible to have braces inside parens, so this was
- flagged as an error.  Since Java 1.1 this is possible (with anonymous
--classes), and therefore is no longer marked as an error.  If you prefer the old
--way, put the following line into your vim startup file: >
-+classes), and therefore is no longer marked as an error.  If you prefer the
-+old way, put the following line into your vim startup file: >
- 	:let java_mark_braces_in_parens_as_errors=1
- 
- All identifiers in java.lang.* are always visible in all classes.  To
-@@ -2064,10 +2064,10 @@ LISP						*lisp.vim* *ft-lisp-syntax*
- 
- The lisp syntax highlighting provides two options: >
- 
--	g:lisp_instring : if it exists, then "(...)" strings are highlighted
-+	g:lisp_instring : If it exists, then "(...)" strings are highlighted
- 			  as if the contents of the string were lisp.
- 			  Useful for AutoLisp.
--	g:lisp_rainbow  : if it exists and is nonzero, then differing levels
-+	g:lisp_rainbow  : If it exists and is nonzero, then differing levels
- 			  of parenthesization will receive different
- 			  highlighting.
- <
-@@ -2474,8 +2474,8 @@ If you do not want complex things like '@{${"foo"}}' to be parsed: >
- 
- (In Vim 6.x it was the other way around: "perl_extended_vars" enabled it.)
- 
--The coloring strings can be changed.  By default strings and qq friends will be
--highlighted like the first line.  If you set the variable
-+The coloring strings can be changed.  By default strings and qq friends will
-+be highlighted like the first line.  If you set the variable
- perl_string_as_statement, it will be highlighted as in the second line.
- 
-    "hello world!"; qq|hello world|;
-@@ -2487,8 +2487,8 @@ perl_string_as_statement, it will be highlighted as in the second line.
- The syncing has 3 options.  The first two switch off some triggering of
- synchronization and should only be needed in case it fails to work properly.
- If while scrolling all of a sudden the whole screen changes color completely
--then you should try and switch off one of those.  Let me know if you can figure
--out the line that causes the mistake.
-+then you should try and switch off one of those.  Let me know if you can
-+figure out the line that causes the mistake.
- 
- One triggers on "^\s*sub\s*" and the other on "^[$@%]" more or less. >
- 
-@@ -2525,7 +2525,7 @@ behavior, set 'perl_nofold_packages': >
- 
- PHP3 and PHP4		*php.vim* *php3.vim* *ft-php-syntax* *ft-php3-syntax*
- 
--[note: previously this was called "php3", but since it now also supports php4
-+[Note: Previously this was called "php3", but since it now also supports php4
- it has been renamed to "php"]
- 
- There are the following options for the php syntax highlighting.
-@@ -2595,15 +2595,15 @@ PPWizard is a preprocessor for HTML and OS/2 INF files
- 
- This syntax file has the options:
- 
--- ppwiz_highlight_defs : determines highlighting mode for PPWizard's
-+- ppwiz_highlight_defs : Determines highlighting mode for PPWizard's
-   definitions.  Possible values are
- 
-   ppwiz_highlight_defs = 1 : PPWizard #define statements retain the
--    colors of their contents (e.g. PPWizard macros and variables)
-+    colors of their contents (e.g. PPWizard macros and variables).
- 
--  ppwiz_highlight_defs = 2 : preprocessor #define and #evaluate
-+  ppwiz_highlight_defs = 2 : Preprocessor #define and #evaluate
-     statements are shown in a single color with the exception of line
--    continuation symbols
-+    continuation symbols.
- 
-   The default setting for ppwiz_highlight_defs is 1.
- 
-@@ -2642,7 +2642,7 @@ highlighted by defining the postscr_level variable as follows: >
- If this variable is not defined it defaults to 2 (level 2) since this is
- the most prevalent version currently.
- 
--Note, not all PS interpreters will support all language features for a
-+Note: Not all PS interpreters will support all language features for a
- particular language level.  In particular the %!PS-Adobe-3.0 at the start of
- PS files does NOT mean the PostScript present is level 3 PostScript!
- 
-@@ -2744,7 +2744,7 @@ If you want all possible Python highlighting (the same as setting the
- preceding last option and unsetting all other ones): >
- 	:let python_highlight_all = 1
- 
--Note: only existence of these options matter, not their value. You can replace
-+Note: Only existence of these options matter, not their value. You can replace
-       1 above with anything.
- 
- QUAKE						*quake.vim* *ft-quake-syntax*
-@@ -3184,16 +3184,16 @@ The Speedup syntax file has some options:
-   the DECLARE section; if you defined own types, you have to include
-   them in the syntax file.
- 
--- oneline_comments : this value ranges from 1 to 3 and determines the
-+- oneline_comments : This value ranges from 1 to 3 and determines the
-   highlighting of # style comments.
- 
--  oneline_comments = 1 : allow normal Speedup code after an even
-+  oneline_comments = 1 : Allow normal Speedup code after an even
-   number of #s.
- 
--  oneline_comments = 2 : show code starting with the second # as
-+  oneline_comments = 2 : Show code starting with the second # as
-   error.  This is the default setting.
- 
--  oneline_comments = 3 : show the whole line as error if it contains
-+  oneline_comments = 3 : Show the whole line as error if it contains
-   more than one #.
- 
- Since especially OPERATION sections tend to become very large due to
-@@ -3232,8 +3232,8 @@ This covers the shell named "tcsh".  It is a superset of csh.  See |csh.vim|
- for how the filetype is detected.
- 
- Tcsh does not allow \" in strings unless the "backslash_quote" shell variable
--is set.  If you want VIM to assume that no backslash quote constructs exist add
--this line to your .vimrc: >
-+is set.  If you want VIM to assume that no backslash quote constructs exist
-+add this line to your .vimrc: >
- 
- 	:let tcsh_backslash_quote = 0
- 
-@@ -3599,7 +3599,7 @@ start and end tags.  This can be turned on by >
- 	:let g:xml_syntax_folding = 1
- 	:set foldmethod=syntax
- 
--Note: syntax folding might slow down syntax highlighting significantly,
-+Note: Syntax folding might slow down syntax highlighting significantly,
- especially for large files.
- 
- 
-@@ -5098,8 +5098,8 @@ ctermul={color-nr}				*highlight-ctermul*
- 
- 	The case of the color names is ignored.
- 	Note that for 16 color ansi style terminals (including xterms), the
--	numbers in the NR-8 column is used.  Here '*' means 'add 8' so that Blue
--	is 12, DarkGray is 8 etc.
-+	numbers in the NR-8 column is used.  Here '*' means 'add 8' so that
-+	Blue is 12, DarkGray is 8 etc.
- 
- 	Note that for some color terminals these names may result in the wrong
- 	colors!
-@@ -5242,48 +5242,46 @@ When possible the name is highlighted in the used colors.  If this makes it
- unreadable use Visual selection.
- 
- 							*hl-ColorColumn*
--ColorColumn	used for the columns set with 'colorcolumn'
-+ColorColumn	Used for the columns set with 'colorcolumn'.
- 							*hl-Conceal*
--Conceal		placeholder characters substituted for concealed
--		text (see 'conceallevel')
-+Conceal		Placeholder characters substituted for concealed
-+		text (see 'conceallevel').
- 							*hl-Cursor*
--Cursor		the character under the cursor
--lCursor		the character under the cursor when |language-mapping|
--		is used (see 'guicursor')
-+Cursor		Character under the cursor.
-+lCursor		Character under the cursor when |language-mapping|
-+		is used (see 'guicursor').
- 							*hl-CursorIM*
--CursorIM	like Cursor, but used when in IME mode |CursorIM|
-+CursorIM	Like Cursor, but used when in IME mode. |CursorIM|
- 							*hl-CursorColumn*
--CursorColumn	the screen column that the cursor is in when 'cursorcolumn' is
--		set
-+CursorColumn	Screen column that the cursor is in when 'cursorcolumn' is set.
- 							*hl-CursorLine*
--CursorLine	the screen line that the cursor is in when 'cursorline' is
--		set
-+CursorLine	Screen line that the cursor is in when 'cursorline' is set.
- 							*hl-Directory*
--Directory	directory names (and other special names in listings)
-+Directory	Directory names (and other special names in listings).
- 							*hl-DiffAdd*
--DiffAdd		diff mode: Added line |diff.txt|
-+DiffAdd		Diff mode: Added line. |diff.txt|
- 							*hl-DiffChange*
--DiffChange	diff mode: Changed line |diff.txt|
-+DiffChange	Diff mode: Changed line. |diff.txt|
- 							*hl-DiffDelete*
--DiffDelete	diff mode: Deleted line |diff.txt|
-+DiffDelete	Diff mode: Deleted line. |diff.txt|
- 							*hl-DiffText*
--DiffText	diff mode: Changed text within a changed line |diff.txt|
-+DiffText	Diff mode: Changed text within a changed line. |diff.txt|
- 							*hl-EndOfBuffer*
--EndOfBuffer	filler lines (~) after the last line in the buffer.
-+EndOfBuffer	Filler lines (~) after the last line in the buffer.
- 		By default, this is highlighted like |hl-NonText|.
- 							*hl-ErrorMsg*
--ErrorMsg	error messages on the command line
-+ErrorMsg	Error messages on the command line.
- 							*hl-VertSplit*
--VertSplit	the column separating vertically split windows
-+VertSplit	Column separating vertically split windows.
- 							*hl-Folded*
--Folded		line used for closed folds
-+Folded		Line used for closed folds.
- 							*hl-FoldColumn*
- FoldColumn	'foldcolumn'
- 							*hl-SignColumn*
--SignColumn	column where |signs| are displayed
-+SignColumn	Column where |signs| are displayed.
- 							*hl-IncSearch*
- IncSearch	'incsearch' highlighting; also used for the text replaced with
--		":s///c"
-+		":s///c".
- 							*hl-LineNr*
- LineNr		Line number for ":number" and ":#" commands, and when 'number'
- 		or 'relativenumber' option is set.
-@@ -5301,11 +5299,11 @@ CursorLineSign	Like SignColumn when 'cursorline' is set for the cursor line.
- 							*hl-CursorLineFold*
- CursorLineFold	Like FoldColumn when 'cursorline' is set for the cursor line.
- 							*hl-MatchParen*
--MatchParen	The character under the cursor or just before it, if it
-+MatchParen	Character under the cursor or just before it, if it
- 		is a paired bracket, and its match. |pi_paren.txt|
- 
- 							*hl-ModeMsg*
--ModeMsg		'showmode' message (e.g., "-- INSERT --")
-+ModeMsg		'showmode' message (e.g., "-- INSERT --").
- 							*hl-MoreMsg*
- MoreMsg		|more-prompt|
- 							*hl-NonText*
-@@ -5314,17 +5312,17 @@ NonText		'@' at the end of the window, characters from 'showbreak'
- 		(e.g., ">" displayed when a double-wide character doesn't
- 		fit at the end of the line).
- 							*hl-Normal*
--Normal		normal text
-+Normal		Normal text.
- 							*hl-Pmenu*
--Pmenu		Popup menu: normal item.
-+Pmenu		Popup menu: Normal item.
- 							*hl-PmenuSel*
--PmenuSel	Popup menu: selected item.
-+PmenuSel	Popup menu: Selected item.
- 							*hl-PmenuSbar*
--PmenuSbar	Popup menu: scrollbar.
-+PmenuSbar	Popup menu: Scrollbar.
- 							*hl-PmenuThumb*
- PmenuThumb	Popup menu: Thumb of the scrollbar.
- 							*hl-Question*
--Question	|hit-enter| prompt and yes/no questions
-+Question	|hit-enter| prompt and yes/no questions.
- 							*hl-QuickFixLine*
- QuickFixLine	Current |quickfix| item in the quickfix window.
- 							*hl-Search*
-@@ -5332,12 +5330,12 @@ Search		Last search pattern highlighting (see 'hlsearch').
- 		Also used for similar items that need to stand out.
- 							*hl-CurSearch*
- CurSearch	Current match for the last search pattern (see 'hlsearch').
--		Note: this is correct after a search, but may get outdated if
--		changes are made or the screen is redrawn. 
-+		Note: This is correct after a search, but may get outdated if
-+		changes are made or the screen is redrawn.
- 							*hl-SpecialKey*
- SpecialKey	Meta and special keys listed with ":map", also for text used
- 		to show unprintable characters in the text, 'listchars'.
--		Generally: text that is displayed differently from what it
-+		Generally: Text that is displayed differently from what it
- 		really is.
- 							*hl-SpellBad*
- SpellBad	Word that is not recognized by the spellchecker. |spell|
-@@ -5354,35 +5352,35 @@ SpellRare	Word that is recognized by the spellchecker as one that is
- 		hardly ever used. |spell|
- 		This will be combined with the highlighting used otherwise.
- 							*hl-StatusLine*
--StatusLine	status line of current window
-+StatusLine	Status line of current window.
- 							*hl-StatusLineNC*
- StatusLineNC	status lines of not-current windows
--		Note: if this is equal to "StatusLine" Vim will use "^^^" in
-+		Note: If this is equal to "StatusLine", Vim will use "^^^" in
- 		the status line of the current window.
- 							*hl-StatusLineTerm*
--StatusLineTerm	status line of current window, if it is a |terminal| window.
-+StatusLineTerm	Status line of current window, if it is a |terminal| window.
- 							*hl-StatusLineTermNC*
--StatusLineTermNC   status lines of not-current windows that is a |terminal|
-+StatusLineTermNC   Status lines of not-current windows that is a |terminal|
- 		window.
- 							*hl-TabLine*
--TabLine		tab pages line, not active tab page label
-+TabLine		Tab pages line, not active tab page label.
- 							*hl-TabLineFill*
--TabLineFill	tab pages line, where there are no labels
-+TabLineFill	Tab pages line, where there are no labels.
- 							*hl-TabLineSel*
--TabLineSel	tab pages line, active tab page label
-+TabLineSel	Tab pages line, active tab page label.
- 							*hl-Terminal*
--Terminal	|terminal| window (see |terminal-size-color|)
-+Terminal	|terminal| window (see |terminal-size-color|).
- 							*hl-Title*
--Title		titles for output from ":set all", ":autocmd" etc.
-+Title		Titles for output from ":set all", ":autocmd" etc.
- 							*hl-Visual*
--Visual		Visual mode selection
-+Visual		Visual mode selection.
- 							*hl-VisualNOS*
- VisualNOS	Visual mode selection when vim is "Not Owning the Selection".
- 		Only X11 Gui's |gui-x11| and |xterm-clipboard| supports this.
- 							*hl-WarningMsg*
--WarningMsg	warning messages
-+WarningMsg	Warning messages.
- 							*hl-WildMenu*
--WildMenu	current match in 'wildmenu' completion
-+WildMenu	Current match in 'wildmenu' completion.
- 
- 					*hl-User1* *hl-User1..9* *hl-User9*
- The 'statusline' syntax allows the use of 9 different highlights in the
-@@ -5772,7 +5770,7 @@ If your syntax causes redrawing to be slow, here are a few hints on making it
- faster.  To see slowness switch on some features that usually interfere, such
- as 'relativenumber' and |folding|.
- 
--Note: this is only available when compiled with the |+profile| feature.
-+Note: This is only available when compiled with the |+profile| feature.
- You many need to build Vim with "huge" features.
- 
- To find out what patterns are consuming most time, get an overview with this
+ General subjects ~
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index f7a3d350f..49fd1ee74 100644
+index 49fd1ee74..95627f3db 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 May 09
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 May 12
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 May 12
++*todo.txt*      For Vim version 8.2.  Last change: 2022 May 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,9 +38,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--String interpolation: Handle backslash and quotes in the expression normally,
--do not require escaping.
--
+@@ -41,13 +41,20 @@ browser use: https://github.com/vim/vim/issues/1234
  Once Vim9 is stable:
  - Use Vim9 for more runtime files.
  - Check code coverage, add more tests if needed.
-@@ -48,6 +45,7 @@ Once Vim9 is stable:
+-	vim9expr.c
  	vim9instr.c
  	vim9script.c
  	vim9type.c
-+- Inlude new set of colors: #9795
+ - Inlude new set of colors: #9795
  - Adjust intro message to say "help version9".
  
++Graduate FEAT_CINDENT and FEAT_SMARTINDENT ?
++
++Update the user manual:
++- Move most of usr_52.txt into usr_41.txt
++- Make usr_41.txt only about basic script writing
++- Fill usr_50.txt as an "advanced section" of usr_41.txt
++
++
  Further Vim9 improvements, possibly after launch:
-@@ -65,8 +63,6 @@ Further Vim9 improvements, possibly after launch:
-   evaluation.
-   Use the location where the option was set for deciding whether it's to be
-   evaluated in Vim9 script context.
--- Implement "import lazy" - like autoload but with a relative or absolute
--  path. #9595
- - implement :type
- - implement :enum
- - implement :class and :interface: See |vim9-classes|
-@@ -127,14 +123,12 @@ Text properties:
-   where property fits in.
-   Or Should we let the textprop highlight overrule other (e.g. diff) highlight
-   if the priority is above a certain value?  (#7392)
--- Popup attached to text property stays visible when text is deleted with
--  "cc". (#7737)  "C" works OK.  "dd" also files in a buffer with a single
-+- "C" works OK.  "dd" fails to delete text property in a buffer with a single
-   line.
- - Add text property that shifts text to make room for annotation (e.g.
-   variable type).  Like the opposite of conceal.  Requires fixing the cursor
-   positioning and mouse clicks as with conceal mode.
- - Auto-indenting may cause highlighting to shift. (#7719)
--- "cc" does not call inserted_bytes(). (Axel Forsman, #5763)
- - Combining text property with 'cursorline' does not always work (Billie
-   Cleek, #5533)
- - See remarks at top of src/textprop.c
-@@ -862,10 +856,6 @@ missing: --nofork, -A , -b, -h, etc.
- ":au * * command" should not be allowed, only use * for event when listing or
- deleting autocmds, not when adding them.
- 
--With 'foldmethod' "indent" and appending an empty line, what follows isn't
--included in the existing fold.  Deleting the empty line and undo fixes it.
--(Oleg Koshovetc, 2018 Jul 15, #3214)
--
- Column number is wrong when using 'linebreak' and 'wrap'. (Keith Smiley, 2018
- Jan 15, #2555)
- 
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index eadd7d916..a5c1d140b 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
+ - Check performance with callgrind and kcachegrind.
+     getline()/substitute()/setline() in #5632
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index eca2d06b4..54af80cb3 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
 @@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 8.2.  Last change: 2022 Apr 06
-+*windows.txt*   For Vim version 8.2.  Last change: 2022 May 11
+-*usr_41.txt*	For Vim version 8.2.  Last change: 2022 May 09
++*usr_41.txt*	For Vim version 8.2.  Last change: 2022 May 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -19,12 +19,6 @@ script.  There are a lot of them, thus this is a long chapter.
+ |41.8|	Lists and Dictionaries
+ |41.9|	Exceptions
+ |41.10|	Various remarks
+-|41.11|	Writing a plugin
+-|41.12|	Writing a filetype plugin
+-|41.13|	Writing a compiler plugin
+-|41.14|	Writing a plugin that loads quickly
+-|41.15|	Writing library scripts
+-|41.16|	Distributing Vim scripts
+ 
+      Next chapter: |usr_42.txt|  Add new menus
+  Previous chapter: |usr_40.txt|  Make new commands
+@@ -42,14 +36,10 @@ Syntax files are also Vim scripts.  As are files that set options for a
+ specific file type.  A complicated macro can be defined by a separate Vim
+ script file.  You can think of other uses yourself.
+ 
+-	If you are familiar with Python, you can find a comparison between
+-	Python and Vim script here, with pointers to other documents:
+-	   https://gist.github.com/yegappan/16d964a37ead0979b05e655aa036cad0
+-	And if you are familiar with JavaScript:
+-	   https://w0rp.com/blog/post/vim-script-for-the-javascripter/
+-
+ Vim script comes in two flavors: legacy and |Vim9|.  Since this help file is
+ for new users, we'll teach you the newer and more convenient |Vim9| syntax.
++While legacy script is particular for Vim, |Vim9| script looks more like other
++languages, such as JavaScript and TypeScript.
+ 
+ To try out Vim script the best way is to edit a script file and source it.
+ Basically: >
+@@ -1928,839 +1918,6 @@ are script-local.
+ If you split your plugin into parts, you can use `import` and `export` to
+ share items between those parts.  See `:export` for the details.
+ 
+-==============================================================================
+-*41.11*	Writing a plugin				*write-plugin*
+-
+-You can write a Vim script in such a way that many people can use it.  This is
+-called a plugin.  Vim users can drop your script in their plugin directory and
+-use its features right away |add-plugin|.
+-
+-There are actually two types of plugins:
+-
+-  global plugins: For all types of files.
+-filetype plugins: Only for files of a specific type.
+-
+-In this section the first type is explained.  Most items are also relevant for
+-writing filetype plugins.  The specifics for filetype plugins are in the next
+-section |write-filetype-plugin|.
+-
+-
+-NAME
+-
+-First of all you must choose a name for your plugin.  The features provided
+-by the plugin should be clear from its name.  And it should be unlikely that
+-someone else writes a plugin with the same name but which does something
+-different.
+-
+-A script that corrects typing mistakes could be called "typecorrect.vim".  We
+-will use it here as an example.
+-
+-For the plugin to work for everybody, it should follow a few guidelines.  This
+-will be explained step-by-step.  The complete example plugin is at the end.
+-
+-
+-BODY
+-
+-Let's start with the body of the plugin, the lines that do the actual work: >
+-
+- 14	iabbrev teh the
+- 15	iabbrev otehr other
+- 16	iabbrev wnat want
+- 17	iabbrev synchronisation
+- 18		\ synchronization
+-
+-The actual list should be much longer, of course.
+-
+-The line numbers have only been added to explain a few things, don't put them
+-in your plugin file!
+-
+-
+-FIRST LINE
+->
+-  1	vim9script noclear
+-
+-You need to use `vimscript` as the very first command.  Best is to put it in
+-the very first line.
+-
+-The script we are writing will have a `finish` command to bail out when it is
+-loaded a second time.  To avoid the items defined in the script are lost the
+-"noclear" argument is used.  More info about this at |vim9-reload|.
+-
+-
+-HEADER
+-
+-You will probably add new corrections to the plugin and soon have several
+-versions lying around.  And when distributing this file, people will want to
+-know who wrote this wonderful plugin and where they can send remarks.
+-Therefore, put a header at the top of your plugin: >
+-
+-  2	# Vim global plugin for correcting typing mistakes
+-  3	# Last Change:	2021 Dec 30
+-  4	# Maintainer:	Bram Moolenaar <Bram@vim.org>
+-
+-About copyright and licensing: Since plugins are very useful and it's hardly
+-worth restricting their distribution, please consider making your plugin
+-either public domain or use the Vim |license|.  A short note about this near
+-the top of the plugin should be sufficient.  Example: >
+-
+-  5	# License:	This file is placed in the public domain.
+-
+-
+-LINE CONTINUATION AND AVOIDING SIDE EFFECTS		 *use-cpo-save*
+-
+-In line 18 above, the line-continuation mechanism is used |line-continuation|.
+-Users with 'compatible' set will run into trouble here, they will get an error
+-message.  We can't just reset 'compatible', because that has a lot of side
+-effects.  Instead, we will set the 'cpoptions' option to its Vim default
+-value and restore it later.  That will allow the use of line-continuation and
+-make the script work for most people.  It is done like this: >
+-
+- 11	var save_cpo = &cpo
+- 12	set cpo&vim
+- ..
+- 42	&cpo = save_cpo
+-
+-We first store the old value of 'cpoptions' in the "save_cpo" variable.  At
+-the end of the plugin this value is restored.
+-
+-Notice that "save_cpo" is a script-local variable.  A global variable could
+-already be in use for something else.  Always use script-local variables for
+-things that are only used in the script.
+-
+-
+-NOT LOADING
+-
+-It is possible that a user doesn't always want to load this plugin.  Or the
+-system administrator has dropped it in the system-wide plugin directory, but a
+-user has his own plugin he wants to use.  Then the user must have a chance to
+-disable loading this specific plugin.  These lines will make it possible: >
+-
+-  7	if exists("g:loaded_typecorrect")
+-  8	  finish
+-  9	endif
+- 10	g:loaded_typecorrect = 1
+-
+-This also avoids that when the script is loaded twice it would pointlessly
+-redefine functions and cause trouble for autocommands that are added twice.
+-
+-The name is recommended to start with "g:loaded_" and then the file name of
+-the plugin, literally.  The "g:" is prepended to make the variable global, so
+-that other places can check whether its functionality is available.  Without
+-"g:" it would be local to the script.
+-
+-Using `finish` stops Vim from reading the rest of the file, it's much quicker
+-than using if-endif around the whole file, since Vim would still need to parse
+-the commands to find the `endif`.
+-
+-
+-MAPPING
+-
+-Now let's make the plugin more interesting: We will add a mapping that adds a
+-correction for the word under the cursor.  We could just pick a key sequence
+-for this mapping, but the user might already use it for something else.  To
+-allow the user to define which keys a mapping in a plugin uses, the <Leader>
+-item can be used: >
+-
+- 22	  map <unique> <Leader>a  <Plug>TypecorrAdd;
+-
+-The "<Plug>TypecorrAdd;" thing will do the work, more about that further on.
+-
+-The user can set the "g:mapleader" variable to the key sequence that he wants
+-plugin mappings to start with.  Thus if the user has done: >
+-
+-	g:mapleader = "_"
+-
+-the mapping will define "_a".  If the user didn't do this, the default value
+-will be used, which is a backslash.  Then a map for "\a" will be defined.
+-
+-Note that <unique> is used, this will cause an error message if the mapping
+-already happened to exist. |:map-<unique>|
+-
+-But what if the user wants to define his own key sequence?  We can allow that
+-with this mechanism: >
+-
+- 21	if !hasmapto('<Plug>TypecorrAdd;')
+- 22	  map <unique> <Leader>a  <Plug>TypecorrAdd;
+- 23	endif
+-
+-This checks if a mapping to "<Plug>TypecorrAdd;" already exists, and only
+-defines the mapping from "<Leader>a" if it doesn't.  The user then has a
+-chance of putting this in his vimrc file: >
+-
+-	map ,c  <Plug>TypecorrAdd;
+-
+-Then the mapped key sequence will be ",c" instead of "_a" or "\a".
+-
+-
+-PIECES
+-
+-If a script gets longer, you often want to break up the work in pieces.  You
+-can use functions or mappings for this.  But you don't want these functions
+-and mappings to interfere with the ones from other scripts.  For example, you
+-could define a function Add(), but another script could try to define the same
+-function.  To avoid this, we define the function local to the script.
+-Fortunately, in |Vim9| script this is the default.  In a legacy script you
+-would need to prefix the name with "s:".
+-
+-We will define a function that adds a new typing correction: >
+-
+- 30	def Add(from: string, correct: bool)
+- 31	  var to = input("type the correction for " .. from .. ": ")
+- 32	  exe ":iabbrev " .. from .. " " .. to
+- ..
+- 36	enddef
+-
+-Now we can call the function Add() from within this script.  If another
+-script also defines Add(), it will be local to that script and can only
+-be called from that script.  There can also be a global g:Add() function,
+-which is again another function.
+-
+-<SID> can be used with mappings.  It generates a script ID, which identifies
+-the current script.  In our typing correction plugin we use it like this: >
+-
+- 24	noremap <unique> <script> <Plug>TypecorrAdd;  <SID>Add
+- ..
+- 28	noremap <SID>Add  :call <SID>Add(expand("<cword>"), true)<CR>
+-
+-Thus when a user types "\a", this sequence is invoked: >
+-
+-	\a  ->  <Plug>TypecorrAdd;  ->  <SID>Add  ->  :call <SID>Add(...)
+-
+-If another script also maps <SID>Add, it will get another script ID and
+-thus define another mapping.
+-
+-Note that instead of Add() we use <SID>Add() here.  That is because the
+-mapping is typed by the user, thus outside of the script context.  The <SID>
+-is translated to the script ID, so that Vim knows in which script to look for
+-the Add() function.
+-
+-This is a bit complicated, but it's required for the plugin to work together
+-with other plugins.  The basic rule is that you use <SID>Add() in mappings and
+-Add() in other places (the script itself, autocommands, user commands).
+-
+-We can also add a menu entry to do the same as the mapping: >
+-
+- 26	noremenu <script> Plugin.Add\ Correction      <SID>Add
+-
+-The "Plugin" menu is recommended for adding menu items for plugins.  In this
+-case only one item is used.  When adding more items, creating a submenu is
+-recommended.  For example, "Plugin.CVS" could be used for a plugin that offers
+-CVS operations "Plugin.CVS.checkin", "Plugin.CVS.checkout", etc.
+-
+-Note that in line 28 ":noremap" is used to avoid that any other mappings cause
+-trouble.  Someone may have remapped ":call", for example.  In line 24 we also
+-use ":noremap", but we do want "<SID>Add" to be remapped.  This is why
+-"<script>" is used here.  This only allows mappings which are local to the
+-script. |:map-<script>|  The same is done in line 26 for ":noremenu".
+-|:menu-<script>|
+-
+-
+-<SID> AND <Plug>					*using-<Plug>*
+-
+-Both <SID> and <Plug> are used to avoid that mappings of typed keys interfere
+-with mappings that are only to be used from other mappings.  Note the
+-difference between using <SID> and <Plug>:
+-
+-<Plug>	is visible outside of the script.  It is used for mappings which the
+-	user might want to map a key sequence to.  <Plug> is a special code
+-	that a typed key will never produce.
+-	To make it very unlikely that other plugins use the same sequence of
+-	characters, use this structure: <Plug> scriptname mapname
+-	In our example the scriptname is "Typecorr" and the mapname is "Add".
+-	We add a semicolon as the terminator.  This results in
+-	"<Plug>TypecorrAdd;".  Only the first character of scriptname and
+-	mapname is uppercase, so that we can see where mapname starts.
+-
+-<SID>	is the script ID, a unique identifier for a script.
+-	Internally Vim translates <SID> to "<SNR>123_", where "123" can be any
+-	number.  Thus a function "<SID>Add()" will have a name "<SNR>11_Add()"
+-	in one script, and "<SNR>22_Add()" in another.  You can see this if
+-	you use the ":function" command to get a list of functions.  The
+-	translation of <SID> in mappings is exactly the same, that's how you
+-	can call a script-local function from a mapping.
+-
+-
+-USER COMMAND
+-
+-Now let's add a user command to add a correction: >
+-
+- 38	if !exists(":Correct")
+- 39	  command -nargs=1  Correct  :call Add(<q-args>, false)
+- 40	endif
+-
+-The user command is defined only if no command with the same name already
+-exists.  Otherwise we would get an error here.  Overriding the existing user
+-command with ":command!" is not a good idea, this would probably make the user
+-wonder why the command he defined himself doesn't work.  |:command|
+-If it did happen you can find out who to blame with: >
+-
+-	verbose command Correct
+-
+-
+-SCRIPT VARIABLES
+-
+-When a variable starts with "s:" it is a script variable.  It can only be used
+-inside a script.  Outside the script it's not visible.  This avoids trouble
+-with using the same variable name in different scripts.  The variables will be
+-kept as long as Vim is running.  And the same variables are used when sourcing
+-the same script again. |s:var|
+-
+-The nice thing about |Vim9| script is that variables are local to the script
+-by default.  You can prepend "s:" if you like, but you do not need to.  And
+-functions in the script can also use the script variables without a prefix.
+-
+-Script-local variables can also be used in functions, autocommands and user
+-commands that are defined in the script.  Thus they are the perfect way to
+-share information between parts of your plugin, without it leaking out.  In
+-our example we can add a few lines to count the number of corrections: >
+-
+- 19	var count = 4
+- ..
+- 30	def Add(from: string, correct: bool)
+- ..
+- 34	  count += 1
+- 35	  echo "you now have " .. count .. " corrections"
+- 36	enddef
+-
+-"count" is declared and initialized to 4 in the script itself.  When later
+-the Add() function is called, it increments "count".  It doesn't matter from
+-where the function was called, since it has been defined in the script, it
+-will use the local variables from this script.
+-
+-
+-THE RESULT
+-
+-Here is the resulting complete example: >
+-
+-  1	vim9script noclear
+-  2	# Vim global plugin for correcting typing mistakes
+-  3	# Last Change:	2021 Dec 30
+-  4	# Maintainer:	Bram Moolenaar <Bram@vim.org>
+-  5	# License:	This file is placed in the public domain.
+-  6
+-  7	if exists("g:loaded_typecorrect")
+-  8	  finish
+-  9	endif
+- 10	g:loaded_typecorrect = 1
+- 11	var save_cpo = &cpo
+- 12	set cpo&vim
+- 13
+- 14	iabbrev teh the
+- 15	iabbrev otehr other
+- 16	iabbrev wnat want
+- 17	iabbrev synchronisation
+- 18		\ synchronization
+- 19	var count = 4
+- 20
+- 21	if !hasmapto('<Plug>TypecorrAdd;')
+- 22	  map <unique> <Leader>a  <Plug>TypecorrAdd;
+- 23	endif
+- 24	noremap <unique> <script> <Plug>TypecorrAdd;  <SID>Add
+- 25
+- 26	noremenu <script> Plugin.Add\ Correction      <SID>Add
+- 27
+- 28	noremap <SID>Add  :call <SID>Add(expand("<cword>"), true)<CR>
+- 29
+- 30	def Add(from: string, correct: bool)
+- 31	  var to = input("type the correction for " .. from .. ": ")
+- 32	  exe ":iabbrev " .. from .. " " .. to
+- 33	  if correct | exe "normal viws\<C-R>\" \b\e" | endif
+- 34	  count += 1
+- 35	  echo "you now have " .. count .. " corrections"
+- 36	enddef
+- 37
+- 38	if !exists(":Correct")
+- 39	  command -nargs=1  Correct  call Add(<q-args>, false)
+- 40	endif
+- 41
+- 42	&cpo = save_cpo
+-
+-Line 33 wasn't explained yet.  It applies the new correction to the word under
+-the cursor.  The |:normal| command is used to use the new abbreviation.  Note
+-that mappings and abbreviations are expanded here, even though the function
+-was called from a mapping defined with ":noremap".
+-
+-
+-DOCUMENTATION						*write-local-help*
+-
+-It's a good idea to also write some documentation for your plugin.  Especially
+-when its behavior can be changed by the user.  See |add-local-help| for how
+-they are installed.
+-
+-Here is a simple example for a plugin help file, called "typecorrect.txt": >
+-
+-  1	*typecorrect.txt*	Plugin for correcting typing mistakes
+-  2
+-  3	If you make typing mistakes, this plugin will have them corrected
+-  4	automatically.
+-  5
+-  6	There are currently only a few corrections.  Add your own if you like.
+-  7
+-  8	Mappings:
+-  9	<Leader>a   or   <Plug>TypecorrAdd;
+- 10		Add a correction for the word under the cursor.
+- 11
+- 12	Commands:
+- 13	:Correct {word}
+- 14		Add a correction for {word}.
+- 15
+- 16							*typecorrect-settings*
+- 17	This plugin doesn't have any settings.
+-
+-The first line is actually the only one for which the format matters.  It will
+-be extracted from the help file to be put in the "LOCAL ADDITIONS:" section of
+-help.txt |local-additions|.  The first "*" must be in the first column of the
+-first line.  After adding your help file do ":help" and check that the entries
+-line up nicely.
+-
+-You can add more tags inside ** in your help file.  But be careful not to use
+-existing help tags.  You would probably use the name of your plugin in most of
+-them, like "typecorrect-settings" in the example.
+-
+-Using references to other parts of the help in || is recommended.  This makes
+-it easy for the user to find associated help.
+-
+-
+-FILETYPE DETECTION					*plugin-filetype*
+-
+-If your filetype is not already detected by Vim, you should create a filetype
+-detection snippet in a separate file.  It is usually in the form of an
+-autocommand that sets the filetype when the file name matches a pattern.
+-Example: >
+-
+-	au BufNewFile,BufRead *.foo		setlocal filetype=foofoo
+-
+-Write this single-line file as "ftdetect/foofoo.vim" in the first directory
+-that appears in 'runtimepath'.  For Unix that would be
+-"~/.vim/ftdetect/foofoo.vim".  The convention is to use the name of the
+-filetype for the script name.
+-
+-You can make more complicated checks if you like, for example to inspect the
+-contents of the file to recognize the language.  Also see |new-filetype|.
+-
+-
+-SUMMARY							*plugin-special*
+-
+-Summary of special things to use in a plugin:
+-
+-var name		Variable local to the script.
+-
+-<SID>			Script-ID, used for mappings and functions local to
+-			the script.
+-
+-hasmapto()		Function to test if the user already defined a mapping
+-			for functionality the script offers.
+-
+-<Leader>		Value of "mapleader", which the user defines as the
+-			keys that plugin mappings start with.
+-
+-map <unique>		Give a warning if a mapping already exists.
+-
+-noremap <script>	Use only mappings local to the script, not global
+-			mappings.
+-
+-exists(":Cmd")		Check if a user command already exists.
+-
+-==============================================================================
+-*41.12*	Writing a filetype plugin	*write-filetype-plugin* *ftplugin*
+-
+-A filetype plugin is like a global plugin, except that it sets options and
+-defines mappings for the current buffer only.  See |add-filetype-plugin| for
+-how this type of plugin is used.
+-
+-First read the section on global plugins above |41.11|.  All that is said there
+-also applies to filetype plugins.  There are a few extras, which are explained
+-here.  The essential thing is that a filetype plugin should only have an
+-effect on the current buffer.
+-
+-
+-DISABLING
+-
+-If you are writing a filetype plugin to be used by many people, they need a
+-chance to disable loading it.  Put this at the top of the plugin: >
+-
+-	# Only do this when not done yet for this buffer
+-	if exists("b:did_ftplugin")
+-	  finish
+-	endif
+-	b:did_ftplugin = 1
+-
+-This also needs to be used to avoid that the same plugin is executed twice for
+-the same buffer (happens when using an ":edit" command without arguments).
+-
+-Now users can disable loading the default plugin completely by making a
+-filetype plugin with only these lines: >
+-
+-	vim9script
+-	b:did_ftplugin = 1
+-
+-This does require that the filetype plugin directory comes before $VIMRUNTIME
+-in 'runtimepath'!
+-
+-If you do want to use the default plugin, but overrule one of the settings,
+-you can write the different setting in a script: >
+-
+-	setlocal textwidth=70
+-
+-Now write this in the "after" directory, so that it gets sourced after the
+-distributed "vim.vim" ftplugin |after-directory|.  For Unix this would be
+-"~/.vim/after/ftplugin/vim.vim".  Note that the default plugin will have set
+-"b:did_ftplugin", but it is ignored here.
+-
+-
+-OPTIONS
+-
+-To make sure the filetype plugin only affects the current buffer use the >
+-
+-	setlocal
+-
+-command to set options.  And only set options which are local to a buffer (see
+-the help for the option to check that).  When using `:setlocal` for global
+-options or options local to a window, the value will change for many buffers,
+-and that is not what a filetype plugin should do.
+-
+-When an option has a value that is a list of flags or items, consider using
+-"+=" and "-=" to keep the existing value.  Be aware that the user may have
+-changed an option value already.  First resetting to the default value and
+-then changing it is often a good idea.  Example: >
+-
+-	setlocal formatoptions& formatoptions+=ro
+-
+-
+-MAPPINGS
+-
+-To make sure mappings will only work in the current buffer use the >
+-
+-	map <buffer>
+-
+-command.  This needs to be combined with the two-step mapping explained above.
+-An example of how to define functionality in a filetype plugin: >
+-
+-	if !hasmapto('<Plug>JavaImport;')
+-	  map <buffer> <unique> <LocalLeader>i <Plug>JavaImport;
+-	endif
+-	noremap <buffer> <unique> <Plug>JavaImport; oimport ""<Left><Esc>
+-
+-|hasmapto()| is used to check if the user has already defined a map to
+-<Plug>JavaImport;.  If not, then the filetype plugin defines the default
+-mapping.  This starts with |<LocalLeader>|, which allows the user to select
+-the key(s) he wants filetype plugin mappings to start with.  The default is a
+-backslash.
+-"<unique>" is used to give an error message if the mapping already exists or
+-overlaps with an existing mapping.
+-|:noremap| is used to avoid that any other mappings that the user has defined
+-interferes.  You might want to use ":noremap <script>" to allow remapping
+-mappings defined in this script that start with <SID>.
+-
+-The user must have a chance to disable the mappings in a filetype plugin,
+-without disabling everything.  Here is an example of how this is done for a
+-plugin for the mail filetype: >
+-
+-	# Add mappings, unless the user didn't want this.
+-	if !exists("g:no_plugin_maps") && !exists("g:no_mail_maps")
+-	  # Quote text by inserting "> "
+-	  if !hasmapto('<Plug>MailQuote;')
+-	    vmap <buffer> <LocalLeader>q <Plug>MailQuote;
+-	    nmap <buffer> <LocalLeader>q <Plug>MailQuote;
+-	  endif
+-	  vnoremap <buffer> <Plug>MailQuote; :s/^/> /<CR>
+-	  nnoremap <buffer> <Plug>MailQuote; :.,$s/^/> /<CR>
+-	endif
+-
+-Two global variables are used:
+-|g:no_plugin_maps|	disables mappings for all filetype plugins
+-|g:no_mail_maps|	disables mappings for the "mail" filetype
+-
+-
+-USER COMMANDS
+-
+-To add a user command for a specific file type, so that it can only be used in
+-one buffer, use the "-buffer" argument to |:command|.  Example: >
+-
+-	command -buffer  Make  make %:r.s
+-
+-
+-VARIABLES
+-
+-A filetype plugin will be sourced for each buffer of the type it's for.  Local
+-script variables will be shared between all invocations.  Use local buffer
+-variables |b:var| if you want a variable specifically for one buffer.
+-
+-
+-FUNCTIONS
+-
+-When defining a function, this only needs to be done once.  But the filetype
+-plugin will be sourced every time a file with this filetype will be opened.
+-This construct makes sure the function is only defined once: >
+-
+-	if !exists("*Func")
+-	  def Func(arg)
+-	    ...
+-	  enddef
+-	endif
+-<
+-
+-UNDO						*undo_indent* *undo_ftplugin*
+-
+-When the user does ":setfiletype xyz" the effect of the previous filetype
+-should be undone.  Set the b:undo_ftplugin variable to the commands that will
+-undo the settings in your filetype plugin.  Example: >
+-
+-	let b:undo_ftplugin = "setlocal fo< com< tw< commentstring<"
+-		\ .. "| unlet b:match_ignorecase b:match_words b:match_skip"
+-
+-Using ":setlocal" with "<" after the option name resets the option to its
+-global value.  That is mostly the best way to reset the option value.
+-
+-This does require removing the "C" flag from 'cpoptions' to allow line
+-continuation, as mentioned above |use-cpo-save|.
+-
+-For undoing the effect of an indent script, the b:undo_indent variable should
+-be set accordingly.
+-
+-Both these variables use legacy script syntax, not |Vim9| syntax.
+-
+-
+-FILE NAME
+-
+-The filetype must be included in the file name |ftplugin-name|.  Use one of
+-these three forms:
+-
+-	.../ftplugin/stuff.vim
+-	.../ftplugin/stuff_foo.vim
+-	.../ftplugin/stuff/bar.vim
+-
+-"stuff" is the filetype, "foo" and "bar" are arbitrary names.
+-
+-
+-SUMMARY							*ftplugin-special*
+-
+-Summary of special things to use in a filetype plugin:
+-
+-<LocalLeader>		Value of "maplocalleader", which the user defines as
+-			the keys that filetype plugin mappings start with.
+-
+-map <buffer>		Define a mapping local to the buffer.
+-
+-noremap <script>	Only remap mappings defined in this script that start
+-			with <SID>.
+-
+-setlocal		Set an option for the current buffer only.
+-
+-command -buffer	Define a user command local to the buffer.
+-
+-exists("*s:Func")	Check if a function was already defined.
+-
+-Also see |plugin-special|, the special things used for all plugins.
+-
+-==============================================================================
+-*41.13*	Writing a compiler plugin		*write-compiler-plugin*
+-
+-A compiler plugin sets options for use with a specific compiler.  The user can
+-load it with the |:compiler| command.  The main use is to set the
+-'errorformat' and 'makeprg' options.
+-
+-Easiest is to have a look at examples.  This command will edit all the default
+-compiler plugins: >
+-
+-	next $VIMRUNTIME/compiler/*.vim
+-
+-Type `:next` to go to the next plugin file.
+-
+-There are two special items about these files.  First is a mechanism to allow
+-a user to overrule or add to the default file.  The default files start with: >
+-
+-	vim9script
+-	if exists("g:current_compiler")
+-	  finish
+-	endif
+-	g:current_compiler = "mine"
+-
+-When you write a compiler file and put it in your personal runtime directory
+-(e.g., ~/.vim/compiler for Unix), you set the "current_compiler" variable to
+-make the default file skip the settings.
+-							*:CompilerSet*
+-The second mechanism is to use ":set" for ":compiler!" and ":setlocal" for
+-":compiler".  Vim defines the ":CompilerSet" user command for this.  However,
+-older Vim versions don't, thus your plugin should define it then.  This is an
+-example: >
+-
+-  if exists(":CompilerSet") != 2
+-    command -nargs=* CompilerSet setlocal <args>
+-  endif
+-  CompilerSet errorformat&		" use the default 'errorformat'
+-  CompilerSet makeprg=nmake
+-
+-When you write a compiler plugin for the Vim distribution or for a system-wide
+-runtime directory, use the mechanism mentioned above.  When
+-"current_compiler" was already set by a user plugin nothing will be done.
+-
+-When you write a compiler plugin to overrule settings from a default plugin,
+-don't check "current_compiler".  This plugin is supposed to be loaded
+-last, thus it should be in a directory at the end of 'runtimepath'.  For Unix
+-that could be ~/.vim/after/compiler.
+-
+-==============================================================================
+-*41.14*	Writing a plugin that loads quickly	*write-plugin-quickload*
+-
+-A plugin may grow and become quite long.  The startup delay may become
+-noticeable, while you hardly ever use the plugin.  Then it's time for a
+-quickload plugin.
+-
+-The basic idea is that the plugin is loaded twice.  The first time user
+-commands and mappings are defined that offer the functionality.  The second
+-time the functions that implement the functionality are defined.
+-
+-It may sound surprising that quickload means loading a script twice.  What we
+-mean is that it loads quickly the first time, postponing the bulk of the
+-script to the second time, which only happens when you actually use it.  When
+-you always use the functionality it actually gets slower!
+-
+-This uses a FuncUndefined autocommand.  Since Vim 7 there is an alternative:
+-use the |autoload| functionality |41.15|.  That will also use |Vim9| script
+-instead of legacy script that is used here.
+-
+-The following example shows how it's done: >
+-
+-	" Vim global plugin for demonstrating quick loading
+-	" Last Change:	2005 Feb 25
+-	" Maintainer:	Bram Moolenaar <Bram@vim.org>
+-	" License:	This file is placed in the public domain.
+-
+-	if !exists("s:did_load")
+-		command -nargs=* BNRead  call BufNetRead(<f-args>)
+-		map <F19> :call BufNetWrite('something')<CR>
+-
+-		let s:did_load = 1
+-		exe 'au FuncUndefined BufNet* source ' .. expand('<sfile>')
+-		finish
+-	endif
+-
+-	function BufNetRead(...)
+-		echo 'BufNetRead(' .. string(a:000) .. ')'
+-		" read functionality here
+-	endfunction
+-
+-	function BufNetWrite(...)
+-		echo 'BufNetWrite(' .. string(a:000) .. ')'
+-		" write functionality here
+-	endfunction
+-
+-When the script is first loaded "s:did_load" is not set.  The commands between
+-the "if" and "endif" will be executed.  This ends in a |:finish| command, thus
+-the rest of the script is not executed.
+-
+-The second time the script is loaded "s:did_load" exists and the commands
+-after the "endif" are executed.  This defines the (possible long)
+-BufNetRead() and BufNetWrite() functions.
+-
+-If you drop this script in your plugin directory Vim will execute it on
+-startup.  This is the sequence of events that happens:
+-
+-1. The "BNRead" command is defined and the <F19> key is mapped when the script
+-   is sourced at startup.  A |FuncUndefined| autocommand is defined.  The
+-   ":finish" command causes the script to terminate early.
+-
+-2. The user types the BNRead command or presses the <F19> key.  The
+-   BufNetRead() or BufNetWrite() function will be called.
+-
+-3. Vim can't find the function and triggers the |FuncUndefined| autocommand
+-   event.  Since the pattern "BufNet*" matches the invoked function, the
+-   command "source fname" will be executed.  "fname" will be equal to the name
+-   of the script, no matter where it is located, because it comes from
+-   expanding "<sfile>" (see |expand()|).
+-
+-4. The script is sourced again, the "s:did_load" variable exists and the
+-   functions are defined.
+-
+-Notice that the functions that are loaded afterwards match the pattern in the
+-|FuncUndefined| autocommand.  You must make sure that no other plugin defines
+-functions that match this pattern.
+-
+-==============================================================================
+-*41.15*	Writing library scripts			*write-library-script*
+-
+-Some functionality will be required in several places.  When this becomes more
+-than a few lines you will want to put it in one script and use it from many
+-scripts.  We will call that one script a library script.
+-
+-Manually loading a library script is possible, so long as you avoid loading it
+-when it's already done.  You can do this with the |exists()| function.
+-Example: >
+-
+-	if !exists('*MyLibFunction')
+-	   runtime library/mylibscript.vim
+-	endif
+-	MyLibFunction(arg)
+-
+-Here you need to know that MyLibFunction() is defined in a script
+-"library/mylibscript.vim" in one of the directories in 'runtimepath'.
+-
+-To make this a bit simpler Vim offers the autoload mechanism.  Then the
+-example looks like this: >
+-
+-	mylib#myfunction(arg)
+-
+-That's a lot simpler, isn't it?  Vim will recognize the function name by the
+-embedded "#" character and when it's not defined search for the script
+-"autoload/mylib.vim" in 'runtimepath'.  That script must define the
+-"mylib#myfunction()" function.
+-
+-You can put many other functions in the mylib.vim script, you are free to
+-organize your functions in library scripts.  But you must use function names
+-where the part before the '#' matches the script name.  Otherwise Vim would
+-not know what script to load.
+-
+-If you get really enthusiastic and write lots of library scripts, you may
+-want to use subdirectories.  Example: >
+-
+-	netlib#ftp#read('somefile')
+-
+-For Unix the library script used for this could be:
+-
+-	~/.vim/autoload/netlib/ftp.vim
+-
+-Where the function is defined like this: >
+-
+-	def netlib#ftp#read(fname: string)
+-		#  Read the file fname through ftp
+-	enddef
+-
+-Notice that the name the function is defined with is exactly the same as the
+-name used for calling the function.  And the part before the last '#'
+-exactly matches the subdirectory and script name.
+-
+-You can use the same mechanism for variables: >
+-
+-	var weekdays = dutch#weekdays
+-
+-This will load the script "autoload/dutch.vim", which should contain something
+-like: >
+-
+-	var dutch#weekdays = ['zondag', 'maandag', 'dinsdag', 'woensdag',
+-		\ 'donderdag', 'vrijdag', 'zaterdag']
+-
+-Further reading: |autoload|.
+-
+-==============================================================================
+-*41.16*	Distributing Vim scripts			*distribute-script*
+-
+-Vim users will look for scripts on the Vim website: http://www.vim.org.
+-If you made something that is useful for others, share it!
+-
+-Another place is github.  But there you need to know where to find it!  The
+-advantage is that most plugin managers fetch plugins from github.  You'll have
+-to use your favorite search engine to find them.
+-
+-Vim scripts can be used on any system.  However, there might not be a tar or
+-gzip command.  If you want to pack files together and/or compress them the
+-"zip" utility is recommended.
+-
+-For utmost portability use Vim itself to pack scripts together.  This can be
+-done with the Vimball utility.  See |vimball|.
+-
+-It's good if you add a line to allow automatic updating.  See |glvs-plugins|.
+-
+ ==============================================================================
+ 
+ Next chapter: |usr_42.txt|  Add new menus
+diff --git a/runtime/doc/usr_45.txt b/runtime/doc/usr_45.txt
+index f91648e0e..e93f74771 100644
+--- a/runtime/doc/usr_45.txt
++++ b/runtime/doc/usr_45.txt
+@@ -1,4 +1,4 @@
+-*usr_45.txt*	For Vim version 8.2.  Last change: 2020 Jun 11
++*usr_45.txt*	For Vim version 8.2.  Last change: 2022 May 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -15,7 +15,7 @@ in various languages is explained.
+ |45.4|	Editing files with a different encoding
+ |45.5|	Entering language text
+ 
+-     Next chapter: |usr_46.txt|  Write plugins using Vim9 script
++     Next chapter: |usr_50.txt|  Advanced Vim script writing
+  Previous chapter: |usr_44.txt|  Your own syntax highlighted
+ Table of contents: |usr_toc.txt|
+ 
+@@ -408,6 +408,6 @@ Don't type the spaces.  See |i_CTRL-V_digit| for the details.
+ 
+ ==============================================================================
+ 
+-Next chapter: |usr_46.txt|  Write plugins using Vim9 script
++Next chapter: |usr_50.txt|  Advanced Vim script writing
+ 
+ Copyright: see |manual-copyright|  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/usr_46.txt b/runtime/doc/usr_46.txt
+deleted file mode 100644
+index 0986ba104..000000000
+--- a/runtime/doc/usr_46.txt
++++ /dev/null
+@@ -1,192 +0,0 @@
+-*usr_46.txt*	For Vim version 8.2.  Last change: 2020 Jun 14
+-
+-		     VIM USER MANUAL - by Bram Moolenaar
+-
+-		       Write plugins using Vim9 script
+-
+-
+-The Vim9 script language is used for writing plugins, especially larger ones
+-that use multiple files.  This chapter explains how to split up a plugin into
+-modules, import and export items and keep the rest local.
+-
+-|46.1|	Introduction
+-|46.2|	Variable declarations
+-|46.3|	Functions and types
+-|46.?|	Using a Vim9 script from legacy script
+-
+-     Next chapter: |usr_90.txt|  Installing Vim
+- Previous chapter: |usr_45.txt|  Select your language (locale)
+-Table of contents: |usr_toc.txt|
+-
+-==============================================================================
+-*46.1*	Introduction				*vim9-script-intro*
+-
+-Vim9 script was designed to make it easier to write large Vim scripts.  It
+-looks more like other script languages, especially Typescript.  Also,
+-functions are compiled into instructions that can be executed quickly.  This
+-makes Vim9 script a lot faster, up to a 100 times.
+-
+-The basic idea is that a script file has items that are private, only used
+-inside the script file, and items that are exported, used outside of the
+-script file.  The exported items can then be used by scripts that import them.
+-That makes very clear what is defined where.
+-
+-Let's start with an example, a script that exports one function and has one
+-private function: >
+-
+-	vim9script  " This indicates a Vim9 script file.
+-
+-	export def GetMessage(): string
+-	   let result = ''
+-	   ...
+-	   result = GetPart(count)
+-	   ...
+-	   return result
+-	enddef
+-
+-	def GetPart(nr: number): string
+-	  if nr == 4
+-	     return 'yes'
+-	  else
+-	     return 'no'
+-	  endif
+-	enddef
+-
+-The `vim9script` command must be the very first command in the file.  Without
+-it Vim will assume legacy script syntax.
+-
+-The `export def GetMessage(): string` line starts with `export`, meaning that
+-this function can be imported and called by other scripts. The line
+-`def GetPart(...` does not start with `export`, this is a script-local
+-function, it can only be used inside this script file.
+-
+-In the `export def GetMessage(): string` line you will notice the colon and
+-the return type.  Vim9 functions, defined with `def`, require specifying the
+-type of arguments and the return type.  That way Vim can compile the code
+-efficiently.  The GetPart function defines an argument "nr" of type "number".
+-
+-Notice that the assignment `result = GetPart(count)` does not use the `let`
+-command.  That is explained in the next section.
+-
+-==============================================================================
+-*46.2*	Variable declarations				*vim9-declarations*
+-
+-In Vim9 script variables are declared once with a `:let` or `:const` command.
+-Assigning a value is done without `:let` and it is not possible to `:unlet`
+-the variable.
+-
+-In most cases you will want to declare the variable and initialize it at the
+-same time: >
+-	let myText = 'some text'
+-	...
+-	myText = 'other text'
+-
+-The type of the variable will be inferred from the expression.  In this case
+-it is a string.  If you initialize with a number, then the type is number: >
+-	let myNumber = 1234
+-	...
+-	myNumber = 0
+-
+-If you try to assign a string to this variable, you will get an error: >
+-	let myNumber = 'this fails!'
+-
+-In the rare case you want a variable that can take values of any type, you
+-have to specify the type: >
+-	let myVar: any = 1234
+-	myVar = 'text also works'
+-
+-You can also declare a variable without assigning a value.  In that case Vim
+-will initialize it to zero or empty: >
+-	let word: string
+-	if condition
+-	  word = 'yes'
+-	else
+-	  word = 'no'
+-	endif
+-
+-Although it's shorter to do: >
+-	let word = condition ? 'yes' : 'no'
+-
+-==============================================================================
+-*46.3*	Functions and types
+-
+-Legacy Vim script does have type checking, but this happens at runtime, when
+-the code is executed.  And it's permissive, often a computation gives an
+-unexpected value instead of reporting an error.  Thus you can define a
+-function and think it's fine, but see a problem only later when it is called: >
+-	let s:collected = ''
+-	func ExtendAndReturn(add)
+-	   let s:collected += a:add
+-	   return s:collected
+-	endfunc
+-
+-Can you spot the error?  Try this: >
+-	echo ExtendAndReturn('text')
+-And you'll see zero.  Why?  Because in legacy Vim script "+=" will convert the
+-arguments to numbers, and any string without a number results in zero!
+-
+-With `:def` the type checking happens when compiling the function.  For that
+-you need to specify the argument types and the return type.  Also notice that
+-the argument is used without the "a:" prefix: >
+-	let s:collected = ''
+-	def ExtendAndReturn(add: string): string
+-	   s:collected += add
+-	   return s:collected
+-	enddef
+-	defcompile
+-
+-Here we use `:defcompile` to do the compilation right away, without it the
+-compilation would happen when the function is called.  Vim will tell you what
+-you did wrong: >
+-	E1013: type mismatch, expected number but got string
+-
+-Vim9 script is strict, it uses the "+" operator only for numbers and floats.
+-For string concatenation ".." must be used.  This avoids mistakes and avoids
+-the automatic conversion that gave a surprising result above.  So you change
+-the first line of the function to: >
+-	   s:collected ..= add
+-And now it works.
+-
+-If the function does not return anything, just leave out the return type: >
+-	def ReportResult(result: string)
+-	   echo 'The result is: ' .. result
+-	enddef
+-
+-This is also checked, if you try to return a value you'll get an error.
+-
+-In case you don't care about types or have a function that does work with
+-multiple types, you can use the "any" type: >
+-	def Store(key: string, value: any)
+-	  resultDict[key] = value
+-	enddef
+-
+-==============================================================================
+-*46.?*	Using a Vim9 script from legacy script		*source-vim9-script*
+-
+-In some cases you have a legacy Vim script where you want to use items from a
+-Vim9 script.  For example in your .vimrc you want to initialize a plugin.  The
+-best way to do this is to use `:import`.  For example: >
+-
+-	import Init as NiceInit from 'myNicePlugin.vim'
+-	call NiceInit('today')
+-
+-This finds the exported function "Init" in the Vim9 script file and makes it
+-available as script-local item "NiceInit". `:import` always uses the script
+-namespace, even when "s:" is not given.  If "myNicePlugin.vim" was already
+-sourced it is not sourced again.
+-
+-Besides avoiding putting any items in the global namespace (where name clashes
+-can cause unexpected errors), this also means the script is sourced only once,
+-no matter how many times items from it are imported.
+-
+-In some cases, e.g. for testing, you may just want to source the Vim9 script.
+-That is OK, but then only global items will be available.  The Vim9 script
+-will have to make sure to use a unique name for these global items. Example: >
+-	source ~/.vim/extra/myNicePlugin.vim
+-	call g:NicePluginTest()
+-
+-==============================================================================
+-
+-Next chapter: |usr_90.txt|  Installing Vim
+-
+-Copyright: see |manual-copyright|  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/usr_90.txt b/runtime/doc/usr_90.txt
+index c1f3641f0..574cfa971 100644
+--- a/runtime/doc/usr_90.txt
++++ b/runtime/doc/usr_90.txt
+@@ -1,4 +1,4 @@
+-*usr_90.txt*	For Vim version 8.2.  Last change: 2020 Jun 11
++*usr_90.txt*	For Vim version 8.2.  Last change: 2022 May 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -15,7 +15,7 @@ upgrading to a new version is done.
+ |90.4|	Common installation issues
+ |90.5|	Uninstalling Vim
+ 
+- Previous chapter: |usr_46.txt|  Write plugins using Vim9 script
++ Previous chapter: |usr_52.txt|  Write plugins using Vim9 script
+ Table of contents: |usr_toc.txt|
+ 
+ ==============================================================================
+diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
+index 816cf065c..d2173a08c 100644
+--- a/runtime/doc/usr_toc.txt
++++ b/runtime/doc/usr_toc.txt
+@@ -1,4 +1,4 @@
+-*usr_toc.txt*	For Vim version 8.2.  Last change: 2020 Jun 15
++*usr_toc.txt*	For Vim version 8.2.  Last change: 2022 May 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -7,7 +7,7 @@
+ ==============================================================================
+ Overview ~
+ 
+-Getting Started
++Getting Started ~
+ |usr_01.txt|  About the manuals
+ |usr_02.txt|  The first steps in Vim
+ |usr_03.txt|  Moving around
+@@ -21,7 +21,7 @@ Getting Started
+ |usr_11.txt|  Recovering from a crash
+ |usr_12.txt|  Clever tricks
+ 
+-Editing Effectively
++Editing Effectively ~
+ |usr_20.txt|  Typing command-line commands quickly
+ |usr_21.txt|  Go away and come back
+ |usr_22.txt|  Finding the file to edit
+@@ -36,24 +36,28 @@ Editing Effectively
+ |usr_31.txt|  Exploiting the GUI
+ |usr_32.txt|  The undo tree
+ 
+-Tuning Vim
++Tuning Vim ~
+ |usr_40.txt|  Make new commands
+ |usr_41.txt|  Write a Vim script
+ |usr_42.txt|  Add new menus
+ |usr_43.txt|  Using filetypes
+ |usr_44.txt|  Your own syntax highlighted
+ |usr_45.txt|  Select your language (locale)
+-|usr_46.txt|  Write plugins using Vim9 script
+ 
+-Making Vim Run
++Writing Vim script ~
++|usr_50.txt|  Advanced Vim script writing
++|usr_51.txt|  Create a plugin
++|usr_52.txt|  Write plugins using Vim9 script
++
++Making Vim Run ~
+ |usr_90.txt|  Installing Vim
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1036,7 +1036,7 @@ modified, but is forced (with '!') to be removed from a window, and
- 'autowrite' is off or the buffer can't be written.
+-Reference manual
++Reference manual ~
+ |reference_toc|     More detailed information for all commands
  
- You can make a hidden buffer not hidden by starting to edit it with any
--command.  Or by deleting it with the ":bdelete" command.
-+command, or by deleting it with the ":bdelete" command.
+-The user manual is available as a single, ready to print HTML and PDF file
+-here:
++The user manual (an older version) is available as a single, ready to print
++HTML and PDF file here:
+ 	http://vimdoc.sf.net
  
- The 'hidden' is global, it is used for all buffers.  The 'bufhidden' option
- can be used to make an exception for a specific buffer.  It can take these
+ ==============================================================================
+@@ -302,12 +306,6 @@ Make Vim work as you like it.
+ 		|41.8|	Lists and Dictionaries
+ 		|41.9|	Exceptions
+ 		|41.10|	Various remarks
+-		|41.11|	Writing a plugin
+-		|41.12|	Writing a filetype plugin
+-		|41.13|	Writing a compiler plugin
+-		|41.14|	Writing a plugin that loads quickly
+-		|41.15|	Writing library scripts
+-		|41.16|	Distributing Vim scripts
+ 
+ |usr_42.txt|  Add new menus
+ 		|42.1|	Introduction
+@@ -340,11 +338,24 @@ Make Vim work as you like it.
+ 		|45.4|	Editing files with a different encoding
+ 		|45.5|	Entering language text
+ 
+-|usr_46.txt|  Write plugins using Vim9 script
+-		|46.1|	Introduction
+-		|46.2|	Variable declarations
+-		|46.3|	Functions and types
+-		|46.?|	Using a Vim9 script from legacy script
++==============================================================================
++Writing Vim script ~
++
++|usr_50.txt|  TODO
++
++|usr_51.txt|  Write plugins
++		|51.1|	Writing a generic plugin
++		|51.2|	Writing a filetype plugin
++		|51.3|	Writing a compiler plugin
++		|51.4|	Writing a plugin that loads quickly
++		|51.5|	Writing library scripts
++		|51.6|	Distributing Vim scripts
++
++|usr_52.txt|  Write plugins using Vim9 script
++		|52.1|	Introduction
++		|52.2|	Variable declarations
++		|52.3|	Functions and types
++		|52.4|	Using a Vim9 script from legacy script
+ 
+ ==============================================================================
+ Making Vim Run ~
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 187712904..5a0e5bf88 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 8.2.  Last change: 2022 Apr 28
++*vim9.txt*	For Vim version 8.2.  Last change: 2022 May 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -294,7 +294,8 @@ You can use an autoload function if needed, or call a legacy function and have
+ Reloading a Vim9 script clears functions and variables by default ~
+ 						*vim9-reload* *E1149* *E1150*
+ When loading a legacy Vim script a second time nothing is removed, the
+-commands will replace existing variables and functions and create new ones.
++commands will replace existing variables and functions, create new ones, and
++leave removed things hanging around.
+ 
+ When loading a Vim9 script a second time all existing script-local functions
+ and variables are deleted, thus you start with a clean slate.  This is useful
