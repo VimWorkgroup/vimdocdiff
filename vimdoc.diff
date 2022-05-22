@@ -1,796 +1,467 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 44997f32a..781f8eba8 100644
+index 781f8eba8..29cc50627 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -1401,7 +1401,7 @@ changenr()						*changenr()*
- 		one less than the number of the undone change.
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 10
++*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 21
  
- char2nr({string} [, {utf8}])					*char2nr()*
--		Return number value of the first char in {string}.
-+		Return Number value of the first char in {string}.
- 		Examples: >
- 			char2nr(" ")		returns 32
- 			char2nr("ABC")		returns 65
-@@ -1500,8 +1500,7 @@ cindent({lnum})						*cindent()*
- 		indenting rules, as with 'cindent'.
- 		The indent is counted in spaces, the value of 'tabstop' is
- 		relevant.  {lnum} is used just like in |getline()|.
--		When {lnum} is invalid or Vim was not compiled the |+cindent|
--		feature, -1 is returned.
-+		When {lnum} is invalid -1 is returned.
- 		See |C-indenting|.
  
- 		Can also be used as a |method|: >
-@@ -1712,13 +1711,13 @@ confirm({msg} [, {choices} [, {default} [, {type}]]])
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 86b968634..77822d796 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -868,33 +868,36 @@ Expression syntax summary, from least to most significant:
+ 	expr5 isnot expr5	different |List|, |Dictionary| or |Blob|
+ 				instance
  
- 		An example: >
- 		   let choice = confirm("What do you want?",
--		   			\ "&Apples\n&Oranges\n&Bananas", 2)
-+					\ "&Apples\n&Oranges\n&Bananas", 2)
- 		   if choice == 0
--		   	echo "make up your mind!"
-+			echo "make up your mind!"
- 		   elseif choice == 3
--		   	echo "tasteful"
-+			echo "tasteful"
- 		   else
--		   	echo "I prefer bananas myself."
-+			echo "I prefer bananas myself."
- 		   endif
- <		In a GUI dialog, buttons are used.  The layout of the buttons
- 		depends on the 'v' flag in 'guioptions'.  If it is included,
-@@ -2306,8 +2305,8 @@ exists({expr})	The result is a Number, which is |TRUE| if {expr} is defined,
- <		There must be no space between the symbol (&/$/*/#) and the
- 		name.
- 		There must be no extra characters after the name, although in
--		a few cases this is ignored.  That may become more strict in
--		the future, thus don't count on it!
-+		a few cases this is ignored.  That may become stricter in the
-+		future, thus don't count on it!
- 		Working example: >
- 			exists(":make")
- <		NOT working example: >
-@@ -3219,7 +3218,7 @@ getchar([expr])						*getchar()*
+-|expr5|	expr6
+-	expr6 +	 expr6 ...	number addition, list or blob concatenation
+-	expr6 -	 expr6 ...	number subtraction
+-	expr6 .	 expr6 ...	string concatenation
+-	expr6 .. expr6 ...	string concatenation
++|expr5|	expr6 << expr6		bitwise left shift
++	expr6 >> expr6		bitwise right shift
  
- 		Without [expr] and when [expr] is 0 a whole character or
- 		special key is returned.  If it is a single character, the
--		result is a number.  Use nr2char() to convert it to a String.
-+		result is a Number.  Use |nr2char()| to convert it to a String.
- 		Otherwise a String is returned with the encoded character.
- 		For a special key it's a String with a sequence of bytes
- 		starting with 0x80 (decimal: 128).  This is the same value as
-@@ -5173,8 +5172,7 @@ lispindent({lnum})					*lispindent()*
- 		indenting rules, as with 'lisp'.
- 		The indent is counted in spaces, the value of 'tabstop' is
- 		relevant.  {lnum} is used just like in |getline()|.
--		When {lnum} is invalid or Vim was not compiled the
--		|+lispindent| feature, -1 is returned.  In |Vim9| script an
-+		When {lnum} is invalid -1 is returned.  In |Vim9| script an
- 		error is given.
+ |expr6|	expr7
+-	expr7 *	 expr7 ...	number multiplication
+-	expr7 /	 expr7 ...	number division
+-	expr7 %	 expr7 ...	number modulo
++	expr7 +	 expr7 ...	number addition, list or blob concatenation
++	expr7 -	 expr7 ...	number subtraction
++	expr7 .	 expr7 ...	string concatenation
++	expr7 .. expr7 ...	string concatenation
  
- 		Can also be used as a |method|: >
-@@ -5468,7 +5466,7 @@ maparg({name} [, {mode} [, {abbr} [, {dict}]]])			*maparg()*
- 		  "sid"	     The script local ID, used for <sid> mappings
- 			     (|<SID>|).
- 		  "scriptversion"  The version of the script.  999999 for
--		  		   |Vim9| script.
-+				   |Vim9| script.
- 		  "lnum"     The line number in "sid", zero if unknown.
- 		  "nowait"   Do not wait for other, longer mappings.
- 			     (|:map-<nowait>|).
-@@ -5573,7 +5571,7 @@ mapset({dict})
- 		Restore a mapping from a dictionary, possibly returned by
- 		|maparg()| or |maplist()|.  A buffer mapping, when dict.buffer
- 		is true, is set on the current buffer; it is up to the caller
--		to insure that the intended buffer is the current buffer. This
-+		to ensure that the intended buffer is the current buffer. This
- 		feature allows copying mappings from one buffer to another.
- 		The dict.mode value may restore a single mapping that covers
- 		more than one mode, like with mode values of '!', ' ', 'nox',
-@@ -8324,7 +8322,7 @@ sort({list} [, {how} [, {dict}]])			*sort()* *E702*
- 		If you want a list to remain unmodified make a copy first: >
- 			:let sortedlist = sort(copy(mylist))
+ |expr7|	expr8
+-	<type>expr8		type check and conversion (|Vim9| only)
++	expr8 *	 expr8 ...	number multiplication
++	expr8 /	 expr8 ...	number division
++	expr8 %	 expr8 ...	number modulo
  
--<		When {how} is omitted or is an string, then sort() uses the
-+<		When {how} is omitted or is a string, then sort() uses the
- 		string representation of each item to sort on.  Numbers sort
- 		after Strings, |Lists| after Numbers.  For sorting text in the
- 		current buffer use |:sort|.
-@@ -8779,9 +8777,11 @@ strftime({format} [, {time}])				*strftime()*
- 			GetFormat()->strftime()
+ |expr8|	expr9
+-	! expr8			logical NOT
+-	- expr8			unary minus
+-	+ expr8			unary plus
++	<type>expr9		type check and conversion (|Vim9| only)
  
- strgetchar({str}, {index})				*strgetchar()*
--		Get character {index} from {str}.  This uses a character
--		index, not a byte index.  Composing characters are considered
--		separate characters here.
-+		Get a Number corresponding to the character at {index} in
-+		{str}.  This uses a zero-based character index, not a byte
-+		index.  Composing characters are considered separate
-+		characters here.  Use |nr2char()| to convert the Number to a
-+		String.
- 		Also see |strcharpart()| and |strchars()|.
+ |expr9|	expr10
+-	expr9[expr1]		byte of a String or item of a |List|
+-	expr9[expr1 : expr1]	substring of a String or sublist of a |List|
+-	expr9.name		entry in a |Dictionary|
+-	expr9(expr1, ...)	function call with |Funcref| variable
+-	expr9->name(expr1, ...)	|method| call
+-
+-|expr10|  number		number constant
++	! expr9			logical NOT
++	- expr9			unary minus
++	+ expr9			unary plus
++
++|expr10|  expr11
++	expr10[expr1]		byte of a String or item of a |List|
++	expr10[expr1 : expr1]	substring of a String or sublist of a |List|
++	expr10.name		entry in a |Dictionary|
++	expr10(expr1, ...)	function call with |Funcref| variable
++	expr10->name(expr1, ...)	|method| call
++
++|expr11|  number		number constant
+ 	"string"		string constant, backslash is special
+ 	'string'		string constant, ' is doubled
+ 	[expr1, ...]		|List|
+@@ -1128,14 +1131,27 @@ can be matched like an ordinary character.  Examples:
+ 	"foo\nbar" =~ "\\n"	evaluates to 0
  
- 		Can also be used as a |method|: >
+ 
+-expr5 and expr6				*expr5* *expr6* *E1036* *E1051*
++expr5						*expr5* *bitwise-shift*
++-----
++expr6 << expr6	bitwise left shift				*expr-<<*
++expr6 >> expr6	bitwise right shift				*expr->>*
++							*E1282* *E1283*
++The "<<" and ">>" operators can be used to perform bitwise left or right shift
++of the left operand by the number of bits specified by the right operand.  The
++operands are used as positive numbers.  When shifting right with ">>" the
++topmost bit (somtimes called the sign bit) is cleared.  If the right operand
++(shift amount) is more than the maximum number of bits in a number
++(|v:numbersize|) the result is zero.
++
++
++expr6 and expr7				*expr6* *expr7* *E1036* *E1051*
+ ---------------
+-expr6 + expr6   Number addition, |List| or |Blob| concatenation	*expr-+*
+-expr6 - expr6   Number subtraction				*expr--*
+-expr6 . expr6   String concatenation				*expr-.*
+-expr6 .. expr6  String concatenation				*expr-..*
++expr7 + expr7   Number addition, |List| or |Blob| concatenation	*expr-+*
++expr7 - expr7   Number subtraction				*expr--*
++expr7 . expr7   String concatenation				*expr-.*
++expr7 .. expr7  String concatenation				*expr-..*
+ 
+-For |Lists| only "+" is possible and then both expr6 must be a list.  The
++For |Lists| only "+" is possible and then both expr7 must be a list.  The
+ result is a new list with the two lists Concatenated.
+ 
+ For String concatenation ".." is preferred, since "." is ambiguous, it is also
+@@ -1147,9 +1163,9 @@ In |Vim9| script the arguments of ".." are converted to String for simple
+ types: Number, Float, Special and Bool.  For other types |string()| should be
+ used.
+ 
+-expr7 * expr7  Number multiplication				*expr-star*
+-expr7 / expr7  Number division					*expr-/*
+-expr7 % expr7  Number modulo					*expr-%*
++expr8 * expr8  Number multiplication				*expr-star*
++expr8 / expr8  Number division					*expr-/*
++expr8 % expr8  Number modulo					*expr-%*
+ 
+ In legacy script, for all operators except "." and "..", Strings are converted
+ to Numbers.
+@@ -1191,18 +1207,18 @@ None of these work for |Funcref|s.
+ ".", ".." and "%" do not work for Float. *E804* *E1035*
+ 
+ 
+-expr7							*expr7*
++expr8							*expr8*
+ -----
+-<type>expr8
++<type>expr9
+ 
+ This is only available in |Vim9| script, see |type-casting|.
+ 
+ 
+-expr8							*expr8*
++expr9							*expr9*
+ -----
+-! expr8			logical NOT		*expr-!*
+-- expr8			unary minus		*expr-unary--*
+-+ expr8			unary plus		*expr-unary-+*
++! expr9			logical NOT		*expr-!*
++- expr9			unary minus		*expr-unary--*
+++ expr9			unary plus		*expr-unary-+*
+ 
+ For '!' |TRUE| becomes |FALSE|, |FALSE| becomes |TRUE| (one).
+ For '-' the sign of the number is changed.
+@@ -1224,21 +1240,21 @@ These three can be repeated and mixed.  Examples:
+ 	--9	    == 9
+ 
+ 
+-expr9							*expr9*
+------
+-This expression is either |expr10| or a sequence of the alternatives below,
++expr10							*expr10*
++------
++This expression is either |expr11| or a sequence of the alternatives below,
+ in any order.  E.g., these are all possible:
+-	expr9[expr1].name
+-	expr9.name[expr1]
+-	expr9(expr1, ...)[expr1].name
+-	expr9->(expr1, ...)[expr1]
++	expr10[expr1].name
++	expr10.name[expr1]
++	expr10(expr1, ...)[expr1].name
++	expr10->(expr1, ...)[expr1]
+ Evaluation is always from left to right.
+ 
+-expr9[expr1]		item of String or |List|	*expr-[]* *E111*
++expr10[expr1]		item of String or |List|	*expr-[]* *E111*
+ 						*E909* *subscript* *E1062*
+ In legacy Vim script:
+-If expr9 is a Number or String this results in a String that contains the
+-expr1'th single byte from expr9.  expr9 is used as a String (a number is
++If expr10 is a Number or String this results in a String that contains the
++expr1'th single byte from expr10.  expr10 is used as a String (a number is
+ automatically converted to a String), expr1 as a Number.  This doesn't
+ recognize multibyte encodings, see `byteidx()` for an alternative, or use
+ `split()` to turn the string into a list of characters.  Example, to get the
+@@ -1246,8 +1262,8 @@ byte under the cursor: >
+ 	:let c = getline(".")[col(".") - 1]
+ 
+ In |Vim9| script:					*E1147* *E1148*
+-If expr9 is a String this results in a String that contains the expr1'th
+-single character (including any composing characters) from expr9.  To use byte
++If expr10 is a String this results in a String that contains the expr1'th
++single character (including any composing characters) from expr10.  To use byte
+ indexes use |strpart()|.
+ 
+ Index zero gives the first byte or character.  Careful: text column numbers
+@@ -1258,7 +1274,7 @@ String.  A negative index always results in an empty string (reason: backward
+ compatibility).  Use [-1:] to get the last byte or character.
+ In Vim9 script a negative index is used like with a list: count from the end.
+ 
+-If expr9 is a |List| then it results the item at index expr1.  See |list-index|
++If expr10 is a |List| then it results the item at index expr1.  See |list-index|
+ for possible index values.  If the index is out of range this results in an
+ error.  Example: >
+ 	:let item = mylist[-1]		" get last item
+@@ -1268,14 +1284,14 @@ Generally, if a |List| index is equal to or higher than the length of the
+ error.
+ 
+ 
+-expr9[expr1a : expr1b]	substring or sublist		*expr-[:]*
++expr10[expr1a : expr1b]	substring or sublist		*expr-[:]*
+ 
+-If expr9 is a String this results in the substring with the bytes or
+-characters from expr1a to and including expr1b.  expr9 is used as a String,
++If expr10 is a String this results in the substring with the bytes or
++characters from expr1a to and including expr1b.  expr10 is used as a String,
+ expr1a and expr1b are used as a Number.
+ 
+ In legacy Vim script the indexes are byte indexes.  This doesn't recognize
+-multibyte encodings, see |byteidx()| for computing the indexes.  If expr9 is
++multibyte encodings, see |byteidx()| for computing the indexes.  If expr10 is
+ a Number it is first converted to a String.
+ 
+ In Vim9 script the indexes are character indexes and include composing
+@@ -1302,20 +1318,20 @@ Examples: >
+ 	:let s = s[:-3]			" remove last two bytes
+ <
+ 							*slice*
+-If expr9 is a |List| this results in a new |List| with the items indicated by
++If expr10 is a |List| this results in a new |List| with the items indicated by
+ the indexes expr1a and expr1b.  This works like with a String, as explained
+ just above. Also see |sublist| below.  Examples: >
+ 	:let l = mylist[:3]		" first four items
+ 	:let l = mylist[4:4]		" List with one item
+ 	:let l = mylist[:]		" shallow copy of a List
+ 
+-If expr9 is a |Blob| this results in a new |Blob| with the bytes in the
++If expr10 is a |Blob| this results in a new |Blob| with the bytes in the
+ indexes expr1a and expr1b, inclusive.  Examples: >
+ 	:let b = 0zDEADBEEF
+ 	:let bs = b[1:2]		" 0zADBE
+ 	:let bs = b[:]			" copy of 0zDEADBEEF
+ 
+-Using expr9[expr1] or expr9[expr1a : expr1b] on a |Funcref| results in an
++Using expr10[expr1] or expr10[expr1a : expr1b] on a |Funcref| results in an
+ error.
+ 
+ Watch out for confusion between a namespace and a variable followed by a colon
+@@ -1324,11 +1340,11 @@ for a sublist: >
+ 	mylist[s:]     " uses namespace s:, error!
+ 
+ 
+-expr9.name		entry in a |Dictionary|		*expr-entry*
++expr10.name		entry in a |Dictionary|		*expr-entry*
+ 							*E1203* *E1229*
+-If expr9 is a |Dictionary| and it is followed by a dot, then the following
++If expr10 is a |Dictionary| and it is followed by a dot, then the following
+ name will be used as a key in the |Dictionary|.  This is just like:
+-expr9[name].
++expr10[name].
+ 
+ The name must consist of alphanumeric characters, just like a variable name,
+ but it may start with a number.  Curly braces cannot be used.
+@@ -1345,17 +1361,17 @@ Note that the dot is also used for String concatenation.  To avoid confusion
+ always put spaces around the dot for String concatenation.
+ 
+ 
+-expr9(expr1, ...)	|Funcref| function call  	*E1085*
++expr10(expr1, ...)	|Funcref| function call  	*E1085*
+ 
+-When expr9 is a |Funcref| type variable, invoke the function it refers to.
++When expr10 is a |Funcref| type variable, invoke the function it refers to.
+ 
+ 
+-expr9->name([args])	method call			*method* *->*
+-expr9->{lambda}([args])
++expr10->name([args])	method call			*method* *->*
++expr10->{lambda}([args])
+ 							*E260* *E276* *E1265*
+ For methods that are also available as global functions this is the same as: >
+-	name(expr9 [, args])
+-There can also be methods specifically for the type of "expr9".
++	name(expr10 [, args])
++There can also be methods specifically for the type of "expr10".
+ 
+ This allows for chaining, passing the value that one method returns to the
+ next method: >
+@@ -1364,7 +1380,7 @@ next method: >
+ Example of using a lambda: >
+ 	GetPercentage()->{x -> x * 100}()->printf('%d%%')
+ <
+-When using -> the |expr8| operators will be applied first, thus: >
++When using -> the |expr9| operators will be applied first, thus: >
+ 	-1.234->string()
+ Is equivalent to: >
+ 	(-1.234)->string()
+@@ -1393,7 +1409,7 @@ When using the lambda form there must be no white space between the } and the
+ (.
+ 
+ 
+-							*expr10*
++							*expr11*
+ number
+ ------
+ number			number constant			*expr-number*
+@@ -1402,6 +1418,10 @@ number			number constant			*expr-number*
+ Decimal, Hexadecimal (starting with 0x or 0X), Binary (starting with 0b or 0B)
+ and Octal (starting with 0, 0o or 0O).
+ 
++Assuming 64 bit numbers are used (see |v:numbersize|) an unsigned number is
++truncated to 0x7fffffffffffffff or 9223372036854775807.  You can use -1 to get
++0xffffffffffffffff.
++
+ 						*floating-point-format*
+ Floating point numbers can be written in two forms:
+ 
 diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index dfee7f584..2899fc5b3 100644
+index 2899fc5b3..4df0909f4 100644
 --- a/runtime/doc/indent.txt
 +++ b/runtime/doc/indent.txt
-@@ -22,9 +22,6 @@ indent and do not perform other formatting.  There are additional options that
- affect other kinds of formatting as well as indenting, see |format-comments|,
- |fo-table|, |gq| and |formatting| for the main ones.
- 
--Note that this will not work when the |+smartindent| or |+cindent| features
--have been disabled at compile time.
--
- There are in fact four main methods available for indentation, each one
- overrides the previous if it is enabled, or non-empty for 'indentexpr':
- 'autoindent'	uses the indent from the previous line.
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 8808e4363..373f459ae 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*map.txt*       For Vim version 8.2.  Last change: 2022 May 09
-+*map.txt*       For Vim version 8.2.  Last change: 2022 May 16
+-*indent.txt*    For Vim version 8.2.  Last change: 2022 Apr 07
++*indent.txt*    For Vim version 8.2.  Last change: 2022 May 21
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -701,6 +701,7 @@ not to be matched with any key sequence.  This is useful in plugins
- 							*<MouseMove>*
- The special key name "<MouseMove>" can be used to handle mouse movement.  It
- needs to be enabled with 'mousemoveevent'.  Currently only works in the GUI.
-+The |getmousepos()| function can be used to obtain the mouse position.
- 
- 							*<Char>* *<Char->*
- To map a character by its decimal, octal or hexadecimal number the <Char>
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 866823341..b4359190d 100644
+index b4359190d..f1038afa6 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -1621,8 +1621,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 				   *'cindent'* *'cin'* *'nocindent'* *'nocin'*
- 'cindent' 'cin'		boolean	(default off)
- 			local to buffer
--			{not available when compiled without the |+cindent|
--			feature}
- 	Enables automatic C program indenting.  See 'cinkeys' to set the keys
- 	that trigger reindenting in insert mode and 'cinoptions' to set your
- 	preferred indent style.
-@@ -1639,8 +1637,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 							*'cinkeys'* *'cink'*
- 'cinkeys' 'cink'	string	(default "0{,0},0),0],:,0#,!^F,o,O,e")
- 			local to buffer
--			{not available when compiled without the |+cindent|
--			feature}
- 	A list of keys that, when typed in Insert mode, cause reindenting of
- 	the current line.  Only used if 'cindent' is on and 'indentexpr' is
- 	empty.
-@@ -1650,8 +1646,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'cinoptions'* *'cino'*
- 'cinoptions' 'cino'	string	(default "")
- 			local to buffer
--			{not available when compiled without the |+cindent|
--			feature}
- 	The 'cinoptions' affect the way 'cindent' reindents lines in a C
- 	program.  See |cinoptions-values| for the values of this option, and
- 	|C-indenting| for info on C indenting in general.
-@@ -1660,8 +1654,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'cinwords'* *'cinw'*
- 'cinwords' 'cinw'	string	(default "if,else,while,do,for,switch")
- 			local to buffer
--			{not available when compiled without both the
--			|+cindent| and the |+smartindent| features}
- 	These keywords start an extra indent in the next line when
- 	'smartindent' or 'cindent' is set.  For 'cindent' this is only done at
- 	an appropriate place (inside {}).
-@@ -1672,8 +1664,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'cinscopedecls'* *'cinsd'*
- 'cinscopedecls' 'cinsd'	string	(default "public,protected,private")
- 			local to buffer
--			{not available when compiled without the |+cindent|
--			feature}
- 	Keywords that are interpreted as a C++ scope declaration by |cino-g|.
- 	Useful e.g. for working with the Qt framework that defines additional
- 	scope declarations "signals", "public slots" and "private slots": >
-@@ -4578,8 +4568,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'indentexpr'* *'inde'*
- 'indentexpr' 'inde'	string	(default "")
- 			local to buffer
--			{not available when compiled without the |+cindent|
--			or |+eval| features}
-+			{not available when compiled without the |+eval|
-+			feature}
- 	Expression which is evaluated to obtain the proper indent for a line.
- 	It is used when a new line is created, for the |=| operator and
- 	in Insert mode as specified with the 'indentkeys' option.
-@@ -4624,8 +4614,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'indentkeys'* *'indk'*
- 'indentkeys' 'indk'	string	(default "0{,0},0),0],:,0#,!^F,o,O,e")
- 			local to buffer
--			{not available when compiled without the |+cindent|
--			feature}
- 	A list of keys that, when typed in Insert mode, cause reindenting of
- 	the current line.  Only happens if 'indentexpr' isn't empty.
- 	The format is identical to 'cinkeys', see |indentkeys-format|.
-@@ -5013,8 +5001,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'lisp'* *'nolisp'*
- 'lisp'			boolean	(default off)
- 			local to buffer
--			{not available when compiled without the |+lispindent|
--			feature}
- 	Lisp mode: When <Enter> is typed in insert mode set the indent for
- 	the next line to Lisp standards (well, sort of).  Also happens with
- 	"cc" or "S".  'autoindent' must also be on for this to work.  The 'p'
-@@ -5028,8 +5014,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'lispwords'* *'lw'*
- 'lispwords' 'lw'	string	(default is very long)
- 			global or local to buffer |global-local|
--			{not available when compiled without the |+lispindent|
--			feature}
- 	Comma-separated list of words that influence the Lisp indenting.
- 	|'lisp'|
- 
-@@ -7222,8 +7206,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			     *'smartindent'* *'si'* *'nosmartindent'* *'nosi'*
- 'smartindent' 'si'	boolean	(default off)
- 			local to buffer
--			{not available when compiled without the
--			|+smartindent| feature}
- 	Do smart autoindenting when starting a new line.  Works for C-like
- 	programs, but can also be used for other languages.  'cindent' does
- 	something like this, works better in most cases, but is more strict,
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index fd783288a..4171a5db5 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 8.2.  Last change: 2022 May 06
-+*syntax.txt*	For Vim version 8.2.  Last change: 2022 May 20
+-*options.txt*	For Vim version 8.2.  Last change: 2022 May 07
++*options.txt*	For Vim version 8.2.  Last change: 2022 May 21
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -32,13 +32,14 @@ In the User Manual:
- 10. Including syntax files	|:syn-include|
- 11. Synchronizing		|:syn-sync|
- 12. Listing syntax items	|:syntax|
--13. Highlight command		|:highlight|
--14. Linking groups		|:highlight-link|
--15. Cleaning up			|:syn-clear|
--16. Highlighting tags		|tag-highlight|
--17. Window-local syntax		|:ownsyntax|
--18. Color xterms		|xterm-color|
--19. When syntax is slow		|:syntime|
-+13. Colorschemes		|color-schemes|
-+14. Highlight command		|:highlight|
-+15. Linking groups		|:highlight-link|
-+16. Cleaning up			|:syn-clear|
-+17. Highlighting tags		|tag-highlight|
-+18. Window-local syntax		|:ownsyntax|
-+19. Color xterms		|xterm-color|
-+20. When syntax is slow		|:syntime|
- 
- {Vi does not have any of these commands}
- 
-@@ -1511,7 +1512,7 @@ modes Conditional, Number, Statement, Comment, PreProc, Type, and String,
- following the language specifications in 'Symbolic Manipulation with FORM' by
- J.A.M. Vermaseren, CAN, Netherlands, 1991.
- 
--If you want include your own changes to the default colors, you have to
-+If you want to include your own changes to the default colors, you have to
- redefine the following syntax groups:
- 
-     - formConditional
-@@ -4845,20 +4846,14 @@ Note that the ":syntax" command can be abbreviated to ":sy", although ":syn"
- is mostly used, because it looks better.
- 
- ==============================================================================
--13. Highlight command			*:highlight* *:hi* *E28* *E411* *E415*
--
--There are three types of highlight groups:
--- The ones used for specific languages.  For these the name starts with the
--  name of the language.  Many of these don't have any attributes, but are
--  linked to a group of the second type.
--- The ones used for all syntax languages.
--- The ones used for the 'highlight' option.
--							*hitest.vim*
--You can see all the groups currently active with this command: >
--    :so $VIMRUNTIME/syntax/hitest.vim
--This will open a new window containing all highlight group names, displayed
--in their own color.
-+13. Colorschemes				*color-schemes*
- 
-+In the next section you can find information about indivisual highlight groups
-+and how to specify colors for them.  Most likely you want to just select a set
-+of colors by using the `:colorscheme` command, for example: >
-+	
-+	    colorscheme pablo
-+<
- 						*:colo* *:colorscheme* *E185*
- :colo[rscheme]		Output the name of the currently active color scheme.
- 			This is basically the same as >
-@@ -4876,30 +4871,62 @@ in their own color.
- 			Doesn't work recursively, thus you can't use
- 			":colorscheme" in a color scheme script.
- 
--			You have two options for customizing a color scheme.
--			For changing the appearance of specific colors, you
--			can redefine a color name before loading the scheme.
--			The desert scheme uses the khaki color for the cursor.
--			To use a darker variation of the same color: >
-+You have two options for customizing a color scheme.  For changing the
-+appearance of specific colors, you can redefine a color name before loading
-+the scheme.  The desert scheme uses the khaki color for the cursor.  To use a
-+darker variation of the same color: >
- 
--				let v:colornames['khaki'] = '#bdb76b'
--				colorscheme desert
-+	let v:colornames['khaki'] = '#bdb76b'
-+	colorscheme desert
- <
--			For further customization, such as changing
--			|:highlight-link| associations, use another name, e.g.
--			"~/.vim/colors/mine.vim", and use `:runtime` to load
--			the original color scheme: >
--				runtime colors/evening.vim
--				hi Statement ctermfg=Blue guifg=Blue
--
--<			Before the color scheme will be loaded all default
--			color list scripts (`colors/lists/default.vim`) will
--			be executed and then the |ColorSchemePre| autocommand
--			event is triggered.  After the color scheme has been
--			loaded the |ColorScheme| autocommand event is
--			triggered.
--			For info about writing a color scheme file: >
--				:edit $VIMRUNTIME/colors/README.txt
-+For further customization, such as changing |:highlight-link| associations,
-+use another name, e.g.  "~/.vim/colors/mine.vim", and use `:runtime` to load
-+the original color scheme: >
-+	runtime colors/evening.vim
-+	hi Statement ctermfg=Blue guifg=Blue
-+
-+Before the color scheme will be loaded all default color list scripts
-+(`colors/lists/default.vim`) will be executed and then the |ColorSchemePre|
-+autocommand event is triggered.  After the color scheme has been loaded the
-+|ColorScheme| autocommand event is triggered.
-+
-+If a color scheme is almost right, you can add modifications on top of it by
-+using the |ColorScheme| autocommand.  For example, to remove the background
-+color (can make it transparent in some terminals): >
-+	augroup my_colorschemes
-+	  au!
-+	  au Colorscheme pablo hi Normal ctermbg=NONE
-+	augroup END
-+
-+If you make a lot of changes it might be better to copy the distributed
-+colorscheme to your home directory and change it: >
-+	:!cp $VIMRUNTIME/colors/pablo.vim ~/.vim/colors
-+	:edit ~/.vim/colors/pablo.vim
-+
-+With Vim 9.0 the collection of color schemes was updated and made work in many
-+different terminals.  One change was to often define the Normal highlight
-+group to make sure the colors work well.  In case you prefer the old version,
-+you can find them here:
-+https://github.com/vim/colorschemes/blob/master/legacy_colors/
-+
-+For info about writing a color scheme file: >
-+	:edit $VIMRUNTIME/colors/README.txt
-+
-+
-+==============================================================================
-+14. Highlight command			*:highlight* *:hi* *E28* *E411* *E415*
-+
-+There are three types of highlight groups:
-+- The ones used for specific languages.  For these the name starts with the
-+  name of the language.  Many of these don't have any attributes, but are
-+  linked to a group of the second type.
-+- The ones used for all syntax languages.
-+- The ones used for the 'highlight' option.
-+							*hitest.vim*
-+You can see all the groups currently active with this command: >
-+    :so $VIMRUNTIME/syntax/hitest.vim
-+This will open a new window containing all highlight group names, displayed
-+in their own color.
- 
- :hi[ghlight]		List all the current highlight groups that have
- 			attributes set.
-@@ -5206,7 +5233,7 @@ guisp={color-name}					*highlight-guisp*
- 	All values are hexadecimal, range from "00" to "ff".  Examples: >
-             :highlight Comment guifg=#11f0c3 guibg=#ff00ff
- <
--	If you are authoring a color scheme and use the same hexademical value
-+	If you are authoring a color scheme and use the same hexadecimal value
- 	repeatedly, you can define a name for it in |v:colornames|. For
- 	example: >
- 
-@@ -5416,7 +5443,7 @@ Tooltip		Current font, background and foreground of the tooltips.
- 		set.
- 
- ==============================================================================
--14. Linking groups		*:hi-link* *:highlight-link* *E412* *E413*
-+15. Linking groups		*:hi-link* *:highlight-link* *E412* *E413*
- 
- When you want to use the same highlighting for several syntax groups, you
- can do this more easily by linking the groups into one common highlight
-@@ -5460,7 +5487,7 @@ another color scheme, put a command like this in the
-     highlight! default link cComment Question
- 
- ==============================================================================
--15. Cleaning up						*:syn-clear* *E391*
-+16. Cleaning up						*:syn-clear* *E391*
- 
- If you want to clear the syntax stuff for the current buffer, you can use this
- command: >
-@@ -5552,7 +5579,7 @@ syntax/syncolor.vim files are loaded:
- 		them.
- 
- ==============================================================================
--16. Highlighting tags					*tag-highlight*
-+17. Highlighting tags					*tag-highlight*
- 
- If you want to highlight all the tags in your file, you can use the following
- mappings.
-@@ -5588,7 +5615,7 @@ And put these lines in your .vimrc: >
-    autocmd BufRead,BufNewFile *.[ch] endif
- 
- ==============================================================================
--17. Window-local syntax				*:ownsyntax*
-+18. Window-local syntax				*:ownsyntax*
- 
- Normally all windows on a buffer share the same syntax settings. It is
- possible, however, to set a particular window on a file to have its own
-@@ -5618,7 +5645,7 @@ is loaded into that window or the file is reloaded.
- When splitting the window, the new window will use the original syntax.
- 
- ==============================================================================
--18. Color xterms				*xterm-color* *color-xterm*
-+19. Color xterms				*xterm-color* *color-xterm*
- 
- Most color xterms have only eight colors.  If you don't get colors with the
- default setup, it should work with these lines in your .vimrc: >
-@@ -5762,7 +5789,7 @@ that Setup / Font / Enable Bold is NOT enabled.
- 
- 
- ==============================================================================
--19. When syntax is slow						*:syntime*
-+20. When syntax is slow						*:syntime*
- 
- This is aimed at authors of a syntax file.
- 
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 0601cb9c8..e6328e91e 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index 6fe56c09e..62376c7f2 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
 @@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 8.2.  Last change: 2022 Apr 03
-+*testing.txt*	For Vim version 8.2.  Last change: 2022 May 16
+-*os_win32.txt*  For Vim version 8.2.  Last change: 2022 Feb 14
++*os_win32.txt*  For Vim version 8.2.  Last change: 2022 May 22
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+ 		  VIM REFERENCE MANUAL    by George Reilly
+@@ -42,6 +42,11 @@ The GUI version was made by George V. Reilly and Robert Webb.
+ 
+ For compiling see "src/INSTALLpc.txt".			*win32-compiling*
+ 
++							*WSL*
++When using Vim on WSL (Windows Subsystem for Linux) the remarks here do not
++apply, `has('win32')` will return false then.  In case you need to know
++whether Vim is running on WSL you can use `exists('$WSLENV')`.
++
+ ==============================================================================
+ 1. Known problems					*win32-problems*
+ 
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 95627f3db..d2a5dbdd1 100644
+index d2a5dbdd1..fa2cded4f 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 May 14
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 May 21
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 May 21
++*todo.txt*      For Vim version 8.2.  Last change: 2022 May 22
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,6 +38,9 @@ browser use: https://github.com/vim/vim/issues/1234
+@@ -38,20 +38,14 @@ browser use: https://github.com/vim/vim/issues/1234
  							*known-bugs*
  -------------------- Known bugs and current work -----------------------
  
-+Make :defcompile accept a function argument, like :disassemble
-+Useful for global functions.
-+
- Once Vim9 is stable:
+-Make :defcompile accept a function argument, like :disassemble
+-Useful for global functions.
+-
+-Once Vim9 is stable:
++Prepare for Vim 9.0 release:
  - Use Vim9 for more runtime files.
- - Check code coverage, add more tests if needed.
-@@ -50,9 +53,10 @@ Once Vim9 is stable:
- Graduate FEAT_CINDENT and FEAT_SMARTINDENT ?
+-- Check code coverage, add more tests if needed.
++- Check Vim9 code coverage, add more tests if needed.
+ 	vim9instr.c
+ 	vim9script.c
+ 	vim9type.c
+-- Inlude new set of colors: #9795
+ - Adjust intro message to say "help version9".
  
+-Graduate FEAT_CINDENT and FEAT_SMARTINDENT ?
+-
  Update the user manual:
--- Move most of usr_52.txt into usr_41.txt
--- Make usr_41.txt only about basic script writing
-+- Update usr_41.txt for Vim9 script
+ - Update usr_41.txt for Vim9 script
  - Fill usr_50.txt as an "advanced section" of usr_41.txt
-+  Add links from usr_41 to usr_50.
-+- Make usr_51.txt use Vim9 script.  Still need usr_52.txt?
- 
- 
- Further Vim9 improvements, possibly after launch:
-@@ -130,14 +134,13 @@ Text properties:
-   where property fits in.
-   Or Should we let the textprop highlight overrule other (e.g. diff) highlight
-   if the priority is above a certain value?  (#7392)
-+  Combining text property with 'cursorline' does not always work (Billie
-+  Cleek, #5533)
- - "C" works OK.  "dd" fails to delete text property in a buffer with a single
-   line.
- - Add text property that shifts text to make room for annotation (e.g.
-   variable type).  Like the opposite of conceal.  Requires fixing the cursor
-   positioning and mouse clicks as with conceal mode.
--- Auto-indenting may cause highlighting to shift. (#7719)
--- Combining text property with 'cursorline' does not always work (Billie
--  Cleek, #5533)
- - See remarks at top of src/textprop.c
- 
- 'incsearch' with :s:
-@@ -659,9 +662,6 @@ that Vim doesn't find the edited file in the buffer list, causing the
- ATTENTION message?  (Tony Mechelynck, 2008 Dec 1)
- Also: swap files are in ~/tmp/  One has relative file name ".mozilla/...".
- 
--'foldcolumn' in modeline applied to wrong window when using a session. (Teemu
--Likonen, March 19)
--
- When using a timer callback vgetc_busy is reset, allowing for using input().
- But in a channel callback this does not happen.  We need to do something
- similar to check_due_timer().  Also see #3809.
-@@ -886,9 +886,6 @@ word is re-added to it. (Matej Cepl, 2018 Feb 6)
- 
- Fold at end of the buffer behaves inconsistently. (James McCoy, 2017 Oct 9)
- 
--With foldmethod=syntax and nofoldenable comment highlighting isn't removed.
--(Marcin Szewczyk, 2017 Apr 26)
--
- Using 'wildignore' also applies to literally entered file name.  Also with
- :drop (remote commands).
- 
-@@ -1002,8 +999,6 @@ After using :noautocmd CursorMoved may still trigger. (Andy Stewart, 2017 Sep
- When bracketed paste is used, pasting at the ":append" prompt does not get the
- line breaks. (Ken Takata, 2017 Aug 22)
- 
--The ":move" command does not honor closed folds. (Ryan Lue, #2351)
--
- Cannot copy modeless selection when cursor is inside it. (lkintact, #2300)
- 
- Test_writefile_fails_conversion failure on Solaris because if different iconv
-@@ -1534,11 +1529,6 @@ was already defined.
- 
- Patch for ordered dict. (Ozaki Kiichi, 2015 May 7)
- 
--Patch to make closed folds line up. (Charles Campbell, 2014 Sep 12)
--Remark from Roland Eggner: does it cause crashes? (2014 Dec 12)
--Updated patch by Roland Eggner, Dec 16
--Updated patch from Charles, 2016 Jul 2
--
- Patch for building a 32bit Vim with 64bit MingW compiler.
- (Michael Soyka, 2014 Oct 15)
- 
-@@ -1714,8 +1704,6 @@ Patch to support 'u' in interactive substitute. (Christian Brabandt, 2012 Sep
- 
- Dialog is too big on Linux too. (David Fishburn, 2013 Sep 2)
- 
--Patch to make fold updates much faster. (Christian Brabandt, 2012 Dec)
--
- -   Add regex for 'paragraphs' and 'sections': 'parare' and 'sectre'.  Combine
-     the two into a regex for searching. (Ned Konz)
- Patch by Christian Brabandt, 2013 Apr 20, unfinished.
-@@ -1779,10 +1767,6 @@ URXVT:
- - Use urxvt mouse support also in xterm.  Explanations:
-   http://www.midnight-commander.org/ticket/2662
- 
--Patch to have the fold and sign column and at the last line of the buffer.
--(Marco Hinz, 2014 Sep 25)
--Alternate suggestion: let all columns continue, also the number column.
--
- Patch to add tests for if_xcmdsrv.c., Jul 8, need some more work. (Brian Burns)
- New tests Jul 13.   Update Jul 17.  Discussion Jul 18.
- 
-@@ -1983,9 +1967,6 @@ the command line. (Ingo Karkat, 2011 Jan 25)
- Since patch 7.2.46 Yankring plugin has become very slow, eventually make Vim
- crash? (Raiwil, 2010 Nov 17)
- 
--Patch to add FoldedLineNr highlighting: different highlighting for the line
--number of a closed fold. (eXerigumo Clanjor, 2013 Jul 15)
--
- Regexp engine performance:
- - Profiling:
- 	./vim -u NONE -s ~/vim/test/ruby.vim
-@@ -2097,9 +2078,6 @@ like it has ":keepjumps" before it.
- Coverity: Check if there are new reported defects:
- https://scan.coverity.com/projects/241
- 
--Patch to use 'foldnestmax' also for "marker" foldmethod. (Arnaud Lacombe, 2011
--Jan 7)
--
- Problem with editing file in binary mode. (Ingo Krabbe, 2009 Oct 8)
- 
- Display error when 'tabline' that includes a file name with double-width
-@@ -2112,9 +2090,6 @@ Using ']' as the end of a range in a pattern requires double escaping:
- 
- Syntax priority problem. (Charles Campbell, 2011 Sep 15)
- 
--When completion inserts the first match, it may trigger the line to be folded.
--Disable updating folds while completion is active? (Peter Odding, 2010 Jun 9)
--
- For running gvim on a USB stick: avoid the OLE registration.  Use a command
- line argument -noregister.
- 
-@@ -2189,10 +2164,6 @@ Don't load macmap.vim on startup, turn it into a plugin. (Ron Aaron,
- 
- Add "no_hlsearch" to winsaveview().
- 
--When 'foldmethod' is "indent", adding an empty line below a fold and then
--indented text, creates a new fold instead of joining it with the previous one.
--(Evan Laforge, 2009 Oct 17)
--
- Bug: When reloading a buffer changed outside of Vim, BufRead autocommands
- are applied to the wrong buffer/window. (Ben Fritz, 2009 Apr 2, May 11)
- Ignore window options when not in the right window?
-@@ -2412,8 +2383,6 @@ Problem with 'ts' set to 9 and 'showbreak' to ">>>". (Matthew Winn, 2007 Oct
- ":tab help" always opens a new tab, while ":help" re-uses an existing window.
- Would be more consistent when an existing tab is re-used. (Tony Mechelynck)
- 
--Add ":nofold".  Range will apply without expanding to closed fold.
--
- Using Aap to build Vim: add remarks about how to set personal preferences.
- Example on http://www.calmar.ws/tmp/aap.html
- 
-@@ -3809,6 +3778,30 @@ Diff mode:
- Folding:
-     (commands still available: zI zJ zK zp zP zq zQ zV zy zY;
-     secondary: zB zS zT zZ, z=)
-+-   Patch to make closed folds line up. (Charles Campbell, 2014 Sep 12)
-+    Remark from Roland Eggner: does it cause crashes? (2014 Dec 12)
-+    Updated patch by Roland Eggner, Dec 16
-+    Updated patch from Charles, 2016 Jul 2
-+-   Patch to make fold updates much faster. (Christian Brabandt, 2012 Dec)
-+-   Patch to have the fold and sign column and at the last line of the buffer.
-+    (Marco Hinz, 2014 Sep 25)
-+    Alternate suggestion: let all columns continue, also the number column.
-+-   Patch to add FoldedLineNr highlighting: different highlighting for the
-+    line number of a closed fold. (eXerigumo Clanjor, 2013 Jul 15)
-+-   Patch to use 'foldnestmax' also for "marker" foldmethod. (Arnaud Lacombe,
-+    2011 Jan 7)
-+-   'foldcolumn' in modeline applied to wrong window when using a session.
-+    (Teemu Likonen, March 19)
-+-   With foldmethod=syntax and nofoldenable comment highlighting isn't
-+    removed.  (Marcin Szewczyk, 2017 Apr 26)
-+-   The ":move" command does not honor closed folds. (Ryan Lue, #2351)
-+-   When completion inserts the first match, it may trigger the line to be
-+    folded.  Disable updating folds while completion is active? (Peter Odding,
-+    2010 Jun 9)
-+-   When 'foldmethod' is "indent", adding an empty line below a fold and then
-+    indented text, creates a new fold instead of joining it with the previous
-+    one.  (Evan Laforge, 2009 Oct 17)
-+-   Add ":nofold".  Range will apply without expanding to closed fold.
- 8   Vertical folds: looks like vertically split windows, but the cursor moves
-     through the vertical separator, separator moves when scrolling.
- 8   Add "z/" and "z?" for searching in not folded text only.  Or use a regexp
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 162eb9d3c..80b7e385c 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 8.2.  Last change: 2022 May 13
-+*usr_41.txt*	For Vim version 8.2.  Last change: 2022 May 21
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -1923,6 +1923,8 @@ are script-local.
- If you split your plugin into parts, you can use `import` and `export` to
- share items between those parts.  See `:export` for the details.
- 
-+More information about writing plugins is in |usr_51.txt|.
-+
- ==============================================================================
- 
- Next chapter: |usr_42.txt|  Add new menus
-diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
-index 14704c69f..2845ab815 100644
---- a/runtime/doc/usr_51.txt
-+++ b/runtime/doc/usr_51.txt
-@@ -1,4 +1,4 @@
--*usr_51.txt*	For Vim version 8.2.  Last change: 2022 May 13
-+*usr_51.txt*	For Vim version 8.2.  Last change: 2022 May 14
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -197,8 +197,8 @@ would need to prefix the name with "s:".
- We will define a function that adds a new typing correction: >
- 
-  30	def Add(from: string, correct: bool)
-- 31	  var to = input("type the correction for " .. from .. ": ")
-- 32	  exe ":iabbrev " .. from .. " " .. to
-+ 31	  var to = input($"type the correction for {from}: ")
-+ 32	  exe $":iabbrev {from} {to}"
-  ..
-  36	enddef
- 
 diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
-index 70338e79a..1fbd66f3c 100644
+index 1fbd66f3c..375fa5dd3 100644
 --- a/runtime/doc/usr_52.txt
 +++ b/runtime/doc/usr_52.txt
 @@ -1,4 +1,4 @@
--*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 13
-+*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 16
+-*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 16
++*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 21
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -110,10 +110,10 @@ Although it's shorter to do: >
- ==============================================================================
- *52.3*	Functions and types
+@@ -113,36 +113,33 @@ Although it's shorter to do: >
+ Legacy Vim script only checks types at runtime, when the code is executed.
+ And it's permissive, often a computation gives an unexpected value instead of
+ reporting an error.  Thus you can define a function and think it's fine, but
+-see a problem only later when it is called: >
+-	let s:collected = ''
+-	func ExtendAndReturn(add)
+-	   let s:collected += a:add
+-	   return s:collected
++notice a problem only later when the function is called: >
++	func Concatenate(base, add)
++	   return a:base + a:add
+ 	endfunc
  
--Legacy Vim script does have type checking, but this happens at runtime, when
--the code is executed.  And it's permissive, often a computation gives an
--unexpected value instead of reporting an error.  Thus you can define a
--function and think it's fine, but see a problem only later when it is called: >
-+Legacy Vim script only checks types at runtime, when the code is executed.
-+And it's permissive, often a computation gives an unexpected value instead of
-+reporting an error.  Thus you can define a function and think it's fine, but
-+see a problem only later when it is called: >
- 	let s:collected = ''
- 	func ExtendAndReturn(add)
- 	   let s:collected += a:add
-@@ -133,12 +133,16 @@ the argument is used without the "a:" prefix: >
- 	   s:collected += add
- 	   return s:collected
- 	enddef
--	defcompile
-+	disassemble ExtendAndReturn
- 
--Here we use `:defcompile` to do the compilation right away, without it the
-+Here we use `:disassemble` to do the compilation right away, without it the
- compilation would happen when the function is called.  Vim will tell you what
- you did wrong: >
--	E1013: type mismatch, expected number but got string
-+	E1051: Wrong argument type for +
+ Can you spot the error?  Try this: >
+-	echo ExtendAndReturn('text')
+-And you'll see zero.  Why?  Because in legacy Vim script "+=" will convert the
+-arguments to numbers, and any string without a number results in zero!
+-
+-With `:def` the type checking happens when compiling the function.  For that
+-you need to specify the argument types and the return type.  Also notice that
+-the argument is used without the "a:" prefix: >
+-	let s:collected = ''
+-	def ExtendAndReturn(add: string): string
+-	   s:collected += add
+-	   return s:collected
++	echo Concatenate('base', 'text')
++And you'll see zero.  Why?  Because in legacy Vim script "+" will convert the
++arguments to numbers, and any string without a number results in zero!  That's
++not what you expected.
 +
-+Side note: here the context is legacy script, when using Vim9 script you would
-+put `:defcompile` at the end of the script to check for errors in the
-+functions defined in it.
++With `:def` the type checking happens when compiling the function.  You need
++to specify the argument types and the return type to make that possible.  Also
++notice that the argument names are used without the "a:" prefix: >
++	def Concatenate(base: string, add: string): string
++	   return base + add
+ 	enddef
+-	disassemble ExtendAndReturn
++	defcompile Concatenate
+ 
+-Here we use `:disassemble` to do the compilation right away, without it the
+-compilation would happen when the function is called.  Vim will tell you what
+-you did wrong: >
++Here we use `:defcompile` to do the compilation right away, without it the
++compilation would happen when the function is first called.  Vim will tell you
++what you did wrong: >
+ 	E1051: Wrong argument type for +
+ 
+-Side note: here the context is legacy script, when using Vim9 script you would
+-put `:defcompile` at the end of the script to check for errors in the
+-functions defined in it.
++Side note: here the context is legacy script.  When using Vim9 script you
++would put `:defcompile` at the end of the script to check for errors in all
++the functions defined in it.
  
  Vim9 script is strict, it uses the "+" operator only for numbers and floats.
  For string concatenation ".." must be used.  This avoids mistakes and avoids
 diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 2f6d1c636..8bfaeaecd 100644
+index 8bfaeaecd..d09dac48f 100644
 --- a/runtime/doc/various.txt
 +++ b/runtime/doc/various.txt
-@@ -346,7 +346,7 @@ B  *++builtin_terms*	maximal terminals builtin |builtin-terms|
- N  *+byte_offset*	support for 'o' flag in 'statusline' option, "go"
- 			and ":goto" commands.
- m  *+channel*		inter process communication |channel|
--N  *+cindent*		|'cindent'|, C indenting
-+6  *+cindent*		|'cindent'|, C indenting
- N  *+clientserver*	Unix and Win32: Remote invocation |clientserver|
-    *+clipboard*		|clipboard| support compiled-in
-    *+clipboard_working*	|clipboard| support compiled-in and working
-@@ -398,7 +398,7 @@ N  *+lambda*		|lambda| and |closure|
- B  *+langmap*		|'langmap'|
- N  *+libcall*		|libcall()|
- N  *+linebreak*		|'linebreak'|, |'breakat'| and |'showbreak'|
--N  *+lispindent*	|'lisp'|
-+t  *+lispindent*	|'lisp'|
- T  *+listcmds*		Vim commands for the list of buffers |buffer-hidden|
- 			and argument list |:argdelete|
- T  *+localmap*		Support for mappings local to a buffer |:map-local|
-@@ -450,7 +450,7 @@ m  *+ruby*		Ruby interface |ruby|
- m  *+ruby/dyn*		Ruby interface |ruby-dynamic| |/dyn|
- T  *+scrollbind*	|'scrollbind'|
- B  *+signs*		|:sign|
--N  *+smartindent*	|'smartindent'|
-+t  *+smartindent*	|'smartindent'|
- B  *+sodium*		compiled with libsodium for better encryption support
- B  *+sound*		|sound_playevent()|, |sound_playfile()| functions, etc.
- N  *+spell*		spell checking support, see |spell|
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 8.2.  Last change: 2022 Apr 03
++*various.txt*   For Vim version 8.2.  Last change: 2022 May 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
 diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 5a0e5bf88..479edc57c 100644
+index 479edc57c..069dac48e 100644
 --- a/runtime/doc/vim9.txt
 +++ b/runtime/doc/vim9.txt
-@@ -1210,7 +1210,14 @@ prefix if they do not exist at the time of compiling.
- 						*:defc* *:defcompile*
- :defc[ompile]		Compile functions defined in the current script that
- 			were not compiled yet.
--			This will report errors found during the compilation.
-+			This will report any errors found during compilation.
-+
-+:defc[ompile] {func}
-+:defc[ompile] debug {func}
-+:defc[ompile] profile {func}
-+			Compile function {func}, if needed.  Use "debug" and
-+			"profile" to specify the compilation mode.
-+			This will report any errors found during compilation.
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 8.2.  Last change: 2022 May 13
++*vim9.txt*	For Vim version 8.2.  Last change: 2022 May 21
  
- 						*:disa* *:disassemble*
- :disa[ssemble] {func}	Show the instructions generated for {func}.
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
