@@ -1,467 +1,123 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 781f8eba8..29cc50627 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 10
-+*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 21
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 3d367bcd7..2c01c6531 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1367,7 +1367,7 @@ Four autocommands can be used: >
+ 						*TermdebugStartPre*
+ TermdebugStartPre		Before starting debugging.
+ 				Not triggered if the debugger is already
+-				running or |g:termdebugger| cannot be
++				running or the debugger command cannot be
+ 				executed.
+ 						*TermdebugStartPost*
+ TermdebugStartPost		After debugging has initialized.
+@@ -1398,18 +1398,24 @@ in a buffer with 'buftype' set to "prompt".  This works slightly differently:
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 86b968634..77822d796 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -868,33 +868,36 @@ Expression syntax summary, from least to most significant:
- 	expr5 isnot expr5	different |List|, |Dictionary| or |Blob|
- 				instance
- 
--|expr5|	expr6
--	expr6 +	 expr6 ...	number addition, list or blob concatenation
--	expr6 -	 expr6 ...	number subtraction
--	expr6 .	 expr6 ...	string concatenation
--	expr6 .. expr6 ...	string concatenation
-+|expr5|	expr6 << expr6		bitwise left shift
-+	expr6 >> expr6		bitwise right shift
- 
- |expr6|	expr7
--	expr7 *	 expr7 ...	number multiplication
--	expr7 /	 expr7 ...	number division
--	expr7 %	 expr7 ...	number modulo
-+	expr7 +	 expr7 ...	number addition, list or blob concatenation
-+	expr7 -	 expr7 ...	number subtraction
-+	expr7 .	 expr7 ...	string concatenation
-+	expr7 .. expr7 ...	string concatenation
- 
- |expr7|	expr8
--	<type>expr8		type check and conversion (|Vim9| only)
-+	expr8 *	 expr8 ...	number multiplication
-+	expr8 /	 expr8 ...	number division
-+	expr8 %	 expr8 ...	number modulo
- 
- |expr8|	expr9
--	! expr8			logical NOT
--	- expr8			unary minus
--	+ expr8			unary plus
-+	<type>expr9		type check and conversion (|Vim9| only)
- 
- |expr9|	expr10
--	expr9[expr1]		byte of a String or item of a |List|
--	expr9[expr1 : expr1]	substring of a String or sublist of a |List|
--	expr9.name		entry in a |Dictionary|
--	expr9(expr1, ...)	function call with |Funcref| variable
--	expr9->name(expr1, ...)	|method| call
--
--|expr10|  number		number constant
-+	! expr9			logical NOT
-+	- expr9			unary minus
-+	+ expr9			unary plus
-+
-+|expr10|  expr11
-+	expr10[expr1]		byte of a String or item of a |List|
-+	expr10[expr1 : expr1]	substring of a String or sublist of a |List|
-+	expr10.name		entry in a |Dictionary|
-+	expr10(expr1, ...)	function call with |Funcref| variable
-+	expr10->name(expr1, ...)	|method| call
-+
-+|expr11|  number		number constant
- 	"string"		string constant, backslash is special
- 	'string'		string constant, ' is doubled
- 	[expr1, ...]		|List|
-@@ -1128,14 +1131,27 @@ can be matched like an ordinary character.  Examples:
- 	"foo\nbar" =~ "\\n"	evaluates to 0
- 
- 
--expr5 and expr6				*expr5* *expr6* *E1036* *E1051*
-+expr5						*expr5* *bitwise-shift*
-+-----
-+expr6 << expr6	bitwise left shift				*expr-<<*
-+expr6 >> expr6	bitwise right shift				*expr->>*
-+							*E1282* *E1283*
-+The "<<" and ">>" operators can be used to perform bitwise left or right shift
-+of the left operand by the number of bits specified by the right operand.  The
-+operands are used as positive numbers.  When shifting right with ">>" the
-+topmost bit (somtimes called the sign bit) is cleared.  If the right operand
-+(shift amount) is more than the maximum number of bits in a number
-+(|v:numbersize|) the result is zero.
-+
-+
-+expr6 and expr7				*expr6* *expr7* *E1036* *E1051*
- ---------------
--expr6 + expr6   Number addition, |List| or |Blob| concatenation	*expr-+*
--expr6 - expr6   Number subtraction				*expr--*
--expr6 . expr6   String concatenation				*expr-.*
--expr6 .. expr6  String concatenation				*expr-..*
-+expr7 + expr7   Number addition, |List| or |Blob| concatenation	*expr-+*
-+expr7 - expr7   Number subtraction				*expr--*
-+expr7 . expr7   String concatenation				*expr-.*
-+expr7 .. expr7  String concatenation				*expr-..*
- 
--For |Lists| only "+" is possible and then both expr6 must be a list.  The
-+For |Lists| only "+" is possible and then both expr7 must be a list.  The
- result is a new list with the two lists Concatenated.
- 
- For String concatenation ".." is preferred, since "." is ambiguous, it is also
-@@ -1147,9 +1163,9 @@ In |Vim9| script the arguments of ".." are converted to String for simple
- types: Number, Float, Special and Bool.  For other types |string()| should be
- used.
- 
--expr7 * expr7  Number multiplication				*expr-star*
--expr7 / expr7  Number division					*expr-/*
--expr7 % expr7  Number modulo					*expr-%*
-+expr8 * expr8  Number multiplication				*expr-star*
-+expr8 / expr8  Number division					*expr-/*
-+expr8 % expr8  Number modulo					*expr-%*
- 
- In legacy script, for all operators except "." and "..", Strings are converted
- to Numbers.
-@@ -1191,18 +1207,18 @@ None of these work for |Funcref|s.
- ".", ".." and "%" do not work for Float. *E804* *E1035*
- 
- 
--expr7							*expr7*
-+expr8							*expr8*
- -----
--<type>expr8
-+<type>expr9
- 
- This is only available in |Vim9| script, see |type-casting|.
- 
- 
--expr8							*expr8*
-+expr9							*expr9*
- -----
--! expr8			logical NOT		*expr-!*
--- expr8			unary minus		*expr-unary--*
--+ expr8			unary plus		*expr-unary-+*
-+! expr9			logical NOT		*expr-!*
-+- expr9			unary minus		*expr-unary--*
-++ expr9			unary plus		*expr-unary-+*
- 
- For '!' |TRUE| becomes |FALSE|, |FALSE| becomes |TRUE| (one).
- For '-' the sign of the number is changed.
-@@ -1224,21 +1240,21 @@ These three can be repeated and mixed.  Examples:
- 	--9	    == 9
- 
- 
--expr9							*expr9*
-------
--This expression is either |expr10| or a sequence of the alternatives below,
-+expr10							*expr10*
-+------
-+This expression is either |expr11| or a sequence of the alternatives below,
- in any order.  E.g., these are all possible:
--	expr9[expr1].name
--	expr9.name[expr1]
--	expr9(expr1, ...)[expr1].name
--	expr9->(expr1, ...)[expr1]
-+	expr10[expr1].name
-+	expr10.name[expr1]
-+	expr10(expr1, ...)[expr1].name
-+	expr10->(expr1, ...)[expr1]
- Evaluation is always from left to right.
- 
--expr9[expr1]		item of String or |List|	*expr-[]* *E111*
-+expr10[expr1]		item of String or |List|	*expr-[]* *E111*
- 						*E909* *subscript* *E1062*
- In legacy Vim script:
--If expr9 is a Number or String this results in a String that contains the
--expr1'th single byte from expr9.  expr9 is used as a String (a number is
-+If expr10 is a Number or String this results in a String that contains the
-+expr1'th single byte from expr10.  expr10 is used as a String (a number is
- automatically converted to a String), expr1 as a Number.  This doesn't
- recognize multibyte encodings, see `byteidx()` for an alternative, or use
- `split()` to turn the string into a list of characters.  Example, to get the
-@@ -1246,8 +1262,8 @@ byte under the cursor: >
- 	:let c = getline(".")[col(".") - 1]
- 
- In |Vim9| script:					*E1147* *E1148*
--If expr9 is a String this results in a String that contains the expr1'th
--single character (including any composing characters) from expr9.  To use byte
-+If expr10 is a String this results in a String that contains the expr1'th
-+single character (including any composing characters) from expr10.  To use byte
- indexes use |strpart()|.
- 
- Index zero gives the first byte or character.  Careful: text column numbers
-@@ -1258,7 +1274,7 @@ String.  A negative index always results in an empty string (reason: backward
- compatibility).  Use [-1:] to get the last byte or character.
- In Vim9 script a negative index is used like with a list: count from the end.
- 
--If expr9 is a |List| then it results the item at index expr1.  See |list-index|
-+If expr10 is a |List| then it results the item at index expr1.  See |list-index|
- for possible index values.  If the index is out of range this results in an
- error.  Example: >
- 	:let item = mylist[-1]		" get last item
-@@ -1268,14 +1284,14 @@ Generally, if a |List| index is equal to or higher than the length of the
- error.
- 
- 
--expr9[expr1a : expr1b]	substring or sublist		*expr-[:]*
-+expr10[expr1a : expr1b]	substring or sublist		*expr-[:]*
- 
--If expr9 is a String this results in the substring with the bytes or
--characters from expr1a to and including expr1b.  expr9 is used as a String,
-+If expr10 is a String this results in the substring with the bytes or
-+characters from expr1a to and including expr1b.  expr10 is used as a String,
- expr1a and expr1b are used as a Number.
- 
- In legacy Vim script the indexes are byte indexes.  This doesn't recognize
--multibyte encodings, see |byteidx()| for computing the indexes.  If expr9 is
-+multibyte encodings, see |byteidx()| for computing the indexes.  If expr10 is
- a Number it is first converted to a String.
- 
- In Vim9 script the indexes are character indexes and include composing
-@@ -1302,20 +1318,20 @@ Examples: >
- 	:let s = s[:-3]			" remove last two bytes
+ 						*termdebug_use_prompt*
+ Prompt mode can be used even when the |+terminal| feature is present with: >
++	let g:termdebug_config['use_prompt'] = 1
++Or if there is no g:termdebug_config: >
+ 	let g:termdebug_use_prompt = 1
  <
- 							*slice*
--If expr9 is a |List| this results in a new |List| with the items indicated by
-+If expr10 is a |List| this results in a new |List| with the items indicated by
- the indexes expr1a and expr1b.  This works like with a String, as explained
- just above. Also see |sublist| below.  Examples: >
- 	:let l = mylist[:3]		" first four items
- 	:let l = mylist[4:4]		" List with one item
- 	:let l = mylist[:]		" shallow copy of a List
- 
--If expr9 is a |Blob| this results in a new |Blob| with the bytes in the
-+If expr10 is a |Blob| this results in a new |Blob| with the bytes in the
- indexes expr1a and expr1b, inclusive.  Examples: >
- 	:let b = 0zDEADBEEF
- 	:let bs = b[1:2]		" 0zADBE
- 	:let bs = b[:]			" copy of 0zDEADBEEF
- 
--Using expr9[expr1] or expr9[expr1a : expr1b] on a |Funcref| results in an
-+Using expr10[expr1] or expr10[expr1a : expr1b] on a |Funcref| results in an
- error.
- 
- Watch out for confusion between a namespace and a variable followed by a colon
-@@ -1324,11 +1340,11 @@ for a sublist: >
- 	mylist[s:]     " uses namespace s:, error!
- 
- 
--expr9.name		entry in a |Dictionary|		*expr-entry*
-+expr10.name		entry in a |Dictionary|		*expr-entry*
- 							*E1203* *E1229*
--If expr9 is a |Dictionary| and it is followed by a dot, then the following
-+If expr10 is a |Dictionary| and it is followed by a dot, then the following
- name will be used as a key in the |Dictionary|.  This is just like:
--expr9[name].
-+expr10[name].
- 
- The name must consist of alphanumeric characters, just like a variable name,
- but it may start with a number.  Curly braces cannot be used.
-@@ -1345,17 +1361,17 @@ Note that the dot is also used for String concatenation.  To avoid confusion
- always put spaces around the dot for String concatenation.
- 
- 
--expr9(expr1, ...)	|Funcref| function call  	*E1085*
-+expr10(expr1, ...)	|Funcref| function call  	*E1085*
- 
--When expr9 is a |Funcref| type variable, invoke the function it refers to.
-+When expr10 is a |Funcref| type variable, invoke the function it refers to.
- 
- 
--expr9->name([args])	method call			*method* *->*
--expr9->{lambda}([args])
-+expr10->name([args])	method call			*method* *->*
-+expr10->{lambda}([args])
- 							*E260* *E276* *E1265*
- For methods that are also available as global functions this is the same as: >
--	name(expr9 [, args])
--There can also be methods specifically for the type of "expr9".
-+	name(expr10 [, args])
-+There can also be methods specifically for the type of "expr10".
- 
- This allows for chaining, passing the value that one method returns to the
- next method: >
-@@ -1364,7 +1380,7 @@ next method: >
- Example of using a lambda: >
- 	GetPercentage()->{x -> x * 100}()->printf('%d%%')
+ 						*termdebug_map_K*
+ The K key is normally mapped to :Evaluate. If you do not want this use: >
++	let g:termdebug_config['map_K'] = 0
++Or if there is no g:termdebug_config: >
+ 	let g:termdebug_map_K = 0
+-
  <
--When using -> the |expr8| operators will be applied first, thus: >
-+When using -> the |expr9| operators will be applied first, thus: >
- 	-1.234->string()
- Is equivalent to: >
- 	(-1.234)->string()
-@@ -1393,7 +1409,7 @@ When using the lambda form there must be no white space between the } and the
- (.
+ 						*termdebug_disasm_window*
+-If you want the Asm window shown by default, set this to 1. Setting to
+-any value greater than 1 will set the Asm window height to that value: >
++If you want the Asm window shown by default, set the flag to 1.
++the "disasm_window_height" entry can be used to set the window height: >
++	let g:termdebug_config['disasm_window'] = 1
++	let g:termdebug_config['disasm_window_height'] = 15
++or, if there is no g:termdebug_config: >
+ 	let g:termdebug_disasm_window = 15
+-<
++Any value greater than 1 will set the Asm window height to that value: >
+ 
+ Communication ~
+ 						*termdebug-communication*
+@@ -1426,15 +1432,36 @@ communication channel.
  
  
--							*expr10*
-+							*expr11*
- number
- ------
- number			number constant			*expr-number*
-@@ -1402,6 +1418,10 @@ number			number constant			*expr-number*
- Decimal, Hexadecimal (starting with 0x or 0X), Binary (starting with 0b or 0B)
- and Octal (starting with 0, 0o or 0O).
+ Customizing ~
++				*termdebug-customizing* *g:termdebug_config*
++In the past several global variables were used for configuration.  These are
++deprecated, using the g:termdebug_config dictionary is preferred.  When
++g:termdebug_config exists the other global variables will not be used.
  
-+Assuming 64 bit numbers are used (see |v:numbersize|) an unsigned number is
-+truncated to 0x7fffffffffffffff or 9223372036854775807.  You can use -1 to get
-+0xffffffffffffffff.
+-GDB command						*termdebug-customizing*
 +
- 						*floating-point-format*
- Floating point numbers can be written in two forms:
- 
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 2899fc5b3..4df0909f4 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
-@@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 8.2.  Last change: 2022 Apr 07
-+*indent.txt*    For Vim version 8.2.  Last change: 2022 May 21
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index b4359190d..f1038afa6 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 8.2.  Last change: 2022 May 07
-+*options.txt*	For Vim version 8.2.  Last change: 2022 May 21
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
-index 6fe56c09e..62376c7f2 100644
---- a/runtime/doc/os_win32.txt
-+++ b/runtime/doc/os_win32.txt
-@@ -1,4 +1,4 @@
--*os_win32.txt*  For Vim version 8.2.  Last change: 2022 Feb 14
-+*os_win32.txt*  For Vim version 8.2.  Last change: 2022 May 22
- 
- 
- 		  VIM REFERENCE MANUAL    by George Reilly
-@@ -42,6 +42,11 @@ The GUI version was made by George V. Reilly and Robert Webb.
- 
- For compiling see "src/INSTALLpc.txt".			*win32-compiling*
- 
-+							*WSL*
-+When using Vim on WSL (Windows Subsystem for Linux) the remarks here do not
-+apply, `has('win32')` will return false then.  In case you need to know
-+whether Vim is running on WSL you can use `exists('$WSLENV')`.
++GDB command ~
+ 							*g:termdebugger*
+-To change the name of the gdb command, set the "g:termdebugger" variable before
+-invoking `:Termdebug`: >
++To change the name of the gdb command, set "debugger" entry in
++g:termdebug_config or the "g:termdebugger" variable before invoking
++`:Termdebug`: >
++	let g:termdebug_config['command'] = "mygdb"
++Or if there is no g:termdebug_config: >
+ 	let g:termdebugger = "mygdb"
 +
- ==============================================================================
- 1. Known problems					*win32-problems*
- 
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index d2a5dbdd1..fa2cded4f 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 May 21
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 May 22
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,20 +38,14 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--Make :defcompile accept a function argument, like :disassemble
--Useful for global functions.
--
--Once Vim9 is stable:
-+Prepare for Vim 9.0 release:
- - Use Vim9 for more runtime files.
--- Check code coverage, add more tests if needed.
-+- Check Vim9 code coverage, add more tests if needed.
- 	vim9instr.c
- 	vim9script.c
- 	vim9type.c
--- Inlude new set of colors: #9795
- - Adjust intro message to say "help version9".
- 
--Graduate FEAT_CINDENT and FEAT_SMARTINDENT ?
--
- Update the user manual:
- - Update usr_41.txt for Vim9 script
- - Fill usr_50.txt as an "advanced section" of usr_41.txt
-diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
-index 1fbd66f3c..375fa5dd3 100644
---- a/runtime/doc/usr_52.txt
-+++ b/runtime/doc/usr_52.txt
-@@ -1,4 +1,4 @@
--*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 16
-+*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 21
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -113,36 +113,33 @@ Although it's shorter to do: >
- Legacy Vim script only checks types at runtime, when the code is executed.
- And it's permissive, often a computation gives an unexpected value instead of
- reporting an error.  Thus you can define a function and think it's fine, but
--see a problem only later when it is called: >
--	let s:collected = ''
--	func ExtendAndReturn(add)
--	   let s:collected += a:add
--	   return s:collected
-+notice a problem only later when the function is called: >
-+	func Concatenate(base, add)
-+	   return a:base + a:add
- 	endfunc
- 
- Can you spot the error?  Try this: >
--	echo ExtendAndReturn('text')
--And you'll see zero.  Why?  Because in legacy Vim script "+=" will convert the
--arguments to numbers, and any string without a number results in zero!
--
--With `:def` the type checking happens when compiling the function.  For that
--you need to specify the argument types and the return type.  Also notice that
--the argument is used without the "a:" prefix: >
--	let s:collected = ''
--	def ExtendAndReturn(add: string): string
--	   s:collected += add
--	   return s:collected
-+	echo Concatenate('base', 'text')
-+And you'll see zero.  Why?  Because in legacy Vim script "+" will convert the
-+arguments to numbers, and any string without a number results in zero!  That's
-+not what you expected.
+ If the command needs an argument use a List: >
++	let g:termdebug_config['command'] = ['rr', 'replay', '--']
++Or if there is no g:termdebug_config: >
+ 	let g:termdebugger = ['rr', 'replay', '--']
+-<							*gdb-version*
 +
-+With `:def` the type checking happens when compiling the function.  You need
-+to specify the argument types and the return type to make that possible.  Also
-+notice that the argument names are used without the "a:" prefix: >
-+	def Concatenate(base: string, add: string): string
-+	   return base + add
- 	enddef
--	disassemble ExtendAndReturn
-+	defcompile Concatenate
- 
--Here we use `:disassemble` to do the compilation right away, without it the
--compilation would happen when the function is called.  Vim will tell you what
--you did wrong: >
-+Here we use `:defcompile` to do the compilation right away, without it the
-+compilation would happen when the function is first called.  Vim will tell you
-+what you did wrong: >
- 	E1051: Wrong argument type for +
- 
--Side note: here the context is legacy script, when using Vim9 script you would
--put `:defcompile` at the end of the script to check for errors in the
--functions defined in it.
-+Side note: here the context is legacy script.  When using Vim9 script you
-+would put `:defcompile` at the end of the script to check for errors in all
-+the functions defined in it.
- 
- Vim9 script is strict, it uses the "+" operator only for numbers and floats.
- For string concatenation ".." must be used.  This avoids mistakes and avoids
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 8bfaeaecd..d09dac48f 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 8.2.  Last change: 2022 Apr 03
-+*various.txt*   For Vim version 8.2.  Last change: 2022 May 21
++Several arguments will be added to make gdb work well for the debugger.
++If you want to modify them, add a function to filter the argument list: >
++	let g:termdebug_config['command_filter'] = MyDebugFilter
++
++If you do not want the arguments to be added, but you do need to set the
++"pty", use a function to add the necessary arguments: >
++	let g:termdebug_config['command_add_args'] = MyAddArguments
++The function will be called with the list of arguments so far, and a second
++argument that is the name of the pty.
++							*gdb-version*
+ Only debuggers fully compatible with gdb will work.  Vim uses the GDB/MI
+ interface.  The "new-ui" command  requires gdb version 7.12 or later.  if you
+ get this error:
+@@ -1442,8 +1469,8 @@ get this error:
+ Then your gdb is too old.
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 479edc57c..069dac48e 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 8.2.  Last change: 2022 May 13
-+*vim9.txt*	For Vim version 8.2.  Last change: 2022 May 21
+-Colors						*hl-debugPC* *hl-debugBreakpoint*
+-
++Colors~
++						*hl-debugPC* *hl-debugBreakpoint*
+ The color of the signs can be adjusted with these highlight groups:
+ - debugPC		the current position
+ - debugBreakpoint	a breakpoint
+@@ -1473,6 +1500,8 @@ these entries to the popup menu:
+ 	Clear breakpoint	`:Clear`
+ 	Evaluate		`:Evaluate`
+ If you don't want this then disable it with: >
++	let g:termdebug_config['popup'] = 0
++or if there is no g:termdebug_config: >
+ 	let g:termdebug_popup = 0
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1480,15 +1509,17 @@ Vim window width						*termdebug_wide*
+ 
+ To change the width of the Vim window when debugging starts and use a vertical
+ split: >
++	let g:termdebug_config['wide'] = 163
++Or if there is no g:termdebug_config: >
+ 	let g:termdebug_wide = 163
+ 
+ This will set 'columns' to 163 when `:Termdebug` is used.  The value is
+ restored when quitting the debugger.
+ 
+-If g:termdebug_wide is set and 'columns' is already a greater value, then a
++If the wide value is set and 'columns' is already a greater value, then a
+ vertical split will be used without modifying 'columns'.
+ 
+-Set g:termdebug_wide to 1 to use a vertical split without ever changing
++Set the wide value to 1 to use a vertical split without ever changing
+ 'columns'.  This is useful when the terminal can't be resized by Vim.
+ 
+ 
