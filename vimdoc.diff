@@ -1,86 +1,106 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index fb4532fc4..0ef7c4c67 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -47,6 +47,28 @@ effects.  Be careful not to destroy your text.
-   It's a good idea to use the same autocommands for the File* and Buf* events
-   when possible.
- 
-+Recommended use:
-+- Always use a group, so that it's easy to delete the autocommand.
-+- Keep the command itself short, call a function to do more work.
-+- Make it so that the script it is defined it can be sourced several times
-+  without the autocommand being repeated.
-+
-+Example in Vim9 script: >
-+   autocmd_add({replace: true,
-+		group:   'DemoGroup',
-+		event:   'BufEnter',
-+		pattern: '*.txt',
-+		cmd:     'call DemoBufEnter()'
-+		})
-+
-+In legacy script: >
-+   call autocmd_add(#{replace: v:true,
-+		    \ group: 'DemoGroup',
-+   		    \ event: 'BufEnter',
-+		    \ pattern: '*.txt',
-+		    \ cmd: 'call DemoBufEnter()'
-+		    \ })
-+
- ==============================================================================
- 2. Defining autocommands				*autocmd-define*
- 
-@@ -83,7 +105,8 @@ triggered.
- 		}
- 
- The |autocmd_add()| function can be used to add a list of autocmds and autocmd
--groups from a Vim script.
-+groups from a Vim script.  It is preferred if you have anything that would
-+require using `:execute` with `:autocmd`.
- 
- Note: The ":autocmd" command can only be followed by another command when the
- '|' appears where the pattern is expected.  This works: >
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 29cc50627..5b20ea332 100644
+index 5b20ea332..0aa2effcd 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -940,13 +940,19 @@ autocmd_add({acmds})					*autocmd_add()*
+@@ -689,7 +689,8 @@ undotree()			List	undo file tree
+ uniq({list} [, {func} [, {dict}]])
+ 				List	remove adjacent duplicates from a list
+ values({dict})			List	values in {dict}
+-virtcol({expr})			Number	screen column of cursor or mark
++virtcol({expr} [, {list}])	Number or List
++					screen column of cursor or mark
+ visualmode([expr])		String	last visual mode used
+ wildmenumode()			Number	whether 'wildmenu' mode is active
+ win_execute({id}, {command} [, {silent}])
+@@ -780,6 +781,7 @@ add({object}, {expr})					*add()*
+ and({expr}, {expr})					*and()*
+ 		Bitwise AND on the two arguments.  The arguments are converted
+ 		to a number.  A List, Dict or Float argument causes an error.
++		Also see `or()` and `xor()`.
+ 		Example: >
+ 			:let flag = and(bits, 0x80)
+ <		Can also be used as a |method|: >
+@@ -936,13 +938,14 @@ autocmd_add({acmds})					*autocmd_add()*
+ 				item is ignored.
+ 		    cmd		Ex command to execute for this autocmd event
+ 		    event	autocmd event name. Refer to |autocmd-events|.
++		    		TODO: currently only accepts one event.
+ 		    group	autocmd group name. Refer to |autocmd-groups|.
  				If this group doesn't exist then it is
  				created.  If not specified or empty, then the
  				default group is used.
--		    nested	set to v:true to add a nested autocmd.
--				Refer to |autocmd-nested|.
--		    once	set to v:true to add a autocmd which executes
--				only once. Refer to |autocmd-once|.
-+		    nested	boolean flag, set to v:true to add a nested
-+				autocmd.  Refer to |autocmd-nested|.
-+		    once	boolean flag, set to v:true to add a autocmd
-+				which executes only once. Refer to
-+				|autocmd-once|.
+ 		    nested	boolean flag, set to v:true to add a nested
+ 				autocmd.  Refer to |autocmd-nested|.
+-		    once	boolean flag, set to v:true to add a autocmd
++		    once	boolean flag, set to v:true to add an autocmd
+ 				which executes only once. Refer to
+ 				|autocmd-once|.
  		    pattern	autocmd pattern string. Refer to
- 				|autocmd-patterns|.  If "bufnr" item is
- 				present, then this item is ignored.
-+		    replace	boolean flag, set to v:true to remove all the
-+				commands associated with the specified autocmd
-+				event and group and add the {cmd}.  This is
-+				useful to avoid adding the same command
-+				multiple times for a autocmd event in a group.
+@@ -952,7 +955,7 @@ autocmd_add({acmds})					*autocmd_add()*
+ 				commands associated with the specified autocmd
+ 				event and group and add the {cmd}.  This is
+ 				useful to avoid adding the same command
+-				multiple times for a autocmd event in a group.
++				multiple times for an autocmd event in a group.
  
  		Returns v:true on success and v:false on failure.
  		Examples: >
-@@ -1037,10 +1043,10 @@ autocmd_get([{opts}])					*autocmd_get()*
- 		    cmd		Command executed for this autocmd.
- 		    event	Autocmd event name.
- 		    group	Autocmd group name.
--		    nested	Set to v:true for a nested autocmd. See
--				|autocmd-nested|.
--		    once	Set to v:true, if the autocmd will be executed
--				only once. See |autocmd-once|.
-+		    nested	Boolean flag, set to v:true for a nested
-+				autocmd. See |autocmd-nested|.
-+		    once	Boolean flag, set to v:true, if the autocmd
-+				will be executed only once. See |autocmd-once|.
- 		    pattern	Autocmd pattern.  For a buffer-local
- 				autocmd, this will be of the form "<buffer=n>".
- 		If there are multiple commands for an autocmd event in a
+@@ -9727,7 +9730,7 @@ values({dict})						*values()*
+ 		Can also be used as a |method|: >
+ 			mydict->values()
+ 
+-virtcol({expr})						*virtcol()*
++virtcol({expr} [, {list}])				*virtcol()*
+ 		The result is a Number, which is the screen column of the file
+ 		position given with {expr}.  That is, the last screen position
+ 		occupied by the character at that position, when the screen
+@@ -9736,13 +9739,17 @@ virtcol({expr})						*virtcol()*
+ 		the <Tab>.  For example, for a <Tab> in column 1, with 'ts'
+ 		set to 8, it returns 8. |conceal| is ignored.
+ 		For the byte position use |col()|.
++
+ 		For the use of {expr} see |col()|.
+-		When 'virtualedit' is used {expr} can be [lnum, col, off], where
+-		"off" is the offset in screen columns from the start of the
+-		character.  E.g., a position within a <Tab> or after the last
+-		character.  When "off" is omitted zero is used.
+-		When Virtual editing is active in the current mode, a position
+-		beyond the end of the line can be returned. |'virtualedit'|
++
++		When 'virtualedit' is used {expr} can be [lnum, col, off],
++		where "off" is the offset in screen columns from the start of
++		the character.  E.g., a position within a <Tab> or after the
++		last character.  When "off" is omitted zero is used.  When
++		Virtual editing is active in the current mode, a position
++		beyond the end of the line can be returned.  Also see
++		|'virtualedit'|
++
+ 		The accepted positions are:
+ 		    .	    the cursor position
+ 		    $	    the end of the cursor line (the result is the
+@@ -9754,11 +9761,22 @@ virtcol({expr})						*virtcol()*
+ 			    cursor is the end).  When not in Visual mode
+ 			    returns the cursor position.  Differs from |'<| in
+ 			    that it's updated right away.
++
++		If {list} is present and non-zero then virtcol() returns a List
++		with the first and last screen position occupied by the
++		character.
++
+ 		Note that only marks in the current file can be used.
+ 		Examples: >
+-  virtcol(".")	   with text "foo^Lbar", with cursor on the "^L", returns 5
+-  virtcol("$")	   with text "foo^Lbar", returns 9
+-  virtcol("'t")    with text "	  there", with 't at 'h', returns 6
++			" With text "foo^Lbar" and cursor on the "^L":
++
++			virtcol(".")	" returns 5
++			virtcol(".", 1)	" returns [4, 5]
++			virtcol("$")	" returns 9
++
++			" With text "	  there", with 't at 'h':
++
++			virtcol("'t")	" returns 6
+ <		The first column is 1.  0 is returned for an error.
+ 		A more advanced example that echoes the maximum length of
+ 		all lines: >
