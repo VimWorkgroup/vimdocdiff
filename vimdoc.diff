@@ -1,111 +1,2608 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 0ef7c4c67..948aae45c 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 8.2.  Last change: 2022 Apr 17
++*autocmd.txt*   For Vim version 8.2.  Last change: 2022 May 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -50,7 +50,7 @@ effects.  Be careful not to destroy your text.
+ Recommended use:
+ - Always use a group, so that it's easy to delete the autocommand.
+ - Keep the command itself short, call a function to do more work.
+-- Make it so that the script it is defined it can be sourced several times
++- Make it so that the script it is defined in can be sourced several times
+   without the autocommand being repeated.
+ 
+ Example in Vim9 script: >
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0aa2effcd..08b54ced4 100644
+index 08b54ced4..fa9db949c 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -691,6 +691,8 @@ uniq({list} [, {func} [, {dict}]])
- values({dict})			List	values in {dict}
- virtcol({expr} [, {list}])	Number or List
- 					screen column of cursor or mark
-+virtcol2col({winid}, {lnum}, {col})
-+				Number  byte index of a character on screen
- visualmode([expr])		String	last visual mode used
- wildmenumode()			Number	whether 'wildmenu' mode is active
- win_execute({id}, {command} [, {silent}])
-@@ -938,7 +940,8 @@ autocmd_add({acmds})					*autocmd_add()*
- 				item is ignored.
- 		    cmd		Ex command to execute for this autocmd event
- 		    event	autocmd event name. Refer to |autocmd-events|.
--		    		TODO: currently only accepts one event.
-+				This can be either a String with a single
-+				event name or a List of event names.
- 		    group	autocmd group name. Refer to |autocmd-groups|.
- 				If this group doesn't exist then it is
- 				created.  If not specified or empty, then the
-@@ -950,7 +953,9 @@ autocmd_add({acmds})					*autocmd_add()*
- 				|autocmd-once|.
- 		    pattern	autocmd pattern string. Refer to
- 				|autocmd-patterns|.  If "bufnr" item is
--				present, then this item is ignored.
-+				present, then this item is ignored.  This can
-+				be a String with a single pattern or a List of
-+				patterns.
- 		    replace	boolean flag, set to v:true to remove all the
- 				commands associated with the specified autocmd
- 				event and group and add the {cmd}.  This is
-@@ -6208,11 +6213,17 @@ nr2char({expr} [, {utf8}])				*nr2char()*
- or({expr}, {expr})					*or()*
- 		Bitwise OR on the two arguments.  The arguments are converted
- 		to a number.  A List, Dict or Float argument causes an error.
-+		Also see `and()` and `xor()`.
- 		Example: >
- 			:let bits = or(bits, 0x80)
- <		Can also be used as a |method|: >
- 			:let bits = bits->or(0x80)
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 21
++*builtin.txt*	For Vim version 8.2.  Last change: 2022 May 27
  
-+<		Rationale: The reason this is a function and not using the "|"
-+		character like many languages, is that Vi has always used "|"
-+		to separate commands.  In many places it would not be clear if
-+		"|" is an operator or a command separator.
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index d3e0a9ca1..1b26660e7 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 8.2.  Last change: 2022 May 07
++*change.txt*    For Vim version 8.2.  Last change: 2022 May 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1272,7 +1272,7 @@ to their previous contents.  When the '>' flag is present in 'cpoptions' then
+ a line break is inserted before the appended text.
+ 
+ 5. Read-only registers ":, ". and "%
+-These are '%', '#', ':' and '.'.  You can use them only with the "p", "P",
++These are '%', ':' and '.'.  You can use them only with the "p", "P",
+ and ":put" commands and with CTRL-R.
+ 						*quote_.* *quote.* *E29*
+ 	".	Contains the last inserted text (the same as what is inserted
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 77822d796..f5f3c37c9 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 8.2.  Last change: 2022 May 13
++*eval.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -183,10 +183,15 @@ You will not get an error if you try to change the type of a variable.
+ 1.2 Function references ~
+ 				*Funcref* *E695* *E718* *E1192*
+ A Funcref variable is obtained with the |function()| function, the |funcref()|
+-function or created with the lambda expression |expr-lambda|.  It can be used
+-in an expression in the place of a function name, before the parenthesis
+-around the arguments, to invoke the function it refers to.  Example: >
++function, (in |Vim9| script) the name of a function, or created with the
++lambda expression |expr-lambda|.  It can be used in an expression in the place
++of a function name, before the parenthesis around the arguments, to invoke the
++function it refers to.  Example in |Vim9| script: >
+ 
++	:var Fn = MyFunc
++	:echo Fn()
++
++Legacy script: >
+ 	:let Fn = function("MyFunc")
+ 	:echo Fn()
+ <							*E704* *E705* *E707*
+@@ -1544,7 +1549,7 @@ to be doubled.  These two commands are equivalent: >
+ 	if a =~ '\s*'
+ 
+ 
+-interpolated-string					*interp-string* *E256*
++interpolated-string				*$quote* *interp-string* *E256*
+ --------------------
+ $"string"		interpolated string constant		*expr-$quote*
+ $'string'		interpolated literal string constant	*expr-$'*
+@@ -2998,7 +3003,7 @@ The file "~/vim/bufnetfuncs.vim" should then define functions that start with
+ 
+ Using an autoload script ~
+ 							*autoload* *E746*
+-This is introduced in the user manual, section |51.5|.
++This is introduced in the user manual, section |52.2|.
+ 
+ Using a script in the "autoload" directory is simpler, but requires using
+ exactly the right file name.  A function that can be autoloaded has a name
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 373f459ae..76a2f5229 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 8.2.  Last change: 2022 May 16
++*map.txt*       For Vim version 8.2.  Last change: 2022 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -63,6 +63,7 @@ modes.
+ 			allows for nested and recursive use of mappings.
+ 			Note: Trailing spaces are included in the {rhs},
+ 			because space is a valid Normal mode command.
++			See |map-trailing-white|.
+ 
+ 						*:nore* *:norem*
+ :no[remap]  {lhs} {rhs}		|mapmode-nvo|	*:no*  *:noremap* *:nor*
+@@ -100,10 +101,8 @@ modes.
+ 			for other modes where it applies.
+ 			It also works when {lhs} matches the {rhs} of a
+ 			mapping. This is for when an abbreviation applied.
+-			Note: Trailing spaces are included in the {lhs}.  This
+-			unmap does NOT work: >
+-				:map @@ foo
+-				:unmap @@ | print
++			Note: Trailing spaces are included in the {lhs}.
++			See |map-trailing-white|.
+ 
+ :mapc[lear]			|mapmode-nvo|		*:mapc*   *:mapclear*
+ :nmapc[lear]			|mapmode-n|		*:nmapc*  *:nmapclear*
+@@ -168,6 +167,27 @@ that mapping won't get expanded yet, Vim is waiting for another character.
+ If you type a space, then "foo" will get inserted, plus the space.  If you
+ type "a", then "bar" will get inserted.
+ 
++Trailing white space ~
++							*map-trailing-white*
++This unmap command does NOT work: >
++	:map @@ foo
++	:unmap @@ | print
++
++Because it tries to unmap "@@ ", including the white space before the command
++separator "|".  Other examples with trailing white space: >
++	unmap @@ 
++	unmap @@     # Vim9 script comment
++	unmap @@     " legacy comment
++
++An error will be issued, which is very hard to identify, because the ending
++whitespace character in `unmap @@ ` is not visible.
++
++A generic solution is to put the command separator "|" right after the mapped
++keys.  After that white space and a comment may follow: >
++
++	unmap @@|    # Vim9 scriptcomment
++	unmap @@|    " legacy scriptcomment
 +
  
- pathshorten({path} [, {len}])				*pathshorten()*
- 		Shorten directory names in the path {path} and return the
-@@ -9785,6 +9796,25 @@ virtcol({expr} [, {list}])				*virtcol()*
- <		Can also be used as a |method|: >
- 			GetPos()->virtcol()
+ 1.2 SPECIAL ARGUMENTS					*:map-arguments*
  
-+virtcol2col({winid}, {lnum}, {col})			*virtcol2col()*
-+		The result is a Number, which is the byte index of the
-+		character in window {winid} at buffer line {lnum} and virtual
-+		column {col}.
-+
-+		If {col} is greater than the last virtual column in line
-+		{lnum}, then the byte index of the character at the last
-+		virtual column is returned.
-+
-+		The {winid} argument can be the window number or the
-+		|window-ID|. If this is zero, then the current window is used.
-+
-+		Returns -1 if the window {winid} doesn't exist or the buffer
-+		line {lnum} or virtual column {col} is invalid.
-+
-+		See also |screenpos()|, |virtcol()| and |col()|.
-+
-+		Can also be used as a |method|: >
-+			GetWinid()->virtcol2col(lnum, col)
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index f1038afa6..799b856a7 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 8.2.  Last change: 2022 May 21
++*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 02
  
- visualmode([{expr}])						*visualmode()*
- 		The result is a String, which describes the last Visual mode
-@@ -10217,6 +10247,7 @@ writefile({object}, {fname} [, {flags}])
- xor({expr}, {expr})					*xor()*
- 		Bitwise XOR on the two arguments.  The arguments are converted
- 		to a number.  A List, Dict or Float argument causes an error.
-+		Also see `and()` and `or()`.
- 		Example: >
- 			:let bits = xor(bits, 0x80)
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4264,7 +4264,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The type of highlighting used can be set with the 'l' occasion in the
+ 	'highlight' option.  This uses the "Search" highlight group by
+ 	default.  Note that only the matching text is highlighted, any offsets
+-	are not applied.
++	are not applied.  If the "CurSearch" highlight group is set then the
++	current match is highlighted with that.
+ 	See also: 'incsearch' and |:match|.
+ 	When you get bored looking at the highlighted matches, you can turn it
+ 	off with |:nohlsearch|.  This does not change the option value, as
+@@ -7624,10 +7625,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	If the statusline is not updated when you want it (e.g., after setting
+ 	a variable that's used in an expression), you can force an update by
+-	setting an option without changing its value.  Example: >
+-		:let &ro = &ro
++	using `:redrawstatus`.
+ 
+-<	A result of all digits is regarded a number for display purposes.
++	A result of all digits is regarded a number for display purposes.
+ 	Otherwise the result is taken as flag text and applied to the rules
+ 	described above.
+ 
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index 62376c7f2..53a4d03ed 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
+@@ -1,4 +1,4 @@
+-*os_win32.txt*  For Vim version 8.2.  Last change: 2022 May 22
++*os_win32.txt*  For Vim version 8.2.  Last change: 2022 May 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by George Reilly
+@@ -7,7 +7,7 @@
+ 						*win32* *Win32* *MS-Windows*
+ This file documents the idiosyncrasies of the Win32 version of Vim.
+ 
+-The Win32 version of Vim works on Windows XP, Vista, 7, 8 and 10.  There are
++The Win32 version of Vim works on Windows XP, Vista, 7, 8, 10 and 11.  There are
+ both console and GUI versions.
+ 
+ The 32 bit version also runs on 64 bit MS-Windows systems.
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index 51413e796..dd478aefe 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -1,4 +1,4 @@
+-*popup.txt*  For Vim version 8.2.  Last change: 2022 Apr 04
++*popup.txt*  For Vim version 8.2.  Last change: 2022 May 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -147,7 +147,8 @@ A special case is running a terminal in a popup window.  Many rules are then
+ different:						*E863*
+ - The popup window always has focus, it is not possible to switch to another
+   window.
+-- When the job ends, the popup window closes.
++- When the job ends, the popup window shows the buffer in Terminal-Normal
++  mode.  Use `:q` to close it or use "term_finish" value "close".
+ - The popup window can be closed with `popup_close()`, the terminal buffer
+   then becomes hidden.
+ - It is not possible to open a second popup window with a terminal. *E861*
+@@ -998,20 +999,23 @@ To make the four corners transparent:
+ ==============================================================================
+ 4. Examples						*popup-examples*
+ 
++These examplese use |Vim9| script.
++
+ TODO: more interesting examples
++
+ 					*popup_dialog-example*
+ Prompt the user to press y/Y or n/N: >
+ 
+-	func MyDialogHandler(id, result)
+-	   if a:result
+-	      " ... 'y' or 'Y' was pressed
+-	   endif
+-	endfunc
+-
+-	call popup_dialog('Continue? y/n', #{
+-		\ filter: 'popup_filter_yesno',
+-		\ callback: 'MyDialogHandler',
+-		\ })
++	popup_dialog('Continue? y/n', {
++		 filter: 'popup_filter_yesno',
++		 callback: (id, result) => {
++				if result == 1
++				  echomsg "'y' or 'Y' was pressed"
++				else
++				  echomsg "'y' or 'Y' was NOT pressed"
++				endif
++			     },
++		 })
  <
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index d8bddce65..8c3579839 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -671,7 +671,7 @@ Note: The keys that are valid in CTRL-X mode are not mapped.  This allows for
- ends CTRL-X mode (any key that is not a valid CTRL-X mode command) is mapped.
- Also, when doing completion with 'complete' mappings apply as usual.
+ 					*popup_menu-shortcut-example*
+ Extend popup_filter_menu() with shortcut keys: >
+diff --git a/runtime/doc/sponsor.txt b/runtime/doc/sponsor.txt
+index c0a8c51b5..77466094f 100644
+--- a/runtime/doc/sponsor.txt
++++ b/runtime/doc/sponsor.txt
+@@ -1,4 +1,4 @@
+-*sponsor.txt*   For Vim version 8.2.  Last change: 2021 Jul 07
++*sponsor.txt*   For Vim version 8.2.  Last change: 2022 May 26
  
--							*E578* *E565*
-+								*E565*
- Note: While completion is active Insert mode can't be used recursively and
- buffer text cannot be changed.  Mappings that somehow invoke ":normal i.."
- will generate an E565 error.
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 4171a5db5..38a4a1c78 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 8.2.  Last change: 2022 May 20
++*syntax.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4898,6 +4898,14 @@ color (can make it transparent in some terminals): >
+ 	  au Colorscheme pablo hi Normal ctermbg=NONE
+ 	augroup END
+ 
++Change a couple more colors: >
++	augroup my_colorschemes
++	  au!
++	  au Colorscheme pablo hi Normal ctermbg=NONE
++		      \ | higlight Special ctermfg=63
++		      \ | highlight Identifier ctermfg=44
++	augroup END
++
+ If you make a lot of changes it might be better to copy the distributed
+ colorscheme to your home directory and change it: >
+ 	:!cp $VIMRUNTIME/colors/pablo.vim ~/.vim/colors
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 2c01c6531..f68bf4271 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 8.2.  Last change: 2022 Apr 06
++*terminal.txt*	For Vim version 8.2.  Last change: 2022 May 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index fa2cded4f..b5dd99e19 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 May 22
++*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -39,20 +39,14 @@ browser use: https://github.com/vim/vim/issues/1234
+ -------------------- Known bugs and current work -----------------------
+ 
+ Prepare for Vim 9.0 release:
++- Update the user manual:
++  - Add import/export example to 52.1
++  - Add more to usr_50.txt as an "advanced section" of usr_41.txt
++  - Move some from vim9.txt to the user manual?  Keep the specification.
+ - Use Vim9 for more runtime files.
+-- Check Vim9 code coverage, add more tests if needed.
+-	vim9instr.c
+-	vim9script.c
+-	vim9type.c
++- Make popup-examples use Vim9 script  Issue #10499
+ - Adjust intro message to say "help version9".
+ 
+-Update the user manual:
+-- Update usr_41.txt for Vim9 script
+-- Fill usr_50.txt as an "advanced section" of usr_41.txt
+-  Add links from usr_41 to usr_50.
+-- Make usr_51.txt use Vim9 script.  Still need usr_52.txt?
+-
+-
+ Further Vim9 improvements, possibly after launch:
+ - Check performance with callgrind and kcachegrind.
+     getline()/substitute()/setline() in #5632
+@@ -89,9 +83,9 @@ Update list of features to vote on:
+ Popup windows:
+ - Preview popup not properly updated when it overlaps with completion menu.
+     (Yegappan Lakshmanan, 2021 May 22
++- Srollbar thumb somtimes not visible  #10492
+ - Add a function to redraw a specific popup window.  Esp. to be used when
+   editing the command line, when screen updating doesn't happen. (Shougo)
+-- In some cases prop_remove() does not work correctly. (#8261)
+ - Add a flag to make a popup window focusable?
+     CTRL-W P cycle over any preview window or focusable popup, end up back in
+ 	     current window.
+@@ -152,6 +146,9 @@ Prompt buffer:
+ - add prompt_addtext({buf}, {expr})	none	add text to a prompt buffer
+ 
+ Terminal debugger:
++- Add a mechanism for configuration.  Instead of several global variables use
++  a dictionary.  Use callbacks for some things, e.g. opening a debug window in
++  a certain position.
+ - Make prompt-buffer variant work better.
+ - Add option to not open the program window.  It's not used when attaching to
+   an already running program. (M. Kelly)
+@@ -207,13 +204,8 @@ Terminal emulator window:
+ - When 'encoding' is not utf-8, or the job is using another encoding, setup
+   conversions.
+ 
+-Add autocmd functions. PR #10291
+-  a couple of outstanding comments, wait for Yegappan to respond
+-
+ Can deref_func_name() and deref_function_name() be merged?
+ 
+-Add mode bits to maparg() dict?  PR #10356
+-
+ After patch 8.2.4915 w_botline is computed much more often. Can this be
+ reduced?
+ 
+@@ -228,11 +220,6 @@ entry separately. #6609
+ Multiplexers (screen, tmux) can request it to the underlaying terminal, and
+ pass it on with modifications.
+ 
+-Test_communicate_ipv6(): is flaky on many systems
+-Fails in line 64 of Ch_communicate, no exception is thrown.
+-
+-Rename getdigraphlist -> digraph_getlist() etc.
+-
+ Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
+ 
+ Valgrind reports memory leaks in test_options.
+@@ -255,8 +242,6 @@ Memory leaks in test_channel? (or is it because of fork())
+ 
+ PR to support %e and %k in 'errorformat'. #9624
+ 
+-PR to add left and right bitwise shift. #8457
+-
+ Idea: when typing ":e /some/dir/" and "dir" does not exist, highlight in red.
+ 
+ ":set &shellpipe" and ":set &shellredir" should use the logic from
+@@ -276,8 +261,6 @@ Add support for "underdouble", "underdot" and "underdash". #9553
+ 
+ test_arglist func Test_all_not_allowed_from_cmdwin() hangs on MS-Windows.
+ 
+-Mapping with partial match not executed properly in GTK. (Ingo Karkat, #7082)
+-
+ Information for a specific terminal (e.g. gnome, tmux, konsole, alacritty) is
+ spread out.  Make a section with copy/paste examples of script and pointers to
+ more information.
+@@ -294,6 +277,8 @@ Request to use "." for the cursor column in search pattern \%<.c and \%<.v.
+ 
+ ":filter set termcap" only filters terminal codes, not keys. (#9297)
+ 
++Add an option to restrict 'incsearch' to not scroll the view. (Tavis Ormandy)
++
+ Remove SPACE_IN_FILENAME ? It is only used for completion.
+ 
+ When 'term' starts with "foot" then default t_TI and t_TE to the values used
+@@ -316,9 +301,6 @@ to tell which value from getvvcol() should be used. (#7964)
+ Value returned by virtcol() changes depending on how lines wrap.  This is
+ inconsistent with the documentation.
+ 
+-Making breakat support multibyte characters (Yasuhiro Matsumoto, #6598)
+-Scroll doesn't work correctly, why?
+-
+ globpath() does not use 'wildignorecase' at all? (related to #8350)
+ 
+ Add 'termguiattr' option, use "gui=" attributes in the terminal?  Would work
+@@ -360,9 +342,6 @@ Should also work without any group:
+ Should add a match/str/list/pos method that also returns the test and position
+ of submatches.  #8355
+ 
+-Syntax highlight for a region does not work with a "nextgroup" if the start
+-match is empty. #8449
+-
+ Check out PR #543 (Roland Puntaier).
+ Patch for multibyte characters in langmap and applying a mapping on them.
+ (Christian Brabandt, 2015 Jun 12, update July 25)
+@@ -485,9 +464,6 @@ Sound: support on Mac?  Or does libcanberra work there?
+ 
+ Python 3.8 doesn't work. (Antonios Hadjigeorgalis, #5509)
+ 
+-The :syntax cchar value can only be a single character.  It would be useful to
+-support combining characters. (Charles Campbell)  Also #4687
+-
+ "--cleanFOO" does not result in an error. (#5537)
+ 
+ Output from assert_equalfile() doesn't give a hint about what's different.
+@@ -803,13 +779,6 @@ Compiler warning (geeknik, 2017 Oct 26):
+ Add Native language protocol server (LSP) support. (Yegappan Lakshmanan, 2018
+ Oct 28)
+ 
+-Add more testing of the GTK GUI.
+-- gtk_test_widget_click() can be used to simulate a click in a widget.
+-
+-Tests failing for "make testgui" with GTK:
+-- Test_setbufvar_options()
+-- Test_exit_callback_interval()
+-
+ Patch to be able to use hex numbers with :digraph. (Lcd, 2015 Sep 6)
+ Update Sep 7.  Update by Christian Brabandt, 2015 Sep 8, 2016 Feb 1.
+ Patch to be able to disable default digraphs (incomplete) (Eric Pruitt, 2018
+@@ -939,9 +908,6 @@ Patch to support hunspell. (Matej Cepl, Jan 2018, #2500) Based on older patch
+ in #846)
+ Doesn't work on Windows yet.  Not ready to included, hard coded paths.
+ 
+-Win32 GUI: when running a fast timer, the cursor no longer blinks.
+-Was reported: cursor blinks in terminal on widows with a timer. (xtal8, #2142)
+-
+ When a timer is running and typing CTRL-R on the command line, it is not
+ redrawn properly. (xtal8, 2017 Oct 23, #2241)
+ 
+@@ -1104,10 +1070,6 @@ Suggestion to improve pt-br spell checking. (Marcelo D Montu, 2016 Dec 15,
+ 
+ Error in test_startup_utf8 on Solaris. (Danek Duvall, 2016 Aug 17)
+ 
+-GTK: When adding a timer from 'balloonexpr' it won't fire, because
+-g_main_context_iteration() doesn't return.  Need to trigger an event when the
+-timer expires.
+-
+ Rule to use "^" for statusline does not work if a space is defined with
+ highlighting for both stl and stlnc.  Patch by Ken Hamada (itchyny, 2016 Dec 11)
+ 
+@@ -1507,8 +1469,6 @@ Result of systemlist() does not show whether text ended in line break.
+ When in 'comments' "n:x" follows after three-part comment directly it repeats
+ any one-character from the previous line. (Kartik Agaram, 2014 Sep 19)
+ 
+-Syntax highlighting slow (hangs) in SASS file. (Niek Bosch, 2013 Aug 21)
+-
+ Adding "~" to 'cdpath' doesn't work for completion?  (Davido, 2013 Aug 19)
+ 
+ Patch: Let rare word highlighting overrule good word highlighting.
+@@ -1630,9 +1590,6 @@ Also see #2034.
+ 
+ Patch to define macros for hardcoded values. (Elias Diem, 2013 Dec 14)
+ 
+-Several syntax file match "^\s*" which may get underlined if that's in the
+-highlight group.  Add a "\zs" after it?
+-
+ Updated spec ftplugin. (Matěj Cepl, 2013 Oct 16)
+ 
+ Patch to handle integer overflow. (Aaron Burrow, 2013 Dec 12)
+@@ -1654,9 +1611,6 @@ When evaluating expression in backticks, autoload doesn't work.
+ Using <nr>ifoobar<esc> can slow down Vim.  Patch by Christian Brabandt, 2013
+ Dec 13.  Only helps a bit, 10000ii<Esc> is still too slow.
+ 
+-GTK: problem with 'L' in 'guioptions' changing the window width.
+-(Aaron Cornelius, 2012 Feb 6)
+-
+ Javascript file where indent gets stuck on: GalaxyMaster, 2012 May 3.
+ 
+ The BufUnload event is triggered when re-using the empty buffer.
+@@ -1682,9 +1636,6 @@ Patch to fix that 'cedit' is recognized after :normal. (Christian Brabandt,
+ 
+ Patch to view coverage of the tests. (Nazri Ramliy, 2013 Feb 15)
+ 
+-Patch to invert characters differently in GTK. (Yukihiro Nakadaira, 2013 May
+-5)
+-
+ Patch to add "Q" and "A" responses to interactive :substitute. They are
+ carried over when using :global. (Christian Brabandt, 2013 Jun 19)
+ 
+@@ -1704,13 +1655,6 @@ Patch by Christian Brabandt, 2013 Apr 20, unfinished.
+ 
+ Bug: findfile("any", "file:///tmp;") does not work.
+ 
+-patch to add "combine" flag to  syntax commands. (so8res, 2012 Dec 6)
+-Patch to add "combine" to :syntax, combines highlight attributes. (Nate
+-Soares, 2012 Dec 3)
+-
+-Syntax update problem in one buffer opened in two windows, bottom window is
+-not correctly updated. (Paul Harris, 2012 Feb 27)
+-
+ Patch to add getsid(). (Tyru, 2011 Oct 2)  Do we want this?  Update Oct 4.
+ Or use expand('<sid>')?
+ 
+@@ -1814,10 +1758,6 @@ On MS-Windows a temp dir with a & init causes system() to fail. (Ben Fritz,
+ Patch 7.3.116 was the wrong solution.
+ Christian Brabandt has another incomplete patch. (2011 Jul 13)
+ 
+-Syntax region with 'concealends' and a 'cchar' value, 'conceallevel' set to 2,
+-only one of the two ends gets the cchar displayed. (Brett Stahlman, 2010 Aug
+-21, Ben Fritz, 2010 Sep 14)
+-
+ Win32: Patch to use task dialogs when available. (Sergiu Dotenco, 2011 Sep 17)
+ New feature, requires testing.  Made some remarks.
+ 
+@@ -1879,18 +1819,12 @@ the help file.
+ After patch 7.3.097 still get E15. (Yukihiro Nakadaira, 2011 Jan 18)
+ Also for another example (ZyX, 2011 Jan 24)
+ 
+-Build problem with small features on Mac OS X 10.6. (Rainer, 2011 Jan 24)
+-
+ "0g@$" puts '] on last byte of multibyte. (ZyX, 2011 Jan 22)
+ 
+ Patch for :tabrecently. (Hirokazu Yoshida, 2012 Jan 30)
+ 
+ Problem with "syn sync grouphere". (Gustavo Niemeyer, 2011 Jan 27)
+ 
+-Using "syn sync breaklines=2" works for when text is changed, but not when
+-scrolling or redrawing.  Should start search for syntax patterns above the
+-first drawn line. (#8103)
+-
+ Loading autoload script even when usage is inside "if 0". (Christian Brabandt,
+ 2010 Dec 18)
+ 
+@@ -1923,19 +1857,12 @@ In the sandbox it's not allowed to do many things, but it's possible to change
+ or set variables.  Add a way to prevent variables from being changed in the
+ sandbox?  E.g.: ":protect g:restore_settings".
+ 
+-GTK: drawing a double-width combining character over single-width characters
+-doesn't look right. (Dominique Pelle, 2010 Aug 8)
+-
+-GTK: tear-off menu does not work. (Kurt Sonnenmoser, 2010 Oct 25)
+-
+ Win32: tear-off menu does not work when menu language is German. (Markus
+ Bossler, 2011 Mar 2)  Fixed by 7.3.095?
+ 
+ Wish for NetBeans commands:
+     - make it possible to have 'defineAnnoType' also handle terminal colors.
+ 
+-Version of netbeans.c for use with MacVim. (Kazuki Sakamoto, 2010 Nov 18)
+-
+ 7.3.014 changed how backslash at end of line works, but still get a NUL when
+ there is one backslash. (Ray Frush, 2010 Nov 18)  What does the original ex
+ do?
+@@ -2009,8 +1936,6 @@ C-indenting: A matching { in a comment is ignored, but intermediate { are not
+ checked to be in a comment.  Implement FM_SKIPCOMM flag of findmatchlimit().
+ Issue 46.
+ 
+-Mac with X11: clipboard doesn't work properly. (Raf, 2010 Aug 16)
+-
+ Using CompilerSet doesn't record where an option was set from.  E.g., in the
+ gcc compiler plugin. (Gary Johnson, 2010 Dec 13)
+ 
+@@ -2082,8 +2007,6 @@ Problem with stop directory in findfile(). (Adam Simpkins, 2009 Aug 26)
+ Using ']' as the end of a range in a pattern requires double escaping:
+      /[@-\\]]  (Andy Wokula, 2011 Jun 28)
+ 
+-Syntax priority problem. (Charles Campbell, 2011 Sep 15)
+-
+ For running gvim on a USB stick: avoid the OLE registration.  Use a command
+ line argument -noregister.
+ 
+@@ -2139,8 +2062,6 @@ J.  Wang, 2009 Mar 31)
+ When $VIMRUNTIME is set in .vimrc, need to reload lang files.  Already done
+ for GTK, how about others? (Ron Aaron, 2010 Apr 10)
+ 
+-Patch for GTK buttons X1Mouse and X2Mouse. (Christian J. Robinson, 2010 Aug 9)
+-
+ ":tab split fname" doesn't set the alternate file in the original window,
+ because win_valid() always returns FALSE.  Below win_new_tabpage() in
+ ex_docmd.c.
+@@ -2174,9 +2095,6 @@ displayed in a window should return the value that's stored for that buffer.
+ 
+ Diff mode out of sync. (Gary Johnson, 2010 Aug 4)
+ 
+-Win32 GUI: last message from startup doesn't show up when there is an echoerr
+-command. (Cyril Slobin, 2009 Mar 13)
+-
+ Win32: completion of file name ":e c:\!test" results in ":e c:\\!test", which
+ does not work. (Nieko Maatjes, 2009 Jan 8, Ingo Karkat, 2009 Jan 22)
+ 
+@@ -2316,10 +2234,6 @@ Win32: Using "gvim --remote-tab-silent elŝuti.txt" doesn't work, the
+ multibyte character isn't passed and edits elsuti.txt.
+ (Raúl Núñez de Arenas Coronado, 2015 Dec 18)
+ 
+-Problem with 'langmap' being used on the rhs of a mapping. (Nikolai Weibull,
+-2008 May 14)
+-Possibly related problem: Alexey Muranov, 2015 Apr 2
+-
+ Problem with CTRL-F. (Charles Campbell, 2008 March 21)
+ Only happens with "gvim -geometry "160x26+4+27" -u NONE -U NONE prop.c".
+ 'lines' is 54. (2008 March 27)
+@@ -2346,21 +2260,6 @@ line doesn't fit. (Dasn, 2008 May 1)
+ GUI: In Normal mode can't yank the modeless selection.  Make "gy" do this?
+ Works like CTRL-Y in Command line mode.
+ 
+-Mac: Move Carbon todo items to os_mac.txt.  Note that this version is frozen,
+-try the Cocoa version.
+-
+-Mac: After a ":vsplit" the left scrollbar doesn't appear until 'columns' is
+-changed or the window is resized.
+-
+-GTK: when setting 'columns' in a startup script and doing ":vertical diffsplit"
+-the window isn't redrawn properly, see two vertical bars.
+-
+-Mac: Patch for configure: remove arch from ruby link args. (Knezevic, 2008
+-Mar 5)  Alternative: Kazuki Sakamoto, Mar 7.
+-
+-Mac: trouble compiling with Motif, requires --disable-darwin. (Raf, 2008 Aug
+-1)  Reply by Ben Schmidt.
+-
+ C't: On utf-8 system, editing file with umlaut through Gnome results in URL
+ with %nn%nn, which is taken as two characters instead of one.
+ Try to reproduce at work.
+@@ -2380,10 +2279,6 @@ Would be more consistent when an existing tab is re-used. (Tony Mechelynck)
+ Using Aap to build Vim: add remarks about how to set personal preferences.
+ Example on http://www.calmar.ws/tmp/aap.html
+ 
+-Syntax highlighting wrong for transparent region. (Doug Kearns, 2007 Feb 26)
+-Bug in using a transparent syntax region. (Hanlen in vim-dev maillist, 2007
+-Jul 31)
+-
+ When 'diffopt' has "context:0" a single deleted line causes two folds to merge
+ and mess up syncing. (Austin Jennings, 2008 Jan 31)
+ 
+@@ -2592,8 +2487,6 @@ Jul 22)
+ 
+ There should be something about spell checking in the user manual.
+ 
+-Mac: Using gvim: netrw window disappears. (Nick Lo, 2006 Jun 21)
+-
+ Add an option to specify the character to use when a double-width character is
+ moved to the next line.  Default '>', set to a space to blank it out.  Check
+ that char is single width when it's set (compare with 'listchars').
+@@ -2644,8 +2537,6 @@ Only skip shortening for ":cc"?
+ Problem with ":call" and dictionary function. Hari Krishna Dara, Charles
+ Campbell 2006 Jul 06.
+ 
+-Syntax HL error caused by "containedin". (Peter Hodge, 2006 Oct 6)
+-
+ A custom completion function in a ":command" cannot be a Funcref. (Andy
+ Wokula, 2007 Aug 25)
+ 
+@@ -2678,18 +2569,9 @@ and <notisdir> to autocommand patterns?  Also <isfile>?
+ Add command modifier that skips wildcard expansion, so that you don't need to
+ put backslashes before special chars, only for white space.
+ 
+-Syntax HL: open two windows on the same C code, delete a ")" in one window,
+-resulting in highlighted "{" in that window, not in the other.
+-
+ In mswin.vim: Instead of mapping <C-V> for Insert mode in a complicated way,
+ can it be done like ":imap <C-V> <MiddleMouse>" without negative side effects?
+ 
+-GTK: when the Tab pages bar appears or disappears while the window is
+-maximized the window is no longer maximized.  Patch that has some idea but
+-doesn't work from Geoffrey Antos, 2008 May 5.
+-Also: the window may no longer fit on the screen, thus the command line is not
+-visible.
+-
+ When right after "vim file", "M" then CTRL-W v the windows are scrolled
+ differently and unexpectedly.  Caused by patch 7.2.398?
+ 
+@@ -2718,9 +2600,6 @@ When completing from another file that uses a different encoding completion
+ text has the wrong encoding.  E.g., when 'encoding' is utf-8 and file is
+ latin1.  Example from Gombault Damien, 2007 Mar 24.
+ 
+-Syntax HL: When using "nextgroup" and the group has an empty match, there is
+-no search at that position for another match. (Lukas Mai, 2008 April 11)
+-
+ In gvim the backspace key produces a backspace character, but on Linux the
+ VERASE key is Delete.  Set VERASE to Backspace? (patch by Stephane Chazelas,
+ 2007 Oct 16)
+@@ -2741,9 +2620,6 @@ When switching between windows the cursor is often put in the middle.
+ Remember the relative position and restore that, just like lnum and col are
+ restored. (Luc St-Louis)
+ 
+-Patch to support horizontal scroll wheel in GTK. Untested. (Bjorn Winckler,
+-2010 Jun 30)
+-
+ Add an option for a minimal text length before inserting a line break for
+ 'textwidth'.  Avoids very short lines when a very long word follows.
+ (Kartik Agaram)
+@@ -2982,7 +2858,7 @@ Vi incompatibility:
+     thing.  (only repeat insert for the first line).
+ 
+ 
+-GTK+ GUI known bugs:
++GTK+ GUI:
+ 9   Crash with X command server over ssh. (Ciaran McCreesh, 2006 Feb 6)
+ 8   GTK 2: Combining UTF-8 characters not displayed properly in menus (Mikolaj
+     Machowski)  They are displayed as separate characters.  Problem in
+@@ -2997,6 +2873,33 @@ GTK+ GUI known bugs:
+ -   Gnome2: When moving the toolbar out of the dock, so that it becomes
+     floating, it can no longer be moved.  Therefore making it float has been
+     blocked for now.
++-   Mapping with partial match not executed properly in GTK. (Ingo Karkat,
++    #7082)
++-   Add more testing of the GTK GUI.
++    - gtk_test_widget_click() can be used to simulate a click in a widget.
++-   Tests failing for "make testgui" with GTK:
++    - Test_setbufvar_options()
++    - Test_exit_callback_interval()
++-   When adding a timer from 'balloonexpr' it won't fire, because
++    g_main_context_iteration() doesn't return.  Need to trigger an event when
++    the timer expires.
++-   problem with 'L' in 'guioptions' changing the window width.  (Aaron
++    Cornelius, 2012 Feb 6)
++-   Patch to invert characters differently in GTK. (Yukihiro Nakadaira, 2013
++    May 5)
++-   drawing a double-width combining character over single-width characters
++    doesn't look right. (Dominique Pelle, 2010 Aug 8)
++-   tear-off menu does not work. (Kurt Sonnenmoser, 2010 Oct 25)
++-   Patch for GTK buttons X1Mouse and X2Mouse. (Christian J. Robinson, 2010
++    Aug 9)
++-   When setting 'columns' in a startup script and doing ":vertical diffsplit"
++    the window isn't redrawn properly, see two vertical bars.
++-   when the Tab pages bar appears or disappears while the window is maximized
++    the window is no longer maximized.  Patch that has some idea but doesn't
++    work from Geoffrey Antos, 2008 May 5.  Also: the window may no longer fit
++    on the screen, thus the command line is not visible.
++-   Patch to support horizontal scroll wheel in GTK. Untested. (Bjorn
++    Winckler, 2010 Jun 30)
+ 
+ 
+ Win32 GUI known bugs:
+@@ -3062,6 +2965,10 @@ Win32 GUI known bugs:
+     still be used somewhere.  This is too tricky, do the font selection first,
+     then set the new font by name (requires putting all logfont parameters in
+     the font name).
++-   When running a fast timer, the cursor no longer blinks.  Was reported:
++    cursor blinks in terminal on widows with a timer. (xtal8, #2142)
++-   Last message from startup doesn't show up when there is an echoerr
++    command. (Cyril Slobin, 2009 Mar 13)
+ 
+ 
+ Motif:
+@@ -3242,6 +3149,18 @@ Macintosh:
+ 9   When DiskLock is running, using a swap file causes a crash.  Appears to be
+     a problem with writing a file that starts with a dot. (Giacalone)
+ 9   In mac_expandpath() check that handling of backslashes is done properly.
++-   Build problem with small features on Mac OS X 10.6. (Rainer, 2011 Jan 24)
++-   Version of netbeans.c for use with MacVim. (Kazuki Sakamoto, 2010 Nov 18)
++-   Mac with X11: clipboard doesn't work properly. (Raf, 2010 Aug 16)
++-   Move Carbon todo items to os_mac.txt.  Note that this version is frozen,
++    try the Cocoa version.
++-   After a ":vsplit" the left scrollbar doesn't appear until 'columns' is
++    changed or the window is resized.
++-   Patch for configure: remove arch from ruby link args. (Knezevic, 2008 Mar
++    5)  Alternative: Kazuki Sakamoto, Mar 7.
++-   trouble compiling with Motif, requires --disable-darwin. (Raf, 2008 Aug 1)
++    Reply by Ben Schmidt.
++-   Using gvim: netrw window disappears. (Nick Lo, 2006 Jun 21)
+ 
+ 
+ "Small" problems:
+@@ -3899,6 +3818,8 @@ Multi-byte characters:
+     table anymore (breakat_flags[]).
+     Simplistic solution: when 'formatoptions' contains "m" also break a line
+     at a multibyte character >= 0x100.
++    Making breakat support multibyte characters (Yasuhiro Matsumoto, #6598)
++    Scroll doesn't work correctly, why?
+ -   Add the possibility to enter mappings which are used whenever normal text
+     could be entered.  E.g., for "f" command.  But not in Normal mode.  Sort
+     of opposite of 'langmap'.  Use ":amap" command?
+@@ -3906,6 +3827,9 @@ Multi-byte characters:
+     account.  The "linebreak" program from Bruno Haible can do it:
+     ftp://ftp.ilog.fr/pub/Users/haible/gnu/linebreak-0.1.tar.gz
+     But it's very complicated...
++-   Problem with 'langmap' being used on the rhs of a mapping. (Nikolai
++    Weibull, 2008 May 14).
++    Possibly related problem: Alexey Muranov, 2015 Apr 2
+ 
+ 
+ Printing:
+@@ -3929,8 +3853,8 @@ Printing:
+ 
+ Syntax highlighting:
+     Long term goal: faster, better, etc.  Options:
+-    - use treesitter, NeoVim uses it
+-    - use TextMate, vscode uses it.  #9087
++    - use treesitter, NeoVim uses it - Many people don't like it.
++    - use TextMate, vscode uses it.  #9087 - possibly a long term solution
+ 8   Make ":syn off" use 'runtimepath' instead of $VIMRUNTIME. (Gary Johnson)
+     Should do the same for ":syn on" and ":syn manual".
+ 8   Support "containedin" argument for ":syn include", so that the defined
+@@ -4079,6 +4003,34 @@ Syntax highlighting:
+     text, exit at end of file, don't allow editing, etc.  moreim?  lessim?
+ 7   SpecialKey highlighting overrules syntax highlighting.  Can't give an
+     unprintable char another color.  Would be useful for ^M at end of line.
++-   Syntax highlight for a region does not work with a "nextgroup" if the
++    start match is empty. #8449
++-   The :syntax cchar value can only be a single character.  It would be
++    useful to support combining characters. (Charles Campbell)  Also #4687
++-   Syntax highlighting slow (hangs) in SASS file. (Niek Bosch, 2013 Aug 21)
++-   Several syntax file match "^\s*" which may get underlined if that's in the
++    highlight group.  Add a "\zs" after it?
++-   patch to add "combine" flag to  syntax commands. (so8res, 2012 Dec 6)
++    Patch to add "combine" to :syntax, combines highlight attributes. (Nate
++    Soares, 2012 Dec 3)
++-   Syntax update problem in one buffer opened in two windows, bottom window
++    is not correctly updated. (Paul Harris, 2012 Feb 27)
++-   Syntax region with 'concealends' and a 'cchar' value, 'conceallevel' set
++    to 2, only one of the two ends gets the cchar displayed. (Brett Stahlman,
++    2010 Aug 21, Ben Fritz, 2010 Sep 14)
++-   Using "syn sync breaklines=2" works for when text is changed, but not when
++    scrolling or redrawing.  Should start search for syntax patterns above the
++    first drawn line. (#8103)
++-   Syntax priority problem. (Charles Campbell, 2011 Sep 15)
++-   Syntax highlighting wrong for transparent region. (Doug Kearns, 2007 Feb
++    26)
++-   Bug in using a transparent syntax region. (Hanlen in vim-dev maillist,
++    2007 Jul 31)
++-   Syntax HL error caused by "containedin". (Peter Hodge, 2006 Oct 6)
++-   Open two windows on the same C code, delete a ")" in one window, resulting
++    in highlighted "{" in that window, not in the other.
++-   When using "nextgroup" and the group has an empty match, there is no
++    search at that position for another match. (Lukas Mai, 2008 April 11)
+ 
+ 
+ Vim script language:
+diff --git a/runtime/doc/undo.txt b/runtime/doc/undo.txt
+index 4a0ea040e..23a30af4b 100644
+--- a/runtime/doc/undo.txt
++++ b/runtime/doc/undo.txt
+@@ -1,4 +1,4 @@
+-*undo.txt*      For Vim version 8.2.  Last change: 2020 Nov 30
++*undo.txt*      For Vim version 8.2.  Last change: 2022 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -105,12 +105,16 @@ change again.  But you can do something like this: >
+ 
+ After this a "u" command will undo the delete command and the previous
+ change.
+-
++							*undo-break*
+ To do the opposite, break a change into two undo blocks, in Insert mode use
+ CTRL-G u.  This is useful if you want an insert command to be undoable in
+ parts.  E.g., for each sentence.  |i_CTRL-G_u|
++
+ Setting the value of 'undolevels' also breaks undo.  Even when the new value
+-is equal to the old value.
++is equal to the old value.  In |Vim9| script: >
++	&undolevels = &undolevels
++In legacy script: >
++	let &undolevels = &undolevels
+ 
+ ==============================================================================
+ 4. Undo branches				*undo-branches* *undo-tree*
 diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 80b7e385c..11f035b4e 100644
+index 11f035b4e..214b8c70e 100644
 --- a/runtime/doc/usr_41.txt
 +++ b/runtime/doc/usr_41.txt
-@@ -835,6 +835,7 @@ Cursor and mark position:		*cursor-functions* *mark-functions*
- 	screencol()		get screen column of the cursor
- 	screenrow()		get screen row of the cursor
- 	screenpos()		screen row and col of a text character
-+	virtcol2col()		byte index of a text character on screen
- 	getcurpos()		get position of the cursor
- 	getpos()		get position of cursor, mark, etc.
- 	setpos()		set position of cursor, mark, etc.
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 8.2.  Last change: 2022 May 21
++*usr_41.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -7,7 +7,7 @@
+ 
+ The Vim script language is used for the startup vimrc file, syntax files, and
+ many other things.  This chapter explains the items that can be used in a Vim
+-script.  There are a lot of them, thus this is a long chapter.
++script.  There are a lot of them, therefore this is a long chapter.
+ 
+ |41.1|	Introduction
+ |41.2|	Variables
+@@ -28,9 +28,10 @@ Table of contents: |usr_toc.txt|
+ *41.1*	Introduction				*vim-script-intro* *script*
+ 
+ Your first experience with Vim scripts is the vimrc file.  Vim reads it when
+-it starts up and executes the commands.  You can set options to values you
+-prefer.  And you can use any colon command in it (commands that start with a
+-":"; these are sometimes referred to as Ex commands or command-line commands).
++it starts up and executes the commands.  You can set options to the values you
++prefer, define mappings, select plugins and much more.   You can use any colon
++command in it (commands that start with a ":"; these are sometimes referred to
++as Ex commands or command-line commands).
+ 
+ Syntax files are also Vim scripts.  As are files that set options for a
+ specific file type.  A complicated macro can be defined by a separate Vim
+@@ -38,8 +39,8 @@ script file.  You can think of other uses yourself.
+ 
+ Vim script comes in two flavors: legacy and |Vim9|.  Since this help file is
+ for new users, we'll teach you the newer and more convenient |Vim9| syntax.
+-While legacy script is particular for Vim, |Vim9| script looks more like other
+-languages, such as JavaScript and TypeScript.
++While legacy script is particularly for Vim, |Vim9| script looks more like
++other languages, such as JavaScript and TypeScript.
+ 
+ To try out Vim script the best way is to edit a script file and source it.
+ Basically: >
+@@ -66,7 +67,7 @@ The output of the example code is:
+ 
+ In the first line the `vim9script` command makes clear this is a new, |Vim9|
+ script file.  That matters for how the rest of the file is used.
+-
++							*vim9-declarations*
+ The `var i = 1` command declares the "i" variable and initializes it.  The
+ generic form is: >
+ 
+@@ -100,29 +101,53 @@ The example was given to explain the commands, but would you really want to
+ make such a loop, it can be written much more compact: >
+ 
+ 	for i in range(1, 4)
+-	  echo "count is" i
++	  echo $"count is {i}"
+ 	endfor
+ 
+-We won't explain how `for` and `range()` work until later.  Follow the links
+-if you are impatient.
++We won't explain how `for`, `range()`and `$"string"` work until later.  Follow
++the links if you are impatient.
++
++
++TRYING OUT EXAMPLES
++
++You can easily try out most examples in these help files without saving the
++commands in a file.  For example, to try out the "for" loop above do this:
++1. position the cursor on the "for"
++2. start Visual mode with "v"
++3. move down to the "endfor"
++4. press colon, then "so" and Enter
++
++After pressing colon you will see ":'<,'>", which is the range of the Visually
++selected text.
++
++For some commands it matters they are executed as in |Vim9| script.  But typed
++commands normally use legacy script syntax, such as the example below that
++causes the E1004 error.  For that use this fourth step:
++4. press colon, then "vim9 so" and Enter
++
++"vim9" is short for `vim9cmd`, which is a command modifier to execute the
++following command in |Vim9| syntax.
++
++Note that this won't work for examples that require a script context.
+ 
+ 
+ FOUR KINDS OF NUMBERS
+ 
+-Numbers can be decimal, hexadecimal, octal or binary.
++Numbers can be decimal, hexadecimal, octal and binary.
+ 
+ A hexadecimal number starts with "0x" or "0X".  For example "0x1f" is decimal
+-31.
++31 and 0x1234 is decimal 4660.
+ 
+ An octal number starts with "0o", "0O".  "0o17" is decimal 15.
+ 
+ A binary number starts with "0b" or "0B".  For example "0b101" is decimal 5.
+ 
+ A decimal number is just digits.  Careful: In legacy script don't put a zero
+-before a decimal number, it will be interpreted as an octal number!
++before a decimal number, it will be interpreted as an octal number!  That's
++one reason to use |Vim9| script.
+ 
+-The `echo` command evaluates its argument and always prints decimal numbers.
+-Example: >
++The `echo` command evaluates its argument and when it is a number always
++prints the decimal form.  Example: >
+ 
+ 	echo 0x7f 0o36
+ <	127 30 ~
+@@ -155,6 +180,7 @@ To actually have the minus sign be used for negation, you can put the second
+ expression in parentheses: >
+ 
+ 	echo -0x7f (-0o36)
++<	-127 -30 ~
+ 
+ ==============================================================================
+ *41.2*	Variables
+@@ -165,7 +191,7 @@ cannot start with a digit.  Valid variable names are:
+ 	counter
+ 	_aap3
+ 	very_long_variable_name_with_underscores
+-	FuncLength
++	CamelCaseName
+ 	LENGTH
+ 
+ Invalid names are "foo+bar" and "6var".
+@@ -175,9 +201,9 @@ variables type this command: >
+ 
+ 	:let
+ 
+-You can use global variables everywhere.  However, it is easy to use the same
+-name in two unrelated scripts.  Therefore variables declared in a script are
+-local to that script.  For example, if you have this in "script1.vim": >
++You can use global variables everywhere.  However, it is too easy to use the
++same name in two unrelated scripts.  Therefore variables declared in a script
++are local to that script.  For example, if you have this in "script1.vim": >
+ 
+ 	vim9script
+ 	var counter = 5
+@@ -194,19 +220,24 @@ Using a script-local variable means you can be sure that it is only changed in
+ that script and not elsewhere.
+ 
+ If you do want to share variables between scripts, use the "g:" prefix and
+-assign the value directly, do not use `var`.  Thus in "script1.vim": >
++assign the value directly, do not use `var`.  And use a specific name to avoid
++mistakes.  Thus in "script1.vim": >
+ 
+ 	vim9script
+-	g:counter = 5
+-	echo g:counter
++	g:mash_counter = 5
++	echo g:mash_counter
+ <	5 ~
+ 
+ And then in "script2.vim": >
+ 
+ 	vim9script
+-	echo g:counter
++	echo g:mash_counter
+ <	5 ~
+ 
++Global variables can also be accessed on the command line, E.g. typing this: >
++	echo g:mash_counter
++That will not work for a script-local variable.
++
+ More about script-local variables here: |script-variable|.
+ 
+ There are more kinds of variables, see |internal-variables|.  The most often
+@@ -231,7 +262,7 @@ when it doesn't, append !: >
+ 
+ 	unlet! g:counter
+ 
+-You cannot `unlet` script-local variables in |Vim9| script.  You can in legacy
++You cannot `unlet` script-local variables in |Vim9| script, only in legacy
+ script.
+ 
+ When a script finishes, the local variables declared there will not be
+@@ -251,12 +282,15 @@ Every time you call the function it will return the next count: >
+ 	:echo g:GetCount()
+ <	2 ~
+ 
+-If you are worried a script-local variable is consuming too much
+-memory, set it to an empty value after you no longer need it.
++If you are worried a script-local variable is consuming too much memory, set
++it to an empty or null value after you no longer need it.  Example: >
++	var lines = readfile(...)
++	...
++	lines = []
+ 
+-Note: below we'll leave out the `vim9script` line, so we can concentrate on
+-the relevant commands, but you'll still need to put it at the top of your
+-script file.
++Note: below we'll leave out the `vim9script` line from examples, so we can
++concentrate on the relevant commands, but you'll still need to put it at the
++top of your script file.
+ 
+ 
+ STRING VARIABLES AND CONSTANTS
+@@ -275,9 +309,13 @@ want to give the variable a value yet, you need to specify the type: >
+ 
+ 	var name: string
+ 	var age: number
+-	...
+-	name = "Peter"
+-	age = 42
++	if male
++	   name = "Peter"
++	   age = 42
++	else
++	   name = "Elisa"
++	   age = 45
++	endif
+ 
+ If you make a mistake and try to assign the wrong type of value you'll get an
+ error: >
+@@ -287,8 +325,8 @@ error: >
+ 
+ More about types in |41.8|.
+ 
+-To assign a string value to a variable, you need to use a string constant.
+-There are two types of these.  First the string in double quotes, as we used
++To assign a string value to a variable, you can use a string constant.  There
++are two types of these.  First the string in double quotes, as we used
+ already.  If you want to include a double quote inside the string, put a
+ backslash in front of it: >
+ 
+@@ -296,7 +334,7 @@ backslash in front of it: >
+ 	echo name
+ <	he is "Peter" ~
+ 
+-To avoid the need for a backslash, you can use a string in single quotes: >
++To avoid the need for backslashes, you can use a string in single quotes: >
+ 
+ 	var name = 'he is "Peter"'
+ 	echo name
+@@ -341,8 +379,8 @@ themselves.  Thus everywhere an expression is expected, you can use a number,
+ string or variable.  Other basic items in an expression are:
+ 
+ 	$NAME		environment variable
+-	&name		option
+-	@r		register
++	&name		option value
++	@r		register contents
+ 
+ Examples: >
+ 
+@@ -384,15 +422,24 @@ Grouping is done with parentheses.  No surprises here.  Example: >
+ 	echo (10 + 5) * 2
+ <	30 ~
+ 
++
++OTHERS
++
+ Strings can be concatenated with ".." (see |expr6|).  Example: >
+ 
+-	echo "foo" .. "bar"
+-<	foobar ~
++	echo "Name: " .. name
++	Name: Peter
+ 
+ When the "echo" command gets multiple arguments, it separates them with a
+ space.  In the example the argument is a single expression, thus no space is
+ inserted.
+ 
++If you don't like the concatenation you can use the $"string" form, which
++accepts an expression in curly braces: >
++	echo $"Name: {name}"
++
++See |interp-string| for more information.
++
+ Borrowed from the C language is the conditional expression: >
+ 
+ 	a ? b : c
+@@ -408,6 +455,10 @@ see it works as: >
+ 
+ 	(a) ? (b) : (c)
+ 
++There is also the falsy operator: >
++	echo name ?? "No name given"
++See |??|.
++
+ ==============================================================================
+ *41.4*	Conditionals
+ 
+@@ -472,16 +523,17 @@ ones:
+ 
+ The result is true if the condition is met and false otherwise.  An example: >
+ 
+-	if v:version >= 700
++	if v:version >= 800
+ 	  echo "congratulations"
+ 	else
+ 	  echo "you are using an old version, upgrade!"
+ 	endif
+ 
+ Here "v:version" is a variable defined by Vim, which has the value of the Vim
+-version.  600 is for version 6.0, version 6.1 has the value 601.  This is
+-very useful to write a script that works with multiple versions of Vim.
+-|v:version|
++version.  800 is for version 8.0, version 8.1 has the value 801.  This is
++useful to write a script that works with multiple versions of Vim.
++See |v:version|.  You can also check for a specific feature with `has()` or a
++specific patch, see |has-patch|.
+ 
+ The logic operators work both for numbers and strings.  When comparing two
+ strings, the mathematical difference is used.  This compares byte values,
+@@ -505,8 +557,8 @@ pattern, like what's used for searching.  Example: >
+ 	endif
+ 
+ Notice the use of a single-quote string for the pattern.  This is useful,
+-because backslashes would need to be doubled in a double-quote string and
+-patterns tend to contain many backslashes.
++because patterns tend to contain many backslashes and backslashes need to be
++doubled in a double-quote string.
+ 
+ The match is not anchored, if you want to match the whole string start with
+ "^" and end with "$".
+@@ -543,6 +595,7 @@ Example: >
+ The `sleep` command makes Vim take a nap.  The "50m" specifies fifty
+ milliseconds.  Another example is `sleep 4`, which sleeps for four seconds.
+ 
++`continue` and `break` can also be used in between `for` and `endfor`.
+ Even more looping can be done with the `for` command, see below in |41.8|.
+ 
+ ==============================================================================
+@@ -579,9 +632,9 @@ Example: >
+ This will move the cursor "count" lines down.
+ 
+ Make sure that the argument for `normal` is a complete command.  Otherwise
+-Vim will run into the end of the argument and abort the command.  For example,
+-if you start the delete operator, you must give the movement command also.
+-This works: >
++Vim will run into the end of the argument and silently abort the command.  For
++example, if you start the delete operator, you must give the movement command
++also.  This works: >
+ 	
+ 	normal d$
+ 
+@@ -604,8 +657,8 @@ Notice the use of the special key "\<Esc>".  This avoids having to enter a
+ real <Esc> character in your script.  That is where `execute` with a
+ double-quote string comes in handy.
+ 
+-If you don't want to execute a string but evaluate it to get its expression
+-value, you can use the eval() function: >
++If you don't want to execute a string as a command but evaluate it to get the
++result of the expression, you can use the eval() function: >
+ 
+ 	var optname = "path"
+ 	var optvalue = eval('&' .. optname)
+@@ -620,19 +673,20 @@ Vim defines many functions and provides a large amount of functionality that
+ way.  A few examples will be given in this section.  You can find the whole
+ list below: |function-list|.
+ 
+-A function is called with the `call` command.  The parameters are passed in
+-between parentheses separated by commas.  Example: >
++A function is called with the parameters in between parentheses, separated by
++commas.  Example: >
+ 
+-	call search("Date: ", "W")
++	search("Date: ", "W")
+ 
+ This calls the search() function, with arguments "Date: " and "W".  The
+ search() function uses its first argument as a search pattern and the second
+ one as flags.  The "W" flag means the search doesn't wrap around the end of
+ the file.
+ 
+-Using `call` is optional in |Vim9| script, this works the same way: >
++Using the  `call` command is optional in |Vim9| script.  This works the same
++way and also works in legacy script and on the command line: >
+ 
+-	search("Date: ", "W")
++	call search("Date: ", "W")
+ 
+ A function can be called in an expression.  Example: >
+ 
+@@ -644,10 +698,10 @@ The getline() function obtains a line from the current buffer.  Its argument
+ is a specification of the line number.  In this case "." is used, which means
+ the line where the cursor is.
+ 
+-The substitute() function does something similar to the `substitute` command.
+-The first argument is the string on which to perform the substitution.  The
+-second argument is the pattern, the third the replacement string.  Finally,
+-the last arguments are the flags.
++The substitute() function does something similar to the `:substitute` command.
++The first argument "line" is the string on which to perform the substitution.
++The second argument '\a' is the pattern, the third "*" is the replacement
++string.  Finally, the last argument "g" is the flags.
+ 
+ The setline() function sets the line, specified by the first argument, to a
+ new string, the second argument.  In this example the line under the cursor is
+@@ -1404,15 +1458,19 @@ functions in the script: >
+ 
+ 	defcompile
+ 
+-For a function that does not return anything leave out the return type: >
++Compiling functions takes a little time, but does report errors early.  You
++could use `:defcompile` at the end of your script while working on it, and
++comment it out when everything is fine.
++
++For a function that does not return anything simply leave out the return type: >
+ 
+ 	def SayIt(text: string)
+ 	  echo text
+ 	enddef
+ 
+ It is also possible to define a legacy function with `function` and
+-`endfunction`.  These do not have types and are not compiled.  They execute
+-much slower.
++`endfunction`.  These do not have types and are not compiled.  Therefore they
++execute much slower.
+ 
+ 
+ USING A RANGE
+@@ -1440,15 +1498,15 @@ argument (start) and can have up to 20 additional arguments: >
+ 
+ 	def Show(start: string, ...items: list<string>)
+ 
+-The variable "items" will be a list containing the extra arguments.  You can
+-use it like any list, for example: >
++The variable "items" will be a list in the function containing the extra
++arguments.  You can use it like any list, for example: >
+ 
+ 	def Show(start: string, ...items: list<string>)
+ 	  echohl Title
+ 	  echo "start is " .. start
+ 	  echohl None
+ 	  for index in range(len(items))
+-	    echon "  Arg " .. index .. " is " .. items[index]
++	    echon $"  Arg {index} is {items[index]}"
+ 	  endfor
+ 	  echo
+ 	enddef
+@@ -1489,12 +1547,11 @@ To see what a function does, use its name as an argument for `function`: >
+ 	3     endif ~
+ 	   endfunction ~
+ 
+-To see the "Show" function you need to include the script prefix, since a
+-"Show" function can be defined multiple times in different scripts.  To find
++To see the "Show" function you need to include the script prefix, since
++multiple "Show" functions can be defined in different scripts.  To find
+ the exact name you can use `function`, but the result may be a very long list.
+ To only get the functions matching a pattern you can use the `filter` prefix:
+ >
+-
+ 	:filter Show function
+ <	def <SNR>86_Show(start: string, ...items: list<string>) ~
+ >
+@@ -1528,21 +1585,21 @@ You get an error when the function doesn't exist or cannot be deleted.
+ FUNCTION REFERENCES
+ 
+ Sometimes it can be useful to have a variable point to one function or
+-another.  You can do it with function reference variable.  Often shortened to
+-"funcref".  Example: >
++another.  You can do it with a function reference variable.  Often shortened
++to "funcref".  Example: >
+ 
+-	def Right()
++	def Right(): string
+ 	  return 'Right!'
+ 	enddef
+-	def Wrong()
++	def Wrong(): string
+ 	  return 'Wrong!'
+ 	enddef
+ 	
+ 	var Afunc = g:result == 1 ? Right : Wrong
+-	Afunc()
++	echo Afunc()
+ <	Wrong! ~
+ 
+-This assumes "g:result" is not one.
++This assumes "g:result" is not one.  See |Funcref| for details.
+ 
+ Note that the name of a variable that holds a function reference must start
+ with a capital.  Otherwise it could be confused with the name of a builtin
+@@ -1560,7 +1617,7 @@ A List is an ordered sequence of items.  The items can be any kind of value,
+ thus you can make a List of numbers, a List of Lists and even a List of mixed
+ items.  To create a List with three strings: >
+ 
+-	var alist = ['aap', 'mies', 'noot']
++	var alist = ['aap', 'noot', 'mies']
+ 
+ The List items are enclosed in square brackets and separated by commas.  To
+ create an empty List: >
+@@ -1582,14 +1639,14 @@ List concatenation is done with +: >
+ 	echo alist
+ <	['foo', 'bar', 'and', 'more'] ~
+ 
+-Or, if you want to extend a List with a function: >
++Or, if you want to extend a List with a function, use `extend()`: >
+ 
+ 	var alist = ['one']
+ 	extend(alist, ['two', 'three'])
+ 	echo alist
+ <	['one', 'two', 'three'] ~
+ 
+-Notice that using `add()` will have a different effect: >
++Notice that using `add()` will have a different effect than `extend()`: >
+ 
+ 	var alist = ['one']
+ 	add(alist, ['two', 'three'])
+@@ -1614,7 +1671,7 @@ One of the nice things you can do with a List is iterate over it: >
+ This will loop over each element in List "alist", assigning each value to
+ variable "n".  The generic form of a for loop is: >
+ 
+-	for {varname} in {listexpression}
++	for {varname} in {list-expression}
+ 	  {commands}
+ 	endfor
+ 
+@@ -1629,7 +1686,10 @@ range() function creates one for you: >
+ 	2 ~
+ 
+ Notice that the first item of the List that range() produces is zero, thus the
+-last item is one less than the length of the list.
++last item is one less than the length of the list.  Detail: Internally range()
++does not actually create the list, so that a large range used in a for loop
++works efficiently.  When used elsewhere, the range is turned into an actual
++list, which takes more time for a long ist.
+ 
+ You can also specify the maximum value, the stride and even go backwards: >
+ 
+@@ -1640,15 +1700,17 @@ You can also specify the maximum value, the stride and even go backwards: >
+ 	6 ~
+ 	4 ~
+ 
+-A more useful example, looping over lines in the buffer: >
++A more useful example, looping over all the lines in the buffer: >
+ 
+-	for line in getline(1, 20)
++	for line in getline(1, 50)
+ 	  if line =~ "Date: "
+ 	    echo line
+ 	  endif
+ 	endfor
+ 
+-This looks into lines 1 to 20 (inclusive) and echoes any date found in there.
++This looks into lines 1 to 50 (inclusive) and echoes any date found in there.
++
++For further reading see |Lists|.
+ 
+ 
+ DICTIONARIES
+@@ -1700,8 +1762,7 @@ specific order: >
+ But you can never get back the order in which items are defined.  For that you
+ need to use a List, it stores items in an ordered sequence.
+ 
+-
+-For further reading see |Lists| and |Dictionaries|.
++For further reading see |Dictionaries|.
+ 
+ ==============================================================================
+ *41.9*	Exceptions
+@@ -1716,7 +1777,7 @@ Let's start with an example: >
+ 
+ The `read` command will fail if the file does not exist.  Instead of
+ generating an error message, this code catches the error and gives the user a
+-nice message.
++message with more information.
+ 
+ For the commands in between `try` and `endtry` errors are turned into
+ exceptions.  An exception is a string.  In the case of an error the string
+@@ -1725,12 +1786,12 @@ case, the error we catch contains "E484:".  This number is guaranteed to stay
+ the same (the text may change, e.g., it may be translated).
+ 
+ Besides being able to give a nice error message, Vim will also continue
+-executing commands.  Otherwise, once an uncaught error is encountered,
+-execution will be aborted.
++executing commands after the `:endtry`.  Otherwise, once an uncaught error is
++encountered, execution of the script/function/mapping will be aborted.
+ 
+ When the `read` command causes another error, the pattern "E484:" will not
+ match in it.  Thus this exception will not be caught and result in the usual
+-error message.
++error message and excecution is aborted.
+ 
+ You might be tempted to do this: >
+ 
+@@ -1742,7 +1803,7 @@ You might be tempted to do this: >
+ 
+ This means all errors are caught.  But then you will not see an error that
+ would indicate a completely different problem, such as "E21: Cannot make
+-changes, 'modifiable' is off".
++changes, 'modifiable' is off".  Think twice before you catch any error!
+ 
+ Another useful mechanism is the `finally` command: >
+ 
+@@ -1753,25 +1814,31 @@ Another useful mechanism is the `finally` command: >
+ 	   :.,$delete
+ 	   exe ":$read " .. tmp
+ 	finally
+-	   call delete(tmp)
++	   delete(tmp)
+ 	endtry
+ 
+ This filters the lines from the cursor until the end of the file through the
+ "filter" command, which takes a file name argument.  No matter if the
+-filtering works, something goes wrong in between `try` and `finally` or the
+-user cancels the filtering by pressing CTRL-C, the `call delete(tmp)` is
++filtering works, if something goes wrong in between `try` and `finally` or the
++user cancels the filtering by pressing CTRL-C, the `delete(tmp)` call is
+ always executed.  This makes sure you don't leave the temporary file behind.
+ 
++The `finally` does not catch the exception, the error will still abort
++further execution.
++
+ More information about exception handling can be found in the reference
+ manual: |exception-handling|.
+ 
+ ==============================================================================
+ *41.10*	Various remarks
+ 
+-Here is a summary of items that are useful to know when writing Vim scripts.
++Here are a few items that are useful to know when writing Vim scripts.
++
++
++FILEFORMAT
+ 
+ The end-of-line character depends on the system.  For Vim scripts it is
+-recommended to always use the Unix fileformat, this also works on any other
++recommended to always use the Unix fileformat.  This also works on any other
+ system.  That way you can copy your Vim scripts from MS-Windows to Unix and
+ they still work.  See |:source_crnl|.  To be sure it is set right, do this
+ before writing the file: >
+@@ -1793,11 +1860,11 @@ escaped by a "\" (backslash)  as in the following example: >
+ 
+ 	:set tags=my\ nice\ file
+ 
+-The same example written as: >
++If it would be written as: >
+ 
+ 	:set tags=my nice file
+ 
+-will issue an error, because it is interpreted as: >
++This will issue an error, because it is interpreted as: >
+ 
+ 	:set tags=my
+ 	:set nice
+@@ -1805,17 +1872,21 @@ will issue an error, because it is interpreted as: >
+ 
+ |Vim9| script is very picky when it comes to white space.  This was done
+ intentionally to make sure scripts are easy to read and to avoid mistakes.
++If you use white space sensibly it will just work.  When not you will get an
++error message telling you where white space is missing or should be removed.
+ 
+ 
+ COMMENTS
+ 
+-In |Vim9| script the character # starts a comment.  Everything after
+-and including this character until the end-of-line is considered a comment and
++In |Vim9| script the character # starts a comment.  That character and
++everything after it until the end-of-line is considered a comment and
+ is ignored, except for commands that don't consider comments, as shown in
+ examples below.  A comment can start on any character position on the line,
+-but not when it is part of the command, e.g. in a string.
++but not when it is part of the command, e.g. inside a string.
+ 
+ The character " (the double quote mark) starts a comment in legacy script.  
++This involves some cleverness to make sure double quoted strings are not
++recognized as comments (just one reason to prefer |Vim9| script).
+ 
+ There is a little "catch" with comments for some commands.  Examples: >
+ 
+@@ -1824,11 +1895,12 @@ There is a little "catch" with comments for some commands.  Examples: >
+ 	execute cmd		# do it
+ 	!ls *.c			# list C files
+ 
+-The abbreviation 'dev' will be expanded to 'development  # shorthand'.  The
+-mapping of <F3> will actually be the whole line after the 'o# ....' including
+-the '# insert include'.  The `execute` command will give an error.  The `!`
+-command will send everything after it to the shell, most likely causing an
+-error.
++- The abbreviation 'dev' will be expanded to 'development  # shorthand'.
++- The mapping of <F3> will actually be the whole line after the 'o# ....'
++  including the '# insert include'.
++- The `execute` command will give an error.
++- The `!` command will send everything after it to the shell, most likely
++  causing an error.
+ 
+ There can be no comment after `map`, `abbreviate`, `execute` and `!` commands
+ (there are a few more commands with this restriction).  For the `map`,
+@@ -1850,7 +1922,8 @@ trailing whitespace is included: >
+ 
+ 	map <F4> o#include  
+ 
+-To spot these problems, you can highlight trailing spaces: >
++Here it is intended, in other cases it might be accidental.  To spot these
++problems, you can highlight trailing spaces: >
+ 	match Search /\s\+$/
+ 
+ For Unix there is one special way to comment a line, that allows making a Vim
+@@ -1860,71 +1933,7 @@ script executable, and it also works in legacy script: >
+ 	quit
+ 
+ 
+-PITFALLS
+-
+-An even bigger problem arises in the following example: >
+-
+-	map ,ab o#include
+-	unmap ,ab 
+-
+-Here the unmap command will not work, because it tries to unmap ",ab ".  This
+-does not exist as a mapped sequence.  An error will be issued, which is very
+-hard to identify, because the ending whitespace character in `unmap ,ab ` is
+-not visible.
+-
+-And this is the same as what happens when one uses a comment after an 'unmap'
+-command: >
+-
+-	unmap ,ab     # comment
+-
+-Here the comment part will be ignored.  However, Vim will try to unmap
+-',ab     ', which does not exist.  Rewrite it as: >
+-
+-	unmap ,ab|    # comment
+-
+-
+-RESTORING THE VIEW
+-
+-Sometimes you want to make a change and go back to where the cursor was.
+-Restoring the relative position would also be nice, so that the same line
+-appears at the top of the window.
+-
+-This example yanks the current line, puts it above the first line in the file
+-and then restores the view: >
+-
+-	map ,p ma"aYHmbgg"aP`bzt`a
+-
+-What this does: >
+-	ma"aYHmbgg"aP`bzt`a
+-<	ma			set mark a at cursor position
+-	  "aY			yank current line into register a
+-	     Hmb		go to top line in window and set mark b there
+-		gg		go to first line in file
+-		  "aP		put the yanked line above it
+-		     `b		go back to top line in display
+-		       zt	position the text in the window as before
+-			 `a	go back to saved cursor position
+-
+-
+-PACKAGING
+-
+-Sometimes you will want to use global variables or functions, so that they can
+-be used anywhere.  A good example is a global variable that passes a
+-preference to a  plugin.  To avoid other scripts using the same name, use a
+-prefix that is very unlikely to be used elsewhere.  For example, if you have a
+-"mytags" plugin, you could use: >
+-
+-	g:mytags_location = '$HOME/project'
+-	g:mytags_style = 'fast'
+-
+-To minimize interference between plugins keep as much as possible local to the
+-script.  |Vim9| script helps you with that, by default functions and variables
+-are script-local.
+-
+-If you split your plugin into parts, you can use `import` and `export` to
+-share items between those parts.  See `:export` for the details.
+-
+-More information about writing plugins is in |usr_51.txt|.
++Advance information about writing Vim script is in |usr_50.txt|.
+ 
+ ==============================================================================
+ 
+diff --git a/runtime/doc/usr_50.txt b/runtime/doc/usr_50.txt
+index 0f87e6367..e4abf0534 100644
+--- a/runtime/doc/usr_50.txt
++++ b/runtime/doc/usr_50.txt
+@@ -1,22 +1,71 @@
+-*usr_50.txt*	For Vim version 8.2.  Last change: 2022 May 13
++*usr_50.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+ 			 Advanced Vim script writing
+ 
+ 
+-TODO - this chapter is to be written
+-
+-|50.1|	Writing stuff
++|50.1|	Line continuation
++|50.2|	Restoring the view
+ 
+      Next chapter: |usr_51.txt|  Create a plugin
+  Previous chapter: |usr_45.txt|  Select your language (local)
+ Table of contents: |usr_toc.txt|
+ 
+ ==============================================================================
+-*50.1*	Writing stuff
++*50.1*	Line continuation
++
++In legacy Vim script line contination is done by preceding a contination line
++with a backslash: >
++	let mylist = [
++			\ 'one',
++			\ 'two',
++			\ ]
++
++This requires the 'cpo' option to exclude the "C" flag.  Normally this is done
++by putting this at the start of the script: >
++	let s:save_cpo = &cpo
++	set cpo&vim
++
++And restore the option at the end of the script: >
++	let &cpo = s:save_cpo
++	unlet s:save_cpo
++
++A few more details can be found here: |line-continuation|.
++
++In |Vim9| script the backslash can still be used, but in most places it is not
++needed: >
++	var mylist = [
++			'one',
++			'two',
++			]
++
++Also, the 'cpo' option does not need to be changed.  See
++|vim9-line-continuation| for details.
++
++==============================================================================
++*50.2*	Restoring the view
++
++Sometimes you want to make a change and go back to where the cursor was.
++Restoring the relative position would also be nice, so that the same line
++appears at the top of the window.
++
++This example yanks the current line, puts it above the first line in the file
++and then restores the view: >
++
++	map ,p ma"aYHmbgg"aP`bzt`a
++
++What this does: >
++	ma"aYHmbgg"aP`bzt`a
++<	ma			set mark a at cursor position
++	  "aY			yank current line into register a
++	     Hmb		go to top line in window and set mark b there
++		gg		go to first line in file
++		  "aP		put the yanked line above it
++		     `b		go back to top line in display
++		       zt	position the text in the window as before
++			 `a	go back to saved cursor position
+ 
+-TODO
+ 
+ ==============================================================================
+ 
+diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
+index 2845ab815..73733f488 100644
+--- a/runtime/doc/usr_51.txt
++++ b/runtime/doc/usr_51.txt
+@@ -1,4 +1,4 @@
+-*usr_51.txt*	For Vim version 8.2.  Last change: 2022 May 14
++*usr_51.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -12,11 +12,9 @@ most common Vim plugins.
+ |51.1|	Writing a generic plugin
+ |51.2|	Writing a filetype plugin
+ |51.3|	Writing a compiler plugin
+-|51.4|	Writing a plugin that loads quickly
+-|51.5|	Writing library scripts
+-|51.6|	Distributing Vim scripts
++|51.4|	Distributing Vim scripts
+ 
+-     Next chapter: |usr_52.txt|  Write plugins using Vim9 script
++     Next chapter: |usr_52.txt|  Write large plugins
+  Previous chapter: |usr_50.txt|  Advanced Vim script writing
+ Table of contents: |usr_toc.txt|
+ 
+@@ -36,6 +34,9 @@ In this section the first type is explained.  Most items are also relevant for
+ writing filetype plugins.  The specifics for filetype plugins are in the next
+ section |write-filetype-plugin|.
+ 
++We will use |Vim9| syntax here, the recommended way to write new plugins.
++Make sure the file starts with the `vim9script` command.
++
+ 
+ NAME
+ 
+@@ -55,11 +56,11 @@ BODY
+ 
+ Let's start with the body of the plugin, the lines that do the actual work: >
+ 
+- 14	iabbrev teh the
+- 15	iabbrev otehr other
+- 16	iabbrev wnat want
+- 17	iabbrev synchronisation
+- 18		\ synchronization
++ 12	iabbrev teh the
++ 13	iabbrev otehr other
++ 14	iabbrev wnat want
++ 15	iabbrev synchronisation
++ 16		\ synchronization
+ 
+ The actual list should be much longer, of course.
+ 
+@@ -98,28 +99,6 @@ the top of the plugin should be sufficient.  Example: >
+   5	# License:	This file is placed in the public domain.
+ 
+ 
+-LINE CONTINUATION AND AVOIDING SIDE EFFECTS		 *use-cpo-save*
+-
+-In line 18 above, the line-continuation mechanism is used |line-continuation|.
+-Users with 'compatible' set will run into trouble here, they will get an error
+-message.  We can't just reset 'compatible', because that has a lot of side
+-effects.  Instead, we will set the 'cpoptions' option to its Vim default
+-value and restore it later.  That will allow the use of line-continuation and
+-make the script work for most people.  It is done like this: >
+-
+- 11	var save_cpo = &cpo
+- 12	set cpo&vim
+- ..
+- 42	&cpo = save_cpo
+-
+-We first store the old value of 'cpoptions' in the "save_cpo" variable.  At
+-the end of the plugin this value is restored.
+-
+-Notice that "save_cpo" is a script-local variable.  A global variable could
+-already be in use for something else.  Always use script-local variables for
+-things that are only used in the script.
+-
+-
+ NOT LOADING
+ 
+ It is possible that a user doesn't always want to load this plugin.  Or the
+@@ -153,7 +132,7 @@ for this mapping, but the user might already use it for something else.  To
+ allow the user to define which keys a mapping in a plugin uses, the <Leader>
+ item can be used: >
+ 
+- 22	  map <unique> <Leader>a  <Plug>TypecorrAdd;
++ 20	  map <unique> <Leader>a  <Plug>TypecorrAdd;
+ 
+ The "<Plug>TypecorrAdd;" thing will do the work, more about that further on.
+ 
+@@ -171,9 +150,9 @@ already happened to exist. |:map-<unique>|
+ But what if the user wants to define his own key sequence?  We can allow that
+ with this mechanism: >
+ 
+- 21	if !hasmapto('<Plug>TypecorrAdd;')
+- 22	  map <unique> <Leader>a  <Plug>TypecorrAdd;
+- 23	endif
++ 19	if !hasmapto('<Plug>TypecorrAdd;')
++ 20	  map <unique> <Leader>a  <Plug>TypecorrAdd;
++ 21	endif
+ 
+ This checks if a mapping to "<Plug>TypecorrAdd;" already exists, and only
+ defines the mapping from "<Leader>a" if it doesn't.  The user then has a
+@@ -196,11 +175,11 @@ would need to prefix the name with "s:".
+ 
+ We will define a function that adds a new typing correction: >
+ 
+- 30	def Add(from: string, correct: bool)
+- 31	  var to = input($"type the correction for {from}: ")
+- 32	  exe $":iabbrev {from} {to}"
+- ..
+- 36	enddef
++ 28	def Add(from: string, correct: bool)
++ 29	  var to = input($"type the correction for {from}: ")
++ 30	  exe $":iabbrev {from} {to}"
++ ...
++ 34	enddef
+ 
+ Now we can call the function Add() from within this script.  If another
+ script also defines Add(), it will be local to that script and can only
+@@ -210,9 +189,9 @@ which is again another function.
+ <SID> can be used with mappings.  It generates a script ID, which identifies
+ the current script.  In our typing correction plugin we use it like this: >
+ 
+- 24	noremap <unique> <script> <Plug>TypecorrAdd;  <SID>Add
+- ..
+- 28	noremap <SID>Add  :call <SID>Add(expand("<cword>"), true)<CR>
++ 22	noremap <unique> <script> <Plug>TypecorrAdd;  <SID>Add
++ ...
++ 26	noremap <SID>Add  :call <SID>Add(expand("<cword>"), true)<CR>
+ 
+ Thus when a user types "\a", this sequence is invoked: >
+ 
+@@ -232,7 +211,7 @@ Add() in other places (the script itself, autocommands, user commands).
+ 
+ We can also add a menu entry to do the same as the mapping: >
+ 
+- 26	noremenu <script> Plugin.Add\ Correction      <SID>Add
++ 24	noremenu <script> Plugin.Add\ Correction      <SID>Add
+ 
+ The "Plugin" menu is recommended for adding menu items for plugins.  In this
+ case only one item is used.  When adding more items, creating a submenu is
+@@ -276,9 +255,9 @@ USER COMMAND
+ 
+ Now let's add a user command to add a correction: >
+ 
+- 38	if !exists(":Correct")
+- 39	  command -nargs=1  Correct  :call Add(<q-args>, false)
+- 40	endif
++ 36	if !exists(":Correct")
++ 37	  command -nargs=1  Correct  :call Add(<q-args>, false)
++ 38	endif
+ 
+ The user command is defined only if no command with the same name already
+ exists.  Otherwise we would get an error here.  Overriding the existing user
+@@ -299,20 +278,21 @@ the same script again. |s:var|
+ 
+ The nice thing about |Vim9| script is that variables are local to the script
+ by default.  You can prepend "s:" if you like, but you do not need to.  And
+-functions in the script can also use the script variables without a prefix.
++functions in the script can also use the script variables without a prefix
++(they must be declared before the function for this to work).
+ 
+ Script-local variables can also be used in functions, autocommands and user
+ commands that are defined in the script.  Thus they are the perfect way to
+ share information between parts of your plugin, without it leaking out.  In
+ our example we can add a few lines to count the number of corrections: >
+ 
+- 19	var count = 4
+- ..
+- 30	def Add(from: string, correct: bool)
+- ..
+- 34	  count += 1
+- 35	  echo "you now have " .. count .. " corrections"
+- 36	enddef
++ 17	var count = 4
++ ...
++ 28	def Add(from: string, correct: bool)
++ ...
++ 32	  count += 1
++ 33	  echo "you now have " .. count .. " corrections"
++ 34	enddef
+ 
+ "count" is declared and initialized to 4 in the script itself.  When later
+ the Add() function is called, it increments "count".  It doesn't matter from
+@@ -334,40 +314,36 @@ Here is the resulting complete example: >
+   8	  finish
+   9	endif
+  10	g:loaded_typecorrect = 1
+- 11	var save_cpo = &cpo
+- 12	set cpo&vim
+- 13
+- 14	iabbrev teh the
+- 15	iabbrev otehr other
+- 16	iabbrev wnat want
+- 17	iabbrev synchronisation
+- 18		\ synchronization
+- 19	var count = 4
+- 20
+- 21	if !hasmapto('<Plug>TypecorrAdd;')
+- 22	  map <unique> <Leader>a  <Plug>TypecorrAdd;
+- 23	endif
+- 24	noremap <unique> <script> <Plug>TypecorrAdd;  <SID>Add
++ 11
++ 12	iabbrev teh the
++ 13	iabbrev otehr other
++ 14	iabbrev wnat want
++ 15	iabbrev synchronisation
++ 16		\ synchronization
++ 17	var count = 4
++ 18
++ 19	if !hasmapto('<Plug>TypecorrAdd;')
++ 20	  map <unique> <Leader>a  <Plug>TypecorrAdd;
++ 21	endif
++ 22	noremap <unique> <script> <Plug>TypecorrAdd;  <SID>Add
++ 23
++ 24	noremenu <script> Plugin.Add\ Correction      <SID>Add
+  25
+- 26	noremenu <script> Plugin.Add\ Correction      <SID>Add
++ 26	noremap <SID>Add  :call <SID>Add(expand("<cword>"), true)<CR>
+  27
+- 28	noremap <SID>Add  :call <SID>Add(expand("<cword>"), true)<CR>
+- 29
+- 30	def Add(from: string, correct: bool)
+- 31	  var to = input("type the correction for " .. from .. ": ")
+- 32	  exe ":iabbrev " .. from .. " " .. to
+- 33	  if correct | exe "normal viws\<C-R>\" \b\e" | endif
+- 34	  count += 1
+- 35	  echo "you now have " .. count .. " corrections"
+- 36	enddef
+- 37
+- 38	if !exists(":Correct")
+- 39	  command -nargs=1  Correct  call Add(<q-args>, false)
+- 40	endif
+- 41
+- 42	&cpo = save_cpo
+-
+-Line 33 wasn't explained yet.  It applies the new correction to the word under
++ 28	def Add(from: string, correct: bool)
++ 29	  var to = input("type the correction for " .. from .. ": ")
++ 30	  exe ":iabbrev " .. from .. " " .. to
++ 31	  if correct | exe "normal viws\<C-R>\" \b\e" | endif
++ 32	  count += 1
++ 33	  echo "you now have " .. count .. " corrections"
++ 34	enddef
++ 35
++ 36	if !exists(":Correct")
++ 37	  command -nargs=1  Correct  call Add(<q-args>, false)
++ 38	endif
++
++Line 31 wasn't explained yet.  It applies the new correction to the word under
+ the cursor.  The |:normal| command is used to use the new abbreviation.  Note
+ that mappings and abbreviations are expanded here, even though the function
+ was called from a mapping defined with ":noremap".
+@@ -413,24 +389,6 @@ Using references to other parts of the help in || is recommended.  This makes
+ it easy for the user to find associated help.
+ 
+ 
+-FILETYPE DETECTION					*plugin-filetype*
+-
+-If your filetype is not already detected by Vim, you should create a filetype
+-detection snippet in a separate file.  It is usually in the form of an
+-autocommand that sets the filetype when the file name matches a pattern.
+-Example: >
+-
+-	au BufNewFile,BufRead *.foo		setlocal filetype=foofoo
+-
+-Write this single-line file as "ftdetect/foofoo.vim" in the first directory
+-that appears in 'runtimepath'.  For Unix that would be
+-"~/.vim/ftdetect/foofoo.vim".  The convention is to use the name of the
+-filetype for the script name.
+-
+-You can make more complicated checks if you like, for example to inspect the
+-contents of the file to recognize the language.  Also see |new-filetype|.
+-
+-
+ SUMMARY							*plugin-special*
+ 
+ Summary of special things to use in a plugin:
+@@ -497,7 +455,7 @@ you can write the different setting in a script: >
+ Now write this in the "after" directory, so that it gets sourced after the
+ distributed "vim.vim" ftplugin |after-directory|.  For Unix this would be
+ "~/.vim/after/ftplugin/vim.vim".  Note that the default plugin will have set
+-"b:did_ftplugin", but it is ignored here.
++"b:did_ftplugin", it is ignored here.
+ 
+ 
+ OPTIONS
+@@ -591,6 +549,9 @@ This construct makes sure the function is only defined once: >
+ 	  enddef
+ 	endif
+ <
++Don't forget to use "noclear" with the `vim9script` command to avoid that the
++function is deleted when the script is sourced a second time.
++
+ 
+ UNDO						*undo_indent* *undo_ftplugin*
+ 
+@@ -598,15 +559,12 @@ When the user does ":setfiletype xyz" the effect of the previous filetype
+ should be undone.  Set the b:undo_ftplugin variable to the commands that will
+ undo the settings in your filetype plugin.  Example: >
+ 
+-	let b:undo_ftplugin = "setlocal fo< com< tw< commentstring<"
++	b:undo_ftplugin = "setlocal fo< com< tw< commentstring<"
+ 		\ .. "| unlet b:match_ignorecase b:match_words b:match_skip"
+ 
+ Using ":setlocal" with "<" after the option name resets the option to its
+ global value.  That is mostly the best way to reset the option value.
+ 
+-This does require removing the "C" flag from 'cpoptions' to allow line
+-continuation, as mentioned above |use-cpo-save|.
+-
+ For undoing the effect of an indent script, the b:undo_indent variable should
+ be set accordingly.
+ 
+@@ -625,6 +583,24 @@ these three forms:
+ "stuff" is the filetype, "foo" and "bar" are arbitrary names.
+ 
+ 
++FILETYPE DETECTION					*plugin-filetype*
++
++If your filetype is not already detected by Vim, you should create a filetype
++detection snippet in a separate file.  It is usually in the form of an
++autocommand that sets the filetype when the file name matches a pattern.
++Example: >
++
++	au BufNewFile,BufRead *.foo		setlocal filetype=foofoo
++
++Write this single-line file as "ftdetect/foofoo.vim" in the first directory
++that appears in 'runtimepath'.  For Unix that would be
++"~/.vim/ftdetect/foofoo.vim".  The convention is to use the name of the
++filetype for the script name.
++
++You can make more complicated checks if you like, for example to inspect the
++contents of the file to recognize the language.  Also see |new-filetype|.
++
++
+ SUMMARY							*ftplugin-special*
+ 
+ Summary of special things to use in a filetype plugin:
+@@ -693,149 +669,7 @@ last, thus it should be in a directory at the end of 'runtimepath'.  For Unix
+ that could be ~/.vim/after/compiler.
+ 
+ ==============================================================================
+-*51.4*	Writing a plugin that loads quickly	*write-plugin-quickload*
+-
+-A plugin may grow and become quite long.  The startup delay may become
+-noticeable, while you hardly ever use the plugin.  Then it's time for a
+-quickload plugin.
+-
+-The basic idea is that the plugin is loaded twice.  The first time user
+-commands and mappings are defined that offer the functionality.  The second
+-time the functions that implement the functionality are defined.
+-
+-It may sound surprising that quickload means loading a script twice.  What we
+-mean is that it loads quickly the first time, postponing the bulk of the
+-script to the second time, which only happens when you actually use it.  When
+-you always use the functionality it actually gets slower!
+-
+-This uses a FuncUndefined autocommand.  Since Vim 7 there is an alternative:
+-use the |autoload| functionality |51.5|.  That will also use |Vim9| script
+-instead of legacy script that is used here.
+-
+-The following example shows how it's done: >
+-
+-	" Vim global plugin for demonstrating quick loading
+-	" Last Change:	2005 Feb 25
+-	" Maintainer:	Bram Moolenaar <Bram@vim.org>
+-	" License:	This file is placed in the public domain.
+-
+-	if !exists("s:did_load")
+-		command -nargs=* BNRead  call BufNetRead(<f-args>)
+-		map <F19> :call BufNetWrite('something')<CR>
+-
+-		let s:did_load = 1
+-		exe 'au FuncUndefined BufNet* source ' .. expand('<sfile>')
+-		finish
+-	endif
+-
+-	function BufNetRead(...)
+-		echo 'BufNetRead(' .. string(a:000) .. ')'
+-		" read functionality here
+-	endfunction
+-
+-	function BufNetWrite(...)
+-		echo 'BufNetWrite(' .. string(a:000) .. ')'
+-		" write functionality here
+-	endfunction
+-
+-When the script is first loaded "s:did_load" is not set.  The commands between
+-the "if" and "endif" will be executed.  This ends in a |:finish| command, thus
+-the rest of the script is not executed.
+-
+-The second time the script is loaded "s:did_load" exists and the commands
+-after the "endif" are executed.  This defines the (possible long)
+-BufNetRead() and BufNetWrite() functions.
+-
+-If you drop this script in your plugin directory Vim will execute it on
+-startup.  This is the sequence of events that happens:
+-
+-1. The "BNRead" command is defined and the <F19> key is mapped when the script
+-   is sourced at startup.  A |FuncUndefined| autocommand is defined.  The
+-   ":finish" command causes the script to terminate early.
+-
+-2. The user types the BNRead command or presses the <F19> key.  The
+-   BufNetRead() or BufNetWrite() function will be called.
+-
+-3. Vim can't find the function and triggers the |FuncUndefined| autocommand
+-   event.  Since the pattern "BufNet*" matches the invoked function, the
+-   command "source fname" will be executed.  "fname" will be equal to the name
+-   of the script, no matter where it is located, because it comes from
+-   expanding "<sfile>" (see |expand()|).
+-
+-4. The script is sourced again, the "s:did_load" variable exists and the
+-   functions are defined.
+-
+-Notice that the functions that are loaded afterwards match the pattern in the
+-|FuncUndefined| autocommand.  You must make sure that no other plugin defines
+-functions that match this pattern.
+-
+-==============================================================================
+-*51.5*	Writing library scripts			*write-library-script*
+-
+-Some functionality will be required in several places.  When this becomes more
+-than a few lines you will want to put it in one script and use it from many
+-scripts.  We will call that one script a library script.
+-
+-Manually loading a library script is possible, so long as you avoid loading it
+-when it's already done.  You can do this with the |exists()| function.
+-Example: >
+-
+-	if !exists('*MyLibFunction')
+-	   runtime library/mylibscript.vim
+-	endif
+-	MyLibFunction(arg)
+-
+-Here you need to know that MyLibFunction() is defined in a script
+-"library/mylibscript.vim" in one of the directories in 'runtimepath'.
+-
+-To make this a bit simpler Vim offers the autoload mechanism.  Then the
+-example looks like this: >
+-
+-	mylib#myfunction(arg)
+-
+-That's a lot simpler, isn't it?  Vim will recognize the function name by the
+-embedded "#" character and when it's not defined search for the script
+-"autoload/mylib.vim" in 'runtimepath'.  That script must define the
+-"mylib#myfunction()" function.
+-
+-You can put many other functions in the mylib.vim script, you are free to
+-organize your functions in library scripts.  But you must use function names
+-where the part before the '#' matches the script name.  Otherwise Vim would
+-not know what script to load.
+-
+-If you get really enthusiastic and write lots of library scripts, you may
+-want to use subdirectories.  Example: >
+-
+-	netlib#ftp#read('somefile')
+-
+-For Unix the library script used for this could be:
+-
+-	~/.vim/autoload/netlib/ftp.vim
+-
+-Where the function is defined like this: >
+-
+-	def netlib#ftp#read(fname: string)
+-		#  Read the file fname through ftp
+-	enddef
+-
+-Notice that the name the function is defined with is exactly the same as the
+-name used for calling the function.  And the part before the last '#'
+-exactly matches the subdirectory and script name.
+-
+-You can use the same mechanism for variables: >
+-
+-	var weekdays = dutch#weekdays
+-
+-This will load the script "autoload/dutch.vim", which should contain something
+-like: >
+-
+-	var dutch#weekdays = ['zondag', 'maandag', 'dinsdag', 'woensdag',
+-		\ 'donderdag', 'vrijdag', 'zaterdag']
+-
+-Further reading: |autoload|.
+-
+-==============================================================================
+-*51.6*	Distributing Vim scripts			*distribute-script*
++*51.4*	Distributing Vim scripts			*distribute-script*
+ 
+ Vim users will look for scripts on the Vim website: http://www.vim.org.
+ If you made something that is useful for others, share it!
+@@ -855,6 +689,6 @@ It's good if you add a line to allow automatic updating.  See |glvs-plugins|.
+ 
+ ==============================================================================
+ 
+-Next chapter: |usr_52.txt|  Write plugins using Vim9 script
++Next chapter: |usr_52.txt|  Write large plugins
+ 
+ Copyright: see |manual-copyright|  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index 375fa5dd3..0461d8ec6 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
+@@ -1,25 +1,27 @@
+-*usr_52.txt*	For Vim version 8.2.  Last change: 2022 May 21
++*usr_52.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+-		       Write plugins using Vim9 script
++		       Write larger plugins
+ 
++TODO: this file needs to be updated
+ 
+-The Vim9 script language is used for writing plugins, especially larger ones
+-that use multiple files.  This chapter explains how to split up a plugin into
+-modules, import and export items and keep the rest local.
++When plugins do more than simple things, they tend to grow big.  This file
++explains how to make sure they still load fast and how to split them up in
++smaller parts
+ 
+-|52.1|	Introduction
+-|52.2|	Variable declarations
+-|52.3|	Functions and types
+-|52.4|	Using a Vim9 script from legacy script
++|52.1|	Export and import
++|52.2|	Autoloading
++|52.3|	Autoloading without import/export
++|52.4|	Other mechanisms to use
++|52.5|	Using a Vim9 script from legacy script
+ 
+      Next chapter: |usr_90.txt|  Installing Vim
+  Previous chapter: |usr_51.txt|  Create a plugin
+ Table of contents: |usr_toc.txt|
+ 
+ ==============================================================================
+-*52.1*	Introduction				*vim9-script-intro*
++*52.1*	Export and import
+ 
+ Vim9 script was designed to make it easier to write large Vim scripts.  It
+ looks more like other script languages, especially Typescript.  Also,
+@@ -65,104 +67,190 @@ the return type.  Vim9 functions, defined with `def`, require specifying the
+ type of arguments and the return type.  That way Vim can compile the code
+ efficiently.  The GetPart function defines an argument "nr" of type "number".
+ 
+-Notice that the assignment `result = GetPart(count)` does not use the `let`
+-command.  That is explained in the next section.
++TODO: import/export example
++
++USING GLOBALS
++
++Sometimes you will want to use global variables or functions, so that they can
++be used anywhere.  A good example is a global variable that passes a
++preference to a plugin.  To avoid other scripts using the same name, use a
++prefix that is very unlikely to be used elsewhere.  For example, if you have a
++"mytags" plugin, you could use: >
++
++	g:mytags_location = '$HOME/project'
++	g:mytags_style = 'fast'
+ 
+ ==============================================================================
+-*52.2*	Variable declarations				*vim9-declarations*
+-
+-In Vim9 script variables are declared once with a `:let` or `:const` command.
+-Assigning a value is done without `:let` and it is not possible to `:unlet`
+-the variable.
+-
+-In most cases you will want to declare the variable and initialize it at the
+-same time: >
+-	let myText = 'some text'
+-	...
+-	myText = 'other text'
+-
+-The type of the variable will be inferred from the expression.  In this case
+-it is a string.  If you initialize with a number, then the type is number: >
+-	let myNumber = 1234
+-	...
+-	myNumber = 0
+-
+-If you try to assign a string to this variable, you will get an error: >
+-	let myNumber = 'this fails!'
+-
+-In the rare case you want a variable that can take values of any type, you
+-have to specify the type: >
+-	let myVar: any = 1234
+-	myVar = 'text also works'
+-
+-You can also declare a variable without assigning a value.  In that case Vim
+-will initialize it to zero or empty: >
+-	let word: string
+-	if condition
+-	  word = 'yes'
+-	else
+-	  word = 'no'
+-	endif
++*52.2*	Autoloading
++
++TODO: autoloading with import/export
++
++After splitting your large script into pieces, all the lines will still be
++loaded and executed the moment the script is used.  Every `import` loads the
++imported script to find the items defined there.  Although that is good for
++finding errors early, it also takes time.  Which is wasted if the
++functionality is not often used.
++
++Instead of having `import` load the script immediately, it can be postponed
++until needed. >
++	import autoload "./LoadLater.vim"
+ 
+-Although it's shorter to do: >
+-	let word = condition ? 'yes' : 'no'
++Now you can use exported items as usual: "LoadLater.GetMonth(4)".
++However, the type will not be checked. Not even the existence of the
++GetMonth() function is checked until it is used.  You will have to decide what
++is more important for your script.  You can also add the "autoload" argument
++later, after you have checked everything works.
++
++Another form is to use a script name that is not an absolute or relative
++path: >
++	import autload "monthlib.vim"
++
++This will search for the script "monthlib.vim" in the autoload directories of
++'runtimepath'.  With Unix the directory often is "~/.vim/autoload".
++
++The main advantage of this is that this script can be shared with other
++scripts.  You do need to make sure that the script name is unique, since Vim
++will search all the "autoload" directories in 'runtimepath', and if you are
++using several plugins, these may add several directories to 'runtimepath',
++each of which might have an "autoload" directory.
+ 
+ ==============================================================================
+-*52.3*	Functions and types
+-
+-Legacy Vim script only checks types at runtime, when the code is executed.
+-And it's permissive, often a computation gives an unexpected value instead of
+-reporting an error.  Thus you can define a function and think it's fine, but
+-notice a problem only later when the function is called: >
+-	func Concatenate(base, add)
+-	   return a:base + a:add
+-	endfunc
+-
+-Can you spot the error?  Try this: >
+-	echo Concatenate('base', 'text')
+-And you'll see zero.  Why?  Because in legacy Vim script "+" will convert the
+-arguments to numbers, and any string without a number results in zero!  That's
+-not what you expected.
+-
+-With `:def` the type checking happens when compiling the function.  You need
+-to specify the argument types and the return type to make that possible.  Also
+-notice that the argument names are used without the "a:" prefix: >
+-	def Concatenate(base: string, add: string): string
+-	   return base + add
+-	enddef
+-	defcompile Concatenate
+-
+-Here we use `:defcompile` to do the compilation right away, without it the
+-compilation would happen when the function is first called.  Vim will tell you
+-what you did wrong: >
+-	E1051: Wrong argument type for +
+-
+-Side note: here the context is legacy script.  When using Vim9 script you
+-would put `:defcompile` at the end of the script to check for errors in all
+-the functions defined in it.
+-
+-Vim9 script is strict, it uses the "+" operator only for numbers and floats.
+-For string concatenation ".." must be used.  This avoids mistakes and avoids
+-the automatic conversion that gave a surprising result above.  So you change
+-the first line of the function to: >
+-	   s:collected ..= add
+-And now it works.
+-
+-If the function does not return anything, just leave out the return type: >
+-	def ReportResult(result: string)
+-	   echo 'The result is: ' .. result
+-	enddef
++*52.3*	Autoloading without import/export
++
++						*write-library-script*
++A mechanism from before import/export is still useful and some users may find
++it a bit simpler.  The idea is that you call a function with a special name.
++That function is then in an autoload script.  We will call that one script a
++library script.
+ 
+-This is also checked, if you try to return a value you'll get an error.
++The autoload mechanism is based on a funtion name that has "#" characters: >
+ 
+-In case you don't care about types or have a function that does work with
+-multiple types, you can use the "any" type: >
+-	def Store(key: string, value: any)
+-	  resultDict[key] = value
++	mylib#myfunction(arg)
++
++Vim will recognize the function name by the embedded "#" character and when
++it is not defined yet search for the script "autoload/mylib.vim" in
++'runtimepath'.  That script must define the "mylib#myfunction()" function.
++Obviously the name "mylib" is the part before the "#" and is used as the name
++of the script, adding ".vim".
++
++You can put many other functions in the mylib.vim script, you are free to
++organize your functions in library scripts.  But you must use function names
++where the part before the '#' matches the script name.  Otherwise Vim would
++not know what script to load.  This is where it differs from the import/export
++mechanism.
++
++If you get really enthusiastic and write lots of library scripts, you may
++want to use subdirectories.  Example: >
++
++	netlib#ftp#read('somefile')
++
++Here the script name is taken from the function name up to the last "#". The
++"#" in the middle are replaced by a slash, the last one by ".vim".  Thus you
++get "netlib/ftp.vim".  For Unix the library script used for this could be:
++
++	~/.vim/autoload/netlib/ftp.vim
++
++Where the function is defined like this: >
++
++	def netlib#ftp#read(fname: string)
++		#  Read the file fname through ftp
+ 	enddef
+ 
++Notice that the name the function is defined with is exactly the same as the
++name used for calling the function.  And the part before the last '#'
++exactly matches the subdirectory and script name.
++
++You can use the same mechanism for variables: >
++
++	var weekdays = dutch#weekdays
++
++This will load the script "autoload/dutch.vim", which should contain something
++like: >
++
++	var dutch#weekdays = ['zondag', 'maandag', 'dinsdag', 'woensdag',
++		\ 'donderdag', 'vrijdag', 'zaterdag']
++
++Further reading: |autoload|.
++
++==============================================================================
++*52.4*	Other mechanisms to use
++
++Some may find the use of several files a hassle and prefer to keep everything
++together in one script.  To avoid this resulting in slow startup there is a
++mechanism that only defines a small part and postpones the rest to when it is
++actually used.  *write-plugin-quickload*
++
++The basic idea is that the plugin is loaded twice.  The first time user
++commands and mappings are defined that offer the functionality.  The second
++time the functions that implement the functionality are defined.
++
++It may sound surprising that quickload means loading a script twice.  What we
++mean is that it loads quickly the first time, postponing the bulk of the
++script to the second time, which only happens when you actually use it.  When
++you always use the functionality it actually gets slower!
++
++This uses a FuncUndefined autocommand.  This works differently from the
++|autoload| functionality explained above.
++
++The following example shows how it's done: >
++
++	" Vim global plugin for demonstrating quick loading
++	" Last Change:	2005 Feb 25
++	" Maintainer:	Bram Moolenaar <Bram@vim.org>
++	" License:	This file is placed in the public domain.
++
++	if !exists("s:did_load")
++		command -nargs=* BNRead  call BufNetRead(<f-args>)
++		map <F19> :call BufNetWrite('something')<CR>
++
++		let s:did_load = 1
++		exe 'au FuncUndefined BufNet* source ' .. expand('<sfile>')
++		finish
++	endif
++
++	function BufNetRead(...)
++		echo 'BufNetRead(' .. string(a:000) .. ')'
++		" read functionality here
++	endfunction
++
++	function BufNetWrite(...)
++		echo 'BufNetWrite(' .. string(a:000) .. ')'
++		" write functionality here
++	endfunction
++
++When the script is first loaded "s:did_load" is not set.  The commands between
++the "if" and "endif" will be executed.  This ends in a |:finish| command, thus
++the rest of the script is not executed.
++
++The second time the script is loaded "s:did_load" exists and the commands
++after the "endif" are executed.  This defines the (possible long)
++BufNetRead() and BufNetWrite() functions.
++
++If you drop this script in your plugin directory Vim will execute it on
++startup.  This is the sequence of events that happens:
++
++1. The "BNRead" command is defined and the <F19> key is mapped when the script
++   is sourced at startup.  A |FuncUndefined| autocommand is defined.  The
++   ":finish" command causes the script to terminate early.
++
++2. The user types the BNRead command or presses the <F19> key.  The
++   BufNetRead() or BufNetWrite() function will be called.
++
++3. Vim can't find the function and triggers the |FuncUndefined| autocommand
++   event.  Since the pattern "BufNet*" matches the invoked function, the
++   command "source fname" will be executed.  "fname" will be equal to the name
++   of the script, no matter where it is located, because it comes from
++   expanding "<sfile>" (see |expand()|).
++
++4. The script is sourced again, the "s:did_load" variable exists and the
++   functions are defined.
++
++Notice that the functions that are loaded afterwards match the pattern in the
++|FuncUndefined| autocommand.  You must make sure that no other plugin defines
++functions that match this pattern.
++
+ ==============================================================================
+-*52.4*	Using a Vim9 script from legacy script		*source-vim9-script*
++*52.5*	Using a Vim9 script from legacy script		*source-vim9-script*
+ 
+ In some cases you have a legacy Vim script where you want to use items from a
+ Vim9 script.  For example in your .vimrc you want to initialize a plugin.  The
+@@ -190,4 +278,5 @@ will have to make sure to use a unique name for these global items. Example: >
+ 
+ Next chapter: |usr_90.txt|  Installing Vim
+ 
++
+ Copyright: see |manual-copyright|  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
+index d2173a08c..268f7cf76 100644
+--- a/runtime/doc/usr_toc.txt
++++ b/runtime/doc/usr_toc.txt
+@@ -1,4 +1,4 @@
+-*usr_toc.txt*	For Vim version 8.2.  Last change: 2022 May 13
++*usr_toc.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -341,21 +341,22 @@ Make Vim work as you like it.
+ ==============================================================================
+ Writing Vim script ~
+ 
+-|usr_50.txt|  TODO
++|usr_50.txt|  Advanced Vim script writing
++		|50.1|	Line continuation
++		|50.2|	Restoring the view
+ 
+ |usr_51.txt|  Write plugins
+ 		|51.1|	Writing a generic plugin
+ 		|51.2|	Writing a filetype plugin
+ 		|51.3|	Writing a compiler plugin
+-		|51.4|	Writing a plugin that loads quickly
+-		|51.5|	Writing library scripts
+-		|51.6|	Distributing Vim scripts
+-
+-|usr_52.txt|  Write plugins using Vim9 script
+-		|52.1|	Introduction
+-		|52.2|	Variable declarations
+-		|52.3|	Functions and types
+-		|52.4|	Using a Vim9 script from legacy script
++		|51.4|	Distributing Vim scripts
++
++|usr_52.txt|  Write larger plugins
++		|52.1|	Export and import
++		|52.2|	Autoloading
++		|52.3|	Autoloading without import/export
++		|52.4|	Other mechanisms to use
++		|52.5|	Using a Vim9 script from legacy script
+ 
+ ==============================================================================
+ Making Vim Run ~
