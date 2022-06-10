@@ -1,30 +1,762 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 799b856a7..932570c60 100644
+index 932570c60..c9db88490 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -5076,14 +5076,23 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			"space" setting is used.  For example,
- 			`:set listchars=multispace:---+` shows ten consecutive
- 			spaces as:
--				---+---+--
-+				---+---+-- ~
- 							*lcs-lead*
- 	  lead:c	Character to show for leading spaces.  When omitted,
- 			leading spaces are blank.  Overrides the "space" and
- 			"multispace" settings for leading spaces.  You can
- 			combine it with "tab:", for example: >
- 				:set listchars+=tab:>-,lead:.
--<							*lcs-trail*
-+<							*lcs-leadmultispace*
-+	  leadmultispace:c...
-+			Like multispace value, but only for leading whitespace
-+			Overrides |lcs-lead| for leading multiple spaces.
-+			`:set listchars=leadmultispace:---+` shows ten consecutive
-+			leading spaces as:
-+				---+---+--XXX ~
-+			Where "XXX" denotes the first non-blank characters in
-+			the line.
-+							*lcs-trail*
- 	  trail:c	Character to show for trailing spaces.  When omitted,
- 			trailing spaces are blank.  Overrides the "space" and
- 			"multispace" settings for trailing spaces.
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 02
++*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index f68bf4271..4004c632d 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 8.2.  Last change: 2022 May 23
++*terminal.txt*	For Vim version 8.2.  Last change: 2022 Jun 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -101,7 +101,7 @@ The special key combination CTRL-\ CTRL-N can be used to switch to Normal
+ mode, just like this works in any other mode.
+ 							*t_CTRL-W_CTRL-C*
+ CTRL-W CTRL-C can be typed to forcefully end the job.  On MS-Windows a
+-CTRL-BREAK will also kill the job.
++CTRL-Break will also kill the job.
+ 
+ If you type CTRL-C the effect depends on what the pty has been configured to
+ do.  For simple commands this causes a SIGINT to be sent to the job, which
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 8cf50b3dd..bd86b20cb 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 05
++*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -245,6 +245,9 @@ Memory leaks in test_channel? (or is it because of fork())
+ 
+ PR to support %e and %k in 'errorformat'. #9624
+ 
++With a window height of 6 and 'scrolloff' set to 3, using "j" does not scroll
++evenly. (#10545)
++
+ Idea: when typing ":e /some/dir/" and "dir" does not exist, highlight in red.
+ 
+ ":set &shellpipe" and ":set &shellredir" should use the logic from
+@@ -306,6 +309,8 @@ inconsistent with the documentation.
+ 
+ globpath() does not use 'wildignorecase' at all? (related to #8350)
+ 
++Add a "--gui-dialog-file" argument, to be used in tests to avoid getting stuck.
++
+ Add 'termguiattr' option, use "gui=" attributes in the terminal?  Would work
+ with 'termguicolors'. #1740
+ 
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 6d135364b..ba3cd2eda 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -17,8 +17,10 @@ script.  There are a lot of them, therefore this is a long chapter.
+ |41.6|	Using functions
+ |41.7|	Defining a function
+ |41.8|	Lists and Dictionaries
+-|41.9|	Exceptions
+-|41.10|	Various remarks
++|41.9|	White space
++|41.10|	Line continuation
++|41.11|	Comments
++|41.12|	Fileformat
+ 
+      Next chapter: |usr_42.txt|  Add new menus
+  Previous chapter: |usr_40.txt|  Make new commands
+@@ -112,7 +114,7 @@ the links if you are impatient.
+ TRYING OUT EXAMPLES
+ 
+ You can easily try out most examples in these help files without saving the
+-commands in a file.  For example, to try out the "for" loop above do this:
++commands to a file.  For example, to try out the "for" loop above do this:
+ 1. position the cursor on the "for"
+ 2. start Visual mode with "v"
+ 3. move down to the "endfor"
+@@ -195,7 +197,7 @@ cannot start with a digit.  Valid variable names are:
+ 	CamelCaseName
+ 	LENGTH
+ 
+-Invalid names are "foo+bar" and "6var".
++Invalid names are "foo.bar" and "6var".
+ 
+ Some variables are global.  To see a list of currently defined global
+ variables type this command: >
+@@ -684,8 +686,8 @@ search() function uses its first argument as a search pattern and the second
+ one as flags.  The "W" flag means the search doesn't wrap around the end of
+ the file.
+ 
+-Using the  `call` command is optional in |Vim9| script.  This works the same
+-way and also works in legacy script and on the command line: >
++Using the  `call` command is optional in |Vim9| script.  It is required in
++legacy script and on the command line: >
+ 
+ 	call search("Date: ", "W")
+ 
+@@ -711,7 +713,7 @@ statements is equal to: >
+ 
+ 	:substitute/\a/*/g
+ 
+-Using the functions becomes more interesting when you do more work before and
++Using the functions becomes interesting when you do more work before and
+ after the substitute() call.
+ 
+ 
+@@ -1402,8 +1404,9 @@ Let's assign the variable "smaller" the value of the smallest number: >
+ 	  smaller = num2
+ 	endif
+ 
+-The variable "smaller" is a local variable.  Variables used inside a function
+-are local unless prefixed by something like "g:", "w:", or "s:".
++The variable "smaller" is a local variable.  It is declared to be a number,
++that way Vim can warn you for any mistakes.  Variables used inside a function
++are local unless prefixed by something like "g:", "w:", or "b:".
+ 
+ 	Note:
+ 	To access a global variable from inside a function you must prepend
+@@ -1469,6 +1472,10 @@ For a function that does not return anything simply leave out the return type: >
+ 	  echo text
+ 	enddef
+ 
++If you want to return any kind of value, you can use the "any" return type: >
++	def GetValue(): any
++This disables type checking for the return value, use only when needed.
++
+ It is also possible to define a legacy function with `function` and
+ `endfunction`.  These do not have types and are not compiled.  Therefore they
+ execute much slower.
+@@ -1485,47 +1492,12 @@ once for every line in the range, with the cursor in that line.  Example: >
+ 
+ If you call this function with: >
+ 
+-	:10,15call Number()
++	:10,15Number()
+ 
+ The function will be called six times, starting on line 10 and ending on line
+ 15.
+ 
+ 
+-VARIABLE NUMBER OF ARGUMENTS
+-
+-Vim enables you to define functions that have a variable number of arguments.
+-The following command, for instance, defines a function that must have 1
+-argument (start) and can have up to 20 additional arguments: >
+-
+-	def Show(start: string, ...items: list<string>)
+-
+-The variable "items" will be a list in the function containing the extra
+-arguments.  You can use it like any list, for example: >
+-
+-	def Show(start: string, ...items: list<string>)
+-	  echohl Title
+-	  echo "start is " .. start
+-	  echohl None
+-	  for index in range(len(items))
+-	    echon $"  Arg {index} is {items[index]}"
+-	  endfor
+-	  echo
+-	enddef
+-
+-You can call it like this: >
+-
+-	Show('Title', 'one', 'two', 'three')
+-<	start is Title  Arg 0 is one  Arg 1 is two  Arg 2 is three ~
+-	
+-This uses the `echohl` command to specify the highlighting used for the
+-following `echo` command.  `echohl None` stops it again.  The `echon` command
+-works like `echo`, but doesn't output a line break.
+-
+-If you call it with one argument the "items" list will be empty.
+-`range(len(items))` returns a list with the indexes, what `for` loops over,
+-we'll explain that further down.
+-
+-
+ LISTING FUNCTIONS
+ 
+ The `function` command lists the names and arguments of all user-defined
+@@ -1606,6 +1578,11 @@ Note that the name of a variable that holds a function reference must start
+ with a capital.  Otherwise it could be confused with the name of a builtin
+ function.
+ 
++
++FURTHER READING
++
++Using a variable number of arguments is introduced in section |50.2|.
++
+ More information about defining your own functions here: |user-functions|.
+ 
+ ==============================================================================
+@@ -1766,95 +1743,16 @@ need to use a List, it stores items in an ordered sequence.
+ For further reading see |Dictionaries|.
+ 
+ ==============================================================================
+-*41.9*	Exceptions
+-
+-Let's start with an example: >
+-
+-	try
+-	   read ~/templates/pascal.tmpl
+-	catch /E484:/
+-	   echo "Sorry, the Pascal template file cannot be found."
+-	endtry
+-
+-The `read` command will fail if the file does not exist.  Instead of
+-generating an error message, this code catches the error and gives the user a
+-message with more information.
+-
+-For the commands in between `try` and `endtry` errors are turned into
+-exceptions.  An exception is a string.  In the case of an error the string
+-contains the error message.  And every error message has a number.  In this
+-case, the error we catch contains "E484:".  This number is guaranteed to stay
+-the same (the text may change, e.g., it may be translated).
+-
+-Besides being able to give a nice error message, Vim will also continue
+-executing commands after the `:endtry`.  Otherwise, once an uncaught error is
+-encountered, execution of the script/function/mapping will be aborted.
+-
+-When the `read` command causes another error, the pattern "E484:" will not
+-match in it.  Thus this exception will not be caught and result in the usual
+-error message and execution is aborted.
+-
+-You might be tempted to do this: >
+-
+-	try
+-	   read ~/templates/pascal.tmpl
+-	catch
+-	   echo "Sorry, the Pascal template file cannot be found."
+-	endtry
+-
+-This means all errors are caught.  But then you will not see an error that
+-would indicate a completely different problem, such as "E21: Cannot make
+-changes, 'modifiable' is off".  Think twice before you catch any error!
+-
+-Another useful mechanism is the `finally` command: >
+-
+-	var tmp = tempname()
+-	try
+-	   exe ":.,$write " .. tmp
+-	   exe "!filter " .. tmp
+-	   :.,$delete
+-	   exe ":$read " .. tmp
+-	finally
+-	   delete(tmp)
+-	endtry
+-
+-This filters the lines from the cursor until the end of the file through the
+-"filter" command, which takes a file name argument.  No matter if the
+-filtering works, if something goes wrong in between `try` and `finally` or the
+-user cancels the filtering by pressing CTRL-C, the `delete(tmp)` call is
+-always executed.  This makes sure you don't leave the temporary file behind.
+-
+-The `finally` does not catch the exception, the error will still abort
+-further execution.
+-
+-More information about exception handling can be found in the reference
+-manual: |exception-handling|.
+-
+-==============================================================================
+-*41.10*	Various remarks
+-
+-Here are a few items that are useful to know when writing Vim scripts.
+-
+-
+-FILEFORMAT
+-
+-The end-of-line character depends on the system.  For Vim scripts it is
+-recommended to always use the Unix fileformat.  This also works on any other
+-system.  That way you can copy your Vim scripts from MS-Windows to Unix and
+-they still work.  See |:source_crnl|.  To be sure it is set right, do this
+-before writing the file: >
+-
+-	:setlocal fileformat=unix
+-
+-
+-WHITE SPACE
++*41.9*	White space
+ 
+ Blank lines are allowed and ignored.
+ 
+ Leading whitespace characters (blanks and TABs) are always ignored.
+ 
+ Trailing whitespace is often ignored, but not always.  One command that
+-includes it is `map`.
++includes it is `map`.  You have to watch out for that, it can cause hard to
++understand mistakes.  A generic solution is to never use trailing white space,
++unless you really need it.
+ 
+ To include a whitespace character in the value of an option, it must be
+ escaped by a "\" (backslash)  as in the following example: >
+@@ -1876,8 +1774,39 @@ intentionally to make sure scripts are easy to read and to avoid mistakes.
+ If you use white space sensibly it will just work.  When not you will get an
+ error message telling you where white space is missing or should be removed.
+ 
++==============================================================================
++*41.10*	Line continuation
++
++In legacy Vim script line continuation is done by preceding a continuation
++line with a backslash: >
++	let mylist = [
++			\ 'one',
++			\ 'two',
++			\ ]
++
++This requires the 'cpo' option to exclude the "C" flag.  Normally this is done
++by putting this at the start of the script: >
++	let s:save_cpo = &cpo
++	set cpo&vim
++
++And restore the option at the end of the script: >
++	let &cpo = s:save_cpo
++	unlet s:save_cpo
++
++A few more details can be found here: |line-continuation|.
++
++In |Vim9| script the backslash can still be used, but in most places it is not
++needed: >
++	var mylist = [
++			'one',
++			'two',
++			]
++
++Also, the 'cpo' option does not need to be changed.  See
++|vim9-line-continuation| for details.
+ 
+-COMMENTS
++==============================================================================
++*41.11*	Comments
+ 
+ In |Vim9| script the character # starts a comment.  That character and
+ everything after it until the end-of-line is considered a comment and
+@@ -1933,11 +1862,21 @@ script executable, and it also works in legacy script: >
+ 	echo "this is a Vim script"
+ 	quit
+ 
++==============================================================================
++*41.12*	Fileformat
+ 
+-Advance information about writing Vim script is in |usr_50.txt|.
++The end-of-line character depends on the system.  For Vim scripts it is
++recommended to always use the Unix fileformat.  This also works on any other
++system.  That way you can copy your Vim scripts from MS-Windows to Unix and
++they still work.  See |:source_crnl|.  To be sure it is set right, do this
++before writing the file: >
++
++	:setlocal fileformat=unix
+ 
+ ==============================================================================
+ 
++Advance information about writing Vim script is in |usr_50.txt|.
++
+ Next chapter: |usr_42.txt|  Add new menus
+ 
+ Copyright: see |manual-copyright|  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/usr_50.txt b/runtime/doc/usr_50.txt
+index 2dff27e04..417bdd2ca 100644
+--- a/runtime/doc/usr_50.txt
++++ b/runtime/doc/usr_50.txt
+@@ -5,46 +5,116 @@
+ 			 Advanced Vim script writing
+ 
+ 
+-|50.1|	Line continuation
+-|50.2|	Restoring the view
++|50.1|	Exceptions
++|50.2|    Function with variable number of arguments
++|50.3|	Restoring the view
+ 
+      Next chapter: |usr_51.txt|  Create a plugin
+  Previous chapter: |usr_45.txt|  Select your language (local)
+ Table of contents: |usr_toc.txt|
+ 
+ ==============================================================================
+-*50.1*	Line continuation
++*50.1*	Exceptions
++
++Let's start with an example: >
++
++	try
++	   read ~/templates/pascal.tmpl
++	catch /E484:/
++	   echo "Sorry, the Pascal template file cannot be found."
++	endtry
++
++The `read` command will fail if the file does not exist.  Instead of
++generating an error message, this code catches the error and gives the user a
++message with more information.
++
++For the commands in between `try` and `endtry` errors are turned into
++exceptions.  An exception is a string.  In the case of an error the string
++contains the error message.  And every error message has a number.  In this
++case, the error we catch contains "E484:".  This number is guaranteed to stay
++the same (the text may change, e.g., it may be translated).
++
++Besides being able to give a nice error message, Vim will also continue
++executing commands after the `:endtry`.  Otherwise, once an uncaught error is
++encountered, execution of the script/function/mapping will be aborted.
++
++When the `read` command causes another error, the pattern "E484:" will not
++match in it.  Thus this exception will not be caught and result in the usual
++error message and execution is aborted.
++
++You might be tempted to do this: >
++
++	try
++	   read ~/templates/pascal.tmpl
++	catch
++	   echo "Sorry, the Pascal template file cannot be found."
++	endtry
++
++This means all errors are caught.  But then you will not see an error that
++would indicate a completely different problem, such as "E21: Cannot make
++changes, 'modifiable' is off".  Think twice before you catch any error!
++
++Another useful mechanism is the `finally` command: >
++
++	var tmp = tempname()
++	try
++	   exe ":.,$write " .. tmp
++	   exe "!filter " .. tmp
++	   :.,$delete
++	   exe ":$read " .. tmp
++	finally
++	   delete(tmp)
++	endtry
++
++This filters the lines from the cursor until the end of the file through the
++"filter" command, which takes a file name argument.  No matter if the
++filtering works, if something goes wrong in between `try` and `finally` or the
++user cancels the filtering by pressing CTRL-C, the `delete(tmp)` call is
++always executed.  This makes sure you don't leave the temporary file behind.
++
++The `finally` does not catch the exception, the error will still abort
++further execution.
++
++More information about exception handling can be found in the reference
++manual: |exception-handling|.
+ 
+-In legacy Vim script line continuation is done by preceding a continuation
+-line with a backslash: >
+-	let mylist = [
+-			\ 'one',
+-			\ 'two',
+-			\ ]
++==============================================================================
++*50.2*	Function with variable number of arguments
++
++Vim enables you to define functions that have a variable number of arguments.
++The following command, for instance, defines a function that must have 1
++argument (start) and can have up to 20 additional arguments: >
++
++	def Show(start: string, ...items: list<string>)
+ 
+-This requires the 'cpo' option to exclude the "C" flag.  Normally this is done
+-by putting this at the start of the script: >
+-	let s:save_cpo = &cpo
+-	set cpo&vim
++The variable "items" will be a list in the function containing the extra
++arguments.  You can use it like any list, for example: >
+ 
+-And restore the option at the end of the script: >
+-	let &cpo = s:save_cpo
+-	unlet s:save_cpo
++	def Show(start: string, ...items: list<string>)
++	  echohl Title
++	  echo "start is " .. start
++	  echohl None
++	  for index in range(len(items))
++	    echon $"  Arg {index} is {items[index]}"
++	  endfor
++	  echo
++	enddef
+ 
+-A few more details can be found here: |line-continuation|.
++You can call it like this: >
+ 
+-In |Vim9| script the backslash can still be used, but in most places it is not
+-needed: >
+-	var mylist = [
+-			'one',
+-			'two',
+-			]
++	Show('Title', 'one', 'two', 'three')
++<	start is Title  Arg 0 is one  Arg 1 is two  Arg 2 is three ~
++	
++This uses the `echohl` command to specify the highlighting used for the
++following `echo` command.  `echohl None` stops it again.  The `echon` command
++works like `echo`, but doesn't output a line break.
+ 
+-Also, the 'cpo' option does not need to be changed.  See
+-|vim9-line-continuation| for details.
++If you call it with one argument the "items" list will be empty.
++`range(len(items))` returns a list with the indexes, what `for` loops over,
++we'll explain that further down.
+ 
+ ==============================================================================
+-*50.2*	Restoring the view
++*50.3*	Restoring the view
+ 
+ Sometimes you want to make a change and go back to where the cursor was.
+ Restoring the relative position would also be nice, so that the same line
+diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
+index 268f7cf76..79222f832 100644
+--- a/runtime/doc/usr_toc.txt
++++ b/runtime/doc/usr_toc.txt
+@@ -304,8 +304,10 @@ Make Vim work as you like it.
+ 		|41.6|	Using functions
+ 		|41.7|	Defining a function
+ 		|41.8|	Lists and Dictionaries
+-		|41.9|	Exceptions
+-		|41.10|	Various remarks
++		|41.9|	White space
++		|41.10|	Line continuation
++		|41.11|	Comments
++		|41.12|	Fileformat
+ 
+ |usr_42.txt|  Add new menus
+ 		|42.1|	Introduction
+@@ -342,8 +344,9 @@ Make Vim work as you like it.
+ Writing Vim script ~
+ 
+ |usr_50.txt|  Advanced Vim script writing
+-		|50.1|	Line continuation
+-		|50.2|	Restoring the view
++		|50.1|	Exceptions
++		|50.2|    Function with variable number of arguments
++		|50.3|	Restoring the view
+ 
+ |usr_51.txt|  Write plugins
+ 		|51.1|	Writing a generic plugin
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 069dac48e..9cd90d5be 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -86,7 +86,7 @@ script and `:def` functions; details are below:
+ 	var count = 0
+ 	count += 3
+ - Constants can be declared with `:final` and `:const`: >
+-	final matches = []		  # add matches
++	final matches = []		  # add to the list later
+ 	const names = ['Betty', 'Peter']  # cannot be changed
+ - `:final` cannot be used as an abbreviation of `:finally`.
+ - Variables and functions are script-local by default.
+@@ -177,12 +177,12 @@ created yet.  In this case you can call `execute()` to invoke it at runtime. >
+ `:def` has no options like `:function` does: "range", "abort", "dict" or
+ "closure".  A `:def` function always aborts on an error (unless `:silent!` was
+ used for the command or the error was caught a `:try` block), does not get a
+-range passed cannot be a "dict" function, and can always be a closure.
++range passed, cannot be a "dict" function, and can always be a closure.
+ 						*vim9-no-dict-function*
+ Later classes will be added, which replaces the "dict function" mechanism.
+ For now you will need to pass the dictionary explicitly: >
+-	def DictFunc(d: dict<any>, arg: string)
+-	   echo d[arg]
++	def DictFunc(self: dict<any>, arg: string)
++	   echo self[arg]
+ 	enddef
+ 	var ad = {item: 'value', func: DictFunc}
+ 	ad.func(ad, 'item')
+@@ -223,7 +223,7 @@ The argument "_" (an underscore) can be used to ignore the argument.  This is
+ most useful in callbacks where you don't need it, but do need to give an
+ argument to match the call.  E.g. when using map() two arguments are passed,
+ the key and the value, to ignore the key: >
+-	map(myList, (_, v) => v * 2)
++	map(numberList, (_, v) => v * 2)
+ There is no error for using the "_" argument multiple times.  No type needs to
+ be given.
+ 
+@@ -234,7 +234,7 @@ When using `:function` or `:def` to specify a new function at the script level
+ in a Vim9 script, the function is local to the script.  Like prefixing "s:" in
+ legacy script.  To define a global function or variable the "g:" prefix must
+ be used.  For functions in a script that is to be imported and in an autoload
+-script "export" needs to be used. >
++script "export" needs to be used for those to be used elsewhere. >
+ 	def ThisFunction()          # script-local
+ 	def g:ThatFunction()        # global
+ 	export def Function()       # for import and import autoload
+@@ -250,13 +250,20 @@ argument, pass the function reference itself: >
+ 	  var Fok = function(Inner)     # OK
+ 	  var Fbad = function('Inner')  # does not work
+ 
+-It is not possible to define a script-local function.  It is possible to
+-define a global function by using the "g:" prefix.
++Detail: this is because "Inner" will actually become a function reference to a
++function with a generated name.
++
++It is not possible to define a script-local function in a function.  You can
++define a local function and assign it to a script-local funcref (it must have
++been declared at the script level).  It is possible to define a global
++function by using the "g:" prefix.
+ 
+ When referring to a function and no "s:" or "g:" prefix is used, Vim will
+ search for the function:
+ - in the function scope, in block scopes
+-- in the script scope, possibly imported
++- in the script scope
++
++Imported functions are found with the prefix from the `:import` command.
+ 
+ Since a script-local function reference can be used without "s:" the name must
+ start with an upper case letter even when using the "s:" prefix.  In legacy
+@@ -272,6 +279,7 @@ variables and functions in a legacy script do use "s:", while in a Vim9 script
+ they do not use "s:".  This matches what you see in the rest of the file.
+ 
+ In legacy functions the use of "s:" for script items is required, as before.
++No matter if the script is Vim9 or legacy.
+ 
+ In all cases the function must be defined before used.  That is when it is
+ called, when `:defcompile` causes it to be compiled, or when code that calls
+@@ -279,11 +287,13 @@ it is being compiled (to figure out the return type).
+ 
+ The result is that functions and variables without a namespace can usually be
+ found in the script, either defined there or imported.  Global functions and
+-variables could be defined anywhere (good luck finding out where!).
++variables could be defined anywhere (good luck finding out where!  You can
++often see where it was last set using |:verbose|).
+ 							*E1102*
+ Global functions can still be defined and deleted at nearly any time.  In
+ Vim9 script script-local functions are defined once when the script is sourced
+-and cannot be deleted or replaced.
++and cannot be deleted or replaced by itself (it can be by reloading the
++script).
+ 
+ When compiling a function and a function call is encountered for a function
+ that is not (yet) defined, the |FuncUndefined| autocommand is not triggered.
+@@ -350,6 +360,13 @@ The declaration must be done earlier: >
+ 	   inner = 0
+ 	endif
+ 	echo inner
++
++Although this is shorter and faster for simple values: >
++	var inner = 0
++	if cond
++	   inner = 5
++	endif
++	echo inner
+ <							*E1025* *E1128*
+ To intentionally hide a variable from code that follows, a block can be
+ used: >
+@@ -1945,13 +1962,14 @@ We can also remove clutter, mainly things that were done to make Vim script
+ backwards compatible with the good old Vi commands.
+ 
+ Examples:
+-- Drop `:call` for calling a function and `:eval` for manipulating data.
++- Drop `:call` for calling a function and `:eval` for evaluating an
++  expression.
+ - Drop using a leading backslash for line continuation, automatically figure
+   out where an expression ends.
+ 
+ However, this does require that some things need to change:
+ - Comments start with # instead of ", to avoid confusing them with strings.
+-  This is good anyway, it is known from several popular languages.
++  This is good anyway, it is also used by several popular languages.
+ - Ex command ranges need to be prefixed with a colon, to avoid confusion with
+   expressions (single quote can be a string or a mark, "/" can be divide or a
+   search command, etc.).
+@@ -2081,12 +2099,13 @@ values are accepted:
+ 	false: `false`, `v:false`, `0`, `0 > 9`
+ Note that the number zero is false and the number one is true.  This is more
+ permissive than most other languages.  It was done because many builtin
+-functions return these values.
++functions return these values, and changing that causes more problems than it
++solves.  After using this for a while it turned out to work well.
+ 
+ If you have any type of value and want to use it as a boolean, use the `!!`
+ operator:
+-	true: `!!'text'`, `!![99]`, `!!{'x': 1}`, `!!99`
+-	false: `!!''`, `!![]`, `!!{}`
++	true: `!!'text'`   `!![99]`   `!!{'x': 1}`   `!!99`
++	false: `!!''`   `!![]`   `!!{}`
+ 
+ From a language like JavaScript we have this handy construct: >
+ 	GetName() || 'unknown'
+@@ -2108,19 +2127,20 @@ In Vim9 script a mechanism very similar to the JavaScript import and export
+ mechanism is supported.  It is a variant to the existing `:source` command
+ that works like one would expect:
+ - Instead of making everything global by default, everything is script-local,
+-  unless exported.
++  some of these are exported.
+ - When importing a script the symbols that are imported are explicitly listed,
+   avoiding name conflicts and failures if functionality is added later.
+ - The mechanism allows for writing a big, long script with a very clear API:
+-  the exported function(s) and class(es).
++  the exported functions, variables and classes.
+ - By using relative paths loading can be much faster for an import inside of a
+   package, no need to search many directories.
+-- Once an import has been used, it can be cached and loading it again can be
+-  avoided.
++- Once an import has been used, its items are cached and loading it again is
++  not needed.
+ - The Vim-specific use of "s:" to make things script-local can be dropped.
+ 
+-When sourcing a Vim9 script from a legacy script, only the items defined
+-globally can be used, not the exported items.  Alternatives considered:
++When sourcing a Vim9 script (from a Vim9 or legacy script), only the items
++defined globally can be used, not the exported items.  Alternatives
++considered:
+ - All the exported items become available as script-local items.  This makes
+   it uncontrollable what items get defined and likely soon leads to trouble.
+ - Use the exported items and make them global.  Disadvantage is that it's then
+@@ -2128,7 +2148,7 @@ globally can be used, not the exported items.  Alternatives considered:
+ - Completely disallow sourcing a Vim9 script, require using `:import`.  That
+   makes it difficult to use scripts for testing, or sourcing them from the
+   command line to try them out.
+-Note that you can also use `:import` in legacy Vim script, see above.
++Note that you CAN also use `:import` in legacy Vim script, see above.
+ 
+ 
+ Compiling functions early ~
+@@ -2146,17 +2166,17 @@ figure out their type, so that forward references are found, and only then
+ execute the script and compile the functions.  This means the script has to be
+ parsed twice, which is slower, and some conditions at the script level, such
+ as checking if a feature is supported, are hard to use.  An attempt was made
+-to see if it works, but it turned out to be impossible to make work nicely.
++to see if it works, but it turned out to be impossible to make work well.
+ 
+ It would be possible to compile all the functions at the end of the script.
+ The drawback is that if a function never gets called, the overhead of
+ compiling it counts anyway.  Since startup speed is very important, in most
+ cases it's better to do it later and accept that syntax and type errors are
+ only reported then.  In case these errors should be found early, e.g. when
+-testing, the `:defcompile` command will help out.
++testing, a `:defcompile` command at the end of the script will help out.
+ 
+ 
+-Why not use an embedded language? ~
++Why not use an existing embedded language? ~
+ 
+ Vim supports interfaces to Perl, Python, Lua, Tcl and a few others.  But
+ these interfaces have never become widely used, for various reasons.  When
+@@ -2165,8 +2185,8 @@ and concentrate on Vim script.
+ 
+ Still, plugin writers may find other languages more familiar, want to use
+ existing libraries or see a performance benefit.  We encourage plugin authors
+-to write code in any language and run it as an external tool, using jobs and
+-channels.  We can try to make this easier somehow.
++to write code in any language and run it as an external process, using jobs
++and channels.  We can try to make this easier somehow.
+ 
+ Using an external tool also has disadvantages.  An alternative is to convert
+ the tool into Vim script.  For that to be possible without too much
+@@ -2182,9 +2202,10 @@ dictionary.  With some care this can be made to work, but it does not look
+ like real classes.  On top of that, it's quite slow, because of the use of
+ dictionaries.
+ 
+-The support of classes in Vim9 script is a "minimal common functionality" of
+-class support in most languages.  It works much like Java, which is the most
+-popular programming language.
++It would be good to support real classes, and this is planned for a leter
++version.  The support is a "minimal common functionality" of class support in
++most languages.  It will work much like Java, which is the most popular
++programming language.
+ 
+ 
+ 
