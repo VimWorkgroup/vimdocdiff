@@ -1,18 +1,52 @@
 diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index f50462a56..aa6fc838e 100644
+index aa6fc838e..e295b80a7 100644
 --- a/runtime/doc/starting.txt
 +++ b/runtime/doc/starting.txt
-@@ -431,6 +431,13 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 		Also avoids the "Reading from stdin..." message.
- 		Also avoids the "N files to edit" message.
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 8.2.  Last change: 2022 Jun 04
++*starting.txt*  For Vim version 8.2.  Last change: 2022 Jun 14
  
-+--gui-dialog-file {name}				*--gui-dialog-file*
-+		When using the GUI, instead of showing a dialog, write the
-+		title and message of the dialog to file {name}.  The file is
-+		careted or appended to.  Only useful for testing, to avoid
-+		that the test gets stuck on a dialog that can't be seen.
-+		Without the GUI the argument is ignored.
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -434,7 +434,7 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ --gui-dialog-file {name}				*--gui-dialog-file*
+ 		When using the GUI, instead of showing a dialog, write the
+ 		title and message of the dialog to file {name}.  The file is
+-		careted or appended to.  Only useful for testing, to avoid
++		created or appended to.  Only useful for testing, to avoid
+ 		that the test gets stuck on a dialog that can't be seen.
+ 		Without the GUI the argument is ignored.
+ 
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index d880553c4..35f48d8d3 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 12
++*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,9 +38,13 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++retab test Test_retab_endless() disabled - why is interrupt not caught?
 +
- 							*--ttyfail*
- --ttyfail	When the stdin or stdout is not a terminal (tty) then exit
- 		right away.
+ searchpair() must call function to set timeout, not pass the time limit down
+ (and set it many times).  #10562
+ 
++Add test for --gui-dialog-file, check :confirm q with change buffer.
++
+ Prepare for Vim 9.0 release:
+ - Update the user manual:
+   - Add more to usr_50.txt as an "advanced section" of usr_41.txt
+@@ -312,8 +316,6 @@ inconsistent with the documentation.
+ 
+ globpath() does not use 'wildignorecase' at all? (related to #8350)
+ 
+-Add a "--gui-dialog-file" argument, to be used in tests to avoid getting stuck.
+-
+ Add 'termguiattr' option, use "gui=" attributes in the terminal?  Would work
+ with 'termguicolors'. #1740
+ 
