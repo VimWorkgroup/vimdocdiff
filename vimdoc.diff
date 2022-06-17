@@ -1,52 +1,666 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index aa6fc838e..e295b80a7 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index b2e276e5c..f0c1ddc1b 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 8.2.  Last change: 2022 Jun 04
-+*starting.txt*  For Vim version 8.2.  Last change: 2022 Jun 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -434,7 +434,7 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- --gui-dialog-file {name}				*--gui-dialog-file*
- 		When using the GUI, instead of showing a dialog, write the
- 		title and message of the dialog to file {name}.  The file is
--		careted or appended to.  Only useful for testing, to avoid
-+		created or appended to.  Only useful for testing, to avoid
- 		that the test gets stuck on a dialog that can't be seen.
- 		Without the GUI the argument is ignored.
- 
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index d880553c4..35f48d8d3 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 12
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 14
+-*builtin.txt*	For Vim version 8.2.  Last change: 2022 Jun 05
++*builtin.txt*	For Vim version 8.2.  Last change: 2022 Jun 16
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,9 +38,13 @@ browser use: https://github.com/vim/vim/issues/1234
+@@ -5899,6 +5899,8 @@ matchfuzzy({list}, {str} [, {dict}])			*matchfuzzy()*
+ 		    matchseq	When this item is present return only matches
+ 				that contain the characters in {str} in the
+ 				given sequence.
++		    limit	Maximum number of matches in {list} to be
++				returned.  Zero means no limit.
+ 
+ 		If {list} is a list of dictionaries, then the optional {dict}
+ 		argument supports the following additional items:
+@@ -5910,8 +5912,6 @@ matchfuzzy({list}, {str} [, {dict}])			*matchfuzzy()*
+ 				This should accept a dictionary item as the
+ 				argument and return the text for that item to
+ 				use for fuzzy matching.
+-		    limit	Maximum number of matches in {list} to be
+-				returned.  Zero means no limit.
+ 
+ 		{str} is treated as a literal string and regular expression
+ 		matching is NOT supported.  The maximum supported {str} length
+@@ -8809,6 +8809,8 @@ strcharpart({src}, {start} [, {len} [, {skipcc}]])		*strcharpart()*
+ 			strcharpart('abc', -1, 2)
+ <		results in 'a'.
+ 
++		Returns an empty string on error.
++
+ 		Can also be used as a |method|: >
+ 			GetText()->strcharpart(5)
+ 
+@@ -8821,6 +8823,8 @@ strchars({string} [, {skipcc}])					*strchars()*
+ 		When {skipcc} set to 1, Composing characters are ignored.
+ 		|strcharlen()| always does this.
+ 
++		Returns zero on error.
++
+ 		Also see |strlen()|, |strdisplaywidth()| and |strwidth()|.
+ 
+ 		{skipcc} is only available after 7.4.755.  For backward
+@@ -8853,6 +8857,7 @@ strdisplaywidth({string} [, {col}])			*strdisplaywidth()*
+ 		'tabstop' and 'display'.
+ 		When {string} contains characters with East Asian Width Class
+ 		Ambiguous, this function's return value depends on 'ambiwidth'.
++		Returns zero on error.
+ 		Also see |strlen()|, |strwidth()| and |strchars()|.
+ 
+ 		Can also be used as a |method|: >
+@@ -8886,6 +8891,7 @@ strgetchar({str}, {index})				*strgetchar()*
+ 		index.  Composing characters are considered separate
+ 		characters here.  Use |nr2char()| to convert the Number to a
+ 		String.
++		Returns -1 if {index} is invalid.
+ 		Also see |strcharpart()| and |strchars()|.
+ 
+ 		Can also be used as a |method|: >
+@@ -8940,7 +8946,7 @@ strlen({string})						*strlen()*
+ 		The result is a Number, which is the length of the String
+ 		{string} in bytes.
+ 		If the argument is a Number it is first converted to a String.
+-		For other types an error is given.
++		For other types an error is given and zero is returned.
+ 		If you want to count the number of multibyte characters use
+ 		|strchars()|.
+ 		Also see |len()|, |strdisplaywidth()| and |strwidth()|.
+@@ -8971,6 +8977,8 @@ strpart({src}, {start} [, {len} [, {chars}]])			*strpart()*
+ 		example, to get the character under the cursor: >
+ 			strpart(getline("."), col(".") - 1, 1, v:true)
+ <
++		Returns an empty string on error.
++
+ 		Can also be used as a |method|: >
+ 			GetText()->strpart(5)
+ 
+@@ -9033,6 +9041,8 @@ strtrans({string})					*strtrans()*
+ <		This displays a newline in register a as "^@" instead of
+ 		starting a new line.
+ 
++		Returns an empty string on error.
++
+ 		Can also be used as a |method|: >
+ 			GetString()->strtrans()
+ 
+@@ -9042,6 +9052,7 @@ strwidth({string})					*strwidth()*
+ 		cell, alternatively use |strdisplaywidth()|.
+ 		When {string} contains characters with East Asian Width Class
+ 		Ambiguous, this function's return value depends on 'ambiwidth'.
++		Returns zero on error.
+ 		Also see |strlen()|, |strdisplaywidth()| and |strchars()|.
+ 
+ 		Can also be used as a |method|: >
+@@ -9067,6 +9078,8 @@ submatch({nr} [, {list}])			*submatch()* *E935*
+ 		When substitute() is used recursively only the submatches in
+ 		the current (deepest) call can be obtained.
+ 
++		Returns an empty string or list on error.
++
+ 		Examples: >
+ 			:s/\d\+/\=submatch(0) + 1/
+ 			:echo substitute(text, '\d\+', '\=submatch(0) + 1', '')
+@@ -9117,7 +9130,9 @@ substitute({string}, {pat}, {sub}, {flags})		*substitute()*
+ 		|submatch()| returns.  Example: >
+ 		   :echo substitute(s, '%\(\x\x\)', {m -> '0x' .. m[1]}, 'g')
+ 
+-<		Can also be used as a |method|: >
++<		Returns an empty string on error.
++
++		Can also be used as a |method|: >
+ 			GetString()->substitute(pat, sub, flags)
+ 
+ swapinfo({fname})					*swapinfo()*
+@@ -9172,6 +9187,8 @@ synID({lnum}, {col}, {trans})				*synID()*
+ 		Warning: This function can be very slow.  Best speed is
+ 		obtained by going through the file in forward direction.
+ 
++		Returns zero on error.
++
+ 		Example (echoes the name of the syntax item under the cursor): >
+ 			:echo synIDattr(synID(line("."), col("."), 1), "name")
+ <
+@@ -9209,6 +9226,8 @@ synIDattr({synID}, {what} [, {mode}])			*synIDattr()*
+ 		"undercurl"	"1" if undercurled
+ 		"strike"	"1" if strikethrough
+ 
++		Returns an empty string on error.
++
+ 		Example (echoes the color of the syntax item under the
+ 		cursor): >
+ 	:echo synIDattr(synIDtrans(synID(line("."), col("."), 1)), "fg")
+@@ -9223,6 +9242,8 @@ synIDtrans({synID})					*synIDtrans()*
+ 		highlight the character.  Highlight links given with
+ 		":highlight link" are followed.
+ 
++		Returns zero on error.
++
+ 		Can also be used as a |method|: >
+ 	:echo synID(line("."), col("."), 1)->synIDtrans()->synIDattr("fg")
+ 
+@@ -9267,7 +9288,7 @@ synstack({lnum}, {col})					*synstack()*
+ 			   echo synIDattr(id, "name")
+ 			endfor
+ <		When the position specified with {lnum} and {col} is invalid
+-		nothing is returned.  The position just after the last
++		an empty List is returned.  The position just after the last
+ 		character in a line and the first column in an empty line are
+ 		valid positions.
+ 
+@@ -9381,6 +9402,8 @@ tabpagenr([{arg}])					*tabpagenr()*
+ 				previous tab page 0 is returned.
+ 		The number can be used with the |:tab| command.
+ 
++		Returns zero on error.
++
+ 
+ tabpagewinnr({tabarg} [, {arg}])			*tabpagewinnr()*
+ 		Like |winnr()| but for tab page {tabarg}.
+@@ -9453,6 +9476,7 @@ tan({expr})						*tan()*
+ 		Return the tangent of {expr}, measured in radians, as a |Float|
+ 		in the range [-inf, inf].
+ 		{expr} must evaluate to a |Float| or a |Number|.
++		Returns 0.0 if {expr} is not a |Float| or a |Number|.
+ 		Examples: >
+ 			:echo tan(10)
+ <			0.648361 >
+@@ -9469,6 +9493,7 @@ tanh({expr})						*tanh()*
+ 		Return the hyperbolic tangent of {expr} as a |Float| in the
+ 		range [-1, 1].
+ 		{expr} must evaluate to a |Float| or a |Number|.
++		Returns 0.0 if {expr} is not a |Float| or a |Number|.
+ 		Examples: >
+ 			:echo tanh(0.5)
+ <			0.462117 >
+@@ -9598,6 +9623,8 @@ timer_start({time}, {callback} [, {options}])
+ 				Vim becomes unusable because of all the error
+ 				messages.
+ 
++		Returns -1 on error.
++
+ 		Example: >
+ 			func MyHandler(timer)
+ 			  echo 'Handler called'
+@@ -9633,7 +9660,7 @@ timer_stopall()						*timer_stopall()*
+ tolower({expr})						*tolower()*
+ 		The result is a copy of the String given, with all uppercase
+ 		characters turned into lowercase (just like applying |gu| to
+-		the string).
++		the string).  Returns an empty string on error.
+ 
+ 		Can also be used as a |method|: >
+ 			GetText()->tolower()
+@@ -9641,7 +9668,7 @@ tolower({expr})						*tolower()*
+ toupper({expr})						*toupper()*
+ 		The result is a copy of the String given, with all lowercase
+ 		characters turned into uppercase (just like applying |gU| to
+-		the string).
++		the string).  Returns an empty string on error.
+ 
+ 		Can also be used as a |method|: >
+ 			GetText()->toupper()
+@@ -9654,6 +9681,8 @@ tr({src}, {fromstr}, {tostr})				*tr()*
+ 		and so on.  Exactly like the unix "tr" command.
+ 		This code also deals with multibyte characters properly.
+ 
++		Returns an empty string on error.
++
+ 		Examples: >
+ 			echo tr("hello there", "ht", "HT")
+ <		returns "Hello THere" >
+@@ -9679,6 +9708,7 @@ trim({text} [, {mask} [, {dir}]])				*trim()*
+ 		When omitted both ends are trimmed.
+ 
+ 		This function deals with multibyte characters properly.
++		Returns an empty string on error.
+ 
+ 		Examples: >
+ 			echo trim("   some text ")
+@@ -9697,6 +9727,7 @@ trunc({expr})							*trunc()*
+ 		Return the largest integral value with magnitude less than or
+ 		equal to {expr} as a |Float| (truncate towards zero).
+ 		{expr} must evaluate to a |Float| or a |Number|.
++		Returns 0.0 if {expr} is not a |Float| or a |Number|.
+ 		Examples: >
+ 			echo trunc(1.456)
+ <			1.0  >
+@@ -9815,12 +9846,15 @@ uniq({list} [, {func} [, {dict}]])			*uniq()* *E882*
+ <		The default compare function uses the string representation of
+ 		each item.  For the use of {func} and {dict} see |sort()|.
+ 
++		Returns zero if {list} is not a |List|.
++
+ 		Can also be used as a |method|: >
+ 			mylist->uniq()
+ 
+ values({dict})						*values()*
+ 		Return a |List| with all the values of {dict}.  The |List| is
+ 		in arbitrary order.  Also see |items()| and |keys()|.
++		Returns zero if {dict} is not a |Dict|.
+ 
+ 		Can also be used as a |method|: >
+ 			mydict->values()
+@@ -9988,6 +10022,8 @@ win_gettype([{nr}])					*win_gettype()*
+ 		popup window then 'buftype' is "terminal" and win_gettype()
+ 		returns "popup".
+ 
++		Return an empty string if the window cannot be found.
++
+ 		Can also be used as a |method|: >
+ 			GetWinid()->win_gettype()
+ <
+@@ -10025,6 +10061,8 @@ win_move_separator({nr}, {offset})			*win_move_separator()*
+ 		specified (e.g., as a consequence of maintaining
+ 		'winminwidth'). Returns TRUE if the window can be found and
+ 		FALSE otherwise.
++		This will fail for the rightmost window and a full-width
++		window, since it has no separator on the right.
+ 
+ 		Can also be used as a |method|: >
+ 			GetWinnr()->win_move_separator(offset)
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 5d7e907dc..35a5548f2 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1485,7 +1485,7 @@ request to the LSP server (if needed).  Example: >
+     let resp = ch_sendexpr(ch, req, #{callback: 'HoverFunc'})
+ 
+ To cancel an outstanding asynchronous LSP request sent to the server using the
+-|ch_sendexpr()| function, send a cancelation message to the server using the
++|ch_sendexpr()| function, send a cancellation message to the server using the
+ |ch_sendexpr()| function with the ID returned by the |ch_sendexpr()| function
+ for the request.  Example: >
+ 
+@@ -1533,7 +1533,7 @@ A LSP request message has the following format (expressed as a Vim Dict).  The
+ 	"params": <list|dict>
+     }
+ 
+-A LSP reponse message has the following format (expressed as a Vim Dict).  The
++A LSP response message has the following format (expressed as a Vim Dict).  The
+ "result" and "error" fields are optional: >
+ 
+     {
+@@ -1565,7 +1565,7 @@ A LSP request message has the following format (expressed as a Vim Dict).  The
+ 	"params": <list|dict>
+     }
+ 
+-A LSP reponse message has the following format (expressed as a Vim Dict).  The
++A LSP response message has the following format (expressed as a Vim Dict).  The
+ "result" and "error" fields are optional: >
+ 
+     {
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index b2928a5e8..16c08b163 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 8.2.  Last change: 2022 Apr 29
++*cmdline.txt*   For Vim version 8.2.  Last change: 2022 Jun 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1218,8 +1218,8 @@ save the command-line history and read it back later.
+ If the 'wildchar' option is set to <Tab>, and the command-line window is used
+ for an Ex command, then two mappings will be added to use <Tab> for completion
+ in the command-line window, like this: >
+-	:imap <buffer> <Tab> <C-X><C-V>
+-	:nmap <buffer> <Tab> a<C-X><C-V>
++	:inoremap <buffer> <Tab> <C-X><C-V>
++	:nnoremap <buffer> <Tab> a<C-X><C-V>
+ Note that hitting <Tab> in Normal mode will do completion on the next
+ character.  That way it works at the end of the line.
+ If you don't want these mappings, disable them with: >
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index f5f3c37c9..237db87c2 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -531,7 +531,7 @@ entry.  Note that the String '04' and the Number 04 are different, since the
+ Number will be converted to the String '4', leading zeros are dropped.  The
+ empty string can also be used as a key.
+ 
+-In |Vim9| script literaly keys can be used if the key consists of alphanumeric
++In |Vim9| script literally keys can be used if the key consists of alphanumeric
+ characters, underscore and dash, see |vim9-literal-dict|.
+ 						*literal-Dict* *#{}*
+ To avoid having to put quotes around every key the #{} form can be used in
+@@ -1144,7 +1144,7 @@ expr6 >> expr6	bitwise right shift				*expr->>*
+ The "<<" and ">>" operators can be used to perform bitwise left or right shift
+ of the left operand by the number of bits specified by the right operand.  The
+ operands are used as positive numbers.  When shifting right with ">>" the
+-topmost bit (somtimes called the sign bit) is cleared.  If the right operand
++topmost bit (sometimes called the sign bit) is cleared.  If the right operand
+ (shift amount) is more than the maximum number of bits in a number
+ (|v:numbersize|) the result is zero.
+ 
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 09399f65b..0ca8f38ab 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -642,15 +642,15 @@ manpages and follows linked manpages on hitting CTRL-]).
+ 
+ For bash,zsh,ksh or dash, add to the config file (.bashrc,.zshrc, ...)
+ 
+-	export MANPAGER="vim -M +MANPAGER -"
++	export MANPAGER="vim +MANPAGER --not-a-term -"
+ 
+ For (t)csh, add to the config file
+ 
+-	setenv MANPAGER "vim -M +MANPAGER -"
++	setenv MANPAGER "vim +MANPAGER --not-a-term -"
+ 
+ For fish, add to the config file
+ 
+-	set -x MANPAGER "vim -M +MANPAGER -"
++	set -x MANPAGER "vim +MANPAGER --not-a-term -"
+ 
+ 
+ MARKDOWN                                                *ft-markdown-plugin*
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 76a2f5229..bcaa3745e 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 8.2.  Last change: 2022 Jun 02
++*map.txt*       For Vim version 8.2.  Last change: 2022 Jun 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -395,8 +395,14 @@ Note:
+ - In Visual mode  you can use `line('v')` and `col('v')` to get one end of the
+   Visual area, the cursor is at the other end.
+ - In Select mode, |:map| and |:vmap| command mappings are executed in
+-  Visual mode.  Use |:smap| to handle Select mode differently.
+-
++  Visual mode.  Use |:smap| to handle Select mode differently.  One particular
++  edge case: >
++  	:vnoremap <C-K> <Esc>
++<  This ends Visual mode when in Visual mode, but in Select mode it does not
++  work, because Select mode is restored after executing the mapped keys.  You
++  need to use: >
++  	:snoremap <C-K> <Esc>
++<
+ 							*E1255* *E1136*
+ <Cmd> and <ScriptCmd> commands must terminate, that is, they must be followed
+ by <CR> in the {rhs} of the mapping definition.  |Command-line| mode is never
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 08c91a831..6f966068f 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -440,11 +440,11 @@ settings are described below, in |netrw-browser-options|, and in
+ 
+  *g:netrw_use_errorwindow* =2: messages from netrw will use a popup window
+ 			     Move the mouse and pause to remove the popup window.
+-			     (default value if popup windows are availble)
++			     (default value if popup windows are available)
+ 			 =1 : messages from netrw will use a separate one
+ 			      line window.  This window provides reliable
+ 			      delivery of messages.
+-			     (default value if popup windows are not availble)
++			     (default value if popup windows are not available)
+ 			 =0 : messages from netrw will use echoerr ;
+ 			      messages don't always seem to show up this
+ 			      way, but one doesn't have to quit the window.
+@@ -1198,7 +1198,7 @@ If there are marked files and/or directories, mb will add them to the bookmark
+ list.
+ 
+ 								*netrw-:NetrwMB*
+-Addtionally, one may use :NetrwMB to bookmark files or directories. >
++Additionally, one may use :NetrwMB to bookmark files or directories. >
+ 
+ 	:NetrwMB[!] [files/directories]
+ 
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index 03dd3a24c..84e02b9e4 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -1,4 +1,4 @@
+-*popup.txt*  For Vim version 8.2.  Last change: 2022 Jun 06
++*popup.txt*  For Vim version 8.2.  Last change: 2022 Jun 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1001,8 +1001,6 @@ To make the four corners transparent:
+ 
+ These examples use |Vim9| script.
+ 
+-TODO: more interesting examples
+-
+ 					*popup_dialog-example*
+ Prompt the user to press y/Y or n/N: >
+ 
+@@ -1015,89 +1013,87 @@ Prompt the user to press y/Y or n/N: >
+ 				  echomsg "'y' or 'Y' was NOT pressed"
+ 				endif
+ 			     },
++		 padding: [2, 4, 2, 4],
+ 		 })
+ <
+ 					*popup_menu-shortcut-example*
+ Extend popup_filter_menu() with shortcut keys: >
+ 
+-	call popup_menu(['Save', 'Cancel', 'Discard'], #{
+-		\ filter: 'MyMenuFilter',
+-		\ callback: 'MyMenuHandler',
+-		\ })
+-
+-	func MyMenuFilter(id, key)
+-	  " Handle shortcuts
+-	  if a:key == 'S'
+-	     call popup_close(a:id, 1)
+-	     return 1
+-	  endif
+-	  if a:key == 'C'
+-	     call popup_close(a:id, 2)
+-	     return 1
+-	  endif
+-	  if a:key == 'D'
+-	     call popup_close(a:id, 3)
+-	     return 1
+-	  endif
+-
+-	  " No shortcut, pass to generic filter
+-	  return popup_filter_menu(a:id, a:key)
+-	endfunc
+-
+-	func MyMenuHandler(id, result)
+-	  echo $'Result: {a:result}'
+-	endfunc
++	popup_menu(['Save', 'Cancel', 'Discard'], {
++	    callback: (_, result) => {
++		echo 'dialog result is' result
++	    },
++	    filter: (id, key) => {
++		# Handle shortcuts
++		if key == 'S' || key == 's'
++		    popup_close(id, 1)
++		elseif key == 'C' || key == 'c'
++		    popup_close(id, 2)
++		elseif key == 'D' || key == 'd'
++		    popup_close(id, 3)
++		else
++		    # No shortcut, pass to generic filter
++		    return popup_filter_menu(id, key)
++		endif
++		return true
++	    },
++	})
+ <
+ 					*popup_beval_example*
+ Example for using a popup window for 'ballooneval': >
+ 
+ 	set ballooneval balloonevalterm
+ 	set balloonexpr=BalloonExpr()
+-	let s:winid = 0
+-	let s:last_text = ''
+-
+-	func BalloonExpr()
+-	  if s:winid && popup_getpos(s:winid) != {}
+-	    " previous popup window still shows
+-	    if v:beval_text == s:last_text
+-	      " Still the same text, keep the existing popup
+-	      return ''
++	var winid: number
++	var last_text: string
++
++	def BalloonExpr(): string
++	    # here you would use "v:beval_text" to lookup something interesting
++	    var text = v:beval_text
++	    if winid > 0 && popup_getpos(winid) != null_dict
++		# previous popup window still shows
++		if text == last_text
++		    # still the same text, keep the existing popup
++		    return null_string
++		endif
++		popup_close(winid)
+ 	    endif
+-	    call popup_close(s:winid)
+-	  endif
+-	  let s:winid = popup_beval(v:beval_text, #{mousemoved: 'word'})
+-	  let s:last_text = v:beval_text
+-	  return ''
+-	endfunc
+-<
++
++	    winid = popup_beval(text, {})
++	    last_text = text
++	    return null_string
++	enddef
++
+ If the text has to be obtained asynchronously return an empty string from the
+ expression function and call popup_beval() once the text is available.  In
+ this example simulated with a timer callback: >
+ 
+ 	set ballooneval balloonevalterm
+ 	set balloonexpr=BalloonExpr()
+-	let s:winid = 0
+-	let s:balloonText = ''
+-
+-	func BalloonExpr()
+-	  if s:winid && popup_getpos(s:winid) != {}
+-	    " previous popup window still shows
+-	    if  v:beval_text == s:balloonText
+-	      " Still the same text, keep the existing popup
+-	      return ''
++	var winid: number
++	var last_text: string
++
++	def BalloonExpr(): string
++	    var text = v:beval_text
++	    if winid > 0 && popup_getpos(winid) != null_dict
++		# previous popup window still shows
++		if text == last_text
++		    # still the same text, keep the existing popup
++		    return null_string
++		endif
++		popup_close(winid)
+ 	    endif
+-	    call popup_close(s:winid)
+-	    let s:winid = 0
+-	  endif
+-	  " simulate an asynchronous lookup for the text to display
+-	  let s:balloonText = v:beval_text
+-	  call timer_start(100, 'ShowPopup')
+-	  return ''
+-	endfunc
+ 
+-	func ShowPopup(id)
+-	  let s:winid = popup_beval(s:balloonText, #{mousemoved: 'word'})
+-	endfunc
++	    # Simulate an asynchronous lookup that takes half a second for the
++	    # text to display.
++	    last_text = text
++	    timer_start(500, 'ShowPopup')
++	    return null_string
++	enddef
++
++	def ShowPopup(timerid: number)
++	    winid = popup_beval('Result: ' .. last_text, {})
++	enddef
+ <
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 35f48d8d3..7716e394b 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 14
++*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,19 +38,15 @@ browser use: https://github.com/vim/vim/issues/1234
  							*known-bugs*
  -------------------- Known bugs and current work -----------------------
  
-+retab test Test_retab_endless() disabled - why is interrupt not caught?
-+
- searchpair() must call function to set timeout, not pass the time limit down
- (and set it many times).  #10562
+-retab test Test_retab_endless() disabled - why is interrupt not caught?
+-
+-searchpair() must call function to set timeout, not pass the time limit down
+-(and set it many times).  #10562
+-
+-Add test for --gui-dialog-file, check :confirm q with change buffer.
++Searchpair() timeout using skip expression using synID() interferes with
++syntax highlighting. #10562
++Add flag that timeout is set for 'redrawtime' and only then set b_syn_slow.
  
-+Add test for --gui-dialog-file, check :confirm q with change buffer.
-+
  Prepare for Vim 9.0 release:
  - Update the user manual:
    - Add more to usr_50.txt as an "advanced section" of usr_41.txt
-@@ -312,8 +316,6 @@ inconsistent with the documentation.
+   - Move some from vim9.txt to the user manual?  Keep the specification.
+ - Use Vim9 for more runtime files.
+-- Make popup-examples use Vim9 script  Issue #10499
+ - Adjust intro message to say "help version9".
  
- globpath() does not use 'wildignorecase' at all? (related to #8350)
+ Further Vim9 improvements, possibly after launch:
+diff --git a/runtime/doc/undo.txt b/runtime/doc/undo.txt
+index 23a30af4b..3feac2a3e 100644
+--- a/runtime/doc/undo.txt
++++ b/runtime/doc/undo.txt
+@@ -257,7 +257,7 @@ message about that when opening a file.
+ Undo files are normally saved in the same directory as the file.  This can be
+ changed with the 'undodir' option.
  
--Add a "--gui-dialog-file" argument, to be used in tests to avoid getting stuck.
--
- Add 'termguiattr' option, use "gui=" attributes in the terminal?  Would work
- with 'termguicolors'. #1740
+-When the file is encrypted, the text in the undo file is also crypted.  The
++When the file is encrypted, the text in the undo file is also encrypted.  The
+ same key and method is used. |encryption|
  
+ Note that text properties are not stored in the undo file.  You can restore
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index 2c3e13be3..41d0832ae 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
+@@ -183,7 +183,7 @@ it a bit simpler.  The idea is that you call a function with a special name.
+ That function is then in an autoload script.  We will call that one script a
+ library script.
+ 
+-The autoload mechanism is based on a funtion name that has "#" characters: >
++The autoload mechanism is based on a function name that has "#" characters: >
+ 
+ 	mylib#myfunction(arg)
+ 
+diff --git a/runtime/doc/version5.txt b/runtime/doc/version5.txt
+index d09640a8b..9bc43bb4d 100644
+--- a/runtime/doc/version5.txt
++++ b/runtime/doc/version5.txt
+@@ -3262,7 +3262,7 @@ Files can be encrypted when writing and decrypted when reading.  Added the
+ on patch from Mohsin Ahmed)
+ 
+ When reading a file, there is an automatic detection whether it has been
+-crypted.  Vim will then prompt for the key.
++encrypted.  Vim will then prompt for the key.
+ 
+ Note that the encryption method is not compatible with Vi.  The encryption is
+ not unbreakable.  This allows it to be exported from the US.
+@@ -7622,7 +7622,7 @@ argument was fixed.
+ Previously released patches for Vim 5.7:
+ 
+ Patch 5.7.001
+-Problem:    When the current buffer is crypted, and another modified buffer
++Problem:    When the current buffer is encrypted, and another modified buffer
+ 	    isn't, ":wall" will encrypt the other buffer.
+ Solution:   In buf_write() use "buf" instead of "curbuf" to check for the
+ 	    crypt key.
