@@ -1,399 +1,262 @@
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 35a5548f2..669657aa0 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1,4 +1,4 @@
+-*channel.txt*      For Vim version 8.2.  Last change: 2022 Jun 04
++*channel.txt*      For Vim version 8.2.  Last change: 2022 Jun 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -464,8 +464,10 @@ a close callback to the channel.
+ 
+ To read all normal output from a RAW channel that is available: >
+ 	let output = ch_readraw(channel)
+-To read the error output: >
++To read all error output from a RAW channel that is available:: >
+ 	let output = ch_readraw(channel, {"part": "err"})
++Note that if the channel is in NL mode, ch_readraw() will only return one line
++for each call.
+ 
+ ch_read() and ch_readraw() use the channel timeout.  When there is nothing to
+ read within that time an empty string is returned.  To specify a different
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index c9db88490..0b5022fca 100644
+index 0b5022fca..8d2d17aea 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 07
-+*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 21
+-*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 21
++*options.txt*	For Vim version 8.2.  Last change: 2022 Jun 23
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3402,8 +3402,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- <	This is similar to the default, except that these characters will also
- 	be used when there is highlighting.
- 
--	For "stl" and "stlnc" single-byte and multibyte characters are
--	supported.  But double-width characters are not supported.
-+	For the "stl", "stlnc", "foldopen", "foldclose" and "foldsep" items
-+	single-byte and multibyte characters are supported.  But double-width
-+	characters are not supported.
- 
- 	The highlighting used for these items:
- 	  item		highlight group ~
-@@ -4954,6 +4955,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+@@ -4955,8 +4955,8 @@ A jump table for the options with a short description can be found at |Q_op|.
  	executing macros, registers and other commands that have not been
  	typed.  Also, updating the window title is postponed.  To force an
  	update use |:redraw|.
-+	This may ocasionally cause display errors.  It is only meant to be set
-+	termporarily when performaing an operation where redrawing may cause
-+	flickering or cause a slow down.
+-	This may ocasionally cause display errors.  It is only meant to be set
+-	termporarily when performaing an operation where redrawing may cause
++	This may occasionally cause display errors.  It is only meant to be set
++	temporarily when performing an operation where redrawing may cause
+ 	flickering or cause a slow down.
  
  			*'linebreak'* *'lbr'* *'nolinebreak'* *'nolbr'*
- 'linebreak' 'lbr'	boolean	(default off)
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 8285df9aa..048e3a2f6 100644
+index 048e3a2f6..40f9bc038 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 20
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 23
+@@ -40,7 +40,6 @@ browser use: https://github.com/vim/vim/issues/1234
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,10 +38,7 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--Prepare for Vim 9.0 release:
--- Update the user manual:
--  - Add more to usr_50.txt as an "advanced section" of usr_41.txt
--  - Move some from vim9.txt to the user manual?  Keep the specification.
-+Prepare for the Vim 9.0 release:
+ Prepare for the Vim 9.0 release:
  - Update version9.txt
- - Adjust intro message to say "help version9".
+-- Adjust intro message to say "help version9".
  
-@@ -205,12 +202,14 @@ Terminal emulator window:
-   conversions.
+ Further Vim9 improvements, possibly after launch:
+ - Use Vim9 for more runtime files.
+@@ -203,6 +202,8 @@ Terminal emulator window:
  
  Patches considered for including:
-+- use ngettext() in a few more places #10606
+ - use ngettext() in a few more places #10606
++- move f_hasmapto() to map.c  #10611
++- allow for nesting of timeout, sketch in #10595
  - Add "-n" option to xxd. #10599
  - Support %e and %k in 'errorformat'. #9624
  - Add support for "underdouble", "underdot" and "underdash". #9553
- - Patch to implement the vimtutor with a plugin: #6414
-   Was originally written by Felipe Morales.
- - Patch to make fillchars global-local. (#5206)
-+- Version of getchar() that does not move the cursor - #10603
- 
- Autoconf: must use autoconf 2.69, later version generates lots of warnings
- - try using autoconf 2.71 and fix all "obsolete" warnings
-@@ -233,9 +232,6 @@ pass it on with modifications.
- 
- Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
- 
--Problems reported by Valgrind:
--Memory leaks in test_channel, in func Test_job_start_fails().  Weird.
--
- With a window height of 6 and 'scrolloff' set to 3, using "j" does not scroll
- evenly. (#10545)  Need to handle this in scroll_cursor_bot().
- 
-@@ -382,6 +378,10 @@ Lua: updating wrong buffer when using newly created, unloaded buffer.
- 
- File marks merging has duplicates since 7.4.1925. (Ingo Karkat, #5733)
- 
-+A syntax plugin cannot use autocommands, it could be sourced from setting
-+'syntax' in a modeline.  Add a function that indicates whethere "secure"
-+and/or "sandbox" are set.
-+
- Problem with auto-formatting - inserting space and putting cursor before added
- character. (#6154)
- 
 diff --git a/runtime/doc/usr_40.txt b/runtime/doc/usr_40.txt
-index 9ed777f1e..af5c5d048 100644
+index af5c5d048..f963e2079 100644
 --- a/runtime/doc/usr_40.txt
 +++ b/runtime/doc/usr_40.txt
 @@ -1,4 +1,4 @@
--*usr_40.txt*	For Vim version 8.2.  Last change: 2022 Jan 03
-+*usr_40.txt*	For Vim version 8.2.  Last change: 2022 Jun 20
+-*usr_40.txt*	For Vim version 8.2.  Last change: 2022 Jun 20
++*usr_40.txt*	For Vim version 8.2.  Last change: 2022 Jun 23
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -463,6 +463,17 @@ separated) that trigger the command.
- The optional [++nested] flag allows for nesting of autocommands (see below),
+@@ -464,7 +464,7 @@ The optional [++nested] flag allows for nesting of autocommands (see below),
  and finally, {command} is the command to be executed.
  
-+When adding an autocommand the already existing ones remain.  To avoid adding
-+the autocommand several time you should use this form: >
-+
-+	:augroup updateDate
-+	:  autocmd!
-+	:  autocmd BufWritePre *  call DateInsert()
-+	:augroup END
-+
-+This will delete any previously defined autocommand with `:autocmd!` before
-+defining the new one.  Groups are explained later.
-+
+ When adding an autocommand the already existing ones remain.  To avoid adding
+-the autocommand several time you should use this form: >
++the autocommand several times you should use this form: >
  
- EVENTS
- 
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index e2dc46365..f5527cd85 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 8.2.  Last change: 2022 Jun 10
-+*usr_41.txt*	For Vim version 8.2.  Last change: 2022 Jun 23
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -1745,9 +1745,10 @@ For further reading see |Dictionaries|.
- ==============================================================================
- *41.9*	White space
- 
--Blank lines are allowed and ignored.
-+Blank lines are allowed in a script and ignored.
- 
--Leading whitespace characters (blanks and TABs) are always ignored.
-+Leading whitespace characters (blanks and TABs) are ignored, except when using
-+|:let-heredoc| without "trim".
- 
- Trailing whitespace is often ignored, but not always.  One command that
- includes it is `map`.  You have to watch out for that, it can cause hard to
-@@ -1866,13 +1867,16 @@ script executable, and it also works in legacy script: >
- *41.12*	Fileformat
- 
- The end-of-line character depends on the system.  For Vim scripts it is
--recommended to always use the Unix fileformat.  This also works on any other
--system.  That way you can copy your Vim scripts from MS-Windows to Unix and
--they still work.  See |:source_crnl|.  To be sure it is set right, do this
--before writing the file: >
--
-+recommended to always use the Unix fileformat.  Lines are then separated with
-+the Newline character.  This also works on any other system.  That way you can
-+copy your Vim scripts from MS-Windows to Unix and they still work.  See
-+|:source_crnl|.  To be sure it is set right, do this before writing the file:
-+>
- 	:setlocal fileformat=unix
- 
-+When using "dos" fileformat, lines are separated with CR-NL, two characters.
-+The CR character causes various problems, better avoid this.
-+
- ==============================================================================
- 
- Advance information about writing Vim script is in |usr_50.txt|.
-diff --git a/runtime/doc/usr_50.txt b/runtime/doc/usr_50.txt
-index 417bdd2ca..7d6936464 100644
---- a/runtime/doc/usr_50.txt
-+++ b/runtime/doc/usr_50.txt
-@@ -1,4 +1,4 @@
--*usr_50.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
-+*usr_50.txt*	For Vim version 8.2.  Last change: 2022 Jun 20
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -116,26 +116,13 @@ we'll explain that further down.
- ==============================================================================
- *50.3*	Restoring the view
- 
--Sometimes you want to make a change and go back to where the cursor was.
--Restoring the relative position would also be nice, so that the same line
--appears at the top of the window.
--
--This example yanks the current line, puts it above the first line in the file
--and then restores the view: >
--
--	map ,p ma"aYHmbgg"aP`bzt`a
--
--What this does: >
--	ma"aYHmbgg"aP`bzt`a
--<	ma			set mark a at cursor position
--	  "aY			yank current line into register a
--	     Hmb		go to top line in window and set mark b there
--		gg		go to first line in file
--		  "aP		put the yanked line above it
--		     `b		go back to top line in display
--		       zt	position the text in the window as before
--			 `a	go back to saved cursor position
-+Sometimes you want to jump around, make a change and then go back to the same
-+position and view.  For example to change something in the file header.  This
-+can be done with two functions: >
- 
-+	var view = winsaveview()
-+	# Move around, make changes
-+	winrestview(view)
- 
- ==============================================================================
- 
-diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
-index 79222f832..31576c610 100644
---- a/runtime/doc/usr_toc.txt
-+++ b/runtime/doc/usr_toc.txt
-@@ -1,4 +1,4 @@
--*usr_toc.txt*	For Vim version 8.2.  Last change: 2022 Jun 03
-+*usr_toc.txt*	For Vim version 8.2.  Last change: 2022 Jun 20
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -46,8 +46,8 @@ Tuning Vim ~
- 
- Writing Vim script ~
- |usr_50.txt|  Advanced Vim script writing
--|usr_51.txt|  Create a plugin
--|usr_52.txt|  Write plugins using Vim9 script
-+|usr_51.txt|  Write plugins
-+|usr_52.txt|  Write larger plugins
- 
- Making Vim Run ~
- |usr_90.txt|  Installing Vim
+ 	:augroup updateDate
+ 	:  autocmd!
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index b9713b395..d53754a3f 100644
+index d53754a3f..443839475 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -245,6 +245,8 @@ Fuzzy completion support for command line completion using 'wildoptions'.
+@@ -248,15 +248,18 @@ Fuzzy match support for |:vimgrep|.
+ Haiku support. |Haiku|
  
- Fuzzy match support for |:vimgrep|.
- 
-+Haiku support. |Haiku|
-+
  Support for "lsp" channel mode to simplify LSP server RPC communication
- |language-server-protocol|.
+-|language-server-protocol|.
++|language-server-protocol|.  Support for using a Unix domain socket with a
++|channel|.  IPv6 support in channels |channel-address|.
  
-@@ -256,17 +258,32 @@ report to a file: `:profile dump` .  |:profile|
- Argument completion support for the |:scriptnames|, |:profile|, |:profdel|,
- |:breakadd| and |:breakdel| commands.
+ Support for sourcing lines from the current buffer. |:source-range|
  
--Support for using a funcref/lambda value with the 'foldtext', 'completefunc',
--'omnifunc', 'operatorfunc', 'thesaurusfunc', 'quickfixtextfunc', 'tagfunc',
--'imactivatefunc' and 'imstatusfunc' options.
-+Support for setting the 'foldtext', 'completefunc', 'omnifunc',
-+'operatorfunc', 'thesaurusfunc', 'quickfixtextfunc', 'tagfunc',
-+'imactivatefunc' and 'imstatusfunc' options to a function reference or a
-+lambda function or a script-local function.
++Support for opening a terminal in a popup window. |popup-terminal|
 +
-+Support directly setting the 'balloonexpr', 'charconvert' 'foldexpr',
-+'formatexpr', 'includeexpr', 'printexpr', 'patchexpr', 'indentexpr',
-+'modelineexpr', 'diffexpr' and 'printexpr' options to a script-local function.
-+
-+Support for configuring the character used to mark the beginning of a fold,
-+show a closed fold and show a fold separator using "foldopen", "foldclose" and
-+"foldsep" respectively in 'fillchars'.
+ Support for stopping profiling a Vim script: `:profile stop` and dumping the
+ report to a file: `:profile dump` .  |:profile|
  
--Support for using multibyte items with the 'fillchars', 'stl' and 'stlnc'
--options.
-+Support for configuring the character displayed in non existing lines using
-+"eob" in 'fillchars'.
+-Argument completion support for the |:scriptnames|, |:profile|, |:profdel|,
+-|:breakadd| and |:breakdel| commands.
++Argument completion support for the |:breakadd|, |:breakdel|, |:diffget|,
++|:diffput|, |:profile|, |:profdel| and |:scriptnames| commands.
  
--Support for xchacha20 encryption method 'cryptmethod'
-+Support for using multibyte items with the "stl", "stlnc", "foldopen",
-+"foldclose" and "foldsep" items in the 'fillchars' option.
-+
-+Support for the XChaCha20 encryption method. 'cryptmethod'
- 
- Spell check current word with |z=| even when 'spell' is off.
- 
-+Add "timeout" to 'spellsuggest' to limit the searching time for spell
-+suggestions.
-+
+ Support for setting the 'foldtext', 'completefunc', 'omnifunc',
+ 'operatorfunc', 'thesaurusfunc', 'quickfixtextfunc', 'tagfunc',
+@@ -287,17 +290,9 @@ suggestions.
  Support for executing Ex commands in a map without changing the current mode
  |<Cmd>| and |<ScriptCmd>|.
  
-@@ -282,7 +299,7 @@ IPv6 support in channels |channel-address|.
- 
- Call Vim functions from Lua (vim.call('func', 'arg')).
- 
--Add unsigned to 'nrformats'.
-+Recognize numbers as unsigned when "unsigned" is set in 'nrformats'.
- 
- Allow setting underline color in terminal.
- 
-@@ -296,7 +313,12 @@ Hide cursor when sleeping using |:sleep!|.
- 
- Detect focus events in terminal (|FocusGained| and |FocusLost|).
- 
--Highlight leading spaces when 'list' is set (|'listchars'|)
-+Add "multispace" to 'listchars' to show two or more spaces no matter where
-+they appear.  Add "leadmultispace" to 'listchars' to show two or more leading
-+spaces.  Add "lead" to 'listchars' to set the character used to show leading
-+spaces.
-+
-+Make 'listchars', 'virtualedit' and 'thesaurusfunc' global-local options.
- 
- Support for looping over a string using |:for|.
- 
-@@ -315,24 +337,14 @@ Add "list" to 'breakindentopt' to add additional indent for lines that match
- a numbered or bulleted list.  Add "column" to 'breakindentopt' to indent
- soft-wrapped lines at a specific column.
- 
--Add "multispace" to 'listchars' to show two or more spaces no matter where
--they appear.
+-A large number of tests have been added to verify the Vim functionality.  Most
+-of the old style tests have been converted to new style tests using the new
+-style assert_* functions.
 -
--Add |hl-CursorLineSign| and |hl-CursorLineFold| default highlight groups to
-+Add the |hl-CursorLineSign| and |hl-CursorLineFold| default highlight groups to
- adjust sign highlighting for 'cursorline'.
+ Add optional error code to |:cquit|.
  
+-Support for using a Unix domain socket with a |channel|.
+-
+-IPv6 support in channels |channel-address|.
+-
+-Call Vim functions from Lua (vim.call('func', 'arg')).
++Support for calling Vim functions from Lua (vim.call() and vim.fn()).
+ 
+ Recognize numbers as unsigned when "unsigned" is set in 'nrformats'.
+ 
+@@ -305,7 +300,8 @@ Allow setting underline color in terminal.
+ 
+ Expand script ID using expand('<SID>'). |expand()|
+ 
+-Jump to the last accessed tab page using |g<Tab>|.
++Jump to the last accessed tab page using |g<Tab>| and support using the
++last accessed tab page in |:tabnext| et al.
+ 
+ Locale aware sorting using |:sort| and |sort()|.
+ 
+@@ -343,15 +339,22 @@ adjust sign highlighting for 'cursorline'.
  Add the |hl-CurSearch| default highlight group for the current search match.
  
--Support directly setting the 'balloonexpr', 'foldexpr', 'formatexpr',
--'includeexpr', 'printexpr', 'patchexpr', 'indentexpr', 'modelineexpr',
--'diffexpr' and 'printexpr' options to a script-local function.
--
  Add the 'P' command in visual mode to paste text in visual mode without
- yanking the deleted text to the unnamed register.
- 
--Add "timeout" to 'spellsuggest' to limit the searching time for spell
--suggestions.
+-yanking the deleted text to the unnamed register.
 -
- Add support for parsing the end line number (%e) and end column number
- (%k) using 'errorformat'.
+-Add support for parsing the end line number (%e) and end column number
+-(%k) using 'errorformat'.
++yanking the deleted text to the unnamed register.  |put-Visual-mode|
  
-@@ -341,13 +353,45 @@ Add support for logging on Vim startup (|--log|).
+ Add support for logging on Vim startup (|--log|).
+ 
  Add "/" in 'formatoptions' to stop inserting // when using "o" on a line with
- inline comment.
+-inline comment.
++inline comment. |fo-/|
++
++Add support for customizing the quickfix buffer contents using
++'quickfixtextfunc'.  Support for the "note" error type (%t) in |errorformat|.
++Add support for parsing the end line number (%e) and end column number (%k)
++using 'errorformat'.
++
++Support truncating the tag stack using |settagstack()|.
++
++Support using any Vim type for user_data with the completion functions
++(|complete-items|).
  
-+Display every option in a separate line when "!" is used with |:set|.
-+
-+Add "nostop" to 'backspace' to allow backspacing over the start of insert for
-+|CTRL-W| and |CTRL-U| also.
-+
-+Add bell support for the terminal window. ('belloff')
-+
-+Sync the undo file if 'fsync' is set.
-+
-+Support excluding the 'runtimepath' and 'packpath' options from a session file
-+using "skiprtp" in 'sessionoptions'.
-+
-+Stop insert mode completion without changing text (|i_CTRL-X_CTRL-Z|).
+ Display every option in a separate line when "!" is used with |:set|.
  
+@@ -367,6 +370,74 @@ using "skiprtp" in 'sessionoptions'.
+ 
+ Stop insert mode completion without changing text (|i_CTRL-X_CTRL-Z|).
+ 
++Support for getting the number of lines (linecount) in a buffer using
++|getbufinfo()|.
++
++Support |filter()| and |map()| for blob and string types.
++
++Support for using a multi-byte character for the tag kind. |tags-file-format|
++
++Add support for checking whether a function name is valid using |exists()|.
++
++Update xdiff to version 2.33.  Update libvterm to revision 789.
++
++Added support for the |Haiku| OS.
++
++Support 'trim' for Python/Lua/Perl/Tcl/Ruby/MzScheme interface heredoc.
++
++Add the |t_AU| and |t_8u| termap codes for underline and undercurl.  Add the
++t_fd and t_fe termcap codes for detecting focus events.
++
++Support for indenting C pragmas like normal code. (|cino-P|)
++
++Add support for defining the syntax fold level (|:syn-foldlevel|)
++
++Add support for using \<*xxx> in a string to prepend a modifier to a
++character. (|expr-quote|).
++
++Add support trimming characters at the beginning or end of a string using
++|trim()|.
++
++Make ":verbose pwd" show the scope of the directory. |:pwd-verbose|
++
++Add the "0o" notation for specifying octal numbers |scriptversion-4|
++
++Support for changing to the previous tab-local and window-local directories
++using the "tcd -" and "lcd -" commands. (|:tcd-| and |:lcd-|)
++
++Add support for skipping an expression using |search()|.
++
++Add the "cmdline" option to |getcompletion()| to return the command line
++arguments.
++
++Add support for spell checking CamelCased words by adding "camel" to
++'spelloptions'.
++
++Add support for importing Vim scripts using |:import| from a Vimscript.
++
++Add support for sorting the directory contents returned by the |readdir()|
++and |readdirex()| functions by case.
++
++Add support for executing (|:@|) a register containing line continuation.
++
++Convert a Lua function and a closure to a Vim funcref so that it can be
++accessed in a Vimscript. (|lua-funcref|) Make Lua arrays one based.
++Add table.insert() and table.remove() functions.
++
++Support mouse left-right scrolling in a terminal window.
++
++Updated colorschemes from https://github.com/vim/colorschemes is included.
++
++TermDebug enhancements:
++Support for showing the disassembled code in a separate window.  Support for
++the GDB until command.  Use a separate group for the signs.
++
++A large number of tests have been added to verify the Vim functionality.  Most
++of the old style tests have been converted to new style tests using the new
++style assert_* functions.
++
++Many Coverity static analysis warnings are fixed.
++
  TODO: more
  
  ==============================================================================
- COMPILE TIME CHANGES					*compile-changes-9*
+@@ -383,9 +454,9 @@ The following features are now enabled in all the builds:
  
--TODO
-+The following features are now enabled in all the builds:
-+  |+cindent|
-+  |+jumplist|
-+  |+lispindent|
-+  |+num64|
-+  |+smartindent|
-+  |+tag_binary|
-+  |+title|
-+
-+The following features have been removed.  They are either obsolete or didn't
-+work properly:
-+  - Athena GUI support (use Motif instead)
-+  - EBCDIC support
-+  - Atari MiNT
-+  - Mac Carbon GUI (use MacVim instead)
-+
-+The rgb.txt file is no longer included, use colors/lists/default.vim instead.
-+
-+Several source files were split, mainly to make it easier to inspect code
-+coverage information.
+ The following features have been removed.  They are either obsolete or didn't
+ work properly:
+-  - Athena GUI support (use Motif instead)
++  - Athena and neXTaw GUI support (use Motif instead)
+   - EBCDIC support
+-  - Atari MiNT
++  - Atari MiNT and BeOS
+   - Mac Carbon GUI (use MacVim instead)
  
+ The rgb.txt file is no longer included, use colors/lists/default.vim instead.
+@@ -393,6 +464,8 @@ The rgb.txt file is no longer included, use colors/lists/default.vim instead.
+ Several source files were split, mainly to make it easier to inspect code
+ coverage information.
+ 
++Support for building Vim with Mingw64 clang compiler on MS-Windows.
++
  ==============================================================================
  PATCHES						*patches-9* *bug-fixes-9*
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 9b7c8dce1..7b1bc261f 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 8.2.  Last change: 2022 Jun 10
-+*vim9.txt*	For Vim version 8.2.  Last change: 2022 Jun 20
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1844,13 +1844,6 @@ Or: >
- 	test_override('ALL', 0)
- 
- 
--Import in legacy Vim script ~
--
--If an `import` statement is used in legacy Vim script, the script-local "s:"
--namespace will be used for the imported items, even when "s:" is not
--specified.
--
--
- ==============================================================================
- 
- 6. Future work: classes					*vim9-classes*
+ 						*patches-after-8.2*
