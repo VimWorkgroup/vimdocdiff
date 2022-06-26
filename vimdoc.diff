@@ -1,939 +1,1341 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c26a8574e..ad7c5fd1a 100644
+index ad7c5fd1a..5f37c742e 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -10421,7 +10421,7 @@ bsd			Compiled on an OS in the BSD family (excluding macOS).
- builtin_terms		Compiled with some builtin terminals.
- byte_offset		Compiled with support for 'o' in 'statusline'
- channel			Compiled with support for |channel| and |job|
--cindent			Compiled with 'cindent' support.
-+cindent			Compiled with 'cindent' support. (always true)
- clientserver		Compiled with remote invocation support |clientserver|.
- clipboard		Compiled with 'clipboard' support.
- clipboard_working	Compiled with 'clipboard' support and it can be used.
-@@ -10483,7 +10483,7 @@ insert_expand		Compiled with support for CTRL-X expansion commands in
- 			Insert mode. (always true)
- job			Compiled with support for |channel| and |job|
- ipv6			Compiled with support for IPv6 networking in |channel|.
--jumplist		Compiled with |jumplist| support.
-+jumplist		Compiled with |jumplist| support. (always true)
- keymap			Compiled with 'keymap' support.
- lambda			Compiled with |lambda| support.
- langmap			Compiled with 'langmap' support.
-@@ -10492,6 +10492,7 @@ linebreak		Compiled with 'linebreak', 'breakat', 'showbreak' and
- 			'breakindent' support.
- linux			Linux version of Vim.
- lispindent		Compiled with support for lisp indenting.
-+			(always true)
- listcmds		Compiled with commands for the buffer list |:files|
- 			and the argument list |arglist|.
- localmap		Compiled with local mappings and abbr. |:map-local|
-@@ -10521,7 +10522,7 @@ mzscheme		Compiled with MzScheme interface |mzscheme|.
- nanotime		Compiled with sub-second time stamp checks.
- netbeans_enabled	Compiled with support for |netbeans| and connected.
- netbeans_intg		Compiled with support for |netbeans|.
--num64			Compiled with 64-bit |Number| support.
-+num64			Compiled with 64-bit |Number| support. (always true)
- ole			Compiled with OLE automation support for Win32.
- osx			Compiled for macOS  cf. mac
- osxdarwin		Compiled for macOS, with |mac-darwin-feature|
-@@ -10547,7 +10548,7 @@ ruby			Compiled with Ruby interface |ruby|.
- scrollbind		Compiled with 'scrollbind' support. (always true)
- showcmd			Compiled with 'showcmd' support.
- signs			Compiled with |:sign| support.
--smartindent		Compiled with 'smartindent' support.
-+smartindent		Compiled with 'smartindent' support. (always true)
- sodium			Compiled with libsodium for better crypt support
- sound			Compiled with sound support, e.g. `sound_playevent()`
- spell			Compiled with spell checking support |spell|.
-@@ -10561,7 +10562,7 @@ syntax_items		There are active syntax highlighting items for the
- 			current buffer.
- system			Compiled to use system() instead of fork()/exec().
- tag_binary		Compiled with binary searching in tags files
--			|tag-binary-search|.
-+			|tag-binary-search|. (always true)
- tag_old_static		Support for old static tags was removed, see
- 			|tag-old-static|.
- tcl			Compiled with Tcl interface.
-@@ -10575,6 +10576,7 @@ tgetent			Compiled with tgetent support, able to use a termcap
- 			or terminfo file.
- timers			Compiled with |timer_start()| support.
- title			Compiled with window title support |'title'|.
-+			(always true)
- toolbar			Compiled with support for |gui-toolbar|.
- ttyin			input is a terminal (tty)
- ttyout			output is a terminal (tty)
+@@ -4898,10 +4898,10 @@ invert({expr})						*invert()*
+ <		Can also be used as a |method|: >
+ 			:let bits = bits->invert()
+ 
+-isabsolutepath({directory})				*isabsolutepath()*
++isabsolutepath({path})					*isabsolutepath()*
+ 		The result is a Number, which is |TRUE| when {path} is an
+ 		absolute path.
+-<		On Unix, a path is considered absolute when it starts with '/'.
++		On Unix, a path is considered absolute when it starts with '/'.
+ 		On MS-Windows, it is considered absolute when it starts with an
+ 		optional drive prefix and is followed by a '\' or '/'. UNC paths
+ 		are always absolute.
+@@ -4911,7 +4911,7 @@ isabsolutepath({directory})				*isabsolutepath()*
+ 			echo isabsolutepath('C:\Windows')	" 1
+ 			echo isabsolutepath('foobar')		" 0
+ 			echo isabsolutepath('\\remote\file')	" 1
+-
++<
+ 		Can also be used as a |method|: >
+ 			GetName()->isabsolutepath()
+ 
+@@ -10595,6 +10595,7 @@ viminfo			Compiled with viminfo support.
+ vimscript-1		Compiled Vim script version 1 support
+ vimscript-2		Compiled Vim script version 2 support
+ vimscript-3		Compiled Vim script version 3 support
++vimscript-4		Compiled Vim script version 4 support
+ virtualedit		Compiled with 'virtualedit' option. (always true)
+ visual			Compiled with Visual mode. (always true)
+ visualextra		Compiled with extra Visual mode commands. (always
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 669657aa0..b7ae4d430 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1554,36 +1554,5 @@ The "params" field is optional: >
+ 	"params": <list|dict>
+     }
+ 
+-Depending on the use case, you can use the ch_evalexpr(), ch_sendexpr() and
+-ch_sendraw() functions on the same channel.
+-
+-A LSP request message has the following format (expressed as a Vim Dict).  The
+-"params" field is optional: >
+-
+-    {
+-	"jsonrpc": "2.0",
+-	"id": <number>,
+-	"method": <string>,
+-	"params": <list|dict>
+-    }
+-
+-A LSP response message has the following format (expressed as a Vim Dict).  The
+-"result" and "error" fields are optional: >
+-
+-    {
+-	"jsonrpc": "2.0",
+-	"id": <number>,
+-	"result": <vim type>
+-	"error": <dict>
+-    }
+-
+-A LSP notification message has the following format (expressed as a Vim Dict).
+-The "params" field is optional: >
+-
+-    {
+-	"jsonrpc": "2.0",
+-	"method": <string>,
+-	"params": <list|dict>
+-    }
+-
++<
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 16c08b163..607eb3403 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -936,7 +936,7 @@ Note: these are typed literally, they are not special keys!
+ 		   When the match is with a file name, it is expanded to the
+ 		   full path.
+ 							*:<sfile>* *<sfile>*
+-	<sfile>    When executing a ":source" command, is replaced with the
++	<sfile>    When executing a `:source` command, is replaced with the
+ 		   file name of the sourced file.  *E498*
+ 		   When executing a legacy function, is replaced with the call
+ 		   stack, as with <stack> (this is for backwards
+@@ -959,7 +959,7 @@ Note: these are typed literally, they are not special keys!
+ 		   defined.
+ 		   If the file name cannot be determined you get error *E1274* .
+ 							*:<slnum>* *<slnum>*
+-	<slnum>	   When executing a ":source" command, is replaced with the
++	<slnum>	   When executing a `:source` command, is replaced with the
+ 		   line number.  *E842*
+ 		   When executing a function it's the line number relative to
+ 		   the start of the function.
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 5130986a0..55543c7df 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1225,7 +1225,7 @@ Examples: >
+ 
+ If you want to always use ":confirm", set the 'confirm' option.
+ 
+-			*:browse* *:bro* *E338*
++							*:browse* *:bro* *E338*
+ :bro[wse] {command}	Open a file selection dialog for an argument to
+ 			{command}.  At present this works for |:e|, |:w|,
+ 			|:wall|, |:wq|, |:wqall|, |:x|, |:xall|, |:exit|,
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 6929f9c77..dd009d938 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -181,7 +181,7 @@ You will not get an error if you try to change the type of a variable.
+ 
+ 
+ 1.2 Function references ~
+-				*Funcref* *E695* *E718* *E1192*
++					*Funcref* *E695* *E718* *E1192*
+ A Funcref variable is obtained with the |function()| function, the |funcref()|
+ function, (in |Vim9| script) the name of a function, or created with the
+ lambda expression |expr-lambda|.  It can be used in an expression in the place
+@@ -1289,7 +1289,7 @@ Generally, if a |List| index is equal to or higher than the length of the
+ error.
+ 
+ 
+-expr10[expr1a : expr1b]	substring or sublist		*expr-[:]*
++expr10[expr1a : expr1b]	substring or |sublist|		*expr-[:]* *substring*
+ 
+ If expr10 is a String this results in the substring with the bytes or
+ characters from expr1a to and including expr1b.  expr10 is used as a String,
+@@ -3287,7 +3287,7 @@ text...
+ 
+ 			If "eval" is not specified, then each line of text is
+ 			used as a |literal-string|, except that single quotes
+-			doe not need to be doubled.
++			does not need to be doubled.
+ 			If "eval" is specified, then any Vim expression in the
+ 			form {expr} is evaluated and the result replaces the
+ 			expression, like with |interp-string|.
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 0ca8f38ab..37f7d61c7 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -143,7 +143,7 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.asp		g:filetype_asp	|ft-aspvbs-syntax| |ft-aspperl-syntax|
+ 	*.bas		g:filetype_bas	|ft-basic-syntax|
+ 	*.cfg		g:filetype_cfg
+-	*.csh		g:filetype_csh  |ft-csh-syntax|
++	*.csh		g:filetype_csh	|ft-csh-syntax|
+ 	*.dat		g:filetype_dat
+ 	*.frm		g:filetype_frm	|ft-form-syntax|
+ 	*.fs		g:filetype_fs	|ft-forth-syntax|
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index a6767925f..9cbd35981 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
+@@ -839,10 +839,10 @@ Raising SystemExit exception in python isn't endorsed way to quit vim, use: >
+ 	:py vim.command("qall!")
+ <
+ 							*E1266*
+-This error can occur when python 3 cannot load the required modules.  This
+-means that your python 3 is not correctly installed or there are some mistakes
++This error can occur when Python 3 cannot load the required modules.  This
++means that your Python 3 is not correctly installed or there are some mistakes
+ in your settings.  Please check the following items:
+-1. Make sure that python 3 is correctly installed.  Also check the version of
++1. Make sure that Python 3 is correctly installed.  Also check the version of
+    python.
+ 2. Check the 'pythonthreedll' option.
+ 3. Check the 'pythonthreehome' option.
+@@ -887,8 +887,8 @@ the runtime library cannot be found.
+ ==============================================================================
+ 11. Python X						*python_x* *pythonx*
+ 
+-Because most python code can be written so that it works with python 2.6+ and
+-python 3 the pyx* functions and commands have been written.  They work exactly
++Because most python code can be written so that it works with Python 2.6+ and
++Python 3 the pyx* functions and commands have been written.  They work exactly
+ the same as the Python 2 and 3 variants, but select the Python version using
+ the 'pyxversion' setting.
+ 
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 4df0909f4..a0230cadc 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -291,7 +291,7 @@ The examples below assume a 'shiftwidth' of 4.
+ <
+ 							*cino-g*
+ 	gN    Place C++ scope declarations N characters from the indent of the
+-	      block they are in.  (default 'shiftwidth'). By default, a scope 
++	      block they are in.  (default 'shiftwidth'). By default, a scope
+ 	      declaration is "public:", "protected:" or "private:". This can
+ 	      be adjusted with the 'cinscopedecls' option.
+ 
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 91df903a3..91261050d 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -177,7 +177,7 @@ Because it tries to unmap "@@ ", including the white space before the command
+ separator "|".  Other examples with trailing white space: >
+ 	unmap @@ 
+ 	unmap @@     # Vim9 script comment
+-	unmap @@     " legacy comment
++	unmap @@     " legacy script comment
+ 
+ An error will be issued, which is very hard to identify, because the ending
+ whitespace character in `unmap @@ ` is not visible.
+@@ -185,8 +185,8 @@ whitespace character in `unmap @@ ` is not visible.
+ A generic solution is to put the command separator "|" right after the mapped
+ keys.  After that white space and a comment may follow: >
+ 
+-	unmap @@|    # Vim9 scriptcomment
+-	unmap @@|    " legacy scriptcomment
++	unmap @@|    # Vim9 script comment
++	unmap @@|    " legacy script comment
+ 
+ 
+ 1.2 SPECIAL ARGUMENTS					*:map-arguments*
+@@ -195,7 +195,8 @@ keys.  After that white space and a comment may follow: >
+ "<unique>" can be used in any order.  They must appear right after the
+ command, before any other arguments.
+ 
+-			*:map-local* *:map-<buffer>* *:map-buffer* *E224* *E225*
++				    *:map-local* *:map-<buffer>* *:map-buffer*
++				    *E224* *E225*
+ If the first argument to one of these commands is "<buffer>" the mapping will
+ be effective in the current buffer only.  Example: >
+ 	:map <buffer>  ,w  /[.,;]<CR>
+diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
+index 760e9ca10..962c86cf9 100644
+--- a/runtime/doc/message.txt
++++ b/runtime/doc/message.txt
+@@ -78,7 +78,7 @@ See `:messages` above.
+ LIST OF MESSAGES
+ 			*E222* *E228* *E232* *E293* *E298* *E304* *E317*
+ 			*E318* *E356* *E438* *E439* *E440* *E316* *E320* *E322*
+-			*E323* *E341* *E473* *E570* *E685* *E292* 
++			*E323* *E341* *E473* *E570* *E685* *E292*
+   Add to read buffer ~
+   makemap: Illegal mode ~
+   Cannot create BalloonEval with both message and callback ~
+@@ -109,26 +109,26 @@ report. |bugs|
+ 
+ See |ATTENTION|.
+ 
+-							*E92* 
++							*E92*
+   Buffer {N} not found ~
+ 
+ The buffer you requested does not exist.  This can also happen when you have
+ wiped out a buffer which contains a mark or is referenced in another way.
+ |:bwipeout|
+ 
+-							*E95* 
++							*E95*
+   Buffer with this name already exists ~
+ 
+ You cannot have two buffers with exactly the same name.  This includes the
+ path leading to the file.
+ 
+-							*E72* 
++							*E72*
+   Close error on swap file ~
+ 
+ The |swap-file|, that is used to keep a copy of the edited text, could not be
+ closed properly.  Mostly harmless.
+ 
+-							*E169* 
++							*E169*
+   Command too recursive ~
+ 
+ This happens when an Ex command executes an Ex command that executes an Ex
+@@ -136,18 +136,18 @@ command, etc.  The limit is 200 or the value of 'maxfuncdepth', whatever is
+ larger.  When it's more there probably is an endless loop.  Probably a
+ |:execute| or |:source| command is involved.
+ 
+-							*E254* 
++							*E254*
+   Cannot allocate color {name} ~
+ 
+ The color name {name} is unknown.  See |gui-colors| for a list of colors that
+ are available on most systems.
+ 
+-							*E1244* 
++							*E1244*
+   Bad color string: {str} ~
+ 
+ The provided color did not conform to the pattern #rrggbb
+ 
+-							*E458* 
++							*E458*
+   Cannot allocate colormap entry, some colors may be incorrect ~
+ 
+ This means that there are not enough colors available for Vim.  It will still
+@@ -164,21 +164,21 @@ This can also be done with a line in your Xdefaults file:
+ or
+ 	Netscape*maxImageColors:  64 ~
+ 
+-							*E79* 
++							*E79*
+   Cannot expand wildcards ~
+ 
+ A filename contains a strange combination of characters, which causes Vim to
+ attempt expanding wildcards but this fails.  This does NOT mean that no
+ matching file names could be found, but that the pattern was illegal.
+ 
+-							*E459* 
++							*E459*
+   Cannot go back to previous directory ~
+ 
+ While expanding a file name, Vim failed to go back to the previously used
+ directory.  All file names being used may be invalid now!  You need to have
+ execute permission on the current directory.
+ 
+-							*E190* *E212* 
++							*E190* *E212*
+   Cannot open "{filename}" for writing ~
+   Can't open file for writing ~
+ 
+@@ -186,7 +186,7 @@ For some reason the file you are writing to cannot be created or overwritten.
+ The reason could be that you do not have permission to write in the directory
+ or the file name is not valid.
+ 
+-							*E166* 
++							*E166*
+   Can't open linked file for writing ~
+ 
+ You are trying to write to a file which can't be overwritten, and the file is
+@@ -198,19 +198,19 @@ place.  If you really want to write the file under this name, you have to
+ manually delete the link or the file, or change the permissions so that Vim
+ can overwrite.
+ 
+-							*E46* 
++							*E46*
+   Cannot change read-only variable "{name}" ~
+ 
+ You are trying to assign a value to an argument of a function |a:var| or a Vim
+ internal variable |v:var| which is read-only.
+ 
+-							*E90* 
++							*E90*
+   Cannot unload last buffer ~
+ 
+ Vim always requires one buffer to be loaded, otherwise there would be nothing
+ to display in the window.
+ 
+-							*E40* 
++							*E40*
+   Can't open errorfile <filename> ~
+ 
+ When using the ":make" or ":grep" commands: The file used to save the error
+@@ -223,7 +223,7 @@ messages or grep output cannot be opened.  This can have several causes:
+ - The 'grepprg' or 'makeprg' could not be executed.  This cannot always be
+   detected (especially on MS-Windows).  Check your $PATH.
+ 
+- 
++
+   Can't open file C:\TEMP\VIoD243.TMP ~
+ 
+ On MS-Windows, this message appears when the output of an external command was
+@@ -232,14 +232,14 @@ many things.  Check the 'shell', 'shellquote', 'shellxquote', 'shellslash' and
+ related options.  It might also be that the external command was not found,
+ there is no different error message for that.
+ 
+-							*E12* 
++							*E12*
+   Command not allowed from exrc/vimrc in current dir or tag search ~
+ 
+ Some commands are not allowed for security reasons.  These commands mostly
+ come from a .exrc or .vimrc file in the current directory, or from a tags
+ file.  Also see 'secure'.
+ 
+-							*E74* 
++							*E74*
+   Command too complex ~
+ 
+ A mapping resulted in a very long command string.  Could be caused by a
+@@ -258,20 +258,20 @@ If there is a backup file, when 'writebackup' or 'backup' is set, it will not
+ be deleted, so you can move it back into place if you want to discard the
+ changes.
+ 
+-							*E302* 
++							*E302*
+   Could not rename swap file ~
+ 
+ When the file name changes, Vim tries to rename the |swap-file| as well.
+ This failed and the old swap file is now still used.  Mostly harmless.
+ 
+-							*E43* *E44* 
++							*E43* *E44*
+   Damaged match string ~
+   Corrupted regexp program ~
+ 
+ Something inside Vim went wrong and resulted in a corrupted regexp.  If you
+ know how to reproduce this problem, please report it. |bugs|
+ 
+-							*E208* *E209* *E210* 
++							*E208* *E209* *E210*
+   Error writing to "{filename}" ~
+   Error closing "{filename}" ~
+   Error reading "{filename}" ~
+@@ -288,19 +288,19 @@ This occurs when Vim cannot read typed characters while input is required.
+ Vim got stuck, the only thing it can do is exit.  This can happen when both
+ stdin and stderr are redirected and executing a script that doesn't exit Vim.
+ 
+-							*E47* 
++							*E47*
+   Error while reading errorfile ~
+ 
+ Reading the error file was not possible.  This is NOT caused by an error
+ message that was not recognized.
+ 
+-							*E80* 
++							*E80*
+   Error while writing ~
+ 
+ Writing a file was not completed successfully.  The file is probably
+ incomplete.
+ 
+-							*E13* *E189* 
++							*E13* *E189*
+   File exists (add ! to override) ~
+   "{filename}" exists (add ! to override) ~
+ 
+@@ -311,7 +311,7 @@ Example: >
+ changes to: >
+ 	:w! /tmp/test
+ <
+-							*E768* 
++							*E768*
+   Swap file exists: {filename} (:silent! overrides) ~
+ 
+ You are protected from overwriting a file that is being edited by Vim.  This
+@@ -324,45 +324,45 @@ happens when you use ":w! filename" and a swapfile is found.
+ < The special command is needed, since you already added the ! for overwriting
+   an existing file.
+ 
+-							*E139* 
++							*E139*
+   File is loaded in another buffer ~
+ 
+ You are trying to write a file under a name which is also used in another
+ buffer.  This would result in two versions of the same file.
+ 
+-							*E142* 
++							*E142*
+   File not written: Writing is disabled by 'write' option ~
+ 
+ The 'write' option is off.  This makes all commands that try to write a file
+ generate this message.  This could be caused by a |-m| commandline argument.
+ You can switch the 'write' option on with ":set write".
+ 
+-							*E25* 
++							*E25*
+   GUI cannot be used: Not enabled at compile time ~
+ 
+ You are running a version of Vim that doesn't include the GUI code.  Therefore
+ "gvim" and ":gui" don't work.
+ 
+-							*E49* 
++							*E49*
+   Invalid scroll size ~
+ 
+ This is caused by setting an invalid value for the 'scroll', 'scrolljump' or
+ 'scrolloff' options.
+ 
+-							*E17* 
++							*E17*
+   "{filename}" is a directory ~
+ 
+ You tried to write a file with the name of a directory.  This is not possible.
+ You probably need to append a file name.
+ 
+-							*E19* 
++							*E19*
+   Mark has invalid line number ~
+ 
+ You are using a mark that has a line number that doesn't exist.  This can
+ happen when you have a mark in another file, and some other program has
+ deleted lines from it.
+ 
+-							*E219* *E220* 
++							*E219* *E220*
+   Missing {. ~
+   Missing }. ~
+ 
+@@ -370,13 +370,13 @@ Using a {} construct in a file name, but there is a { without a matching } or
+ the other way around.  It should be used like this: {foo,bar}.  This matches
+ "foo" and "bar".
+ 
+-							*E315* 
++							*E315*
+   ml_get: invalid lnum: {number} ~
+ 
+ This is an internal Vim error.  Please try to find out how it can be
+ reproduced, and submit a bug report |bugreport.vim|.
+ 
+-							*E173* 
++							*E173*
+   {number} more files to edit ~
+ 
+ You are trying to exit, while the last item in the argument list has not been
+@@ -384,19 +384,19 @@ edited.  This protects you from accidentally exiting when you still have more
+ files to work on.  See |argument-list|.  If you do want to exit, just do it
+ again and it will work.
+ 
+-							*E23* *E194* 
++							*E23* *E194*
+   No alternate file ~
+   No alternate file name to substitute for '#' ~
+ 
+ The alternate file is not defined yet.  See |alternate-file|.
+ 
+-							*E32* 
++							*E32*
+   No file name ~
+ 
+ The current buffer has no name.  To write it, use ":w fname".  Or give the
+ buffer a name with ":file fname".
+ 
+-							*E141* 
++							*E141*
+   No file name for buffer {number} ~
+ 
+ One of the buffers that was changed does not have a file name.  Therefore it
+@@ -404,7 +404,7 @@ cannot be written.  You need to give the buffer a file name: >
+ 	:buffer {number}
+ 	:file {filename}
+ <
+-							*E33* 
++							*E33*
+   No previous substitute regular expression ~
+ 
+ When using the '~' character in a pattern, it is replaced with the previously
+@@ -412,13 +412,13 @@ used pattern in a ":substitute" command.  This fails when no such command has
+ been used yet.  See |/~|.  This also happens when using ":s/pat/%/", where the
+ "%" stands for the previous substitute string.
+ 
+-							*E35* 
++							*E35*
+   No previous regular expression ~
+ 
+ When using an empty search pattern, the previous search pattern is used.  But
+ that is not possible if there was no previous search.
+ 
+-							*E24* 
++							*E24*
+   No such abbreviation ~
+ 
+ You have used an ":unabbreviate" command with an argument which is not an
+@@ -441,7 +441,7 @@ mapping.  All variations of this command give the same message: ":cunmap",
+ - If the mapping is buffer-local you need to use ":unmap <buffer>".
+   |:map-<buffer>|
+ 
+-							*E37* *E89* 
++							*E37* *E89*
+   No write since last change (add ! to override) ~
+   No write since last change for buffer {N} (add ! to override) ~
+ 
+@@ -453,7 +453,7 @@ adding a '!' character just after the command you used.  Example: >
+ changes to: >
+ 	:e! other_file
+ <
+-							*E162* 
++							*E162*
+   No write since last change for buffer "{name}" ~
+ 
+ This appears when you try to exit Vim while some buffers are changed.  You
+@@ -468,13 +468,13 @@ about a buffer, especially when 'hidden' is set.
+ This appears when executing a shell command while at least one buffer was
+ changed.  To avoid the message reset the 'warn' option.
+ 
+-							*E38* 
++							*E38*
+   Null argument ~
+ 
+ Something inside Vim went wrong and resulted in a NULL pointer.  If you know
+ how to reproduce this problem, please report it. |bugs|
+ 
+-						*E41* *E82* *E83* *E342* 
++						*E41* *E82* *E83* *E342*
+   Out of memory! ~
+   Out of memory!  (allocating {number} bytes) ~
+   Cannot allocate any buffer, exiting... ~
+@@ -496,7 +496,7 @@ in memory, you can reduce that with these options:
+   helps for a change that affects all lines.
+ - 'undoreload' Set to zero to disable.
+ 
+-							*E339* 
++							*E339*
+   Pattern too long ~
+ 
+ This happens on systems with 16 bit ints: The compiled regexp pattern is
+@@ -504,7 +504,7 @@ longer than about 65000 characters.  Try using a shorter pattern.
+ It also happens when the offset of a rule doesn't fit in the space available.
+ Try simplifying the pattern.
+ 
+-							*E45* 
++							*E45*
+   'readonly' option is set (add ! to override) ~
+ 
+ You are trying to write a file that was marked as read-only.  To write the
+@@ -514,7 +514,7 @@ after the command you used.  Example: >
+ changes to: >
+ 	:w!
+ <
+-							*E294* *E295* *E301* 
++							*E294* *E295* *E301*
+   Read error in swap file ~
+   Seek error in swap file read ~
+   Oops, lost the swap file!!! ~
+@@ -524,7 +524,7 @@ text in the related buffer may now be corrupted!  Check carefully before you
+ write a buffer.  You may want to write it in another file and check for
+ differences.
+ 
+-							*E192* 
++							*E192*
+   Recursive use of :normal too deep ~
+ 
+ You are using a ":normal" command, whose argument again uses a ":normal"
+@@ -533,7 +533,7 @@ example illustrates how to get this message: >
+ 	:map gq :normal gq<CR>
+ If you type "gq", it will execute this mapping, which will call "gq" again.
+ 
+-							*E22* 
++							*E22*
+   Scripts nested too deep ~
+ 
+ Scripts can be read with the "-s" command-line argument and with the
+@@ -541,7 +541,7 @@ Scripts can be read with the "-s" command-line argument and with the
+ continue for about 14 levels.  When more nesting is done, Vim assumes that
+ there is a recursive loop and stops with this error message.
+ 
+-							*E319* 
++							*E319*
+   Sorry, the command is not available in this version ~
+ 
+ You have used a command that is not present in the version of Vim you are
+@@ -550,7 +550,7 @@ disabled.  This depends on how big Vim has chosen to be and the operating
+ system.  See |+feature-list| for when which feature is available.  The
+ |:version| command shows which feature Vim was compiled with.
+ 
+-							*E300* 
++							*E300*
+   Swap file already exists (symlink attack?) ~
+ 
+ This message appears when Vim is trying to open a swap file and finds it
+@@ -560,7 +560,7 @@ opened the same file at exactly the same moment (very unlikely) or someone is
+ attempting a symlink attack (could happen when editing a file in /tmp or when
+ 'directory' starts with "/tmp", which is a bad choice).
+ 
+-							*E432* 
++							*E432*
+   Tags file not sorted: {file name} ~
+ 
+ Vim (and Vi) expect tags files to be sorted in ASCII order.  Binary searching
+@@ -570,20 +570,20 @@ This message is only given when Vim detects a problem when searching for a
+ tag.  Sometimes this message is not given, even though the tags file is not
+ properly sorted.
+ 
+-							*E424* 
++							*E424*
+   Too many different highlighting attributes in use ~
+ 
+ Vim can only handle about 223 different kinds of highlighting.  If you run
+ into this limit, you have used too many |:highlight| commands with different
+ arguments.  A ":highlight link" is not counted.
+ 
+-							*E77* 
++							*E77*
+   Too many file names ~
+ 
+ When expanding file names, more than one match was found.  Only one match is
+ allowed for the command that was used.
+ 
+-							*E303* 
++							*E303*
+   Unable to open swap file for "{filename}", recovery impossible ~
+ 
+ Vim was not able to create a swap file.  You can still edit the file, but if
+@@ -592,7 +592,7 @@ memory when editing a big file.  You may want to change the 'directory' option
+ to avoid this error.  This error is not given when 'directory' is empty.  See
+ |swap-file|.
+ 
+-							*E140* 
++							*E140*
+   Use ! to write partial buffer ~
+ 
+ When using a range to write part of a buffer, it is unusual to overwrite the
+@@ -609,7 +609,7 @@ X11 configuration is wrong.  You can find a hint on how to solve this here:
+ http://groups.yahoo.com/group/solarisonintel/message/12179.
+ [this URL is no longer valid]
+ 
+-							*W10* 
++							*W10*
+   Warning: Changing a readonly file ~
+ 
+ The file is read-only and you are making a change to it anyway.  You can use
+@@ -618,14 +618,14 @@ must reset the 'readonly' option).  See 'modifiable' to completely disallow
+ making changes to a file.
+ This message is only given for the first change after 'readonly' has been set.
+ 
+-							*W13* 
++							*W13*
+   Warning: File "{filename}" has been created after editing started ~
+ 
+ You are editing a file in Vim when it didn't exist, but it does exist now.
+ You will have to decide if you want to keep the version in Vim or the newly
+ created file.  This message is not given when 'buftype' is not empty.
+ 
+-							*W11* 
++							*W11*
+   Warning: File "{filename}" has changed since editing started ~
+ 
+ The file which you have started editing has got another timestamp and the
+@@ -649,14 +649,14 @@ starts.  It can be fixed in one of these ways:
+ If you get W11 all the time, you may need to disable "Acronis Active
+ Protection" or register Vim as a trusted service/application.
+ 
+-							*W12* 
++							*W12*
+   Warning: File "{filename}" has changed and the buffer was changed in Vim as well ~
+ 
+ Like the above, and the buffer for the file was changed in this Vim as well.
+ You will have to decide if you want to keep the version in this Vim or the one
+ on disk.  This message is not given when 'buftype' is not empty.
+ 
+-							*W16* 
++							*W16*
+   Warning: Mode of file "{filename}" has changed since editing started ~
+ 
+ When the timestamp for a buffer was changed and the contents are still the
+@@ -665,27 +665,27 @@ checking out a file from a version control system, which causes the read-only
+ bit to be reset.  It should be safe to reload the file.  Set 'autoread' to
+ automatically reload the file.
+ 
+-							*E211* 
++							*E211*
+   File "{filename}" no longer available ~
+ 
+ The file which you have started editing has disappeared, or is no longer
+ accessible.  Make sure you write the buffer somewhere to avoid losing
+ changes.  This message is not given when 'buftype' is not empty.
+ 
+-							*W14* 
++							*W14*
+   Warning: List of file names overflow ~
+ 
+ You must be using an awful lot of buffers.  It's now possible that two buffers
+ have the same number, which causes various problems.  You might want to exit
+ Vim and restart it.
+ 
+-							*E931* 
++							*E931*
+   Buffer cannot be registered ~
+ 
+ Out of memory or a duplicate buffer number.  May happen after W14.  Looking up
+ a buffer will not always work, better restart Vim.
+ 
+-							*E296* *E297* 
++							*E296* *E297*
+   Seek error in swap file write ~
+   Write error in swap file ~
+ 
+@@ -694,7 +694,7 @@ This mostly happens when the disk is full.  Vim could not write text into the
+ text may be lost without recovery being possible.  Vim might run out of memory
+ when this problem persists.
+ 
+-						*connection-refused* 
++						*connection-refused*
+   Xlib: connection to "<machine-name:0.0" refused by server ~
+ 
+ This happens when Vim tries to connect to the X server, but the X server does
+@@ -703,7 +703,7 @@ to restore the title and for the xterm clipboard support.  Unfortunately this
+ error message cannot be avoided, except by disabling the |+xterm_clipboard|
+ and |+X11| features.
+ 
+-							*E10* 
++							*E10*
+   \\ should be followed by /, ? or & ~
+ 
+ A command line started with a backslash or the range of a command contained a
+@@ -711,13 +711,13 @@ backslash in a wrong place.  This is often caused by command-line continuation
+ being disabled.  Remove the 'C' flag from the 'cpoptions' option to enable it.
+ Or use ":set nocp".
+ 
+-							*E471* 
++							*E471*
+   Argument required ~
+ 
+ This happens when an Ex command with mandatory argument(s) was executed, but
+ no argument has been specified.
+ 
+-							*E474* *E475* *E983* 
++							*E474* *E475* *E983*
+   Invalid argument ~
+   Invalid argument: {arg} ~
+   Duplicate argument: {arg} ~
+@@ -725,32 +725,32 @@ no argument has been specified.
+ An Ex command or function has been executed, but an invalid argument has been
+ specified.
+ 
+-							*E488* 
++							*E488*
+   Trailing characters ~
+   Trailing characters: {text} ~
+ 
+ An argument has been added to an Ex command that does not permit one.
+ Or the argument has invalid characters and has not been recognized.
+ 
+-							*E477* *E478* 
++							*E477* *E478*
+   No ! allowed ~
+   Don't panic! ~
+ 
+ You have added a "!" after an Ex command that doesn't permit one.
+ 
+-							*E481* 
++							*E481*
+   No range allowed ~
+ 
+ A range was specified for an Ex command that doesn't permit one.  See
+ |cmdline-ranges|.
+ 
+-							*E482* *E483* 
++							*E482* *E483*
+   Can't create file {filename} ~
+   Can't get temp file name ~
+ 
+ Vim cannot create a temporary file.
+ 
+-							*E484* *E485* 
++							*E484* *E485*
+   Can't open file {filename} ~
+   Can't read file {filename} ~
+ 
+@@ -760,7 +760,7 @@ changed with patch 7.3.443.  Try using |shellescape()| for all shell arguments
+ given to |system()|, or explicitly add escaping with ^.  Also see
+ 'shellxquote' and 'shellxescape'.
+ 
+-							*E464* 
++							*E464*
+   Ambiguous use of user-defined command ~
+ 
+ There are two user-defined commands with a common name prefix, and you used
+@@ -770,20 +770,20 @@ Example: >
+ 	:command MyCommand2 echo "two"
+ 	:MyCommand
+ <
+-							*E492* 
++							*E492*
+   Not an editor command ~
+ 
+ You tried to execute a command that is neither an Ex command nor
+ a user-defined command.
+ 
+-							*E943* 
++							*E943*
+   Command table needs to be updated, run 'make cmdidxs' ~
+ 
+ This can only happen when changing the source code, when adding a command in
+ src/ex_cmds.h.  The lookup table then needs to be updated, by running: >
+ 	make cmdidxs
+ <
+-						*E928* *E889* 
++						*E928* *E889*
+   E928: String required ~
+   E889: Number required ~
+ 
+@@ -842,7 +842,7 @@ Also see 'mouse'.  The hit-enter message is highlighted with the |hl-Question|
+ group.
+ 
+ 
+-						*more-prompt* *pager* 
++						*more-prompt* *pager*
+   -- More -- ~
+   -- More -- SPACE/d/j: screen/page/line down, b/u/k: up, q: quit ~
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 8d2d17aea..2f414cd60 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1427,7 +1427,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  hide		hide the buffer (don't unload it), even if 'hidden' is
+ 			not set
+ 	  unload	unload the buffer, even if 'hidden' is set; the
+-			|:hide| command will also unlod the buffer
++			|:hide| command will also unload the buffer
+ 	  delete	delete the buffer from the buffer list, even if
+ 			'hidden' is set; the |:hide| command will also delete
+ 			the buffer, making it behave like |:bdelete|
+@@ -4518,7 +4518,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 				 *'incsearch'* *'is'* *'noincsearch'* *'nois'*
+ 'incsearch' 'is'	boolean	(default off, set in |defaults.vim| if the
+-						+reltime feature is supported)
++					    |+reltime| feature is supported)
+ 			global
+ 			{not available when compiled without the
+ 			|+extra_search| features}
+@@ -5090,9 +5090,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <							*lcs-leadmultispace*
+ 	  leadmultispace:c...
+ 			Like multispace value, but only for leading whitespace
+-			Overrides |lcs-lead| for leading multiple spaces.
+-			`:set listchars=leadmultispace:---+` shows ten consecutive
+-			leading spaces as:
++			overrides |lcs-lead| for leading multiple spaces.
++			`:set listchars=leadmultispace:---+` shows ten
++			consecutive leading spaces as:
+ 				---+---+--XXX ~
+ 			Where "XXX" denotes the first non-blank characters in
+ 			the line.
+@@ -7421,7 +7421,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			{millisec} milli seconds.  Applies to the following
+ 			methods.  When omitted the limit is 5000. When
+ 			negative there is no limit.  {only works when built
+-			with the +reltime feature}
++			with the |+reltime| feature}
+ 
+ 	file:{filename} Read file {filename}, which must have two columns,
+ 			separated by a slash.  The first column contains the
+@@ -9021,7 +9021,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	mode.  On pressing 'wildchar' (usually <Tab>) to invoke completion,
+ 	the possible matches are shown just above the command line, with the
+ 	first match highlighted (overwriting the status line, if there is
+-	one).  This is the behavior without "pum" in 'wildoptions.
++	one).  This is the behavior without "pum" in 'wildoptions'.
+ 	Keys that show the previous/next match, such as <Tab> or
+ 	CTRL-P/CTRL-N, cause the highlight to move to the appropriate match.
+ 	When 'wildmode' is used, "wildmenu" mode is used where "full" is
+@@ -9132,7 +9132,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			expansion. Currently fuzzy matching based completion
+ 			is not supported for file and directory names and
+ 			instead wildcard expansion is used.
+-	  pum		Display the completion matches using the popupmenu
++	  pum		Display the completion matches using the popup menu
+ 			in the same style as the |ins-completion-menu|.
+ 	  tagfile	When using CTRL-D to list matching tags, the kind of
+ 			tag and the file of the tag is listed.	Only one match
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 09549b50b..f8eef0ef6 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -643,7 +643,7 @@ Short explanation of each option:		*option-list*
+ 'cinkeys'	  'cink'    keys that trigger indent when 'cindent' is set
+ 'cinoptions'	  'cino'    how to do indenting when 'cindent' is set
+ 'cinwords'	  'cinw'    words where 'si' and 'cin' add an indent
+-'cinscopedecls'	  'cinsd'   words that are recognized by 'cino-g' 
++'cinscopedecls'	  'cinsd'   words that are recognized by 'cino-g'
+ 'clipboard'	  'cb'	    use the clipboard as the unnamed register
+ 'cmdheight'	  'ch'	    number of lines to use for the command-line
+ 'cmdwinheight'	  'cwh'     height of the command-line window
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index e295b80a7..be33def10 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -348,7 +348,7 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ 		Start logging and write entries to {filename}.
+ 		This works like calling `ch_logfile({filename}, 'ao')` very
+ 		early during startup.
+-		{only available with the +channel feature}
++		{only available with the |+channel| feature}
+ 
+ 							*-D*
+ -D		Debugging.  Go to debugging mode when executing the first
+diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
+index a6941e1a1..c0744f669 100644
+--- a/runtime/doc/tabpage.txt
++++ b/runtime/doc/tabpage.txt
+@@ -138,7 +138,7 @@ something else.
+ 		    :+tabclose	    " close the next tab page
+ 		    :1tabclose	    " close the first tab page
+ 		    :$tabclose	    " close the last tab page
+-		    :tabclose -2    " close the 2nd previous tab page 
++		    :tabclose -2    " close the 2nd previous tab page
+ 		    :tabclose +	    " close the next tab page
+ 		    :tabclose 3	    " close the third tab page
+ 		    :tabclose $	    " close the last tab page
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 4004c632d..463ab26d7 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1415,7 +1415,7 @@ the "disasm_window_height" entry can be used to set the window height: >
+ 	let g:termdebug_config['disasm_window_height'] = 15
+ or, if there is no g:termdebug_config: >
+ 	let g:termdebug_disasm_window = 15
+-Any value greater than 1 will set the Asm window height to that value: >
++Any value greater than 1 will set the Asm window height to that value.
+ 
+ Communication ~
+ 						*termdebug-communication*
+@@ -1469,7 +1469,7 @@ get this error:
+ Then your gdb is too old.
+ 
+ 
+-Colors~
++Colors ~
+ 						*hl-debugPC* *hl-debugBreakpoint*
+ The color of the signs can be adjusted with these highlight groups:
+ - debugPC		the current position
+@@ -1484,7 +1484,8 @@ When 'background' is "dark":
+   hi debugBreakpoint term=reverse ctermbg=red guibg=red
+ 
+ 
+-Shortcuts						*termdebug_shortcuts*
++Shortcuts ~
++							*termdebug_shortcuts*
+ 
+ You can define your own shortcuts (mappings) to control gdb, that can work in
+ any window, using the TermDebugSendCommand() function.  Example: >
+@@ -1492,7 +1493,8 @@ any window, using the TermDebugSendCommand() function.  Example: >
+ The argument is the gdb command.
+ 
+ 
+-Popup menu						*termdebug_popup*
++Popup menu ~
++							*termdebug_popup*
+ 
+ By default the Termdebug plugin sets 'mousemodel' to "popup_setpos" and adds
+ these entries to the popup menu:
+@@ -1505,7 +1507,8 @@ or if there is no g:termdebug_config: >
+ 	let g:termdebug_popup = 0
+ 
+ 
+-Vim window width						*termdebug_wide*
++Vim window width ~
++							*termdebug_wide*
+ 
+ To change the width of the Vim window when debugging starts and use a vertical
+ split: >
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index e6328e91e..42246c049 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -91,9 +91,9 @@ test_gui_event({event}, {args})
+ 
+ 		{event} is a String and the supported values are:
+ 		    "dropfiles"	drop one or more files in a window.
+-		    "findrepl"  search and replace text
++		    "findrepl"  search and replace text.
+ 		    "mouse"	mouse button click event.
+-		    "scrollbar" move or drag the scrollbar
++		    "scrollbar" move or drag the scrollbar.
+ 		    "tabline"	select a tab page by mouse click.
+ 		    "tabmenu"	select a tabline menu entry.
+ 
+@@ -119,7 +119,7 @@ test_gui_event({event}, {args})
+ 		  Perform a search and replace of text.  The supported items
+ 		  in {args} are:
+ 		    find_text:	string to find.
+-		    repl_text:	replacement string
++		    repl_text:	replacement string.
+ 		    flags:	flags controlling the find/replace. Supported
+ 				values are:
+ 				    1	search next string (find dialog)
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 40f9bc038..50661efc4 100644
+index 50661efc4..37dc6d4ae 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 23
-+*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 25
+-*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 25
++*todo.txt*      For Vim version 8.2.  Last change: 2022 Jun 26
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -39,7 +39,7 @@ browser use: https://github.com/vim/vim/issues/1234
- -------------------- Known bugs and current work -----------------------
- 
- Prepare for the Vim 9.0 release:
--- Update version9.txt
-+- Update version number in help
- 
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
-@@ -79,7 +79,7 @@ Update list of features to vote on:
- Popup windows:
- - Preview popup not properly updated when it overlaps with completion menu.
-   (Yegappan Lakshmanan, 2021 May 22)
--- Srollbar thumb sometimes not visible  #10492
-+- Scrollbar thumb sometimes not visible  #10492
- - Add a function to redraw a specific popup window.  Esp. to be used when
-   editing the command line, when screen updating doesn't happen. (Shougo)
- - Add a flag to make a popup window focusable?
-@@ -201,6 +201,7 @@ Terminal emulator window:
-   conversions.
- 
- Patches considered for including:
-+- make functions static if possible, add a few tests. #10612
- - use ngettext() in a few more places #10606
+@@ -206,14 +206,14 @@ Patches considered for including:
  - move f_hasmapto() to map.c  #10611
  - allow for nesting of timeout, sketch in #10595
-@@ -211,6 +212,8 @@ Patches considered for including:
+ - Add "-n" option to xxd. #10599
+-- Support %e and %k in 'errorformat'. #9624
+ - Add support for "underdouble", "underdot" and "underdash". #9553
+ - Patch to implement the vimtutor with a plugin: #6414
    Was originally written by Felipe Morales.
  - Patch to make fillchars global-local. (#5206)
  - Version of getchar() that does not move the cursor - #10603
-+  Use a separate argument for the new flag.
-+- Improved VB filetype detection. (Doug Kearns, June 25)
+   Use a separate argument for the new flag.
+-- Improved VB filetype detection. (Doug Kearns, June 25)
++- Improved VB filetype detection. (Doug Kearns, June 26)
++- Improved FreeBasic runtime files (and a second one). (Doug Kearns, June 26)
  
  Autoconf: must use autoconf 2.69, later version generates lots of warnings
  - try using autoconf 2.71 and fix all "obsolete" warnings
-@@ -304,6 +307,11 @@ changes.
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index f5527cd85..cd39dd367 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -322,7 +322,7 @@ want to give the variable a value yet, you need to specify the type: >
  
- Add ??= operator, "a ??= b" works like "a = a ?? b". #10343
- 
-+When ":redir" is used while already active, the previous one is ended.  But
-+when redirecting to a local variable (function or script) storing the value
-+won't work.  At least give an error.  Is there a way to make it work?
-+#10616
+ If you make a mistake and try to assign the wrong type of value you'll get an
+ error: >
+-	
 +
- Add an option to start_timer() to return from the input loop with K_IGNORE.
- This is useful e.g. when a popup was created that disables mappings, we need
- to return from vgetc() to make this happen.  #7011
-@@ -380,7 +388,7 @@ Lua: updating wrong buffer when using newly created, unloaded buffer.
- File marks merging has duplicates since 7.4.1925. (Ingo Karkat, #5733)
+ 	age = "Peter"
+ <	E1012: Type mismatch; expected number but got string ~
  
- A syntax plugin cannot use autocommands, it could be sourced from setting
--'syntax' in a modeline.  Add a function that indicates whethere "secure"
-+'syntax' in a modeline.  Add a function that indicates whether "secure"
- and/or "sandbox" are set.
+@@ -638,7 +638,7 @@ Make sure that the argument for `normal` is a complete command.  Otherwise
+ Vim will run into the end of the argument and silently abort the command.  For
+ example, if you start the delete operator, you must give the movement command
+ also.  This works: >
+-	
++
+ 	normal d$
  
- Problem with auto-formatting - inserting space and putting cursor before added
+ This does nothing: >
+@@ -1567,7 +1567,7 @@ to "funcref".  Example: >
+ 	def Wrong(): string
+ 	  return 'Wrong!'
+ 	enddef
+-	
++
+ 	var Afunc = g:result == 1 ? Right : Wrong
+ 	echo Afunc()
+ <	Wrong! ~
+@@ -1815,7 +1815,7 @@ is ignored, except for commands that don't consider comments, as shown in
+ examples below.  A comment can start on any character position on the line,
+ but not when it is part of the command, e.g. inside a string.
+ 
+-The character " (the double quote mark) starts a comment in legacy script.  
++The character " (the double quote mark) starts a comment in legacy script.
+ This involves some cleverness to make sure double quoted strings are not
+ recognized as comments (just one reason to prefer |Vim9| script).
+ 
+diff --git a/runtime/doc/usr_50.txt b/runtime/doc/usr_50.txt
+index 7d6936464..e8ebeb001 100644
+--- a/runtime/doc/usr_50.txt
++++ b/runtime/doc/usr_50.txt
+@@ -6,7 +6,7 @@
+ 
+ 
+ |50.1|	Exceptions
+-|50.2|    Function with variable number of arguments
++|50.2|	Function with variable number of arguments
+ |50.3|	Restoring the view
+ 
+      Next chapter: |usr_51.txt|  Create a plugin
+@@ -104,7 +104,7 @@ You can call it like this: >
+ 
+ 	Show('Title', 'one', 'two', 'three')
+ <	start is Title  Arg 0 is one  Arg 1 is two  Arg 2 is three ~
+-	
++
+ This uses the `echohl` command to specify the highlighting used for the
+ following `echo` command.  `echohl None` stops it again.  The `echon` command
+ works like `echo`, but doesn't output a line break.
+diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
+index 73733f488..800946e51 100644
+--- a/runtime/doc/usr_51.txt
++++ b/runtime/doc/usr_51.txt
+@@ -72,7 +72,7 @@ FIRST LINE
+ >
+   1	vim9script noclear
+ 
+-You need to use `vimscript` as the very first command.  Best is to put it in
++You need to use `vim9script` as the very first command.  Best is to put it in
+ the very first line.
+ 
+ The script we are writing will have a `finish` command to bail out when it is
+@@ -615,7 +615,7 @@ noremap <script>	Only remap mappings defined in this script that start
+ 
+ setlocal		Set an option for the current buffer only.
+ 
+-command -buffer	Define a user command local to the buffer.
++command -buffer		Define a user command local to the buffer.
+ 
+ exists("*s:Func")	Check if a function was already defined.
+ 
+diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
+index 31576c610..59777cc98 100644
+--- a/runtime/doc/usr_toc.txt
++++ b/runtime/doc/usr_toc.txt
+@@ -345,7 +345,7 @@ Writing Vim script ~
+ 
+ |usr_50.txt|  Advanced Vim script writing
+ 		|50.1|	Exceptions
+-		|50.2|    Function with variable number of arguments
++		|50.2|	Function with variable number of arguments
+ 		|50.3|	Restoring the view
+ 
+ |usr_51.txt|  Write plugins
 diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index d09dac48f..1414561c6 100644
+index 1414561c6..96f0f88ce 100644
 --- a/runtime/doc/various.txt
 +++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 8.2.  Last change: 2022 May 21
-+*various.txt*   For Vim version 8.2.  Last change: 2022 Jun 25
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -558,7 +558,10 @@ N  *+X11*		Unix only: can restore window title |X11|
- 			initialized to an empty string.  After the redirection
- 			starts, if the variable is removed or locked or the
- 			variable type is changed, then further command output
--			messages will cause errors.
-+			messages will cause errors.  When using a local
-+			variable (l:var in a function or s:var in a script)
-+			and another `:redir` causes the current one to end,
-+			the scope might be different and the assignment fails.
- 			In Vim9 script: the variable must have been declared
- 			as a string.
- 			The variable will remain empty until redirection ends.
-diff --git a/runtime/doc/version7.txt b/runtime/doc/version7.txt
-index 0256f4b01..775b9dcdb 100644
---- a/runtime/doc/version7.txt
-+++ b/runtime/doc/version7.txt
-@@ -12849,7 +12849,7 @@ Files:	    src/getchar.c, src/normal.c, src/proto/getchar.pro
- 
- Patch 7.3.430
- Problem:    When a custom filetype detection uses "augroup END" the conf
--	    fileytpe detection does not have the filetypedetect group.
-+	    filetype detection does not have the filetypedetect group.
- Solution:   Always end the group and include filetypedetect in the conf
- 	    autocommand. (Lech Lorens)
- Files:	    runtime/filetype.vim
+@@ -411,7 +411,8 @@ T  *+mouse*		Mouse handling |mouse-using|
+ N  *+mouseshape*	|'mouseshape'|
+ B  *+mouse_dec*		Unix only: Dec terminal mouse handling |dec-mouse|
+ N  *+mouse_gpm*		Unix only: Linux console mouse handling |gpm-mouse|
+-m  *+mouse_gpm/dyn*	Same as |+mouse_gpm| with optional library dependency |/dyn|
++m  *+mouse_gpm/dyn*	Same as |+mouse_gpm| with optional library dependency
++			|/dyn|
+ N  *+mouse_jsbterm*	JSB mouse handling |jsbterm-mouse|
+ B  *+mouse_netterm*	Unix only: netterm mouse handling |netterm-mouse|
+ N  *+mouse_pterm*	QNX only: pterm mouse handling |qnx-terminal|
 diff --git a/runtime/doc/version8.txt b/runtime/doc/version8.txt
-index b7185e866..670208fde 100644
+index 670208fde..1cb95e0a0 100644
 --- a/runtime/doc/version8.txt
 +++ b/runtime/doc/version8.txt
-@@ -18427,7 +18427,7 @@ Problem:    When 'wrapscan' is off "gn" does not select the whole pattern when
- Solution:   Check if the search fails. (Christian Brabandt, closes #1683)
- Files:      src/search.c, src/testdir/test_gn.vim
+@@ -370,8 +370,8 @@ New autocommand events: ~
+ |OptionSet|		after setting any option
+ |TabClosed|		after closing a tab page
+ |TabNew|		after creating a new tab page
+-|TextChangedI|		after a change was made to the text in Insert mode
+ |TextChanged|		after a change was made to the text in Normal mode
++|TextChangedI|		after a change was made to the text in Insert mode
+ |WinNew|		after creating a new window
  
--Patch 8.0.0628 (after 8.0.0626
-+Patch 8.0.0628 (after 8.0.0626)
- Problem:    Cursor disappears after silent mapping. (Ramel Eshed)
- Solution:   Do restore the cursor when it was changed, but don't change it in
-             the first place for a silent mapping.
+ 
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 443839475..37054001a 100644
+index 37054001a..323829a59 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 8.2.  Last change: 2022 Jun 20
-+*version9.txt*  For Vim version 8.2.  Last change: 2022 Jun 24
+-*version9.txt*  For Vim version 8.2.  Last change: 2022 Jun 24
++*version9.txt*  For Vim version 8.2.  Last change: 2022 Jun 25
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -7,25 +7,27 @@
- 				*vim-9.0* *vim-9* *version-9.0* *version9.0*
- Welcome to Vim 9!  Several years have passed since the previous release.
- A large number of bugs have been fixed, many nice features have been added
--and Vim9 script syntax has been introduced.  This file mentions all the new
--things and changes to existing features since Vim 8.2.0. The patches up to Vim
--8.2 can be found here: |vim-8.2|.
-+and the Vim9 script syntax is here!  This file mentions all the new things and
-+changes to existing features since Vim 8.2.0. The patches up to Vim 8.2 can be
-+found here: |vim-8.2|.
+@@ -462,6 +462,10 @@ TermDebug enhancements:
  
- Use this command to see the full version and features information of the Vim
- program you are using: >
- 	:version
+ xxd: Support for showing offset as a decimal number (-d).
  
--NEW FEATURES				|new-9|
--	Vim script enhancements		|new-vim-script-9|
--	Various new items		|new-items-9|
-+NEW FEATURES					|new-9|
-+   Vim script enhancements			|new-vim-script-9|
-+   Command line completion in a popup menu	|new-popup-compl|
-+   Updated colorschemes				|new-colorschemes-9|
-+   Various new items				|new-items-9|
- 
--INCOMPATIBLE CHANGES			|incompatible-9|
-+INCOMPATIBLE CHANGES				|incompatible-9|
- 
--IMPROVEMENTS				|improvements-9|
-+IMPROVEMENTS					|improvements-9|
- 
--COMPILE TIME CHANGES			|compile-changes-9|
-+COMPILE TIME CHANGES				|compile-changes-9|
- 
--PATCHES					|patches-9|
-+PATCHES						|patches-9|
- 
- 
- See |vi_diff.txt| for an overview of differences between Vi and Vim 9.0.
-@@ -51,26 +53,41 @@ is below.
- Vim9 script ~
- 							*new-vim-script-9*
- The Vim script language has been changed step by step over many years,
--preserving backwards compatibility.  Several choices made in early days got in
--the way of making it work better.  At the same time, Vim script is being used
--much more often, since there are so many plugins being used.
-+preserving backwards compatibility.  Several choices made in the early days
-+got in the way of making it work better.  At the same time, Vim script is
-+being used much more often, since there are so many plugins being used.
- 
- Vim9 script provides a syntax that is much more similar to other languages.
- In other words: "less weird".  Compiled functions are introduced which allow
- for a large speed improvement.  You can expect around ten times faster
--execution.  The price to pay is that Vim9 script is not backwards compatible.
--But don't worry, you can still use your old scripts, the new script language
--is added, it does not replace the legacy script.
-+execution, or even more.  The price to pay is that Vim9 script is not
-+backwards compatible.  But don't worry, you can still use your old scripts,
-+the new script language is added, it does not replace the legacy script.
- 
--All the information about Vim9 script can be found in the |Vim9| help file.
-+Information about Vim9 script can be found in the |Vim9| help file.
- 
- 
--Various new items					*new-items-9*
-------------------
-+Command line completion in a popup menu ~
-+							*new-popup-compl*
-+Before there was the 'wildmenu' option, which uses the space of one line above
-+the statusline to show matches.  Only a few matches fit there.
- 
--TODO: Visual/Insert/Cmdline mode commands?
-+Now a popup menu can be used by setting "wildoptions' to "pum".  This allows
-+for showing many more matches.  This requires redrawing more of the display,
-+but since computers are fast enough that is not a problem.
- 
- 
-+Updated colorschemes ~
-+							*new-colorschemes-9*
-+Colorschemes from https://github.com/vim/colorschemes have been included.
-+They were made to work consistently across many types of terminals.  Although
-+generally an improvement, a lot of personal preference is involved.  You can
-+always get the old version if you prefer it, look here:
-+https://github.com/vim/colorschemes/blob/master/legacy_colors/
++The C omni-complete plugin (|ft-c-omni|), the file type detection script
++(ft.vim) and the syntax menu generation script (makemenu.vim) have been
++rewritten using the Vim9 script syntax.
 +
-+
-+Various new items ~
-+							*new-items-9*
- Options: ~
- 
- 'autoshelldir'		change directory to the shell's current directory
-@@ -86,25 +103,26 @@ Options: ~
- 
- Ex commands: ~
- 
--|:abstract|
-+|:abstract|		(reserved for future use)
- |:argdedupe|		remove duplicates from the argument list
- |:balt|			like ":badd" but also set the alternate file
--|:class|		reserved for future use
-+|:class|		(reserved for future use)
- |:def|			define a Vim9 user function
- |:defcompile|		compile Vim9 user functions in current script
- |:disassemble|		disassemble Vim9 user function
- |:echoconsole|		like :echomsg but write to stdout
--|:endinterface|		reserved for future use
--|:endclass|		reserved for future use
-+|:endinterface|		(reserved for future use)
-+|:endclass|		(reserved for future use)
- |:enddef|		end of a user function started with :def
--|:endenum|		reserved for future use
--|:enum|			reserved for future use
-+|:endenum|		(reserved for future use)
-+|:enum|			(reserved for future use)
-+|:eval|			evaluate an expression and discard the result
- |:export|		Vim9: export an item from a script
- |:final|		declare an immutable variable in Vim9
- |:import|		Vim9: import an item from another script
--|:interface|		reserved for future use
--|:static|		reserved for future use
--|:type|			reserved for future use
-+|:interface|		(reserved for future use)
-+|:static|		(reserved for future use)
-+|:type|			(reserved for future use)
- |:var|			variable declaration in Vim9
- |:vim9script|		indicates Vim9 script file
- 
-@@ -138,6 +156,7 @@ New and extended functions: ~
- |getcharpos()|		get character position of cursor, mark, etc.
- |getcharstr()|		get a character from the user as a string
- |getcmdcompltype()|	return current cmdline completion type
-+|getcmdscreenpos()|	return the current cursor position in the cmdline
- |getcursorcharpos()|	get character position of the cursor
- |getmarklist()|		list of global/local marks
- |getreginfo()|		get information about a register
-@@ -195,10 +214,9 @@ New Vim variables: ~
- 
- New autocommand events: ~
- 
--|CompleteDonePre|	after Insert mode completion is done, before clearing
--			info
-+|CompleteDonePre|	after Insert mode completion done, before clearing info
- |DirChangedPre|		before the working directory will change
--|InsertLeavePre| 	just before leaving Insert mode
-+|InsertLeavePre|	just before leaving Insert mode
- |ModeChanged|		after changing the mode
- |SigUSR1|		after the SIGUSR1 signal has been detected
- |WinClosed|		after closing a window
-@@ -207,7 +225,7 @@ New autocommand events: ~
- |VimResume|		when Vim is resumed after being suspended
- 
- 
--New operator: ~
-+New operators: ~
- 
- |>>|			bitwise right shift
- |<<|			bitwise left shift
-@@ -220,16 +238,18 @@ Too many to list here.
- ==============================================================================
- INCOMPATIBLE CHANGES				*incompatible-9*
- 
--These changes are incompatible with previous releases.  Check this list if you
--run into a problem when upgrading from Vim 8.2 to 9.0.
-+There is only one change that is incompatible with previous releases:
-+
-+- Lua arrays are now one-based, they used to be zero-based.
- 
--TODO
-+Note that when using |Vim9| script several things work differently, see
-+|vim9-differences|.
- 
- ==============================================================================
- IMPROVEMENTS						*improvements-9*
- 
--Various small and useful improvements have been made since Vim 8.2.  Here is a
--collection of changes that are worth mentioning.
-+Various small and useful improvements have been made since Vim 8.2, here is a
-+summary.
- 
- Many memory leaks, invalid memory accesses and crashes have been fixed.
- See the list of patches below: |bug-fixes-9|.
-@@ -237,15 +257,12 @@ See the list of patches below: |bug-fixes-9|.
- Support for Vim expression evaluation in a string. |interp-string|
- Support for evaluating Vim expressions in a heredoc. |:let-heredoc|
- 
--Display the command line completion matches in a popup menu. 'wildoptions'
--
--Support for fuzzy matching a string in a List of strings. |fuzzy-matching|
--
--Fuzzy completion support for command line completion using 'wildoptions'.
-+Support for fuzzy matching:
-+- a string in a List of strings. |fuzzy-matching|
-+- completion support for command line completion using 'wildoptions'
-+- for |:vimgrep|.
- 
--Fuzzy match support for |:vimgrep|.
--
--Haiku support. |Haiku|
-+Added support for the |Haiku| OS.
- 
- Support for "lsp" channel mode to simplify LSP server RPC communication
- |language-server-protocol|.  Support for using a Unix domain socket with a
-@@ -253,13 +270,24 @@ Support for "lsp" channel mode to simplify LSP server RPC communication
- 
- Support for sourcing lines from the current buffer. |:source-range|
- 
--Support for opening a terminal in a popup window. |popup-terminal|
-+Terminal window improvements:
-+- Support for opening a terminal in a popup window. |popup-terminal|
-+- Allow setting underline color in terminal.
-+- Detect focus events in terminal (|FocusGained| and |FocusLost|).
-+- Add bell support for the terminal window. ('belloff')
-+- Support mouse left-right scrolling in a terminal window.
- 
- Support for stopping profiling a Vim script: `:profile stop` and dumping the
- report to a file: `:profile dump` .  |:profile|
- 
--Argument completion support for the |:breakadd|, |:breakdel|, |:diffget|,
--|:diffput|, |:profile|, |:profdel| and |:scriptnames| commands.
-+Completion improvements:
-+- Argument completion support for the |:breakadd|, |:breakdel|, |:diffget|,
-+  |:diffput|, |:profile|, |:profdel| and |:scriptnames| commands.
-+- Support using any Vim type for user_data with the completion functions
-+  (|complete-items|).
-+- Stop insert mode completion without changing text (|i_CTRL-X_CTRL-Z|).
-+- Add the "cmdline" option to |getcompletion()| to return the command line
-+  arguments.
- 
- Support for setting the 'foldtext', 'completefunc', 'omnifunc',
- 'operatorfunc', 'thesaurusfunc', 'quickfixtextfunc', 'tagfunc',
-@@ -270,35 +298,33 @@ Support directly setting the 'balloonexpr', 'charconvert' 'foldexpr',
- 'formatexpr', 'includeexpr', 'printexpr', 'patchexpr', 'indentexpr',
- 'modelineexpr', 'diffexpr' and 'printexpr' options to a script-local function.
- 
--Support for configuring the character used to mark the beginning of a fold,
--show a closed fold and show a fold separator using "foldopen", "foldclose" and
--"foldsep" respectively in 'fillchars'.
--
--Support for configuring the character displayed in non existing lines using
--"eob" in 'fillchars'.
--
--Support for using multibyte items with the "stl", "stlnc", "foldopen",
--"foldclose" and "foldsep" items in the 'fillchars' option.
-+Improvements in 'fillchars':
-+- Support for configuring the character used to mark the beginning of a fold,
-+  show a closed fold and show a fold separator using "foldopen", "foldclose"
-+  and "foldsep" respectively in 'fillchars'.
-+- Support for configuring the character displayed in non existing lines using
-+  "eob" in 'fillchars'.
-+- Support for using multibyte items with the "stl", "stlnc", "foldopen",
-+  "foldclose" and "foldsep" items in the 'fillchars' option.
- 
- Support for the XChaCha20 encryption method. 'cryptmethod'
- 
--Spell check current word with |z=| even when 'spell' is off.
--
--Add "timeout" to 'spellsuggest' to limit the searching time for spell
--suggestions.
-+Spell checking:
-+- Spell check current word with |z=| even when 'spell' is off.
-+- Add "timeout" to 'spellsuggest' to limit the searching time for spell
-+  suggestions.
-+- Add support for spell checking CamelCased words by adding "camel" to
-+  'spelloptions'.
- 
- Support for executing Ex commands in a map without changing the current mode
- |<Cmd>| and |<ScriptCmd>|.
- 
- Add optional error code to |:cquit|.
- 
--Support for calling Vim functions from Lua (vim.call() and vim.fn()).
--
- Recognize numbers as unsigned when "unsigned" is set in 'nrformats'.
- 
--Allow setting underline color in terminal.
--
--Expand script ID using expand('<SID>'). |expand()|
-+Expand script ID using expand('<SID>') and script name using
-+expand('<script>'). |expand()|
- 
- Jump to the last accessed tab page using |g<Tab>| and support using the
- last accessed tab page in |:tabnext| et al.
-@@ -307,25 +333,27 @@ Locale aware sorting using |:sort| and |sort()|.
- 
- Hide cursor when sleeping using |:sleep!|.
- 
--Detect focus events in terminal (|FocusGained| and |FocusLost|).
--
- Add "multispace" to 'listchars' to show two or more spaces no matter where
- they appear.  Add "leadmultispace" to 'listchars' to show two or more leading
- spaces.  Add "lead" to 'listchars' to set the character used to show leading
--spaces.
-+spaces.  Support specifying a character using the hexdecimal notation in
-+'listchars' (\x, \u and \U).
- 
- Make 'listchars', 'virtualedit' and 'thesaurusfunc' global-local options.
- 
--Support for looping over a string using |:for|.
-+Support for looping over a string using `:for`.
- 
- Don't reset 'wrap' for diff windows when "followwrap" is set in 'diffopt'.
- 
- Support for re-evaluating the 'statusline' expression as a statusline format
--string (%{expr})
-+string (%{% expr %})
- 
- Add |zp| and |zP| to paste in block mode without adding trailing white space.
- Add |zy| to yank without trailing white space in block mode.
- 
-+Add the 'P' command in visual mode to paste text in Visual mode without
-+yanking the deleted text to the unnamed register.  |put-Visual-mode|
-+
- Add \%.l, \%<.l and \%>.l atoms to match the line the cursor is currently on.
- See |/\%l| for more information.
- 
-@@ -338,14 +366,8 @@ adjust sign highlighting for 'cursorline'.
- 
- Add the |hl-CurSearch| default highlight group for the current search match.
- 
--Add the 'P' command in visual mode to paste text in visual mode without
--yanking the deleted text to the unnamed register.  |put-Visual-mode|
--
- Add support for logging on Vim startup (|--log|).
- 
--Add "/" in 'formatoptions' to stop inserting // when using "o" on a line with
--inline comment. |fo-/|
--
- Add support for customizing the quickfix buffer contents using
- 'quickfixtextfunc'.  Support for the "note" error type (%t) in |errorformat|.
- Add support for parsing the end line number (%e) and end column number (%k)
-@@ -353,24 +375,17 @@ using 'errorformat'.
- 
- Support truncating the tag stack using |settagstack()|.
- 
--Support using any Vim type for user_data with the completion functions
--(|complete-items|).
--
- Display every option in a separate line when "!" is used with |:set|.
- 
- Add "nostop" to 'backspace' to allow backspacing over the start of insert for
- |CTRL-W| and |CTRL-U| also.
- 
--Add bell support for the terminal window. ('belloff')
--
- Sync the undo file if 'fsync' is set.
- 
- Support excluding the 'runtimepath' and 'packpath' options from a session file
- using "skiprtp" in 'sessionoptions'.
- 
--Stop insert mode completion without changing text (|i_CTRL-X_CTRL-Z|).
--
--Support for getting the number of lines (linecount) in a buffer using
-+Support for getting the number of lines (line count) in a buffer using
- |getbufinfo()|.
- 
- Support |filter()| and |map()| for blob and string types.
-@@ -381,8 +396,6 @@ Add support for checking whether a function name is valid using |exists()|.
- 
- Update xdiff to version 2.33.  Update libvterm to revision 789.
- 
--Added support for the |Haiku| OS.
--
- Support 'trim' for Python/Lua/Perl/Tcl/Ruby/MzScheme interface heredoc.
- 
- Add the |t_AU| and |t_8u| termap codes for underline and undercurl.  Add the
-@@ -407,38 +420,53 @@ using the "tcd -" and "lcd -" commands. (|:tcd-| and |:lcd-|)
- 
- Add support for skipping an expression using |search()|.
- 
--Add the "cmdline" option to |getcompletion()| to return the command line
--arguments.
--
--Add support for spell checking CamelCased words by adding "camel" to
--'spelloptions'.
--
--Add support for importing Vim scripts using |:import| from a Vimscript.
--
- Add support for sorting the directory contents returned by the |readdir()|
- and |readdirex()| functions by case.
- 
- Add support for executing (|:@|) a register containing line continuation.
- 
--Convert a Lua function and a closure to a Vim funcref so that it can be
--accessed in a Vimscript. (|lua-funcref|) Make Lua arrays one based.
--Add table.insert() and table.remove() functions.
-+Lua support:
-+- Call Vim functions from Lua (vim.call() and vim.fn()).
-+- Convert a Lua function and a closure to a Vim funcref so that it can be
-+  accessed in a Vimscript (|lua-funcref|).
-+- Not backwards compatible: Make Lua arrays one based.
-+- Add support for using table.insert() and table.remove() functions with Vim
-+  lists.
-+- Support for running multiple Ex-mode commands using vim.command().
-+- Add vim.lua_version to get the Lua version.
-+- Add support for accessing Vim namespace dictionaries from Lua
-+  (|lua-vim-variables|).
-+
-+Support for new UTF-8 characters from Unicode release 13.
-+
-+Support for using a command block (|:command-repl|) when defining a |:command|
-+or an |:autocmd|.
-+
-+Support for using |:z!| to use the Vim display height instead of the current
-+window height.
- 
--Support mouse left-right scrolling in a terminal window.
-+Support for deleting a buffer-local command using ":delcommand -buffer {cmd}".
- 
--Updated colorschemes from https://github.com/vim/colorschemes is included.
-+When formatting a // comment after a statement, find the start of the line
-+comment, insert the comment leader and indent the comment properly (|fo-/|).
-+
-+Add the "numhl" argument to `:sign define` to use a separate highlight group
-+for the line number on a line where a sign is placed.  |:sign-define|
-+
-+When $SHELL ends in "nologin" or "false", start Vim in restricted mode.
- 
- TermDebug enhancements:
--Support for showing the disassembled code in a separate window.  Support for
--the GDB until command.  Use a separate group for the signs.
-+- Support for showing the disassembled code in a separate window.
-+- Support for the GDB until command.
-+- Use a separate group for the signs.
-+
-+xxd: Support for showing offset as a decimal number (-d).
- 
  A large number of tests have been added to verify the Vim functionality.  Most
  of the old style tests have been converted to new style tests using the new
  style assert_* functions.
+@@ -27439,7 +27443,7 @@ Solution:   Only check an autoload name when is prefixed.
+ Files:      src/userfunc.c
  
--Many Coverity static analysis warnings are fixed.
--
--TODO: more
-+Many Coverity static analysis warnings have been fixed.
+ Patch 8.2.4473
+-Problem:    Coverity warnds for not checking return value of ftell().
++Problem:    Coverity warns for not checking return value of ftell().
+ Solution:   Bail out if ftell() returns a negative value.
+ Files:      src/spellfile.c
  
- ==============================================================================
- COMPILE TIME CHANGES					*compile-changes-9*
-@@ -461,11 +489,15 @@ work properly:
+@@ -27813,7 +27817,7 @@ Solution:   Consider empty string and null to be different for "is".
+ Files:      src/typval.c, src/vim9execute.c, src/testdir/test_vim9_expr.vim
  
- The rgb.txt file is no longer included, use colors/lists/default.vim instead.
+ Patch 8.2.4535
+-Problem:    Filename modifer ":8" removes the filename.
++Problem:    Filename modifier ":8" removes the filename.
+ Solution:   Use strncpy() instead of vim_strncpy(). (Christian Brabandt,
+             closes #9918, closes #8600)
+ Files:      src/filepath.c, src/testdir/test_shortpathname.vim
+@@ -28668,7 +28672,7 @@ Files:      src/screen.c
  
--Several source files were split, mainly to make it easier to inspect code
--coverage information.
-+Several large source files were split, mainly to make it easier to inspect
-+code coverage information.  Source files have also been refactored for
-+maintainability.
+ Patch 8.2.4674
+ Problem:    Cannot force getting MouseMove events.
+-Solution:   Add the 'mousemoveevent' option with implementaiton for the GUI.
++Solution:   Add the 'mousemoveevent' option with implementation for the GUI.
+             (Ernie Rael, closes #10044)
+ Files:      runtime/doc/gui.txt, runtime/doc/options.txt,
+             runtime/doc/testing.txt, src/gui.c, src/option.h,
+@@ -29432,7 +29436,7 @@ Solution:   Uncomment the line that deletes the file.
+ Files:      src/testdir/test_cursorline.vim
  
- Support for building Vim with Mingw64 clang compiler on MS-Windows.
+ Patch 8.2.4797
+-Problem:    getwininfo() may get oudated values.
++Problem:    getwininfo() may get outdated values.
+ Solution:   Make sure w_botline is up-to-date. (closes #10226)
+ Files:      src/evalwindow.c, src/testdir/test_bufwintabinfo.vim
  
-+Support for building Vim with Python 3.10, Lua 5.4.4, Perl 5.34 and
-+Ruby 3.1.0.
+@@ -30039,7 +30043,7 @@ Files:      src/buffer.c, src/testdir/test_buffer.vim
+ 
+ Patch 8.2.4902
+ Problem:    Mouse wheel scrolling is inconsistent.
+-Solution:   Use the MS-Winows system setting. (closes #10368)
++Solution:   Use the MS-Windows system setting. (closes #10368)
+ Files:      runtime/doc/scroll.txt, src/gui_w32.c, src/mouse.c,
+             src/proto/mouse.pro, src/testing.c, src/testdir/test_gui.vim
+ 
+@@ -30719,7 +30723,7 @@ Files:      src/change.c, src/vim.h, src/textformat.c,
+             src/testdir/test_textformat.vim
+ 
+ Patch 8.2.5009
+-Problem:    Fold may not be closeable after appending.
++Problem:    Fold may not be closable after appending.
+ Solution:   Set the fd_small flag to MAYBE. (Brandon Simmons, closes #10471)
+ Files:      src/fold.c, src/testdir/test_fold.vim
+ 
+@@ -31399,7 +31403,7 @@ Solution:   Use assert_inrange().
+ Files:      src/testdir/test_syntax.vim
+ 
+ Patch 8.2.5125
+-Problem:    MS-Windows: warnings from MinGW compyler.
++Problem:    MS-Windows: warnings from MinGW compiler.
+ Solution:   Use "volatile". (Yasuhiro Matsumoto, closes #10589)  Initialize
+             variable.
+ Files:      src/os_win32.c, src/proto/os_win32.pro, src/map.c
+@@ -31581,5 +31585,20 @@ Solution:   Handle special key combinations better. (closes #10613,
+             closes #10602, closes #10579)
+ Files:      src/gui_w32.c
+ 
++Patch 8.2.5158
++Problem:    TSTP and INT signal tests are not run with valgrind.
++Solution:   Sleep a bit longer. (closes #10614)
++Files:      src/testdir/test_signals.vim
 +
- ==============================================================================
- PATCHES						*patches-9* *bug-fixes-9*
- 						*patches-after-8.2*
-@@ -12812,7 +12844,7 @@ Files:      src/bufwrite.c, src/testdir/test_viminfo.vim
- Patch 8.2.2040
- Problem:    Terminal buffer disappears even when 'bufhidden' is "hide".
-             (Sergey Vlasov)
--Solution:   Check 'bufhiddden' when a terminal buffer becomes hidden.
-+Solution:   Check 'bufhidden' when a terminal buffer becomes hidden.
-             (closes #7358)
- Files:      src/buffer.c, src/testdir/test_terminal.vim
- 
-@@ -25903,7 +25935,7 @@ Solution:   Only delete the tail from the record buffer if the character was
- Files:      src/normal.c, src/testdir/test_registers.vim
- 
- Patch 8.2.4238
--Problem:    *.tf file could be fileytpe "tf" or "terraform".
-+Problem:    *.tf file could be filetype "tf" or "terraform".
- Solution:   Detect the type from the file contents. (closes #9642)
- Files:      runtime/filetype.vim, runtime/autoload/dist/ft.vim,
-             src/testdir/test_filetype.vim
-@@ -27440,7 +27472,7 @@ Solution:   Temporary fix: put back regexp. (closes #9852, closes #9851)
- Files:      src/cmdexpand.c, src/testdir/test_cmdline.vim
- 
- Patch 8.2.4479
--Problem:    No fuzzy completieon for maps and abbreviations.
-+Problem:    No fuzzy completion for maps and abbreviations.
- Solution:   Fuzzy complete maps and abbreviations. (Yegappan Lakshmanan,
-             closes #9856)
- Files:      src/cmdexpand.c, src/map.c, src/proto/map.pro, src/search.c,
-@@ -27662,7 +27694,7 @@ Files:      src/ex_cmds.h, src/ex_docmd.c, src/errors.h, src/userfunc.c,
-             src/testdir/test_vim9_script.vim
- 
- Patch 8.2.4515
--Problem:    Old subsitute syntax is still supported.
-+Problem:    Old substitute syntax is still supported.
- Solution:   Disallow using backslash after ":s" in Vim9 script.
- Files:      src/ex_cmds.c, src/errors.h, src/testdir/test_substitute.vim
- 
-@@ -27715,7 +27747,7 @@ Files:      src/term.c
- 
- Patch 8.2.4524
- Problem:    MS-Windows: cannot build with some sodium libraries.
--Solution:   Make the DLL name configuragle.  Add build instructions.
-+Solution:   Make the DLL name configurable.  Add build instructions.
-             (Ken Takata, closes #9905)
- Files:      src/INSTALLpc.txt, src/Make_cyg_ming.mak, src/Make_mvc.mak,
-             src/crypt.c
-@@ -28312,7 +28344,7 @@ Files:      src/eval.c, src/testdir/test_vim9_script.vim
- 
- Patch 8.2.4623
- Problem:    Coverity warns for using uninitialized field.
--Solution:   Initialize he field to zero.
-+Solution:   Initialize the field to zero.
- Files:      src/ex_docmd.c
- 
- Patch 8.2.4624
-@@ -28759,7 +28791,7 @@ Files:      src/getchar.c
- 
- Patch 8.2.4692
- Problem:    No test for what 8.2.4691 fixes.
--Solution:   Add a test.  Use a more generic sotlution. (closes #10090)
-+Solution:   Add a test.  Use a more generic solution. (closes #10090)
- Files:      src/getchar.c, src/mouse.c, src/testdir/test_mapping.vim
- 
- Patch 8.2.4693 (after 8.2.4688)
-@@ -28907,7 +28939,7 @@ Files:      src/alloc.c, src/alloc.h, src/proto/alloc.pro, src/userfunc.c,
- Patch 8.2.4717
- Problem:    For TextYankPost v:event does not contain information about the
-             operation being inclusive or not.
--Solution:   Add "inclusive" to v:event. (Justn M. Keyes, Yegappan Lakshmanan,
-+Solution:   Add "inclusive" to v:event. (Justin M. Keyes, Yegappan Lakshmanan,
-             closes #10125)
- Files:      runtime/doc/autocmd.txt, src/register.c,
-             src/testdir/test_autocmd.vim
-@@ -29092,7 +29124,7 @@ Files:      src/terminal.c, src/misc1.c
- 
- Patch 8.2.4746
- Problem:    Supercollider filetype not recognized.
--Solution:   Match file extentions and check file contents to detect
-+Solution:   Match file extensions and check file contents to detect
-             supercollider. (closes #10142)
- Files:      runtime/filetype.vim, runtime/autoload/dist/ft.vim,
-             src/testdir/test_filetype.vim
-@@ -29625,7 +29657,7 @@ Solution:   Remove dead code.  Add disassemble tests.
- Files:      src/vim9execute.c, src/vim9.h,
-             src/testdir/test_vim9_disassemble.vim
- 
--Patch 8.2.4837 (after patch 8.2.0919
-+Patch 8.2.4837 (after patch 8.2.0919)
- Problem:    Modifiers not simplified when timed out or using feedkeys() with
-             'n" flag.
- Solution:   Adjust how mapped flag and timeout are used. (closes #10305)
-@@ -29714,7 +29746,7 @@ Files:      src/session.c
- Patch 8.2.4852
- Problem:    ANSI color index to RGB value not correct.
- Solution:   Convert the cterm index to ANSI index. (closes #10321,
--            closes #9836))
-+            closes #9836)
- Files:      src/term.c
- 
- Patch 8.2.4853
-@@ -29950,7 +29982,7 @@ Files:      Filelist, runtime/import/dist/vimhelp.vim
- 
- Patch 8.2.4892
- Problem:    Test failures because of changed error messages.
--Solution:   Adjust the exptected error messages.
-+Solution:   Adjust the expected error messages.
- Files:      src/testdir/test_vim9_assign.vim,
-             src/testdir/test_vim9_builtin.vim, src/testdir/test_vim9_expr.vim,
-             src/testdir/test_vim9_func.vim, src/testdir/test_vim9_script.vim,
-@@ -29986,7 +30018,7 @@ Files:      src/eval.c, src/testdir/test_lambda.vim
- 
- Patch 8.2.4898
- Problem:    Coverity complains about pointer usage.
--Solution:   Move code for increment/decerment.
-+Solution:   Move code for increment/decrement.
- Files:      src/vim9compile.c
- 
- Patch 8.2.4899
-@@ -30183,7 +30215,7 @@ Files:      src/bufwrite.c, src/channel.c, src/cindent.c, src/crypt.c,
-             src/os_vms.c, src/os_vms_conf.h
- 
- Patch 8.2.4929
--Problem:    Off-by-one error in in statusline item.
-+Problem:    Off-by-one error in statusline item.
- Solution:   Subtrace one less. (closes #10394, closes #5599)
- Files:      src/buffer.c, src/testdir/test_statusline.vim,
-             src/testdir/dumps/Test_statusline_hl.dump
-@@ -30327,7 +30359,7 @@ Solution:   Check the cursor is in indent.  (closes #10420)
- Files:      src/indent.c, src/testdir/test_smartindent.vim
- 
- Patch 8.2.4954
--Problem:    Inserting line breaks text property spanning more then one line.
-+Problem:    Inserting line breaks text property spanning more than one line.
- Solution:   Check TP_FLAG_CONT_PREV and TP_FLAG_CONT_NEXT. (closes #10423)
- Files:      src/textprop.c, src/testdir/test_textprop.vim
- 
-@@ -31394,6 +31426,160 @@ Solution:   Avoid setting timeout_flag twice.  Adjust the pointer when
-             stopping the regexp timeout.  Adjust variable name.
- Files:      src/os_unix.c, src/os_win32.c, src/regexp.c
- 
-+Patch 8.2.5130
-+Problem:    Edit test for mode message fails when using valgrind.
-+Solution:   Use WaitForAssert().  Run beep test later.
-+Files:      src/testdir/test_edit.vim
++Patch 8.2.5159 (after 8.2.5157)
++Problem:    Fix for CTRL-key combinations causes more problems than it solves.
++Solution:   Roll back the change.
++Files:      src/gui_w32.c
 +
-+Patch 8.2.5131
-+Problem:    Timeout implementation is not optimal.
-+Solution:   Further improvements for timeouts.  Add a test for searchpair()
-+            timeout. (partly by Paul Ollis)
-+Files:      src/configure.ac, src/auto/configure,
-+            src/testdir/test_hlsearch.vim, src/testdir/test_search.vim
-+
-+Patch 8.2.5132
-+Problem:    :mkview test doesn't test much.
-+Solution:   Save the view with the folds closed. (James McCoy, closes #10596)
-+Files:      src/testdir/test_mksession.vim
-+
-+Patch 8.2.5133
-+Problem:    MacOS: build fails.
-+Solution:   Remove "#if 0" from timer_delete().
-+Files:      src/os_macosx.m
-+
-+Patch 8.2.5134
-+Problem:    Function has confusing name.
-+Solution:   Rename tgetent_error() to invoke_tgetent().
++Patch 8.2.5160
++Problem:    Accessing invalid memory after changing terminal size.
++Solution:   Adjust cmdline_row and msg_row to the value of Rows.
 +Files:      src/term.c
 +
-+Patch 8.2.5135
-+Problem:    Running configure gives warnings for main() return type.
-+Solution:   Specify "int" return type.  Avoid a few more warnings.
-+Files:      src/configure.ac, src/auto/configure
-+
-+Patch 8.2.5136
-+Problem:    Debugger test fails when run with valgrind.
-+Solution:   Wait longer when using valgrind.
-+Files:      src/testdir/shared.vim, src/testdir/test_debugger.vim,
-+            src/testdir/test_search.vim
-+
-+Patch 8.2.5137
-+Problem:    Cannot build without the +channel feature. (Dominique Pellé)
-+Solution:   Add #ifdef around ch_log() calls. (closes #10598)
-+Files:      src/os_unix.c, src/regexp_nfa.c, src/regexp_bt.c
-+
-+Patch 8.2.5138
-+Problem:    Various small issues.
-+Solution:   Various small improvments.
-+Files:      src/filepath.c, src/job.c, src/mark.c, src/move.c,
-+            src/popupwin.c, src/testdir/test_filetype.vim
-+
-+Patch 8.2.5139
-+Problem:    TIME_WITH_SYS_TIME is no longer supported by autoconf.
-+Solution:   Always include time.h.
-+Files:      src/os_unix.h
-+
-+Patch 8.2.5140
-+Problem:    Seachpair timeout test is flaky.
-+Solution:   Mark the test as flaky so it is retried.
-+Files:      src/testdir/test_search.vim
-+
-+Patch 8.2.5141
-+Problem:    Using "volatile int" in a signal handler might be wrong.
-+Solution:   Use "volatile sig_atomic_t".
-+Files:      src/os_unix.c, src/proto/os_unix.pro, src/os_win32.c,
-+            src/proto/os_win32.pro, src/regexp.c,
-+
-+Patch 8.2.5142
-+Problem:    Startup test fails if there is a status bar at the top of the
-+            screen. (Ernie Rael)
-+Solution:   Use a larger vertical offset in the test.
-+Files:      src/testdir/test_startup.vim
-+
-+Patch 8.2.5143
-+Problem:    Some tests fail when using valgrind. Spurious leak reports.
-+Solution:   Use WaitForAssert().  Avoid failing fork/exec.  Skip tests where a
-+            job is killed when running valgrind.
-+Files:      src/testdir/test_iminsert.vim, src/testdir/test_popup.vim,
-+            src/testdir/test_cscope.vim, src/testdir/test_channel.vim
-+
-+Patch 8.2.5144
-+Problem:    With 'lazyredraw' set completion menu may be displayed wrong.
-+Solution:   When the popup menu is visible do not insert a screen line.
-+            (closes #10601)
-+Files:      src/screen.c
-+
-+Patch 8.2.5145
-+Problem:    Exit test causes spurious valgrind reports.
-+Solution:   Skip test.  Add CheckNotValgrind.
-+Files:      src/testdir/test_exit.vim, src/testdir/check.vim,
-+            src/testdir/test_channel.vim
-+
-+Patch 8.2.5146
-+Problem:    Memory leak when substitute expression nests.
-+Solution:   Use an array of expression results.
-+Files:      src/alloc.c, src/regexp.c, src/proto/regexp.pro,
-+            src/errors.h, src/ex_cmds.c, src/testdir/test_substitute.vim
-+
-+Patch 8.2.5147
-+Problem:    Flaky test always fails on retry.
-+Solution:   Delete the created function.
-+Files:      src/testdir/test_search.vim
-+
-+Patch 8.2.5148
-+Problem:    Invalid memory access when using an expression on the command line.
-+Solution:   Make sure the position does not go negative.
-+Files:      src/ex_getln.c, src/testdir/test_cmdline.vim
-+
-+Patch 8.2.5149 (after 8.2.5148)
-+Problem:    Cannot build without the +eval feature. (Tony Mechelynck)
-+Solution:   Add #ifdefs.
-+Files:      src/ex_getln.c
-+
-+Patch 8.2.5150
-+Problem:    Read past the end of the first line with ":0;'{".
-+Solution:   When on line zero check the column is valid for line one.
-+Files:      src/ex_docmd.c, src/testdir/test_cmdline.vim
-+
-+Patch 8.2.5151
-+Problem:    Reading beyond the end of the line with lisp indenting.
-+Solution:   Avoid going over the NUL at the end of the line.
-+Files:      src/indent.c, src/testdir/test_lispwords.vim
-+
-+Patch 8.2.5152
-+Problem:    search() gets stuck with "c" and skip evaluates to true.
-+Solution:   Reset the SEARCH_START option. (closes #10608)
-+Files:      src/evalfunc.c, src/testdir/test_syntax.vim
-+
-+Patch 8.2.5153
-+Problem:    "make uninstall" does not remove colors/lists.
-+Solution:   Add a line to the Makefile. (closes #10609)
-+Files:      src/Makefile
-+
-+Patch 8.2.5154
-+Problem:    Still mentioning version8, some cosmetic issues.
-+Solution:   Prefer mentioning version9, cosmetic improvements.
-+Files:      src/version.c, src/if_tcl.c, src/regexp.c,
-+            src/testdir/test_gui.vim, src/os_unix.c, Filelist, src/Makefile
-+
-+Patch 8.2.5155
-+Problem:    In diff mode windows may get out of sync. (Gary Johnson)
-+Solution:   Avoid that the other window scrolls for 'cursorbind'.
-+Files:      src/move.c, src/testdir/test_diffmode.vim,
-+            src/testdir/dumps/Test_diff_scroll_1.dump,
-+            src/testdir/dumps/Test_diff_scroll_2.dump
-+
-+Patch 8.2.5156
-+Problem:    Search timeout test often fails with FreeBSD.
-+Solution:   Double the maximum time.
-+Files:      src/testdir/test_search.vim
-+
-+Patch 8.2.5157
-+Problem:    MS-Windows GUI: CTRL-key combinations do not always work.
-+Solution:   Handle special key combinations better. (closes #10613,
-+            closes #10602, closes #10579)
-+Files:      src/gui_w32.c
- 
  
   vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 7b1bc261f..aef4230d9 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 8.2.  Last change: 2022 Jun 20
++*vim9.txt*	For Vim version 8.2.  Last change: 2022 Jun 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -37,10 +37,10 @@ A secondary goal is to avoid Vim-specific constructs and get closer to
+ commonly used programming languages, such as JavaScript, TypeScript and Java.
+ 
+ The performance improvements can only be achieved by not being 100% backwards
+-compatible.  For example, making function arguments available in the
+-"a:" dictionary adds quite a lot of overhead.  In a Vim9 function this
+-dictionary is not available.  Other differences are more subtle, such as how
+-errors are handled.
++compatible.  For example, making function arguments available in the "a:"
++dictionary adds quite a lot of overhead.  In a Vim9 function this dictionary
++is not available.  Other differences are more subtle, such as how errors are
++handled.
+ 
+ The Vim9 script syntax and semantics are used in:
+ - a function defined with the `:def` command
