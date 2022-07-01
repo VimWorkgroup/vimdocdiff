@@ -1,97 +1,36 @@
 diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 06eff2da1..282a7966c 100644
+index 282a7966c..90ae3e7ac 100644
 --- a/runtime/doc/filetype.txt
 +++ b/runtime/doc/filetype.txt
-@@ -143,6 +143,7 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.asp		g:filetype_asp	|ft-aspvbs-syntax| |ft-aspperl-syntax|
- 	*.bas		g:filetype_bas	|ft-basic-syntax|
- 	*.cfg		g:filetype_cfg
-+	*.cls		g:filetype_cls
- 	*.csh		g:filetype_csh	|ft-csh-syntax|
- 	*.dat		g:filetype_dat
- 	*.frm		g:filetype_frm	|ft-form-syntax|
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 84ab1fb8b..1d14c4433 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -4211,7 +4211,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		b	bold		(termcap entry "md" and "me")
- 		s	standout	(termcap entry "so" and "se")
- 		u	underline	(termcap entry "us" and "ue")
--		c	undercurl	(termcap entry "Cs" and "Ce")
-+		c	undercurl	(termcap entry "Us" and "Ce")
-+		2	double underline (termcap entry "Ds" and "Ce")
-+		d	dotted underline (termcap entry "ds" and "Ce")
-+		=	dashed underline (termcap entry "Ds" and "Ce")
- 		t	strikethrough	(termcap entry "Ts" and "Te")
- 		n	no highlighting
- 		-	no highlighting
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index c3d677769..1229b1908 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -5002,14 +5002,18 @@ the same syntax file on all terminals, and use the optimal highlighting.
- 1. highlight arguments for normal terminals
+@@ -157,6 +157,7 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.pp		g:filetype_pp	|ft-pascal-syntax|
+ 	*.prg		g:filetype_prg
+ 	*.r		g:filetype_r
++	*.sig		g:filetype_sig
+ 	*.sql		g:filetype_sql	|ft-sql-syntax|
+ 	*.src		g:filetype_src
+ 	*.sys		g:filetype_sys
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 1252ce308..6998a6edc 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -268,6 +268,9 @@ test_override({name}, {val})				*test_override()*
+ 		Current supported values for {name} are:
  
- 					*bold* *underline* *undercurl*
--					*inverse* *italic* *standout*
--					*nocombine* *strikethrough*
-+					*underdouble* *underdotted*
-+					*underdashed* *inverse* *italic*
-+					*standout* *nocombine* *strikethrough*
- term={attr-list}			*attr-list* *highlight-term* *E418*
- 	attr-list is a comma-separated list (without spaces) of the
- 	following items (in any order):
- 		bold
- 		underline
- 		undercurl	not always available
-+		underdouble	not always available
-+		underdotted	not always available
-+		underdashed	not always available
- 		strikethrough	not always available
- 		reverse
- 		inverse		same as reverse
-@@ -5020,6 +5024,7 @@ term={attr-list}			*attr-list* *highlight-term* *E418*
+ 		{name}	     effect when {val} is non-zero ~
++		alloc_lines  make a copy of every buffer line into allocated
++			     memory, so that memory access errors can be found
++			     by valgrind
+ 		autoload     `import autoload` will load the script right
+ 			     away, not postponed until an item is used
+ 		char_avail   disable the char_avail() function
+@@ -287,7 +290,8 @@ test_override({name}, {val})				*test_override()*
+ 		uptime 	     overrules sysinfo.uptime
+ 		vterm_title  setting the window title by a job running in a
+ 			     terminal window
+-		ALL	     clear all overrides ({val} is not used)
++		ALL	     clear all overrides, except alloc_lines ({val} is
++			     not used)
  
- 	Note that "bold" can be used here and by using a bold font.  They
- 	have the same effect.
-+							*underline-codes*
- 	"undercurl" is a curly underline.  When "undercurl" is not possible
- 	then "underline" is used.  In general "undercurl" and "strikethrough"
- 	are only available in the GUI and some terminals.  The color is set
-@@ -5028,6 +5033,17 @@ term={attr-list}			*attr-list* *highlight-term* *E418*
- 	    let &t_Cs = "\e[4:3m"
- 	    let &t_Ce = "\e[4:0m"
- 
-+<	"underdouble" is a double underline, "underdotted" is a dotted
-+	underline and "underdashed" is a dashed underline.  These are only
-+	supported by some terminals.  If your terminal supports them you may
-+	have to specify the codes like this: >
-+	    let &t_Us = "\e[4:2m"
-+	    let &t_ds = "\e[4:4m"
-+	    let &t_Ds = "\e[4:5m"
-+<	They are reset with |t_Ce|, the same as curly underline (undercurl).
-+	When t_Us, t_ds or t_Ds is not set then underline will be used as a
-+	fallback.
-+
- 
- start={term-list}				*highlight-start* *E422*
- stop={term-list}				*term-list* *highlight-stop*
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index f10340572..c4199c2db 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -372,8 +372,11 @@ OUTPUT CODES						*terminal-output-codes*
- 
- Added by Vim (there are no standard codes for these):
- 	t_AU	set underline color (ANSI)			*t_AU* *'t_AU'*
--	t_Ce	undercurl end					*t_Ce* *'t_Ce'*
--	t_Cs	undercurl mode					*t_Cs* *'t_Cs'*
-+	t_Ce	undercurl and underline end			*t_Ce* *'t_Ce'*
-+	t_Cs	undercurl (curly underline) mode		*t_Cs* *'t_Cs'*
-+	t_Us	double underline mode				*t_Us* *'t_Us'*
-+	t_ds	dotted underline mode				*t_ds* *'t_ds'*
-+	t_Ds	dashed underline mode				*t_Ds* *'t_Ds'*
- 	t_Te	strikethrough end				*t_Te* *'t_Te'*
- 	t_Ts	strikethrough mode				*t_Ts* *'t_Ts'*
- 	t_IS	set icon text start				*t_IS* *'t_IS'*
+ 		"starting" is to be used when a test should behave like
+ 		startup was done.  Since the tests are run by sourcing a
