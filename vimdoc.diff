@@ -1,155 +1,19 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 90ae3e7ac..d04e4ac13 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -556,12 +556,30 @@ For further discussion of fortran_have_tabs and the method used for the
- detection of source format see |ft-fortran-syntax|.
- 
- 
-+FREEBASIC						*ft-freebasic-plugin*
-+
-+This plugin aims to treat the four FreeBASIC dialects, "fb", "qb", "fblite"
-+and "deprecated", as distinct languages.
-+
-+The dialect will be set to the first name found in g:freebasic_forcelang, any
-+#lang directive or $lang metacommand in the file being edited, or finally
-+g:freebasic_lang.  These global variables conceptually map to the fbc options
-+-forcelang and -lang.  If no dialect is explicitly specified "fb" will be
-+used.
-+
-+For example, to set the dialect to a default of "fblite" but still allow for
-+any #lang directive overrides, use the following command: >
-+
-+     let g:freebasic_lang = "fblite"
-+
-+
- GIT COMMIT                                              *ft-gitcommit-plugin*
- 
- One command, :DiffGitCached, is provided to show a diff of the current commit
- in the preview window.  It is equivalent to calling "git diff --cached" plus
- any arguments given to the command.
- 
-+
- GPROF							*ft-gprof-plugin*
- 
- The gprof filetype plugin defines a mapping <C-]> to jump from a function
-@@ -571,6 +589,7 @@ to the details of that function in the call graph.
- The mapping can be disabled with: >
- 	let g:no_gprof_maps = 1
- 
-+
- MAIL							*ft-mail-plugin*
- 
- Options:
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 0db640702..67947854d 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -568,6 +568,9 @@ pattern is used.
- The |:Lfilter| command does the same as |:Cfilter| but operates on the current
- location list.
- 
-+The current quickfix/location list is not modified by these commands, so you
-+can go back to the unfiltered list using the |:colder|/|:lolder| command.
-+
- =============================================================================
- 2. The error window					*quickfix-window*
- 
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 1229b1908..86e7edd02 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1694,6 +1694,21 @@ because Fortran90 has no reserved words.
- For further information related to fortran, see |ft-fortran-indent| and
- |ft-fortran-plugin|.
- 
-+FREEBASIC				*freebasic.vim* *ft-freebasic-syntax*
-+
-+FreeBASIC files will be highlighted differently for each of the four available
-+dialects, "fb", "qb", "fblite" and "deprecated".  See |ft-freebasic-plugin|
-+for how to select the correct dialect.
-+
-+Highlighting is further configurable via the following variables.
-+
-+Variable			Highlight ~
-+*freebasic_no_comment_fold*	disable multiline comment folding
-+*freebasic_operators*		non-alpha operators
-+*freebasic_space_errors*	trailing white space and spaces before a <Tab>
-+*freebasic_type_suffixes*	QuickBASIC style type suffixes
-+
-+
- 
- FVWM CONFIGURATION FILES			*fvwm.vim* *ft-fvwm-syntax*
- 
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 896be454a..736340ac4 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -38,9 +38,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--Prepare for the Vim 9.0 release:
--- Update version number in help
--
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
- - Check performance with callgrind and kcachegrind.
-@@ -201,19 +198,11 @@ Terminal emulator window:
-   conversions.
- 
- Patches considered for including:
--- make functions static if possible, add a few tests. #10612
--- use ngettext() in a few more places #10606
--- move f_hasmapto() to map.c  #10611
-+- Add "-n" option to xxd. #10599  needs a test
- - allow for nesting of timeout, sketch in #10595
--- Add "-n" option to xxd. #10599
--- Add support for "underdouble", "underdot" and "underdash". #9553
- - Patch to implement the vimtutor with a plugin: #6414
-   Was originally written by Felipe Morales.
- - Patch to make fillchars global-local. (#5206)
--- Version of getchar() that does not move the cursor - #10603
--  Use a separate argument for the new flag.
--- Improved VB filetype detection. (Doug Kearns, June 26)
--- Improved FreeBasic runtime files (and a second one). (Doug Kearns, June 26)
- 
- Autoconf: must use autoconf 2.69, later version generates lots of warnings
- - try using autoconf 2.71 and fix all "obsolete" warnings
-@@ -236,6 +225,8 @@ pass it on with modifications.
- 
- Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
- 
-+Typed keys invisible after calling interrupt() from a timer. #10631
-+
- With a window height of 6 and 'scrolloff' set to 3, using "j" does not scroll
- evenly. (#10545)  Need to handle this in scroll_cursor_bot().
- 
-@@ -254,6 +245,9 @@ The line number can be obtained from win->w_lines[].
- 
- MS-Windows: did path modifier :p:8 stop working?  #8600
- 
-+Version of getchar() that does not move the cursor - #10603 Use a separate
-+argument for the new flag.
-+
- test_arglist func Test_all_not_allowed_from_cmdwin() hangs on MS-Windows.
- 
- Information for a specific terminal (e.g. gnome, tmux, konsole, alacritty) is
-@@ -295,6 +289,8 @@ inconsistent with the documentation.
- 
- globpath() does not use 'wildignorecase' at all? (related to #8350)
- 
-+mksession uses :buffer instead of :edit in one place but not another. #10629
-+
- Add 'termguiattr' option, use "gui=" attributes in the terminal?  Would work
- with 'termguicolors'. #1740
- 
-@@ -4423,6 +4419,8 @@ GUI:
- 
- 
- Autocommands:
-+9   Add WinNewPre - before creating a new window. #10635
-+9   When triggering WinNew provide the window ID somehow.  #10633
- 9   Rework the code from FEAT_OSFILETYPE for autocmd-osfiletypes to use
-     'filetype'.  Only for when the current buffer is known.
- -   Put autocommand event names in a hashtable for faster lookup?
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index ee9a61309..5efc5076f 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1721,10 +1721,10 @@ The valid escape sequences are
+ 		nothing. Supported modifiers are |:aboveleft|, |:belowright|,
+ 		|:botright|, |:browse|, |:confirm|, |:hide|, |:keepalt|,
+ 		|:keepjumps|, |:keepmarks|, |:keeppatterns|, |:leftabove|,
+-		|:lockmarks|, |:noswapfile| |:rightbelow|, |:silent|, |:tab|,
+-		|:topleft|, |:verbose|, and |:vertical|.
+-		Note that these are not yet supported: |:noautocmd|,
+-		|:sandbox| and |:unsilent|.
++		|:lockmarks|, |:noautocmd|, |:noswapfile| |:rightbelow|,
++		|:sandbox|, |:silent|, |:tab|, |:topleft|, |:unsilent|,
++		|:verbose|, and |:vertical|.
++		Note that |:filter| is not supported.
+ 		Examples: >
+ 		    command! -nargs=+ -complete=file MyEdit
+ 				\ for f in expand(<q-args>, 0, 1) |
