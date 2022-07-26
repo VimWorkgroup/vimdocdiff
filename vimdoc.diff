@@ -1,28 +1,360 @@
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 6998a6edc..7e8e8b9cc 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
-@@ -94,6 +94,7 @@ test_gui_event({event}, {args})
- 		    "findrepl"  search and replace text.
- 		    "mouse"	mouse button click event.
- 		    "scrollbar" move or drag the scrollbar.
-+		    "sendevent" send a low-level GUI event.
- 		    "tabline"	select a tab page by mouse click.
- 		    "tabmenu"	select a tabline menu entry.
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 5d76ff3a3..d85fb89bc 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1275,7 +1275,7 @@ User				Never executed automatically.  To be used for
+ 				    if exists('#User#MyEvent')
+ 					doautocmd User MyEvent
+ 				    endif
+-
++<
+ 							*SigUSR1*
+ SigUSR1				After the SIGUSR1 signal has been detected.
+ 				Could be used if other ways of notifying Vim
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index dc68def41..d182f47d9 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -293,7 +293,7 @@ index({object}, {expr} [, {start} [, {ic}]])
+ 				Number	index in {object} where {expr} appears
+ input({prompt} [, {text} [, {completion}]])
+ 				String	get input from the user
+-inputdialog({prompt} [, {text} [, {completion}]])
++inputdialog({prompt} [, {text} [, {cancelreturn}]])
+ 				String	like input() but in a GUI dialog
+ inputlist({textlist})		Number	let the user pick from a choice list
+ inputrestore()			Number	restore typeahead
+@@ -1149,7 +1149,7 @@ blob2list({blob})					*blob2list()*
  
-@@ -177,6 +178,15 @@ test_gui_event({event}, {args})
- 		    dragging:	1 to drag the scrollbar and 0 to click in the
- 				scrollbar.
+ 		Can also be used as a |method|: >
+ 			GetBlob()->blob2list()
+-
++<
+ 							*browse()*
+ browse({save}, {title}, {initdir}, {default})
+ 		Put up a file requester.  This only works when "has("browse")"
+@@ -2316,7 +2316,9 @@ exists({expr})	The result is a Number, which is |TRUE| if {expr} is defined,
+ 					To check for a supported command
+ 					always check the return value to be 2.
+ 			:2match		The |:2match| command.
+-			:3match		The |:3match| command.
++			:3match		The |:3match| command (but you
++					probably should not use it, it is
++					reserved for internal usage)
+ 			#event		autocommand defined for this event
+ 			#event#pattern	autocommand defined for this event and
+ 					pattern (the pattern is taken
+@@ -5773,8 +5775,10 @@ matchadd({group}, {pattern} [, {priority} [, {id} [, {dict}]]])
+ 		message will appear and the match will not be added.  An ID
+ 		is specified as a positive integer (zero excluded).  IDs 1, 2
+ 		and 3 are reserved for |:match|, |:2match| and |:3match|,
+-		respectively.  If the {id} argument is not specified or -1,
+-		|matchadd()| automatically chooses a free ID.
++		respectively.  3 is reserved for use by the
++		|matchparen|polugin.
++		If the {id} argument is not specified or -1, |matchadd()|
++		automatically chooses a free ID.
  
-+		"sendevent":
-+		  Send a low-level GUI event (e.g. key-up or down).
-+		  Currently only supported on MS-Windows.
-+		  The supported items in {args} are:
-+		    event:	The supported string values are:
-+				    keyup   generate a keyup event
-+				    keydown generate a keydown event
-+		    keycode:    Keycode to use for a keyup or a keydown event.
+ 		The optional {dict} argument allows for further custom
+ 		values. Currently this is used to specify a match specific
+@@ -7475,7 +7479,7 @@ searchcount([{options}])					*searchcount()*
+ 			" to 1)
+ 			let result = searchcount()
+ <
+-		The function is useful to add the count to |statusline|: >
++		The function is useful to add the count to 'statusline': >
+ 			function! LastSearchCount() abort
+ 			  let result = searchcount(#{recompute: 0})
+ 			  if empty(result)
+diff --git a/runtime/doc/ft_sql.txt b/runtime/doc/ft_sql.txt
+index 73d619c5d..0bf98861e 100644
+--- a/runtime/doc/ft_sql.txt
++++ b/runtime/doc/ft_sql.txt
+@@ -506,7 +506,7 @@ documentation.
+ Assuming you have followed the dbext-tutorial you can press <C-C>t to
+ display a list of tables.  There is a delay while dbext is creating the table
+ list.  After the list is displayed press <C-W>.  This will remove both the
+-popup window and the table name already chosen when the list became active. >
++popup window and the table name already chosen when the list became active.
+ 
+  4.3.1 Table Completion:			*sql-completion-tables*
+ 
+@@ -514,7 +514,7 @@ Press <C-C>t to display a list of tables from within the database you
+ have connected via the dbext plugin.
+ NOTE: All of the SQL completion popups support typing a prefix before pressing
+ the key map.  This will limit the contents of the popup window to just items
+-beginning with those characters.  >
++beginning with those characters.
+ 
+  4.3.2 Column Completion:			*sql-completion-columns*
+ 
+@@ -587,13 +587,13 @@ popup a list of columns for the customer table.  It does this by looking back
+ to the beginning of the select statement and finding a list of the tables
+ specified in the FROM clause.  In this case it notes that in the string
+ "customer c", "c" is an alias for the customer table.  The optional "AS"
+-keyword is also supported, "customer AS c". >
++keyword is also supported, "customer AS c".
+ 
+ 
+  4.3.3 Procedure Completion:			*sql-completion-procedures*
+ 
+ Similar to the table list, <C-C>p, will display a list of stored
+-procedures stored within the database. >
++procedures stored within the database.
+ 
+  4.3.4 View Completion:				*sql-completion-views*
+ 
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 942037a64..14ed9f5c9 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
+@@ -680,7 +680,7 @@ Of these three, Vim uses PRIMARY when reading and writing the "* register
+ register.  Vim does not access the SECONDARY selection.
+ 
+ This applies both to the GUI and the terminal version.  For non-X11 systems
+-the plus and the star register both us the system clipboard.
++the plus and the star register both use the system clipboard.
+ 
+ Examples: (assuming the default option values)
+ - Select a URL in Visual mode in Vim.  Go to your browser and click the
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index b376af700..51cfa4697 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -388,10 +388,10 @@ CTRL-G CTRL-J	cursor one line down, insert start column    *i_CTRL-G_CTRL-J*
+ CTRL-O		execute one command, return to Insert mode   *i_CTRL-O*
+ CTRL-\ CTRL-O	like CTRL-O but don't move the cursor	     *i_CTRL-\_CTRL-O*
+ CTRL-L		when 'insertmode' is set: go to Normal mode  *i_CTRL-L*
+-CTRL-G u	break undo sequence, start new change	     *i_CTRL-G_u*
+-CTRL-G U	don't break undo with next left/right cursor *i_CTRL-G_U*
+-		movement, if the cursor stays within the
+-		same line
++CTRL-G u	close undo sequence, start new change	     *i_CTRL-G_u*
++CTRL-G U	don't start a new undo block with the next   *i_CTRL-G_U*
++		left/right cursor movement, if the cursor
++		stays within the same line
+ -----------------------------------------------------------------------
+ 
+ Note: If the cursor keys take you out of Insert mode, check the 'noesckeys'
+@@ -428,8 +428,8 @@ that, with CTRL-O u.  Another example: >
+ 
+ 	:inoremap <CR> <C-]><C-G>u<CR>
+ 
+-This breaks undo at each line break.  It also expands abbreviations before
+-this.
++This starts a new undo block at each line break.  It also expands
++abbreviations before this.
+ 
+ An example for using CTRL-G U: >
+ 
+@@ -443,9 +443,9 @@ An example for using CTRL-G U: >
+ 	inoremap <expr> <End> repeat('<C-G>U<Right>', col('$') - col('.'))
+ 	inoremap ( ()<C-G>U<Left>
+ 
+-This makes it possible to use the cursor keys in Insert mode, without breaking
+-the undo sequence and therefore using |.| (redo) will work as expected.
+-Also entering a text like (with the "(" mapping from above):
++This makes it possible to use the cursor keys in Insert mode, without starting
++a new undo block and therefore using |.| (redo) will work as expected.  Also
++entering a text like (with the "(" mapping from above):
+ 
+    Lorem ipsum (dolor
+ 
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index e4332b8d4..69557d614 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -682,19 +682,22 @@ two bytes 0xc3 0xa1.  You don't want the 0xc3 byte to be mapped then or
+ otherwise it would be impossible to type the á character.
+ 
+ 					*<Leader>* *mapleader*
+-To define a mapping which uses the "mapleader" variable, the special string
+-"<Leader>" can be used.  It is replaced with the string value of "mapleader".
+-If "mapleader" is not set or empty, a backslash is used instead.  Example: >
+-	:map <Leader>A  oanother line<Esc>
++To define a mapping which uses the "g:mapleader" variable, the special string
++"<Leader>" can be used.  It is replaced with the string value of
++"g:mapleader".  If "g:mapleader" is not set or empty, a backslash is used
++instead.  Example: >
++	map <Leader>A  oanother line<Esc>
+ Works like: >
+-	:map \A  oanother line<Esc>
+-But after: >
+-	:let mapleader = ","
++	map \A  oanother line<Esc>
++But after (legacy script): >
++	let mapleader = ","
++Or (Vim9 script): >
++	g:mapleader = ","
+ It works like: >
+-	:map ,A  oanother line<Esc>
++	map ,A  oanother line<Esc>
+ 
+-Note that the value of "mapleader" is used at the moment the mapping is
+-defined.  Changing "mapleader" after that has no effect for already defined
++Note that the value of "g:mapleader" is used at the moment the mapping is
++defined.  Changing "g:mapleader" after that has no effect for already defined
+ mappings.
+ 
+ 					*<LocalLeader>* *maplocalleader*
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index cd9d7bd80..762a84224 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -4843,7 +4843,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	help.  (Note that previously setting the global option to the empty
+ 	value did this, which is now deprecated.)
+ 	When the first character is ":", the command is invoked as a Vim
+-	Ex command prefixed with [count].
++	Ex command with [count] added as an argument if it is not zero.
+ 	When "man", "man -s" or an Ex command is used, Vim will automatically
+ 	translate a count for the "K" command and pass it as the first
+ 	argument.  For "man -s" the "-s" is removed when there is no count.
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 2b1897fe1..71c752ac4 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -3918,7 +3918,7 @@ netrw:
+ 				* Installed |g:netrw_clipboard| setting
+ 				* Installed option bypass for |'guioptions'|
+ 				  a/A settings
+-				* Changed popup_beval() to |popup_atcursor|()
++				* Changed popup_beval() to |popup_atcursor()|
+ 				  in netrw#ErrorMsg (lacygoill). Apparently
+ 				  popup_beval doesn't reliably close the
+ 				  popup when the mouse is moved.
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index d0d9c35da..f9d0b6698 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -231,7 +231,7 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			Examples: >
+ 				:4,5source
+ 				:10,18source ++clear
+-
++<
+ 							*:source!*
+ :so[urce]! {file}	Read Vim commands from {file}.  These are commands
+ 			that are executed from Normal mode, like you type
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index fc71bb4c2..6b4c0235e 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -137,7 +137,11 @@ prop_add({lnum}, {col}, {props})
+ 		   bufnr	buffer to add the property to; when omitted
+ 				the current buffer is used
+ 		   id		user defined ID for the property; must be a
+-				number; when omitted zero is used
++				number, should be positive; when using "text"
++				then "id" must not be present and will be set
++				automatically to a negative number; otherwise
++				zero is used
++		   text		text to be displayed at {col}
+ 		   type		name of the text property type
+ 		All fields except "type" are optional.
+ 
+@@ -157,6 +161,17 @@ prop_add({lnum}, {col}, {props})
+ 		"type" will first be looked up in the buffer the property is
+ 		added to. When not found, the global property types are used.
+ 		If not found an error is given.
++							*virtual-text*
++		When "text" is used this text will be displayed at the start
++		location of the text property.  The text of the buffer line
++		will be shifted to make room.  This is called "virtual text".
++		The text will be displayed but it is not part of the actual
++		buffer line, the cursor cannot be placed on it.  A mouse click
++		in the text will move the cursor to the first character after
++		the text.
++		A negative "id" will be chosen and is returned.  Once a
++		property with "text" has been added for a buffer then using a
++		negative "id" for any other property will give an error.
+ 
+ 		Can also be used as a |method|: >
+ 			GetLnum()->prop_add(col, props)
+@@ -181,6 +196,9 @@ prop_add_list({props}, [[{lnum}, {col}, {end-lnum}, {end-col}], ...])
+ 		two items {end-lnum} and {end-col} specify the position just
+ 		after the text.
+ 
++		It is not possible to add a text property with a "text" field
++		here.
 +
- 		"tabline":
- 		  Inject a mouse click event on the tabline to select a
- 		  tabpage. The supported items in {args} are:
+ 		Example:
+ 			call prop_add_list(#{type: 'MyProp', id: 2},
+ 					\ [[1, 4, 1, 7],
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 594e83c50..20dbce954 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -38,6 +38,20 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++PR to consider:
++- Fix CTRL-[ for Win32 on Belgian keyboard  #10687 (closes #10454)
++- stricter parsing for has('patch-x.y.z')  #10752
++- cmdheight=0  #10675  Does it work properly?
++- add splitscroll  #10682  Useful?  Any trouble? Null Chilly says it's OK.
++    suggestion: names instead of numbers for the option value
++
++Support virtual text:
++- clear b_textprop_text when buffer is cleared
++- Remove and free text when textprop is removed with negative ID.
++- "gj" does not work correctly
++- placement at the end of the line: after the text (text_align: "end"), right
++  aligned (text_align: "right")
++
+ Further Vim9 improvements, possibly after launch:
+ - Use Vim9 for more runtime files.
+ - Check performance with callgrind and kcachegrind.
+@@ -224,6 +238,10 @@ entry separately. #6609
+ Multiplexers (screen, tmux) can request it to the underlying terminal, and
+ pass it on with modifications.
+ 
++When scheme can't be found by configure there is no clear "not found" message:
++    configure:5769: checking MzScheme install prefix
++    configure:5781: result: 
++
+ Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
+ 
+ Typed keys invisible after calling interrupt() from a timer. #10631
+@@ -1160,9 +1178,6 @@ cmap using execute() has side effects. (Killthemule, 2016 Aug 17, #983)
+ 
+ Patch to order results from taglist(). (Duncan McDougall, 2016 Oct 25)
+ 
+-Syntax highlighting for messages with RFC3339 timestamp (#946)
+-Did maintainer reply?
+-
+ ml_get errors when reloading file. (Chris Desjardins, 2016 Apr 19)
+ Also with latest version.
+ 
+@@ -3761,6 +3776,7 @@ Syntax highlighting:
+     - use TextMate, vscode uses it.  #9087 - Other people don't like it.
+       Vscode is asked to switch to treesitter:
+       https://github.com/microsoft/vscode/issues/50140
++    - sublime grammar?
+ 8   Make ":syn off" use 'runtimepath' instead of $VIMRUNTIME. (Gary Johnson)
+     Should do the same for ":syn on" and ":syn manual".
+ 8   Support "containedin" argument for ":syn include", so that the defined
+diff --git a/runtime/doc/undo.txt b/runtime/doc/undo.txt
+index 34d805433..cc3348247 100644
+--- a/runtime/doc/undo.txt
++++ b/runtime/doc/undo.txt
+@@ -105,13 +105,13 @@ change again.  But you can do something like this: >
+ 
+ After this a "u" command will undo the delete command and the previous
+ change.
+-							*undo-break*
+-To do the opposite, break a change into two undo blocks, in Insert mode use
+-CTRL-G u.  This is useful if you want an insert command to be undoable in
++					*undo-break* *undo-close-block*
++To do the opposite, use a new undo block for the next change, in Insert mode
++use CTRL-G u.  This is useful if you want an insert command to be undoable in
+ parts.  E.g., for each sentence.  |i_CTRL-G_u|
+ 
+-Setting the value of 'undolevels' also breaks undo.  Even when the new value
+-is equal to the old value.  In |Vim9| script: >
++Setting the value of 'undolevels' also closes the undo block.  Even when the
++new value is equal to the old value.  In |Vim9| script: >
+ 	&undolevels = &undolevels
+ In legacy script: >
+ 	let &undolevels = &undolevels
