@@ -1,253 +1,64 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index d182f47d9..f700d4e9d 100644
+index f700d4e9d..a65f60d41 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -5775,8 +5775,8 @@ matchadd({group}, {pattern} [, {priority} [, {id} [, {dict}]]])
- 		message will appear and the match will not be added.  An ID
- 		is specified as a positive integer (zero excluded).  IDs 1, 2
- 		and 3 are reserved for |:match|, |:2match| and |:3match|,
--		respectively.  3 is reserved for use by the
--		|matchparen|polugin.
-+		respectively.  3 is reserved for use by the |matchparen|
-+		plugin.
- 		If the {id} argument is not specified or -1, |matchadd()|
- 		automatically chooses a free ID.
+@@ -9233,6 +9233,7 @@ synIDattr({synID}, {what} [, {mode}])			*synIDattr()*
+ 		"underline"	"1" if underlined
+ 		"undercurl"	"1" if undercurled
+ 		"strike"	"1" if strikethrough
++		"nocombine"	"1" if nocombine
  
-@@ -7387,7 +7387,7 @@ search({pattern} [, {flags} [, {stopline} [, {timeout} [, {skip}]]]])
- <		When {stopline} is used and it is not zero this also implies
- 		that the search does not wrap around the end of the file.
- 		A zero value is equal to not giving the argument.
--
-+				*E1285* *E1286* *E1287* *E1288* *E1289*
- 		When the {timeout} argument is given the search stops when
- 		more than this many milliseconds have passed.  Thus when
- 		{timeout} is 500 the search stops after half a second.
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 89a2491f0..5ac2f63f7 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
-@@ -802,6 +802,8 @@ When the {string} starts with "\=" it is evaluated as an expression, see
- |sub-replace-expression|.  You can use that for complex replacement or special
- characters.
+ 		Returns an empty string on error.
  
-+The substitution is limited in recursion to 4 levels. *E1290*
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 762a84224..e4e0d6612 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1760,12 +1760,15 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'cmdheight'* *'ch'*
+ 'cmdheight' 'ch'	number	(default 1)
+-			global
++			global or local to tab page
+ 	Number of screen lines to use for the command-line.  Helps avoiding
+ 	|hit-enter| prompts.
+ 	The value of this option is stored with the tab page, so that each tab
+ 	page can have a different value.
+ 
++	When 'cmdheight' is zero, there is no command-line unless it is being
++	used.  Any messages will cause the |hit-enter| prompt.
 +
- Otherwise these characters in {string} have a special meaning:
- 								*:s%*
- When {string} is equal to "%" and '/' is included with the 'cpoptions' option,
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index 65dbd30f9..5b4ea2bc9 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -27,6 +27,7 @@ The Netbeans interface also uses a channel. |netbeans|
- 14. Using a prompt buffer		|prompt-buffer|
- 15. Language Server Protocol		|language-server-protocol|
- 
-+							*E1277*
- {only when compiled with the |+channel| feature for channel stuff}
- 	You can check this with: `has('channel')`
- {only when compiled with the |+job| feature for job stuff}
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index ffb0832bd..e09ec39a5 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -1147,6 +1147,8 @@ character that indicates the type of command-line being edited, see
- 
- Vim will be in Normal mode when the editor is opened, except when 'insertmode'
- is set.
-+								*E1292*
-+Once a command-line window is open it is not possible to open another one.
- 
- The height of the window is specified with 'cmdwinheight' (or smaller if there
- is no room).  The window is always full width and is positioned just above the
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 3dfacf729..9a3546158 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1399,7 +1399,7 @@ parenthesis), or any expression in parentheses: >
- 	base->alist[idx](args)
- 	base->(getFuncRef())(args)
- Note that in the last call the base is passed to the function resulting from
--"(getFuncRef())", inserted before "args".
-+"(getFuncRef())", inserted before "args".  *E1275*
- 
- 							*E274*
- "->name(" must not contain white space.  There can be white space before the
-@@ -1559,7 +1559,7 @@ allowing the inclusion of Vim script expressions (see |expr1|).  Any
- expression returning a value can be enclosed between curly braces.  The value
- is converted to a string.  All the text and results of the expressions
- are concatenated to make a new string.
--								*E1278*
-+							*E1278* *E1279*
- To include an opening brace '{' or closing brace '}' in the string content
- double it.  For double quoted strings using a backslash also works.  A single
- closing brace '}' will result in an error.
-@@ -2682,7 +2682,7 @@ See |:verbose-cmd| for more information.
- 			Define a new function by the name {name}.  The body of
- 			the function follows in the next lines, until the
- 			matching |:endfunction|.
--
-+								*E1267*
- 			The name must be made of alphanumeric characters and
- 			'_', and must start with a capital or "s:" (see
- 			above).  Note that using "b:" or "g:" is not allowed.
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index d5e991593..7700d26e1 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -928,7 +928,7 @@ $	At end of pattern or in front of "\|", "\)" or "\n" ('magic' on):
- 	becomes invalid.  Vim doesn't automatically update the matches.
- 	Similar to moving the cursor for "\%#" |/\%#|.
- 
--					*/\%l* */\%>l* */\%<l* *E951* *E1204*
-+				*/\%l* */\%>l* */\%<l* *E951* *E1204* *E1273*
- \%23l	Matches in a specific line.
- \%<23l	Matches above a specific line (lower line number).
- \%>23l	Matches below a specific line (higher line number).
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 6a2471acf..d11557c79 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
-@@ -591,7 +591,7 @@ POPUP_CREATE() ARGUMENTS			 *popup_create-arguments*
- 
- The first argument of |popup_create()| (and the second argument to
- |popup_settext()|) specifies the text to be displayed, and optionally text
--properties.  It is in one of four forms:
-+properties.  It is in one of four forms:  *E1284*
- - a buffer number
- - a string
- - a list of strings
-diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
-index a7e0e7e41..f15d3b1cb 100644
---- a/runtime/doc/spell.txt
-+++ b/runtime/doc/spell.txt
-@@ -103,7 +103,7 @@ zuW							*zuG* *zuW*
- zuG			Undo |zW| and |zG|, remove the word from the internal
- 			word list.  Count used as with |zg|.
- 
--							*:spe* *:spellgood*
-+						*:spe* *:spellgood* *E1280*
- :[count]spe[llgood] {word}
- 			Add {word} as a good word to 'spellfile', like with
- 			|zg|.  Without count the first name is used, with a
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 7e8e8b9cc..f251781c4 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
-@@ -186,6 +186,7 @@ test_gui_event({event}, {args})
- 				    keyup   generate a keyup event
- 				    keydown generate a keydown event
- 		    keycode:    Keycode to use for a keyup or a keydown event.
-+								*E1291*
- 
- 		"tabline":
- 		  Inject a mouse click event on the tabline to select a
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 6b4c0235e..d231082f0 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -171,7 +171,8 @@ prop_add({lnum}, {col}, {props})
- 		the text.
- 		A negative "id" will be chosen and is returned.  Once a
- 		property with "text" has been added for a buffer then using a
--		negative "id" for any other property will give an error.
-+		negative "id" for any other property will give an error:
-+		*E1293*
- 
- 		Can also be used as a |method|: >
- 			GetLnum()->prop_add(col, props)
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 20dbce954..7156df742 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -39,18 +39,24 @@ browser use: https://github.com/vim/vim/issues/1234
- -------------------- Known bugs and current work -----------------------
- 
- PR to consider:
--- Fix CTRL-[ for Win32 on Belgian keyboard  #10687 (closes #10454)
- - stricter parsing for has('patch-x.y.z')  #10752
- - cmdheight=0  #10675  Does it work properly?
- - add splitscroll  #10682  Useful?  Any trouble? Null Chilly says it's OK.
-     suggestion: names instead of numbers for the option value
-+    problem depending on whether window is focused or not
- 
--Support virtual text:
--- clear b_textprop_text when buffer is cleared
-+Support virtual text:  #7553
- - Remove and free text when textprop is removed with negative ID.
- - "gj" does not work correctly
-+- no virtual text when 'signcolumn' is set to "yes"  #10794
- - placement at the end of the line: after the text (text_align: "end"), right
--  aligned (text_align: "right")
-+  aligned (text_align: "right"); choice: truncate when not enough space or
-+  wrap to next line (text_wrap: "yes"); Also: fill with space to text wraps to
-+  start of next screen line (text_align: "below")
-+  Also consider an empty line, should fix #10786.  Also check inserting text.
-+- win_lbr_chartabsize() TODO item: count screen cells
-+- wrong cursor position (Yegappan, July 27)
-+- many tests
- 
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
-@@ -238,6 +244,9 @@ entry separately. #6609
- Multiplexers (screen, tmux) can request it to the underlying terminal, and
- pass it on with modifications.
- 
-+Using "A" and "o" in manually created fold (in empty buffer) does not behave
-+consistenly (James McCoy, #10698)
-+
- When scheme can't be found by configure there is no clear "not found" message:
-     configure:5769: checking MzScheme install prefix
-     configure:5781: result: 
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 4b54f18f9..ce1b182d9 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -281,7 +281,7 @@ start with an upper case letter even when using the "s:" prefix.  In legacy
- script "s:funcref" could be used, because it could not be referred to with
- "funcref".  In Vim9 script it can, therefore "s:Funcref" must be used to avoid
- that the name interferes with builtin functions.
--							*vim9-s-namespace*
-+						*vim9-s-namespace* *E1268*
- The use of the "s:" prefix is not supported at the Vim9 script level.  All
- functions and variables without a prefix are script-local.
- 
-@@ -857,6 +857,8 @@ No curly braces expansion ~
- Command modifiers are not ignored ~
- 								*E1176*
- Using a command modifier for a command that does not use it gives an error.
-+								*E1082*
-+Also, using a command modifier without a following command is now an error.
- 
- 
- Dictionary literals ~
-@@ -1234,6 +1236,9 @@ variables can be accessed without the "s:" prefix.  They must be defined
- before the function is compiled.  If the script the function is defined in is
- legacy script, then script-local variables must be accessed with the "s:"
- prefix if they do not exist at the time of compiling.
-+							*E1269*
-+Script-local variables in a |Vim9| script must be declared at the script
-+level.  They cannot be created in a function, also not in a legacy function.
- 
- 						*:defc* *:defcompile*
- :defc[ompile]		Compile functions defined in the current script that
-@@ -1492,6 +1497,8 @@ value is not actually changed.  If you need to change the type, e.g. to change
- it to a string, use the |string()| function.  Or use |str2nr()| to convert a
- string to a number.
- 
-+If a type is given where it is not expected you can get *E1272* .
-+
- 
- Type inference ~
- 							*type-inference*
-@@ -1696,8 +1703,8 @@ be exported. {not implemented yet: class, interface}
- 
- 
- Import ~
--					*:import* *:imp* *E1094* *E1047* *E1262*
--					*E1048* *E1049* *E1053* *E1071* *E1236*
-+				*:import* *:imp* *E1094* *E1047* *E1262*
-+				*E1048* *E1049* *E1053* *E1071* *E1088* *E1236*
- The exported items can be imported in another script. The import syntax has
- two forms. The simple form: >
- 	import {filename}
+ 						*'cmdwinheight'* *'cwh'*
+ 'cmdwinheight' 'cwh'	number	(default 7)
+ 			global
+@@ -6446,9 +6449,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		45%	relative position in the file
+ 	If 'rulerformat' is set, it will determine the contents of the ruler.
+ 	Each window has its own ruler.  If a window has a status line, the
+-	ruler is shown there.  Otherwise it is shown in the last line of the
+-	screen.  If the statusline is given by 'statusline' (i.e. not empty),
+-	this option takes precedence over 'ruler' and 'rulerformat'
++	ruler is shown there.  If a window doesn't have a status line and
++	'cmdheight' is zero, the ruler is not shown.  Otherwise it is shown in
++	the last line of the screen.  If the statusline is given by
++	'statusline' (i.e. not empty), this option takes precedence over
++	'ruler' and 'rulerformat'
+ 	If the number of characters displayed is different from the number of
+ 	bytes in the text (e.g., for a TAB or a multibyte character), both
+ 	the text column (byte number) and the screen column are shown,
+@@ -7098,6 +7103,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			|+cmdline_info| feature}
+ 	Show (partial) command in the last line of the screen.  Set this
+ 	option off if your terminal is slow.
++	The option has no effect when 'cmdheight' is zero.
+ 	In Visual mode the size of the selected area is shown:
+ 	- When selecting characters within a line, the number of characters.
+ 	  If the number of bytes is different it is also displayed: "2-6"
+@@ -7147,6 +7153,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	If in Insert, Replace or Visual mode put a message on the last line.
+ 	Use the 'M' flag in 'highlight' to set the type of highlighting for
+ 	this message.
++	The option has no effect when 'cmdheight' is zero.
+ 	When |XIM| may be used the message will include "XIM".  But this
+ 	doesn't mean XIM is really active, especially when 'imactivatekey' is
+ 	not set.
