@@ -1,64 +1,70 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index f700d4e9d..a65f60d41 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -9233,6 +9233,7 @@ synIDattr({synID}, {what} [, {mode}])			*synIDattr()*
- 		"underline"	"1" if underlined
- 		"undercurl"	"1" if undercurled
- 		"strike"	"1" if strikethrough
-+		"nocombine"	"1" if nocombine
- 
- 		Returns an empty string on error.
- 
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 762a84224..e4e0d6612 100644
+index e4e0d6612..55c2146b9 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -1760,12 +1760,15 @@ A jump table for the options with a short description can be found at |Q_op|.
- 
- 						*'cmdheight'* *'ch'*
- 'cmdheight' 'ch'	number	(default 1)
--			global
-+			global or local to tab page
- 	Number of screen lines to use for the command-line.  Helps avoiding
- 	|hit-enter| prompts.
- 	The value of this option is stored with the tab page, so that each tab
- 	page can have a different value.
- 
-+	When 'cmdheight' is zero, there is no command-line unless it is being
-+	used.  Any messages will cause the |hit-enter| prompt.
-+
- 						*'cmdwinheight'* *'cwh'*
- 'cmdwinheight' 'cwh'	number	(default 7)
- 			global
-@@ -6446,9 +6449,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		45%	relative position in the file
- 	If 'rulerformat' is set, it will determine the contents of the ruler.
- 	Each window has its own ruler.  If a window has a status line, the
--	ruler is shown there.  Otherwise it is shown in the last line of the
--	screen.  If the statusline is given by 'statusline' (i.e. not empty),
--	this option takes precedence over 'ruler' and 'rulerformat'
-+	ruler is shown there.  If a window doesn't have a status line and
-+	'cmdheight' is zero, the ruler is not shown.  Otherwise it is shown in
-+	the last line of the screen.  If the statusline is given by
-+	'statusline' (i.e. not empty), this option takes precedence over
-+	'ruler' and 'rulerformat'
+@@ -6453,7 +6453,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	'cmdheight' is zero, the ruler is not shown.  Otherwise it is shown in
+ 	the last line of the screen.  If the statusline is given by
+ 	'statusline' (i.e. not empty), this option takes precedence over
+-	'ruler' and 'rulerformat'
++	'ruler' and 'rulerformat'.
  	If the number of characters displayed is different from the number of
  	bytes in the text (e.g., for a TAB or a multibyte character), both
  	the text column (byte number) and the screen column are shown,
-@@ -7098,6 +7103,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			|+cmdline_info| feature}
- 	Show (partial) command in the last line of the screen.  Set this
- 	option off if your terminal is slow.
-+	The option has no effect when 'cmdheight' is zero.
- 	In Visual mode the size of the selected area is shown:
- 	- When selecting characters within a line, the number of characters.
- 	  If the number of bytes is different it is also displayed: "2-6"
-@@ -7147,6 +7153,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	If in Insert, Replace or Visual mode put a message on the last line.
- 	Use the 'M' flag in 'highlight' to set the type of highlighting for
- 	this message.
-+	The option has no effect when 'cmdheight' is zero.
- 	When |XIM| may be used the message will include "XIM".  But this
- 	doesn't mean XIM is really active, especially when 'imactivatekey' is
- 	not set.
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index d231082f0..a0c8c348d 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -141,7 +141,20 @@ prop_add({lnum}, {col}, {props})
+ 				then "id" must not be present and will be set
+ 				automatically to a negative number; otherwise
+ 				zero is used
+-		   text		text to be displayed at {col}
++		   text		text to be displayed before {col}, or after the
++				line if {col} is zero
++		   text_align	when "text" is present and {col} is zero
++				specifies where to display the text:
++				   after   after the end of the line
++				   right   right aligned in the window
++				   below   in the next screen line
++				When omitted "after" is used.
++		   text_wrap	when "text" is present and {col} is zero,
++				specifies what happens if the text doesn't
++				fit:
++				   wrap      wrap the text to the next line
++				   truncate  truncate the text to make it fit
++		   		When omitted "truncate" is used.
+ 		   type		name of the text property type
+ 		All fields except "type" are optional.
+ 
+@@ -162,17 +175,26 @@ prop_add({lnum}, {col}, {props})
+ 		added to. When not found, the global property types are used.
+ 		If not found an error is given.
+ 							*virtual-text*
+-		When "text" is used this text will be displayed at the start
+-		location of the text property.  The text of the buffer line
+-		will be shifted to make room.  This is called "virtual text".
++		When "text" is used and the column is non-zero then this text
++		will be displayed at the start location of the text property
++		after the text.  The text of the buffer line will be shifted
++		to make room.  This is called "virtual text".
++		When the column is zero the virtual text will appear after the
++		buffer text.  The "text_align" and "text_wrap" arguments
++		determine how it is displayed.
+ 		The text will be displayed but it is not part of the actual
+ 		buffer line, the cursor cannot be placed on it.  A mouse click
+ 		in the text will move the cursor to the first character after
+-		the text.
++		the text, or the last character of the line.
+ 		A negative "id" will be chosen and is returned.  Once a
+ 		property with "text" has been added for a buffer then using a
+ 		negative "id" for any other property will give an error:
+ 		*E1293*
++		Make sure to use a highlight that makes clear to the user that
++		this is virtual text, otherwise it will be very confusing that
++		the text cannot be edited.
++		To separate the virtual text from the buffer text prepend
++		and/or append spaces to the "text" field.
+ 
+ 		Can also be used as a |method|: >
+ 			GetLnum()->prop_add(col, props)
