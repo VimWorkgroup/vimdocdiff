@@ -1,229 +1,111 @@
-diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
-index 361587536..71200a3ea 100644
---- a/runtime/doc/help.txt
-+++ b/runtime/doc/help.txt
-@@ -26,6 +26,7 @@ Get specific help:  It is possible to go directly to whatever you want help
- 		      Option			  '	   :help 'textwidth'
- 		      Regular expression	  /	   :help /[
- 		    See |help-summary| for more contexts and an explanation.
-+		    See |notation| for an explanation of the help syntax.
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index a65f60d41..cc4e7c4a8 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -291,6 +291,8 @@ iconv({expr}, {from}, {to})	String	convert encoding of {expr}
+ indent({lnum})			Number	indent of line {lnum}
+ index({object}, {expr} [, {start} [, {ic}]])
+ 				Number	index in {object} where {expr} appears
++indexof({object}, {expr} [, {opts}]])
++				Number	index in {object} where {expr} is true
+ input({prompt} [, {text} [, {completion}]])
+ 				String	get input from the user
+ inputdialog({prompt} [, {text} [, {cancelreturn}]])
+@@ -4730,19 +4732,25 @@ indent({lnum})	The result is a Number, which is indent of line {lnum} in the
+ 			GetLnum()->indent()
  
-   Search for help:  Type ":help word", then hit CTRL-D to see matching
- 		    help entries for "word".
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 55c2146b9..ee17e6445 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -808,8 +808,33 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	When on, Vim will change the current working directory whenever you
- 	change the directory of the shell running in a terminal window. You
- 	need proper setting-up, so whenever the shell's pwd changes an OSC 7
--	escape sequence will be emitted. For example, on Linux, you can source
--	/etc/profile.d/vte.sh in your shell profile if you use bash or zsh.
-+	escape sequence will be emitted.  For example, on Linux, you can
-+	source /etc/profile.d/vte.sh in your shell profile if you use bash or
-+	zsh.  For bash this should work (put it in a bash init file): >
-+		if [[ -n "$VIM_TERMINAL" ]]; then
-+		    PROMPT_COMMAND='_vim_sync_PWD'
-+		    function _vim_sync_PWD() {
-+			printf "\033]7;file://%s\033\\" "$PWD"
-+		    }
-+		fi
-+<
-+	Or, in a zsh init file: >
-+		if [[ -n "$VIM_TERMINAL" ]]; then
-+		    autoload -Uz add-zsh-hook
-+		    add-zsh-hook -Uz chpwd _vim_sync_PWD
-+		    function _vim_sync_PWD() {
-+			printf "\033]7;file://%s\033\\" "$PWD"
-+		    }
-+		fi
-+<
-+	In a fish init file: >
-+		if test -n "$VIM_TERMINAL"
-+		    function _vim_sync_PWD --on-variable=PWD
-+			printf "\033]7;file://%s\033\\" "$PWD"
-+		    end
-+		end
-+<
-+	You can find an alternative method at |terminal-autoshelldir|.
- 	When the parsing of the OSC sequence fails you get *E1179* .
+ index({object}, {expr} [, {start} [, {ic}]])			*index()*
++		Find {expr} in {object} and return its index.  See
++		|indexof()| for using a lambda to select the item.
++
+ 		If {object} is a |List| return the lowest index where the item
+ 		has a value equal to {expr}.  There is no automatic
+ 		conversion, so the String "4" is different from the Number 4.
+ 		And the number 4 is different from the Float 4.0.  The value
+-		of 'ignorecase' is not used here, case always matters.
++		of 'ignorecase' is not used here, case matters as indicated by
++		the {ic} argument.
  
- 				*'arabic'* *'arab'* *'noarabic'* *'noarab'*
-@@ -1767,7 +1792,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	page can have a different value.
+ 		If {object} is |Blob| return the lowest index where the byte
+ 		value is equal to {expr}.
  
- 	When 'cmdheight' is zero, there is no command-line unless it is being
--	used.  Any messages will cause the |hit-enter| prompt.
-+	used.  Some informative messages will not be displayed, any other
-+	messages will cause the |hit-enter| prompt.
+ 		If {start} is given then start looking at the item with index
+ 		{start} (may be negative for an item relative to the end).
++
+ 		When {ic} is given and it is |TRUE|, ignore case.  Otherwise
+ 		case must match.
++
+ 		-1 is returned when {expr} is not found in {object}.
+ 		Example: >
+ 			:let idx = index(words, "the")
+@@ -4751,6 +4759,47 @@ index({object}, {expr} [, {start} [, {ic}]])			*index()*
+ <		Can also be used as a |method|: >
+ 			GetObject()->index(what)
  
- 						*'cmdwinheight'* *'cwh'*
- 'cmdwinheight' 'cwh'	number	(default 7)
-@@ -5027,8 +5053,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'lispwords'* *'lw'*
- 'lispwords' 'lw'	string	(default is very long)
- 			global or local to buffer |global-local|
--	Comma-separated list of words that influence the Lisp indenting.
--	|'lisp'|
-+	Comma-separated list of words that influence the Lisp indenting when
-+	enabled with the |'lisp'| option.
- 
- 						*'list'* *'nolist'*
- 'list'			boolean	(default off)
-@@ -7327,6 +7353,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Name of the word list file where words are added for the |zg| and |zw|
- 	commands.  It must end in ".{encoding}.add".  You need to include the
- 	path, otherwise the file is placed in the current directory.
-+	The path may include characters from 'isfname', space, comma and '@'.
- 								*E765*
- 	It may also be a comma-separated list of names.  A count before the
- 	|zg| and |zw| commands can be used to access each.  This allows using
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 81dd7c678..56f0dc82d 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1019,6 +1019,36 @@ A trick to have Vim send this escape sequence: >
- 
- Rationale: Why not allow for any command or expression?  Because that might
- create a security problem.
-+						*terminal-autoshelldir*
-+This can be used to pass the current directory from a shell to Vim.
-+Put this in your .vimrc: >
-+	def g:Tapi_lcd(_, args: string)
-+	    execute 'silent lcd ' .. args
-+	enddef
-+<
-+And, in a bash init file: >
-+        if [[ -n "$VIM_TERMINAL" ]]; then
-+            PROMPT_COMMAND='_vim_sync_PWD'
-+            function _vim_sync_PWD() {
-+              printf '\033]51;["call", "Tapi_lcd", "%q"]\007' "$PWD"
-+            }
-+        fi
-+<
-+Or, for zsh: >
-+	if [[ -n "$VIM_TERMINAL" ]]; then
-+	    autoload -Uz add-zsh-hook
-+	    add-zsh-hook -Uz chpwd _vim_sync_PWD
-+	    function _vim_sync_PWD() {
-+		printf '\033]51;["call", "Tapi_lcd", "%q"]\007' "$PWD"
-+	    }
-+	fi
-+<
-+Or, for fish: >
-+	if test -n "$VIM_TERMINAL"
-+	    function _vim_sync_PWD --on-variable=PWD
-+		printf '\033]51;["call", "Tapi_lcd", "%s"]\007' "$PWD"
-+	    end
-+	end
- 
- 
- Using the client-server feature ~
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index d2adeffe1..059e44b89 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -38,20 +38,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--Support virtual text:  #7553
--- Wrong cursor position in Insert mode, wrong pos after typing char #10786
--- implement "text_align" - right
--    when not truncated, may increase line height
--- implement "text_align" - below
--    need to compute extra screen line
--- implement "text_wrap" - truncate
--- when Tab is in text handle it like a space
--- Also consider an empty line, should fix #10786.  Also check inserting text.
--- win_lbr_chartabsize() TODO item: count screen cells
--- check that when inserting/deleting text col == MAXCOL isn't changed
--- wrong cursor position (Yegappan, July 27)
--- many tests
--
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
- - Check performance with callgrind and kcachegrind.
-@@ -129,19 +115,6 @@ Popup windows:
-   Use ERROR_IF_POPUP_WINDOW for these.
- - Figure out the size and position better if wrapping inserts indent
- 
--Text properties:
--- property is overruled by cursorline. (#8225).
--  Add better control over priority?  Make list of all highlighting, specify
--  where property fits in.
--  Or Should we let the textprop highlight overrule other (e.g. diff) highlight
--  if the priority is above a certain value?  (#7392)
--  Combining text property with 'cursorline' does not always work (Billie
--  Cleek, #5533)
--- Add text property that shifts text to make room for annotation (e.g.
--  variable type).  Like the opposite of conceal.  Requires fixing the cursor
--  positioning and mouse clicks as with conceal mode.
--- See remarks at top of src/textprop.c
--
- 'incsearch' with :s:
- - :s/foo  using CTRL-G moves to another line, should not happen, or use the
-   correct line (it uses the last but one line) (Lifepillar, Aug 18, #3345)
-@@ -248,6 +221,7 @@ consistenly (James McCoy, #10698)
- 
- To avoid flicker: add an option that when a screen clear is requested, instead
- of clearing it draws everything and uses "clear to end of line" for every line.
-+Resetting 't_ut' already causes this?
- 
- When scheme can't be found by configure there is no clear "not found" message:
-     configure:5769: checking MzScheme install prefix
-@@ -2679,6 +2653,8 @@ Better 'rightleft' or BIDI support:
- 
- 
- Spell checking:
-+-   [s does not find missing capital at start of the line.  #10838
-+    Probably because the dot at the end of the previous line isn't seen.
- -   When 'cursorline' is set and the first word should have SpellCap
-     highlighting, redrawing the line removes it when moving the cursor away
-     from the line. (#7085)  Would need to inspect the end of the previous line
-@@ -3784,6 +3760,7 @@ Printing:
- Syntax highlighting:
-     Long term goal: faster, better, etc.  Options:
-     - use treesitter, NeoVim uses it - Many people don't like it.
-+	After changes requires rebuilding the library.
-     - use TextMate, vscode uses it.  #9087 - Other people don't like it.
-       Vscode is asked to switch to treesitter:
-       https://github.com/microsoft/vscode/issues/50140
++indexof({object}, {expr} [, {opts}])			*indexof()*
++		Returns the index of an item in {object} where {expr} is
++		v:true.  {object} must be a |List| or a |Blob|.
++
++		If {object} is a |List|, evaluate {expr} for each item in the
++		List until the expression is v:true and return the index of
++		this item.
++
++		If {object} is a |Blob| evaluate {expr} for each byte in the
++		Blob until the expression is v:true and return the index of
++		this byte.
++
++		{expr} must be a |string| or |Funcref|.
++
++		If {expr} is a |string|: If {object} is a |List|, inside
++		{expr} |v:key| has the index of the current List item and
++		|v:val| has the value of the item.  If {object} is a |Blob|,
++		inside {expr} |v:key| has the index of the current byte and
++		|v:val| has the byte value.
++
++		If {expr} is a |Funcref| it must take two arguments:
++			1. the key or the index of the current item.
++			2. the value of the current item.
++		The function must return |TRUE| if the item is found and the
++		search should stop.
++
++		The optional argument {opts} is a Dict and supports the
++		following items:
++		    startidx	start evaluating {expr} at the item with this
++				index; may be negative for an item relative to
++				the end
++		Returns -1 when {expr} evaluates to v:false for all the items.
++		Example: >
++			:let l = [#{n: 10}, #{n: 20}, #{n: 30}]
++			:echo indexof(l, "v:val.n == 20")
++			:echo indexof(l, {i, v -> v.n == 30})
++			:echo indexof(l, "v:val.n == 20", #{startidx: 1})
++
++<		Can also be used as a |method|: >
++			mylist->indexof(expr)
++
+ input({prompt} [, {text} [, {completion}]])		*input()*
+ 		The result is a String, which is whatever the user typed on
+ 		the command-line.  The {prompt} argument is either a prompt
 diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 7f9cee487..c1f74d624 100644
+index c1f74d624..1938e3546 100644
 --- a/runtime/doc/usr_41.txt
 +++ b/runtime/doc/usr_41.txt
-@@ -268,14 +268,15 @@ when it doesn't, append !: >
- You cannot `unlet` script-local variables in |Vim9| script, only in legacy
- script.
- 
--When a script finishes, the local variables declared there will not be
--deleted.  Functions defined in the script can use them.  Example:
-+When a script has been processed to the end, the local variables declared
-+there will not be deleted.  Functions defined in the script can use them.
-+Example:
- >
- 	vim9script
- 	var counter = 0
- 	def g:GetCount(): number
--	  s:counter += 1
--	  return s:counter
-+	  counter += 1
-+	  return counter
- 	enddef
- 
- Every time you call the function it will return the next count: >
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 5fba47ba4..01412a039 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1773,7 +1773,7 @@ line, there can be no line break: >
- 		name   # Error!
- 	echo that
- 		.name  # Error!
--
-+<						*import-map*
- When you've imported a function from one script into a vim9 script you can
- refer to the imported function in a mapping by prefixing it with |<SID>|: >
- 	noremap <silent> ,a :call <SID>name.Function()<CR>
+@@ -792,14 +792,16 @@ List manipulation:					*list-functions*
+ 	reduce()		reduce a List to a value
+ 	slice()			take a slice of a List
+ 	sort()			sort a List
+-	reverse()		reverse the order of a List
++	reverse()		reverse the order of a List or Blob
+ 	uniq()			remove copies of repeated adjacent items
+ 	split()			split a String into a List
+ 	join()			join List items into a String
+ 	range()			return a List with a sequence of numbers
+ 	string()		String representation of a List
+ 	call()			call a function with List as arguments
+-	index()			index of a value in a List
++	index()			index of a value in a List or Blob
++	indexof()		index in a List or Blob where an expression
++				evaluates to true 
+ 	max()			maximum value in a List
+ 	min()			minimum value in a List
+ 	count()			count number of times a value appears in a List
