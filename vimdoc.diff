@@ -1,186 +1,34 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 6eab0833f..5947703fb 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1098,6 +1098,7 @@ a different type means the values are different: >
- 	echo 0 is []
- 	0
- "is#"/"isnot#" and "is?"/"isnot?" can be used to match and ignore case.
-+In |Vim9| script this doesn't work, two strings are never identical.
- 
- In legacy script, when comparing a String with a Number, the String is
- converted to a Number, and the comparison is done on Numbers.  This means
 diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 4cd1a32b4..9d6142ba5 100644
+index 9d6142ba5..4253684d1 100644
 --- a/runtime/doc/motion.txt
 +++ b/runtime/doc/motion.txt
-@@ -612,7 +612,8 @@ i)							*v_i)* *i)* *i(*
- i(							*vib* *v_ib* *v_i(* *ib*
- ib			"inner block", select [count] blocks, from "[count] [("
- 			to the matching ')', excluding the '(' and ')' (see
--			|[(|).
-+			|[(|).  If the cursor is not inside a () block, then
-+			find the next "(".
+@@ -532,8 +532,6 @@ including white space, the commands starting with "i" select an "inner" object
+ without white space, or just the white space.  Thus the "inner" commands
+ always select less text than the "a" commands.
+ 
+-These commands are not available when the |+textobjects| feature has been
+-disabled at compile time.
+ Also see `gn` and `gN`, operating on the last search pattern.
+ 
+ 							*v_aw* *aw*
+@@ -634,6 +632,7 @@ at			"a tag block", select [count] tag blocks, from the
+ 			"</aaa>", including the "<aaa>" and "</aaa>".
+ 			See |tag-blocks| about the details.
  			When used in Visual mode it is made characterwise.
++			Only available when compiled with the |+eval| feature.
  
- a>						*v_a>* *v_a<* *a>* *a<*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index ee17e6445..0b35e9405 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -814,7 +814,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		if [[ -n "$VIM_TERMINAL" ]]; then
- 		    PROMPT_COMMAND='_vim_sync_PWD'
- 		    function _vim_sync_PWD() {
--			printf "\033]7;file://%s\033\\" "$PWD"
-+			printf '\033]7;file://%s\033\\' "$PWD"
- 		    }
- 		fi
- <
-@@ -823,14 +823,14 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    autoload -Uz add-zsh-hook
- 		    add-zsh-hook -Uz chpwd _vim_sync_PWD
- 		    function _vim_sync_PWD() {
--			printf "\033]7;file://%s\033\\" "$PWD"
-+			printf '\033]7;file://%s\033\\' "$PWD"
- 		    }
- 		fi
- <
- 	In a fish init file: >
- 		if test -n "$VIM_TERMINAL"
- 		    function _vim_sync_PWD --on-variable=PWD
--			printf "\033]7;file://%s\033\\" "$PWD"
-+			printf '\033]7;file://%s\033\\' "$PWD"
- 		    end
- 		end
- <
-@@ -1793,7 +1793,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 
- 	When 'cmdheight' is zero, there is no command-line unless it is being
- 	used.  Some informative messages will not be displayed, any other
--	messages will cause the |hit-enter| prompt.
-+	messages will cause the |hit-enter| prompt.  Expect some other
-+	unexpected behavior too.
- 
- 						*'cmdwinheight'* *'cwh'*
- 'cmdwinheight' 'cwh'	number	(default 7)
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index fd9133327..9a148455e 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -143,12 +143,16 @@ prop_add({lnum}, {col}, {props})
- 				zero is used
- 		   text		text to be displayed before {col}, or after the
- 				line if {col} is zero
-+		   					*E1294*
- 		   text_align	when "text" is present and {col} is zero
- 				specifies where to display the text:
- 				   after   after the end of the line
--				   right   right aligned in the window
-+				   right   right aligned in the window (unless
-+					   the text wraps to the next screen
-+					   line)
- 				   below   in the next screen line
--				When omitted "after" is used.
-+				When omitted "after" is used.  Only one
-+				"right" property can fit in earch line.
- 		   text_wrap	when "text" is present and {col} is zero,
- 				specifies what happens if the text doesn't
- 				fit:
-@@ -186,9 +190,10 @@ prop_add({lnum}, {col}, {props})
- 		buffer line, the cursor cannot be placed on it.  A mouse click
- 		in the text will move the cursor to the first character after
- 		the text, or the last character of the line.
-+		Any Tab and other control character in the text will be
-+		changed to a space (Rationale: otherwise the size of the text
-+		is difficult to compute).
- 		A negative "id" will be chosen and is returned.  Once a
--		Any Tab in the text will be changed to a space (Rationale:
--		otherwise the size of the text is difficult to compute).
- 		property with "text" has been added for a buffer then using a
- 		negative "id" for any other property will give an error:
- 		*E1293*
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 059e44b89..66640aa53 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -38,6 +38,11 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
-+Text props: Add "padding" argument - only for when using "text" and {col} is
-+zero.  Use tp_len field and n_attr_skip. #10906
-+
-+Graduate FEAT_TEXTOBJ ?
-+
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
- - Check performance with callgrind and kcachegrind.
-@@ -67,18 +72,6 @@ Further Vim9 improvements, possibly after launch:
-     has(featureName), len(someString)
- - Implement as part of an expression: ++expr, --expr, expr++, expr--.
- 
--Update list of features to vote on:
--- Remove Athena item (won't happen)
--- Remove "add open mode" (won't happen)
--- Remove "editing of a hidden buffer" (done)
--- Change "add IDE features" to "improve terminal debugger"
--- Change "diff/merge capability for CVS" to "CVS and git"
--- Remove "pre-compile them" from "improve the performance of Vim scripts"
--- Add: multiple cursors, edit text in more than one place at a time
--- Add: fast syntax highlighting with parser instead of regex patterns
--- Add: virtual text, text properties can insert text in the line
--- Add: start first line halfway, scroll per wrapped screen line
--
- Popup windows:
- - Preview popup not properly updated when it overlaps with completion menu.
-   (Yegappan Lakshmanan, 2021 May 22)
-@@ -192,6 +185,7 @@ Patches considered for including:
- - use int instead of char_ for index  #10818  needs a test
- - Add "-n" option to xxd. #10599  needs a test
- - allow for nesting of timeout, sketch in #10595
-+- Add setcmdline()  #10869
- 
- Add 'splitscroll'  #10682  Useful?  Any trouble? Null Chilly says it's OK.
-     suggestion: names instead of numbers for the option value
-@@ -3958,15 +3952,16 @@ Vim script language:
-     can be the plugin name.
-     Perhaps also have a way to remove everything that the package added?
-     including autocommands.
--7   Pre-parse or compile Vim scripts into a bytecode.
-+7   Pre-parse or compile Vim scripts into a bytecode, like :def functions.
-+    Possibilities:
-     1. Put the bytecode with the original script, with an ":if
--       has('bytecode')" around it, so that it's only used with a Vim that
--       supports it.  Update the code with a command, can be used in an
--       autocommand.
-+       has('bytecode-1234')" around it, so that it's only used with a Vim that
-+       supports the version.  Update the code with a command, can be used in
-+       an autocommand.
-     2. Use a ".vic" file (like Python use .pyc).  Create it when writing a
--       .vim file.  Problem: distribution.
--    3. Use a cache directory for each user.  How to recognize which cached
--       file belongs to a sourced script?
-+       .vim file.  Problem: distribution, non-writable directory, etc.
-+    3. Use a cache directory for each user.  Disadvantage: cache lookup may
-+       cost more time than bytecode wins.
- 7   Add argument to winwidth() to subtract the space taken by 'foldcolumn',
-     signs and/or 'number'.
- 6   Add ++ and -- operators?  They only work on variables (lvals), how to
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 01412a039..089cb8f8e 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -913,6 +913,12 @@ Comparators ~
- The 'ignorecase' option is not used for comparators that use strings.
- Thus "=~" works like "=~#".
- 
-+"is" and "isnot" (|expr-is| and |expr-isnot|) when used on strings now return
-+false.  In legacy script they just compare the strings, in |Vim9| script they
-+check identity, and strings are copied when used, thus two strings are never
-+the same (this might change some day if strings are not copied but reference
-+counted).
-+
- 
- Abort after error ~
- 
+ 						*v_it* *it*
+ it			"inner tag block", select [count] tag blocks, from the
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index e916abde4..13e73e343 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -470,7 +470,7 @@ m  *+terminal*		Support for terminal window |terminal|
+    *+terminfo*		uses |terminfo| instead of termcap
+ N  *+termresponse*	support for |t_RV| and |v:termresponse|
+ B  *+termguicolors*	24-bit color in xterm-compatible terminals support
+-N  *+textobjects*	|text-objects| selection
++T  *+textobjects*	|text-objects| selection. Always enabled since 9.0.0222.
+ N  *+textprop*		|text-properties|
+    *+tgetent*		non-Unix only: able to use external termcap
+ N  *+timers*		the |timer_start()| function
