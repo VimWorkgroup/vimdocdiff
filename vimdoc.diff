@@ -1,34 +1,57 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 9d6142ba5..4253684d1 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
-@@ -532,8 +532,6 @@ including white space, the commands starting with "i" select an "inner" object
- without white space, or just the white space.  Thus the "inner" commands
- always select less text than the "a" commands.
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index cc4e7c4a8..7ddc4a3ee 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -4399,8 +4399,11 @@ has({feature} [, {check}])
  
--These commands are not available when the |+textobjects| feature has been
--disabled at compile time.
- Also see `gn` and `gN`, operating on the last search pattern.
+ has_key({dict}, {key})					*has_key()*
+ 		The result is a Number, which is TRUE if |Dictionary| {dict}
+-		has an entry with key {key}.  FALSE otherwise. The {key}
+-		argument is a string.
++		has an entry with key {key}.  FALSE otherwise.
++		The {key} argument is a string.  In |Vim9| script a number is
++		also accepted (and converted to a string) but no other types.
++		In legacy script the usual automatic conversion to string is
++		done.
  
- 							*v_aw* *aw*
-@@ -634,6 +632,7 @@ at			"a tag block", select [count] tag blocks, from the
- 			"</aaa>", including the "<aaa>" and "</aaa>".
- 			See |tag-blocks| about the details.
- 			When used in Visual mode it is made characterwise.
-+			Only available when compiled with the |+eval| feature.
+ 		Can also be used as a |method|: >
+ 			mydict->has_key(key)
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 0b35e9405..914176364 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -799,7 +799,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	When on, Vim will change the current working directory whenever you
+ 	open a file, switch buffers, delete a buffer or open/close a window.
+ 	It will change to the directory containing the file which was opened
+-	or selected.
++	or selected.  When a buffer has no name it also has no directory, thus
++	the current directory won't change when navigating to it.
+ 	Note: When this option is on some plugins may not work.
  
- 						*v_it* *it*
- it			"inner tag block", select [count] tag blocks, from the
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index e916abde4..13e73e343 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -470,7 +470,7 @@ m  *+terminal*		Support for terminal window |terminal|
-    *+terminfo*		uses |terminfo| instead of termcap
- N  *+termresponse*	support for |t_RV| and |v:termresponse|
- B  *+termguicolors*	24-bit color in xterm-compatible terminals support
--N  *+textobjects*	|text-objects| selection
-+T  *+textobjects*	|text-objects| selection. Always enabled since 9.0.0222.
- N  *+textprop*		|text-properties|
-    *+tgetent*		non-Unix only: able to use external termcap
- N  *+timers*		the |timer_start()| function
+ 			*'autoshelldir'* *'asd'* *'noautoshelldir'* *'noasd'*
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 86e7edd02..7d6b92da1 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -4905,6 +4905,7 @@ Before the color scheme will be loaded all default color list scripts
+ autocommand event is triggered.  After the color scheme has been loaded the
+ |ColorScheme| autocommand event is triggered.
+ 
++						*colorscheme-override*
+ If a color scheme is almost right, you can add modifications on top of it by
+ using the |ColorScheme| autocommand.  For example, to remove the background
+ color (can make it transparent in some terminals): >
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 66640aa53..4982498af 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -41,8 +41,6 @@ browser use: https://github.com/vim/vim/issues/1234
+ Text props: Add "padding" argument - only for when using "text" and {col} is
+ zero.  Use tp_len field and n_attr_skip. #10906
+ 
+-Graduate FEAT_TEXTOBJ ?
+-
+ Further Vim9 improvements, possibly after launch:
+ - Use Vim9 for more runtime files.
+ - Check performance with callgrind and kcachegrind.
