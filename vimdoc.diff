@@ -1,278 +1,222 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 00ae665f8..c1dea37ad 100644
+index c1dea37ad..15af01fbb 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -253,7 +253,7 @@ getreg([{regname} [, 1 [, {list}]]])
  				String or List   contents of a register
  getreginfo([{regname}])		Dict	information about a register
  getregtype([{regname}])		String	type of a register
--getscriptinfo()		List	list of sourced scripts
-+getscriptinfo()			List	list of sourced scripts
+-getscriptinfo()			List	list of sourced scripts
++getscriptinfo([{opts}])		List	list of sourced scripts
  gettabinfo([{expr}])		List	list of tab pages
  gettabvar({nr}, {varname} [, {def}])
  				any	variable {varname} in tab {nr} or {def}
-@@ -4089,17 +4089,21 @@ getregtype([{regname}])					*getregtype()*
+@@ -1179,7 +1179,8 @@ browsedir({title}, {initdir})
+ 		browsing is not possible, an empty string is returned.
+ 
+ bufadd({name})						*bufadd()*
+-		Add a buffer to the buffer list with String {name}.
++		Add a buffer to the buffer list with name {name} (must be a
++		String).
+ 		If a buffer for file {name} already exists, return that buffer
+ 		number.  Otherwise return the buffer number of the newly
+ 		created buffer.  When {name} is an empty string then a new
+@@ -1232,7 +1233,8 @@ bufload({buf})						*bufload()*
+ 		Ensure the buffer {buf} is loaded.  When the buffer name
+ 		refers to an existing file then the file is read.  Otherwise
+ 		the buffer will be empty.  If the buffer was already loaded
+-		then there is no change.
++		then there is no change.  If the buffer is not related to a
++		file the no file is read (e.g., when 'buftype' is "nofile").
+ 		If there is an existing swap file for the file of the buffer,
+ 		there will be no dialog, the buffer will be loaded anyway.
+ 		The {buf} argument is used like with |bufexists()|.
+@@ -2734,8 +2736,6 @@ finddir({name} [, {path} [, {count}]])				*finddir()*
+ 		Returns an empty string if the directory is not found.
+ 
+ 		This is quite similar to the ex-command `:find`.
+-		{only available when compiled with the |+file_in_path|
+-		feature}
+ 
+ 		Can also be used as a |method|: >
+ 			GetName()->finddir()
+@@ -4089,7 +4089,7 @@ getregtype([{regname}])					*getregtype()*
  		Can also be used as a |method|: >
  			GetRegname()->getregtype()
  
--getscriptinfo()					*getscriptinfo()*
-+getscriptinfo()						*getscriptinfo()*
+-getscriptinfo()						*getscriptinfo()*
++getscriptinfo([{opts})					*getscriptinfo()*
  		Returns a |List| with information about all the sourced Vim
--		scripts in the order they were sourced. (|:scriptinfo|)
-+		scripts in the order they were sourced, like what
-+		`:scriptnames` shows.
- 
- 		Each item in the returned List is a |Dict| with the following
- 		items:
- 		    autoload	set to TRUE for a script that was used with
--				|import autoload| but was not actually sourced
--				yet.
-+				`import autoload` but was not actually sourced
-+				yet (see |import-autoload|).
- 		    name	vim script file name.
- 		    sid		script ID |<SID>|.
-+		    sourced	script ID of the actually sourced script that
-+				this script name links to, if any, otherwise
-+				zero
+ 		scripts in the order they were sourced, like what
+ 		`:scriptnames` shows.
+@@ -4104,6 +4104,13 @@ getscriptinfo()						*getscriptinfo()*
+ 		    sourced	script ID of the actually sourced script that
+ 				this script name links to, if any, otherwise
+ 				zero
++		    version	vimscript version (|scriptversion|)
++
++		The optional Dict argument {opts} supports the following
++		items:
++		    name	script name match pattern. If specified,
++				information about scripts with name
++				that match the pattern "name" are returned.
  
  gettabinfo([{tabnr}])					*gettabinfo()*
  		If {tabnr} is not specified, then information about all the
-@@ -7437,8 +7441,10 @@ search({pattern} [, {flags} [, {stopline} [, {timeout} [, {skip}]]]])
- 		starts in column zero and then matches before the cursor are
- 		skipped.  When the 'c' flag is present in 'cpo' the next
- 		search starts after the match.  Without the 'c' flag the next
--		search starts one column further.  This matters for
--		overlapping matches.
-+		search starts one column after the start of the match.  This
-+		matters for overlapping matches.  See |cpo-c|.  You can also
-+		insert "\ze" to change where the match ends, see  |/\ze|.
-+
- 		When searching backwards and the 'z' flag is given then the
- 		search starts in column zero, thus no match in the current
- 		line will be found (unless wrapping around the end of the
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index ade9e422c..2ebbadbf8 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
-@@ -983,25 +983,38 @@ indentation: >
- PYTHON							*ft-python-indent*
+@@ -10530,7 +10537,8 @@ ex_extra		|+ex_extra| (always true)
+ extra_search		Compiled with support for |'incsearch'| and
+ 			|'hlsearch'|
+ farsi			Support for Farsi was removed |farsi|.
+-file_in_path		Compiled with support for |gf| and |<cfile>|
++file_in_path		Compiled with support for |gf| and |<cfile>| (always
++			true)
+ filterpipe		When 'shelltemp' is off pipes are used for shell
+ 			read/write/filter commands
+ find_in_path		Compiled with support for include file searches
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index e09ec39a5..e29369cb6 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -199,9 +199,6 @@ CTRL-R CTRL-L				*c_CTRL-R_CTRL-L* *c_<C-R>_<C-L>*
+ 		currently displayed match is used.  With CTRL-W the part of
+ 		the word that was already typed is not inserted again.
  
- The amount of indent can be set for the following situations.  The examples
--given are the defaults.  Note that the variables are set to an expression, so
--that you can change the value of 'shiftwidth' later.
-+given are the defaults.  Note that the dictionary values are set to an
-+expression, so that you can change the value of 'shiftwidth' later.
- 
- Indent after an open paren: >
--	let g:pyindent_open_paren = 'shiftwidth() * 2'
-+	let g:python_indent.open_paren = 'shiftwidth() * 2'
- Indent after a nested paren: >
--	let g:pyindent_nested_paren = 'shiftwidth()'
-+	let g:python_indent.nested_paren = 'shiftwidth()'
- Indent for a continuation line: >
--	let g:pyindent_continue = 'shiftwidth() * 2'
-+	let g:python_indent.continue = 'shiftwidth() * 2'
-+
-+By default, the closing paren on a multiline construct lines up under the first
-+non-whitespace character of the previous line.
-+If you prefer that it's lined up under the first character of the line that
-+starts the multiline construct, reset this key: >
-+	let g:python_indent.closed_paren_align_last_line = v:false
- 
- The method uses |searchpair()| to look back for unclosed parentheses.  This
- can sometimes be slow, thus it timeouts after 150 msec.  If you notice the
- indenting isn't correct, you can set a larger timeout in msec: >
--	let g:pyindent_searchpair_timeout = 500
-+	let g:python_indent.searchpair_timeout = 500
- 
- If looking back for unclosed parenthesis is still too slow, especially during
- a copy-paste operation, or if you don't need indenting inside multi-line
- parentheses, you can completely disable this feature: >
--	let g:pyindent_disable_parentheses_indenting = 1
-+	let g:python_indent.disable_parentheses_indenting = 1
-+
-+For backward compatibility, these variables are also supported: >
-+	g:pyindent_open_paren
-+	g:pyindent_nested_paren
-+	g:pyindent_continue
-+	g:pyindent_searchpair_timeout
-+	g:pyindent_disable_parentheses_indenting
- 
- 
- R								*ft-r-indent*
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index f9d0b6698..f8602ba8c 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
-@@ -417,6 +417,10 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
- 			For a script that was used with `import autoload` but
- 			was not actually sourced yet an "A" is shown after the
- 			script ID.
-+			For a script that was referred to by one name but
-+			after resolving symbolic links got sourced with
-+			another name the other script is after "->".  E.g.
-+			"20->22" means script 20 was sourced as script 22.
- 			{not available when compiled without the |+eval|
- 			feature}
- 
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 56f0dc82d..0b94f8a04 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1022,8 +1022,10 @@ create a security problem.
- 						*terminal-autoshelldir*
- This can be used to pass the current directory from a shell to Vim.
- Put this in your .vimrc: >
--	def g:Tapi_lcd(_, args: string)
--	    execute 'silent lcd ' .. args
-+	def g:Tapi_lcd(_, path: string)
-+	    if isdirectory(path)
-+                execute 'silent lcd ' .. fnameescape(path)
-+            endif
- 	enddef
- <
- And, in a bash init file: >
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 9a148455e..996cdd197 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -126,6 +126,7 @@ prop_add({lnum}, {col}, {props})
- 		If {col} is invalid an error is given. *E964*
- 
- 		{props} is a dictionary with these fields:
-+		   type		name of the text property type
- 		   length	length of text in bytes, can only be used
- 				for a property that does not continue in
- 				another line; can be zero
-@@ -142,9 +143,10 @@ prop_add({lnum}, {col}, {props})
- 				automatically to a negative number; otherwise
- 				zero is used
- 		   text		text to be displayed before {col}, or after the
--				line if {col} is zero
-+				line if {col} is zero; prepend and/or append
-+				spaces for padding with highlighting
- 		   					*E1294*
--		   text_align	when "text" is present and {col} is zero
-+		   text_align	when "text" is present and {col} is zero;
- 				specifies where to display the text:
- 				   after   after the end of the line
- 				   right   right aligned in the window (unless
-@@ -152,14 +154,20 @@ prop_add({lnum}, {col}, {props})
- 					   line)
- 				   below   in the next screen line
- 				When omitted "after" is used.  Only one
--				"right" property can fit in earch line.
-+				"right" property can fit in each line, if
-+				there are two ore more these will go in a
-+				separate line (still right aligned).
-+		   text_padding_left				*E1296*
-+				used when "text" is present and {col} is zero;
-+				padding between the end of the text line
-+				(leftmost column for "below") and the virtual
-+				text, not highlighted
- 		   text_wrap	when "text" is present and {col} is zero,
- 				specifies what happens if the text doesn't
- 				fit:
- 				   wrap      wrap the text to the next line
- 				   truncate  truncate the text to make it fit
- 		   		When omitted "truncate" is used.
--		   type		name of the text property type
- 		All fields except "type" are optional.
- 
- 		It is an error when both "length" and "end_lnum" or "end_col"
-@@ -352,11 +360,16 @@ prop_remove({props} [, {lnum} [, {lnum-end}]])
- 		{props} is a dictionary with these fields:
- 		   id		remove text properties with this ID
- 		   type		remove text properties with this type name
--		   both		"id" and "type" must both match
-+		   types	remove text properties with type names in this
-+				List
-+		   both		"id" and "type"/"types" must both match
- 		   bufnr	use this buffer instead of the current one
- 		   all		when TRUE remove all matching text properties,
- 				not just the first one
--		A property matches when either "id" or "type" matches.
-+		Only one of "type" and "types" may be supplied. *E1295*
-+
-+		A property matches when either "id" or one of the supplied
-+		types matches.
- 		If buffer "bufnr" does not exist you get an error message.
- 		If buffer "bufnr" is not loaded then nothing happens.
- 
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 4982498af..a4f3a288f 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -38,9 +38,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--Text props: Add "padding" argument - only for when using "text" and {col} is
--zero.  Use tp_len field and n_attr_skip. #10906
+-		CTRL-F and CTRL-P: {only when |+file_in_path| feature is
+-		included}
 -
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
- - Check performance with callgrind and kcachegrind.
-@@ -244,6 +241,9 @@ MS-Windows: did path modifier :p:8 stop working?  #8600
- Version of getchar() that does not move the cursor - #10603 Use a separate
- argument for the new flag.
+ 					*c_CTRL-R_CTRL-R* *c_<C-R>_<C-R>*
+ 					*c_CTRL-R_CTRL-O* *c_<C-R>_<C-O>*
+ CTRL-R CTRL-R {register CTRL-F CTRL-P CTRL-W CTRL-A CTRL-L}
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 0ce48af0d..522831f99 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -247,8 +247,6 @@ If you want to keep the changed buffer without saving it, switch on the
+ 							*:fin* *:find*
+ :fin[d][!] [++opt] [+cmd] {file}
+ 			Find {file} in 'path' and then |:edit| it.
+-			{not available when the |+file_in_path| feature was
+-			disabled at compile time}
  
-+Add "lastline" entry to 'fillchars' to specify a character instead of '@'.
-+#10963
-+
- test_arglist func Test_all_not_allowed_from_cmdwin() hangs on MS-Windows.
+ :{count}fin[d][!] [++opt] [+cmd] {file}
+ 			Just like ":find", but use the {count} match in
+@@ -322,8 +320,6 @@ CTRL-^			Edit the alternate file.  Mostly the alternate file is
+ 			For Unix the '~' character is expanded, like in
+ 			"~user/file".  Environment variables are expanded too
+ 			|expand-env|.
+-			{not available when the |+file_in_path| feature was
+-			disabled at compile time}
  
- Information for a specific terminal (e.g. gnome, tmux, konsole, alacritty) is
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 4e210a65a..57cdb11e8 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1349,7 +1349,7 @@ Various:					*various-functions*
- 	did_filetype()		check if a FileType autocommand was used
- 	eventhandler()		check if invoked by an event handler
- 	getpid()		get process ID of Vim
--	getscriptinfo()	get list of sourced vim scripts
-+	getscriptinfo()		get list of sourced vim scripts
- 	getimstatus()		check if IME status is active
- 	interrupt()		interrupt script execution
- 	windowsversion()	get MS-Windows version
+ 							*v_gf*
+ {Visual}[count]gf	Same as "gf", but the highlighted text is used as the
+@@ -1707,8 +1703,6 @@ problem goes away the next day.
+ ==============================================================================
+ 11. File Searching					*file-searching*
+ 
+-{not available when compiled without the |+path_extra| feature}
+-
+ The file searching is currently used for the 'path', 'cdpath' and 'tags'
+ options, for |finddir()| and |findfile()|.  Other commands use |wildcards|
+ which is slightly different.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 914176364..e4bf25f70 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1559,8 +1559,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'cdpath'* *'cd'* *E344* *E346*
+ 'cdpath' 'cd'		string	(default: equivalent to $CDPATH or ",,")
+ 			global
+-			{not available when compiled without the
+-			|+file_in_path| feature}
+ 	This is a list of directories which will be searched when using the
+ 	|:cd|, |:tcd| and |:lcd| commands, provided that the directory being
+ 	searched for has a relative path, not an absolute part starting with
+@@ -5951,7 +5949,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  "http://www.vim.org" will make ":find index.html" work.
+ 	- Search upwards and downwards in a directory tree using "*", "**" and
+ 	  ";".  See |file-searching| for info and syntax.
+-	  {not available when compiled without the |+path_extra| feature}
+ 	- Careful with '\' characters, type two to get one in the option: >
+ 		:set path=.,c:\\include
+ <	  Or just use '/' instead: >
+@@ -7726,8 +7723,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'suffixesadd'* *'sua'*
+ 'suffixesadd' 'sua'	string	(default "")
+ 			local to buffer
+-			{not available when compiled without the
+-			|+file_in_path| feature}
+ 	Comma-separated list of suffixes, which are used when searching for a
+ 	file for the "gf", "[I", etc. commands.  Example: >
+ 		:set suffixesadd=.java
+@@ -8005,8 +8000,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	a directory tree.  See |file-searching|.  E.g., "/lib/**/tags" will
+ 	find all files named "tags" below "/lib".  The filename itself cannot
+ 	contain wildcards, it is used as-is.  E.g., "/lib/**/tags?" will find
+-	files called "tags?".  {not available when compiled without the
+-	|+path_extra| feature}
++	files called "tags?".
+ 	The |tagfiles()| function can be used to get a list of the file names
+ 	actually used.
+ 	If Vim was compiled with the |+emacs_tags| feature, Emacs-style tag
+diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
+index 54ac11e17..a010e2fd2 100644
+--- a/runtime/doc/tabpage.txt
++++ b/runtime/doc/tabpage.txt
+@@ -81,8 +81,6 @@ For the related autocommands see |tabnew-autocmd|.
+ :[count]tabf[ind] [++opt] [+cmd] {file}			*:tabf* *:tabfind*
+ 		Open a new tab page and edit {file} in 'path', like with
+ 		|:find|.  For [count] see |:tabnew| above.
+-		{not available when the |+file_in_path| feature was disabled
+-		at compile time}
+ 
+ :[count]tab {cmd}					*:tab*
+ 		Execute {cmd} and when it opens a new window open a new tab
 diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 13e73e343..62a9b203a 100644
+index 62a9b203a..92403d376 100644
 --- a/runtime/doc/various.txt
 +++ b/runtime/doc/various.txt
-@@ -332,7 +332,8 @@ g8			Print the hex values of the bytes used in the
-    *+ARP*		Amiga only: ARP support included
- B  *+arabic*		|Arabic| language support
- B  *+autochdir*		support 'autochdir' option
--T  *+autocmd*		|:autocmd|, automatic commands
-+T  *+autocmd*		|:autocmd|, automatic commands.  Always enabled since
-+			8.0.1564
- H  *+autoservername*	Automatically enable |clientserver|
- m  *+balloon_eval*	|balloon-eval| support in the GUI. Included when
- 			compiling with supported GUI (Motif, GTK, GUI) and
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 089cb8f8e..5d1a82301 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1823,7 +1823,7 @@ defined.  This does not apply to autoload imports, see the next section.
- 
- 
- Importing an autoload script ~
--							*vim9-autoload*
-+					*vim9-autoload* *import-autoload*
- For optimal startup speed, loading scripts should be postponed until they are
- actually needed.  Using the autoload mechanism is recommended:
- 							*E1264*
+@@ -432,7 +432,8 @@ T  *+num64*		64-bit Number support |Number|
+ 			check the actual size of a Number.
+ m  *+ole*		Win32 GUI only: |ole-interface|
+ N  *+packages*		Loading |packages|
+-N  *+path_extra*	Up/downwards search in 'path' and 'tags'
++T  *+path_extra*	Up/downwards search in 'path' and 'tags'  Always
++			enabled since 9.0.0270
+ m  *+perl*		Perl interface |perl|
+ m  *+perl/dyn*		Perl interface |perl-dynamic| |/dyn|
+ N  *+persistent_undo*	Persistent undo |undo-persistence|
 diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 595147301..5c648971f 100644
+index 5c648971f..13f648f19 100644
 --- a/runtime/doc/windows.txt
 +++ b/runtime/doc/windows.txt
-@@ -183,6 +183,8 @@ CTRL-W v						*CTRL-W_v*
- 		3. 'eadirection' isn't "ver", and
- 		4. one of the other windows is wider than the current or new
- 		   window.
-+		If N was given make the new window N columns wide, if
-+		possible.
- 		Note: In other places CTRL-Q does the same as CTRL-V, but here
- 		it doesn't!
+@@ -843,30 +843,22 @@ CTRL-W CTRL-F	Split current window in two.  Edit file name under cursor.
+ 		If the name is a hypertext link that looks like
+ 		"type://machine/path", only "/path" is used.
+ 		If a count is given, the count'th matching file is edited.
+-		{not available when the |+file_in_path| feature was disabled
+-		at compile time}
  
+ CTRL-W F						*CTRL-W_F*
+ 		Split current window in two.  Edit file name under cursor and
+ 		jump to the line number following the file name. See |gF| for
+ 		details on how the line number is obtained.
+-		{not available when the |+file_in_path| feature was disabled
+-		at compile time}
+ 
+ CTRL-W gf						*CTRL-W_gf*
+ 		Open a new tab page and edit the file name under the cursor.
+ 		Like "tab split" and "gf", but the new tab page isn't created
+ 		if the file does not exist.
+-		{not available when the |+file_in_path| feature was disabled
+-		at compile time}
+ 
+ CTRL-W gF						*CTRL-W_gF*
+ 		Open a new tab page and edit the file name under the cursor
+ 		and jump to the line number following the file name.  Like
+ 		"tab split" and "gF", but the new tab page isn't created if
+ 		the file does not exist.
+-		{not available when the |+file_in_path| feature was disabled
+-		at compile time}
+ 
+ CTRL-W gt						*CTRL-W_gt*
+ 		Go to next tab page, same as `gt`.
