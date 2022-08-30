@@ -1,58 +1,21 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 556418f10..29146dc64 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -4099,24 +4099,42 @@ getscriptinfo([{opts})					*getscriptinfo()*
- 		scripts in the order they were sourced, like what
- 		`:scriptnames` shows.
- 
-+		The optional Dict argument {opts} supports the following
-+		optional items:
-+		    name	Script name match pattern. If specified,
-+				and "sid" is not specified, information about
-+				scripts with name that match the pattern
-+				"name" are returned.
-+		    sid		Script ID |<SID>|.  If specified, only
-+				information about the script with ID "sid" is
-+				returned and "name" is ignored.
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 5947703fb..9ac4942dd 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -3821,6 +3821,16 @@ text...
+ 		:echomsg "It's a Zizzer Zazzer Zuzz, as you can plainly see."
+ <			See |:echo-redraw| to avoid the message disappearing
+ 			when the screen is redrawn.
 +
- 		Each item in the returned List is a |Dict| with the following
- 		items:
--		    autoload	set to TRUE for a script that was used with
-+		    autoload	Set to TRUE for a script that was used with
- 				`import autoload` but was not actually sourced
- 				yet (see |import-autoload|).
--		    name	vim script file name.
--		    sid		script ID |<SID>|.
--		    sourced	script ID of the actually sourced script that
-+		    functions   List of script-local function names defined in
-+				the script.  Present only when a particular
-+				script is specified using the "sid" item in
-+				{opts}.
-+		    name	Vim script file name.
-+		    sid		Script ID |<SID>|.
-+		    sourced	Script ID of the actually sourced script that
- 				this script name links to, if any, otherwise
- 				zero
--		    version	vimscript version (|scriptversion|)
--
--		The optional Dict argument {opts} supports the following
--		items:
--		    name	script name match pattern. If specified,
--				information about scripts with name
--				that match the pattern "name" are returned.
-+		    variables   A dictionary with the script-local variables.
-+				Present only when the a particular script is
-+				specified using the "sid" item in {opts}.
-+				Note that this is a copy, the value of
-+				script-local variables cannot be changed using
-+				this dictionary.
-+		    version	Vimscript version (|scriptversion|)
- 
-+		Examples: >
-+			:echo getscriptinfo({'name': 'myscript'})
-+			:echo getscriptinfo({'sid': 15}).variables
-+<
- gettabinfo([{tabnr}])					*gettabinfo()*
- 		If {tabnr} is not specified, then information about all the
- 		tab pages is returned as a |List|. Each List item is a
++					*:echow* *:echowin* *:echowindow*
++:echow[indow] {expr1} ..
++			Like |:echomsg| but when the messages popup window is
++			available the message is displayed there.  This means
++			it will show for three seconds and avoid a
++			|hit-enter| prompt.
++			The message window is available when Vim was compiled
++			with the +timer and the +popupwin features.
++
+ 							*:echoe* *:echoerr*
+ :echoe[rr] {expr1} ..	Echo the expression(s) as an error message, saving the
+ 			message in the |message-history|.  When used in a
