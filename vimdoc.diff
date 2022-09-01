@@ -1,113 +1,89 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 9ac4942dd..fd293e4cf 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -3608,6 +3608,9 @@ text...
- 			iterate over.  Unlike with |List|, modifying the
- 			|Blob| does not affect the iteration.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 1aa5c2cd9..1b9ae38db 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1783,18 +1783,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'cmdheight'* *'ch'*
+ 'cmdheight' 'ch'	number	(default 1)
+ 			global or local to tab page
+-	Number of screen lines to use for the command-line.  Helps avoiding
+-	|hit-enter| prompts.
++	Number of screen lines to use for the command-line.  A larger value
++	helps avoiding |hit-enter| prompts.
+ 	The value of this option is stored with the tab page, so that each tab
+ 	page can have a different value.
  
-+			When {object} is a |String| each item is a string with
-+			one character, plus any combining characters.
-+
- 			In |Vim9| script `:endfor` cannot be shortened, to
- 			improve script readability.
- 
-@@ -3827,7 +3830,9 @@ text...
- 			Like |:echomsg| but when the messages popup window is
- 			available the message is displayed there.  This means
- 			it will show for three seconds and avoid a
--			|hit-enter| prompt.
-+			|hit-enter| prompt.  If you want to hide it before
-+			that, press Esc in Normal mode (when it would
-+			otherwise beep).
- 			The message window is available when Vim was compiled
- 			with the +timer and the +popupwin features.
- 
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 7d6b92da1..adc1d5695 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -5368,7 +5368,9 @@ CursorLineFold	Like FoldColumn when 'cursorline' is set for the cursor line.
- 							*hl-MatchParen*
- MatchParen	Character under the cursor or just before it, if it
- 		is a paired bracket, and its match. |pi_paren.txt|
+-	When 'cmdheight' is zero, there is no command-line unless it is being
+-	used.  Informative messages will be displayed in a popup notification
+-	window at the bottom if the window, using the MessageWindow highlight
+-	group {only if compiled with the +popupwin and +timers features},
+-	otherwise they will not be displayed.  Other messages will cause the
+-	|hit-enter| prompt.  Expect some other unexpected behavior too.
 -
-+							*hl-MessageWindow*
-+MessageWindow	Messages popup window used when 'cmdheight' is zero.  If not
-+		defined |hl-WarningMsg| is used.
- 							*hl-ModeMsg*
- ModeMsg		'showmode' message (e.g., "-- INSERT --").
- 							*hl-MoreMsg*
-@@ -5388,6 +5390,10 @@ PmenuSel	Popup menu: Selected item.
- PmenuSbar	Popup menu: Scrollbar.
- 							*hl-PmenuThumb*
- PmenuThumb	Popup menu: Thumb of the scrollbar.
-+							*hl-PopupNotification*
-+PopupNotification
-+		Popup window created with |popup_notification()|.  If not
-+		defined |hl-WarningMsg| is used.
- 							*hl-Question*
- Question	|hit-enter| prompt and yes/no questions.
- 							*hl-QuickFixLine*
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index ea8d2c0db..327ae01f4 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -38,8 +38,13 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
+ 						*'cmdwinheight'* *'cwh'*
+ 'cmdwinheight' 'cwh'	number	(default 7)
+ 			global
+@@ -6474,11 +6467,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		45%	relative position in the file
+ 	If 'rulerformat' is set, it will determine the contents of the ruler.
+ 	Each window has its own ruler.  If a window has a status line, the
+-	ruler is shown there.  If a window doesn't have a status line and
+-	'cmdheight' is zero, the ruler is not shown.  Otherwise it is shown in
+-	the last line of the screen.  If the statusline is given by
+-	'statusline' (i.e. not empty), this option takes precedence over
+-	'ruler' and 'rulerformat'.
++	ruler is shown there.  Otherwise it is shown in the last line of the
++	screen.  If the statusline is given by 'statusline' (i.e. not empty),
++	this option takes precedence over 'ruler' and 'rulerformat'.
+ 	If the number of characters displayed is different from the number of
+ 	bytes in the text (e.g., for a TAB or a multibyte character), both
+ 	the text column (byte number) and the screen column are shown,
+@@ -7128,7 +7119,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			|+cmdline_info| feature}
+ 	Show (partial) command in the last line of the screen.  Set this
+ 	option off if your terminal is slow.
+-	The option has no effect when 'cmdheight' is zero.
+ 	In Visual mode the size of the selected area is shown:
+ 	- When selecting characters within a line, the number of characters.
+ 	  If the number of bytes is different it is also displayed: "2-6"
+@@ -7178,7 +7168,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	If in Insert, Replace or Visual mode put a message on the last line.
+ 	Use the 'M' flag in 'highlight' to set the type of highlighting for
+ 	this message.
+-	The option has no effect when 'cmdheight' is zero.
+ 	When |XIM| may be used the message will include "XIM".  But this
+ 	doesn't mean XIM is really active, especially when 'imactivatekey' is
+ 	not set.
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 13f648f19..32ec10211 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -256,9 +256,16 @@ and 'winminwidth' are relevant.
+ 						*:vert* *:vertical*
+ :vert[ical] {cmd}
+ 		Execute {cmd}.  If it contains a command that splits a window,
+-		it will be split vertically.
++		it will be split vertically.  For `vertical wincmd =` windows
++		will be equialized only vertically.
+ 		Doesn't work for |:execute| and |:normal|.
  
-+cmdheight=0:
-+- :g/pattern should not use message window  #11012
++						*:hor* *:horizontal*
++:hor[izontal] {cmd}
++		Execute {cmd}.  Currently only makes a difference for
++		`horizontal wincmd =`, which will equal windows only
++		horizontally.
 +
- *.sil detection with FTsil() (lacygoill, Aug 25)
+ :lefta[bove] {cmd}				*:lefta* *:leftabove*
+ :abo[veleft] {cmd}				*:abo* *:aboveleft*
+ 		Execute {cmd}.  If it contains a command that splits a window,
+@@ -553,6 +560,10 @@ CTRL-W =	Make all windows (almost) equally high and wide, but use
+ 		'winheight' and 'winwidth' for the current window.
+ 		Windows with 'winfixheight' set keep their height and windows
+ 		with 'winfixwidth' set keep their width.
++		To equalize only vertically (make window equally high) use
++		`vertical wincmd =`
++		To equalize only horizontally (make window equally wide) use
++		`horizontal wincmd =`
  
-+Avoid using "Xfile" and "Xdir" in tests, use specific names.
-+
- Further Vim9 improvements, possibly after launch:
- - Use Vim9 for more runtime files.
- - Check performance with callgrind and kcachegrind.
-@@ -178,19 +183,10 @@ Terminal emulator window:
- - When 'encoding' is not utf-8, or the job is using another encoding, setup
-   conversions.
- 
--Patches considered for including:
--- use int instead of char_ for index  #10818  needs a test
--- Add "-n" option to xxd. #10599  needs a test
--- allow for nesting of timeout, sketch in #10595
--- Add setcmdline()  #10869
--
- Cleanup:
--- Remove OLD_DIGRAPHS ?
- - Remove FEAT_FOOTER ?
- 
--Add 'splitscroll'  #10682  Useful?  Any trouble? Null Chilly says it's OK.
--    suggestion: names instead of numbers for the option value
--    problem depending on whether window is focused or not
-+Add 'splitscroll'  #10682  Useful?  Any remaining trouble?
- 
- Autoconf: must use autoconf 2.69, later version generates lots of warnings
- - try using autoconf 2.71 and fix all "obsolete" warnings
-@@ -882,9 +878,6 @@ The ++ options for the :edit command are also useful on the Vim command line.
- Overlong utf-8 sequence is displayed wrong. (Harm te Hennepe, 2017 Sep 14,
- #2089)  Patch with possible solution by Björn Linse.
- 
--The change list index is local to a buffer, but it doesn't make sense using it
--for another buffer.  (lacygoill) Copy w_changelistidx to wininfo_S and back.
--
- X11: Putting more than about 262040 characters of text on the clipboard and
- pasting it in another Vim doesn't work.  (Dominique Pelle, 2008 Aug 21-23)
- clip_x11_request_selection_cb() is called with zero value and length.
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 5d1a82301..b77b789a2 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1618,7 +1618,7 @@ type, it can not be used in Vim9 script.
- 			 *E1211* *E1217* *E1218* *E1219* *E1220* *E1221*
- 			 *E1222* *E1223* *E1224* *E1225* *E1226* *E1227*
- 			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1253*
--			 *E1256*
-+			 *E1256* *E1297*
- Types are checked for most builtin functions to make it easier to spot
- mistakes.
- 
+ :res[ize] -N					*:res* *:resize* *CTRL-W_-*
+ CTRL-W -	Decrease current window height by N (default 1).
