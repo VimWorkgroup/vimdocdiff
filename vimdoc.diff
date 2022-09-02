@@ -1,89 +1,57 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 1aa5c2cd9..1b9ae38db 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1783,18 +1783,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'cmdheight'* *'ch'*
- 'cmdheight' 'ch'	number	(default 1)
- 			global or local to tab page
--	Number of screen lines to use for the command-line.  Helps avoiding
--	|hit-enter| prompts.
-+	Number of screen lines to use for the command-line.  A larger value
-+	helps avoiding |hit-enter| prompts.
- 	The value of this option is stored with the tab page, so that each tab
- 	page can have a different value.
- 
--	When 'cmdheight' is zero, there is no command-line unless it is being
--	used.  Informative messages will be displayed in a popup notification
--	window at the bottom if the window, using the MessageWindow highlight
--	group {only if compiled with the +popupwin and +timers features},
--	otherwise they will not be displayed.  Other messages will cause the
--	|hit-enter| prompt.  Expect some other unexpected behavior too.
--
- 						*'cmdwinheight'* *'cwh'*
- 'cmdwinheight' 'cwh'	number	(default 7)
- 			global
-@@ -6474,11 +6467,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		45%	relative position in the file
- 	If 'rulerformat' is set, it will determine the contents of the ruler.
- 	Each window has its own ruler.  If a window has a status line, the
--	ruler is shown there.  If a window doesn't have a status line and
--	'cmdheight' is zero, the ruler is not shown.  Otherwise it is shown in
--	the last line of the screen.  If the statusline is given by
--	'statusline' (i.e. not empty), this option takes precedence over
--	'ruler' and 'rulerformat'.
-+	ruler is shown there.  Otherwise it is shown in the last line of the
-+	screen.  If the statusline is given by 'statusline' (i.e. not empty),
-+	this option takes precedence over 'ruler' and 'rulerformat'.
- 	If the number of characters displayed is different from the number of
- 	bytes in the text (e.g., for a TAB or a multibyte character), both
- 	the text column (byte number) and the screen column are shown,
-@@ -7128,7 +7119,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			|+cmdline_info| feature}
- 	Show (partial) command in the last line of the screen.  Set this
- 	option off if your terminal is slow.
--	The option has no effect when 'cmdheight' is zero.
- 	In Visual mode the size of the selected area is shown:
- 	- When selecting characters within a line, the number of characters.
- 	  If the number of bytes is different it is also displayed: "2-6"
-@@ -7178,7 +7168,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	If in Insert, Replace or Visual mode put a message on the last line.
- 	Use the 'M' flag in 'highlight' to set the type of highlighting for
- 	this message.
--	The option has no effect when 'cmdheight' is zero.
- 	When |XIM| may be used the message will include "XIM".  But this
- 	doesn't mean XIM is really active, especially when 'imactivatekey' is
- 	not set.
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 13f648f19..32ec10211 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
-@@ -256,9 +256,16 @@ and 'winminwidth' are relevant.
- 						*:vert* *:vertical*
- :vert[ical] {cmd}
- 		Execute {cmd}.  If it contains a command that splits a window,
--		it will be split vertically.
-+		it will be split vertically.  For `vertical wincmd =` windows
-+		will be equialized only vertically.
- 		Doesn't work for |:execute| and |:normal|.
- 
-+						*:hor* *:horizontal*
-+:hor[izontal] {cmd}
-+		Execute {cmd}.  Currently only makes a difference for
-+		`horizontal wincmd =`, which will equal windows only
-+		horizontally.
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 69557d614..6beae6ee2 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1724,11 +1724,11 @@ The valid escape sequences are
+ 					*<mods>* *<q-mods>* *:command-modifiers*
+ 	<mods>  The command modifiers, if specified. Otherwise, expands to
+ 		nothing. Supported modifiers are |:aboveleft|, |:belowright|,
+-		|:botright|, |:browse|, |:confirm|, |:hide|, |:keepalt|,
+-		|:keepjumps|, |:keepmarks|, |:keeppatterns|, |:leftabove|,
+-		|:lockmarks|, |:noautocmd|, |:noswapfile| |:rightbelow|,
+-		|:sandbox|, |:silent|, |:tab|, |:topleft|, |:unsilent|,
+-		|:verbose|, and |:vertical|.
++		|:botright|, |:browse|, |:confirm|, |:hide|, |:horizontal|,
++		|:keepalt|, |:keepjumps|, |:keepmarks|, |:keeppatterns|,
++		|:leftabove|, |:lockmarks|, |:noautocmd|, |:noswapfile|
++		|:rightbelow|, |:sandbox|, |:silent|, |:tab|, |:topleft|,
++		|:unsilent|, |:verbose|, and |:vertical|.
+ 		Note that |:filter| is not supported.
+ 		Examples: >
+ 		    command! -nargs=+ -complete=file MyEdit
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 7acfba78c..906e44404 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -643,6 +643,18 @@ Example for an xterm, this changes the color of the cursor: >
+     endif
+ NOTE: When Vim exits the shape for Normal mode will remain.  The shape from
+ before Vim started will not be restored.
 +
- :lefta[bove] {cmd}				*:lefta* *:leftabove*
- :abo[veleft] {cmd}				*:abo* *:aboveleft*
- 		Execute {cmd}.  If it contains a command that splits a window,
-@@ -553,6 +560,10 @@ CTRL-W =	Make all windows (almost) equally high and wide, but use
- 		'winheight' and 'winwidth' for the current window.
- 		Windows with 'winfixheight' set keep their height and windows
- 		with 'winfixwidth' set keep their width.
-+		To equalize only vertically (make window equally high) use
-+		`vertical wincmd =`
-+		To equalize only horizontally (make window equally wide) use
-+		`horizontal wincmd =`
++For Windows Terminal you can use something like this: >
++    " Note: This should be set after `set termguicolors` or `set t_Co=256`.
++    if &term =~ 'xterm' || &term == 'win32'
++	" Use DECSCUSR escape sequences
++	let &t_SI = "\e[5 q"    " blink bar
++	let &t_SR = "\e[3 q"    " blink underline
++	let &t_EI = "\e[1 q"    " blink block
++	let &t_ti ..= "\e[1 q"   " blink block
++	let &t_te ..= "\e[0 q"   " default (depends on terminal, normally blink block)
++    endif
++
+ {not available when compiled without the |+cursorshape| feature}
  
- :res[ize] -N					*:res* *:resize* *CTRL-W_-*
- CTRL-W -	Decrease current window height by N (default 1).
+ 							*termcap-title*
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index b77b789a2..aba0f0051 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1618,7 +1618,7 @@ type, it can not be used in Vim9 script.
+ 			 *E1211* *E1217* *E1218* *E1219* *E1220* *E1221*
+ 			 *E1222* *E1223* *E1224* *E1225* *E1226* *E1227*
+ 			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1253*
+-			 *E1256* *E1297*
++			 *E1256* *E1297* *E1298*
+ Types are checked for most builtin functions to make it easier to spot
+ mistakes.
+ 
