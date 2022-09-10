@@ -1,33 +1,25 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 1de0e40ad..12d62a676 100644
+index 12d62a676..01263402f 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -6239,8 +6239,26 @@ min({expr})	Return the minimum value of all items in {expr}. Example:  >
- mkdir({name} [, {path} [, {prot}]])
- 		Create directory {name}.
+@@ -471,7 +471,8 @@ remove({blob}, {idx} [, {end}])	Number/Blob
+ 					remove bytes {idx}-{end} from {blob}
+ remove({dict}, {key})		any	remove entry {key} from {dict}
+ rename({from}, {to})		Number	rename (move) file from {from} to {to}
+-repeat({expr}, {count})		String	repeat {expr} {count} times
++repeat({expr}, {count})		List/Blob/String
++					repeat {expr} {count} times
+ resolve({filename})		String	get filename a shortcut points to
+ reverse({list})			List	reverse {list} in-place
+ round({expr})			Float	round off {expr}
+@@ -7294,8 +7295,8 @@ repeat({expr}, {count})					*repeat()*
+ 		result.  Example: >
+ 			:let separator = repeat('-', 80)
+ <		When {count} is zero or negative the result is empty.
+-		When {expr} is a |List| the result is {expr} concatenated
+-		{count} times.  Example: >
++		When {expr} is a |List| or a |Blob| the result is {expr}
++		concatenated {count} times.  Example: >
+ 			:let longlist = repeat(['a', 'b'], 3)
+ <		Results in ['a', 'b', 'a', 'b', 'a', 'b'].
  
--		If {path} is "p" then intermediate directories are created as
--		necessary.  Otherwise it must be "".
-+		If {path} contains "p" then intermediate directories are
-+		created as necessary.  Otherwise it must be "".
-+
-+		If {path} contains "D" then {name} is deleted at the end of
-+		the current function, as with: >
-+			defer delete({name}, 'd')
-+<
-+		If {path} contains "R" then {name} is deleted recursively at
-+		the end of the current function, as with: >
-+			defer delete({name}, 'rf')
-+<		Note that when {name} has more than one part and "p" is used
-+		some directories may already exist.  Only the first one that
-+		is created and what it contains is scheduled to be deleted.
-+		E.g. when using: >
-+			call mkdir('subdir/tmp/autoload', 'pR')
-+<		and "subdir" already exists then "subdir/tmp" will be
-+		scheduled for deletion, like with: >
-+			defer delete('subdir/tmp', 'rf')
-+<		Note that if scheduling the defer fails the directory is not
-+		deleted.  This should only happen when out of memory.
- 
- 		If {prot} is given it is used to set the protection bits of
- 		the new directory.  The default is 0o755 (rwxr-xr-x: r/w for
