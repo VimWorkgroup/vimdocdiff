@@ -1,25 +1,268 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 12d62a676..01263402f 100644
+index 01263402f..3448ed585 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -471,7 +471,8 @@ remove({blob}, {idx} [, {end}])	Number/Blob
- 					remove bytes {idx}-{end} from {blob}
- remove({dict}, {key})		any	remove entry {key} from {dict}
- rename({from}, {to})		Number	rename (move) file from {from} to {to}
--repeat({expr}, {count})		String	repeat {expr} {count} times
-+repeat({expr}, {count})		List/Blob/String
-+					repeat {expr} {count} times
- resolve({filename})		String	get filename a shortcut points to
- reverse({list})			List	reverse {list} in-place
- round({expr})			Float	round off {expr}
-@@ -7294,8 +7295,8 @@ repeat({expr}, {count})					*repeat()*
- 		result.  Example: >
- 			:let separator = repeat('-', 80)
- <		When {count} is zero or negative the result is empty.
--		When {expr} is a |List| the result is {expr} concatenated
--		{count} times.  Example: >
-+		When {expr} is a |List| or a |Blob| the result is {expr}
-+		concatenated {count} times.  Example: >
- 			:let longlist = repeat(['a', 'b'], 3)
- <		Results in ['a', 'b', 'a', 'b', 'a', 'b'].
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Jun 27
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Sep 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 741f70ad6..e99e9baa0 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2022 Jun 17
++*eval.txt*	For Vim version 9.0.  Last change: 2022 Sep 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1718,6 +1718,9 @@ Recommendation: don't do this.
+ Notice how execute() is used to execute an Ex command.  That's ugly though.
+ In Vim9 script you can use a command block, see |inline-function|.
+ 
++Although you can use the loop variable of a `for` command, it must still exist
++when the closure is called, otherwise you get an error.  *E1302*
++
+ Lambda expressions have internal names like '<lambda>42'.  If you get an error
+ for a lambda expression, you can find what it is with the following command: >
+ 	:function <lambda>42
+@@ -3397,7 +3400,8 @@ text...
+ 			it will show for three seconds and avoid a
+ 			|hit-enter| prompt.  If you want to hide it before
+ 			that, press Esc in Normal mode (when it would
+-			otherwise beep).
++			otherwise beep).  If it disappears too soon you can
++			use `:messages` to see the text.
+ 			The message window is available when Vim was compiled
+ 			with the +timer and the +popupwin features.
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 1b9ae38db..b60abc271 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2022 Jun 27
++*options.txt*	For Vim version 9.0.  Last change: 2022 Sep 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index 4c49e44d0..e7a522feb 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
+@@ -889,13 +889,16 @@ like |CTRL-]|.
+ 
+ The function used for generating the taglist is specified by setting the
+ 'tagfunc' option.  The function will be called with three arguments:
+-   a:pattern	The tag identifier or pattern used during the tag search.
+-   a:flags	String containing flags to control the function behavior.
+-   a:info	Dict containing the following entries:
++   pattern	The tag identifier or pattern used during the tag search.
++   flags	String containing flags to control the function behavior.
++   info		Dict containing the following entries:
+ 		    buf_ffname	  Full filename which can be used for priority.
+ 		    user_data	  Custom data String, if stored in the tag
+ 				  stack previously by tagfunc.
+ 
++Note that in a legacy function "a:" needs to be prepended to the argument name
++when using it.
++
+ Currently up to three flags may be passed to the tag function:
+   'c'		The function was invoked by a normal command being processed
+ 	        (mnemonic: the tag function may use the context around the
+@@ -931,6 +934,8 @@ If the function returns |v:null| instead of a List, a standard tag lookup will
+ be performed instead.
+ 
+ It is not allowed to change the tagstack from inside 'tagfunc'.  *E986*
++It is not allowed to close a window or change window from inside 'tagfunc'.
++*E1299*
+ 
+ The following is a hypothetical example of a function used for 'tagfunc'.  It
+ uses the output of |taglist()| to generate the result: a list of tags in the
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 996cdd197..8d7c0ecf3 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -153,6 +153,7 @@ prop_add({lnum}, {col}, {props})
+ 					   the text wraps to the next screen
+ 					   line)
+ 				   below   in the next screen line
++				   above   just above the line
+ 				When omitted "after" is used.  Only one
+ 				"right" property can fit in each line, if
+ 				there are two ore more these will go in a
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 71b8b0f07..b22c2564f 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Jun 27
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Sep 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,17 +38,14 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
+-When using :echomessage do use msg_row and msg_col, but save and restore.
+-How to test any failure?
++Use :defer command:
++    - Use "D" flag of writefile() and mkdir() in tests.
++	(testdir/test_c*.vim done)
+ 
+-Improve :defer command:
+-    - Use "D" flag of writefile() in tests.
+-    - test "defer func()->funcouter()" fails (or use "funcouter")
+-    - test "defer func().arg" fails
+-    - test partial fails
+-    - check arguments at :defer command
+-    - Also when function does "qa!" or "cq"?
++When using :echomessage do use msg_row and msg_col, but save and restore.
++How to test any failure?  If nothing fails perhaps it's OK alrady.
+ 
++Drop Windows XP?  #11089
+ 
+ Further Vim9 improvements, possibly after launch:
+ - Use Vim9 for more runtime files.
+@@ -277,6 +274,7 @@ Adding "10" to 'spellsuggest' causes spell suggestions to become very slow.
+ Also, z= in German on a long word can take a very long time, but CTRL-C to
+ interrupt does not work. Where to add ui_breakcheck()?
+ New English spell files also have very slow suggestions.
++French spell files don't work correctly.  #4916
+ 
+ Make "g>" and "g<" in Visual mode move the text right or left.
+ Also for a block selection.  #8558
+@@ -2648,6 +2646,11 @@ Better 'rightleft' or BIDI support:
+ 
+ 
+ Spell checking:
++-   List of common misspellings in English:
++    https://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/For_machines
++    German:
++    https://de.wikipedia.org/wiki/Wikipedia:Liste_von_Tippfehlern/F%C3%BCr_Maschinen
++    There are other languages.
+ -   [s does not find missing capital at start of the line.  #10838
+     Probably because the dot at the end of the previous line isn't seen.
+ -   When 'cursorline' is set and the first word should have SpellCap
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index f6377009b..24e3fd7da 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.0.  Last change: 2022 Jun 17
++*userfunc.txt*	For Vim version 9.0.  Last change: 2022 Sep 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -23,7 +23,7 @@ commands can be executed with the |:normal| command.
+ 
+ The function name must start with an uppercase letter, to avoid confusion with
+ builtin functions.  To prevent from using the same name in different scripts
+-make them script-local.  If you do use a global function the avoid obvious,
++make them script-local.  If you do use a global function then avoid obvious,
+ short names.  A good habit is to start the function name with the name of the
+ script, e.g., "HTMLcolor()".
+ 
+@@ -427,7 +427,8 @@ GetArg()->TheFunc()` does not work, it may work in a later version.
+ 
+ Errors are reported but do not cause aborting execution of deferred functions.
+ 
+-No range is accepted.
++No range is accepted.  The function can be a partial with extra arguments, but
++not with a dictionary. *E1300*
+ 
+ ==============================================================================
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 4e6b1cbf1..9ec13872a 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -72,7 +72,7 @@ Command line completion in a popup menu ~
+ Before there was the 'wildmenu' option, which uses the space of one line above
+ the statusline to show matches.  Only a few matches fit there.
+ 
+-Now a popup menu can be used by setting "wildoptions' to "pum".  This allows
++Now a popup menu can be used by setting 'wildoptions' to "pum".  This allows
+ for showing many more matches.  This requires redrawing more of the display,
+ but since computers are fast enough that is not a problem.
+ 
+@@ -336,7 +336,7 @@ Hide cursor when sleeping using |:sleep!|.
+ Add "multispace" to 'listchars' to show two or more spaces no matter where
+ they appear.  Add "leadmultispace" to 'listchars' to show two or more leading
+ spaces.  Add "lead" to 'listchars' to set the character used to show leading
+-spaces.  Support specifying a character using the hexdecimal notation in
++spaces.  Support specifying a character using the hexadecimal notation in
+ 'listchars' (\x, \u and \U).
+ 
+ Make 'listchars', 'virtualedit' and 'thesaurusfunc' global-local options.
+@@ -28248,7 +28248,7 @@ Files:      runtime/doc/repeat.txt, src/scriptfile.c, src/vim9script.c,
+             src/proto/vim9script.pro, src/testdir/test_source.vim
+ 
+ Patch 8.2.4608
+-Problem:    getcompletion() does not work properly when 'wildoptions
++Problem:    getcompletion() does not work properly when 'wildoptions'
+             contains "fuzzy".
+ Solution:   Do not use addstar(). (Yegappan Lakshmanan, closes #9992,
+             closes #9986)
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index aba0f0051..ce9cbdf3b 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2022 Jun 25
++*vim9.txt*	For Vim version 9.0.  Last change: 2022 Sep 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1311,7 +1311,7 @@ Make sure to define the breakpoint before compiling the outer function.
+ The "inloop" variable will exist only once, all closures put in the list refer
+ to the same instance, which in the end will have the value 4.  This is
+ efficient, also when looping many times.  If you do want a separate context
+-for each closure call a function to define it: >
++for each closure, call a function to define it: >
+ 	def GetClosure(i: number): func
+ 	  var infunc = i
+ 	  return () => infunc
+@@ -1327,6 +1327,30 @@ for each closure call a function to define it: >
+ In some situations, especially when calling a Vim9 closure from legacy
+ context, the evaluation will fail.  *E1248*
+ 
++Note that at the script level the loop variable will be invalid after the
++loop, also when used in a closure that is called later, e.g. with a timer.
++This will generate error |E1302|: >
++	for n in range(4)
++	    timer_start(500 * n, (_) => {
++	          echowin n
++	       })
++	endfor
++
++You need to create a closure to store the current value of "n", so that it is
++evaluated at the time the closure is created: >
++	def GetClosure(nr: number): func
++	  return (_) => {
++	    echowindow nr
++	  }
++	enddef
++
++	for n in range(4)
++	    timer_start(500 * n, GetClosure(n))
++	endfor
++
++Using `echowindow` is useful in a timer, the messages go into a popup and will
++not interfere with what the user is doing when it triggers.
++
+ 
+ Converting a function from legacy to Vim9 ~
+ 					*convert_legacy_function_to_vim9*
+@@ -1618,7 +1642,7 @@ type, it can not be used in Vim9 script.
+ 			 *E1211* *E1217* *E1218* *E1219* *E1220* *E1221*
+ 			 *E1222* *E1223* *E1224* *E1225* *E1226* *E1227*
+ 			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1253*
+-			 *E1256* *E1297* *E1298*
++			 *E1256* *E1297* *E1298* *E1301*
+ Types are checked for most builtin functions to make it easier to spot
+ mistakes.
  
