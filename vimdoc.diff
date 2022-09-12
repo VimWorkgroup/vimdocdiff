@@ -1,35 +1,43 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index b60abc271..336d4497d 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -7499,6 +7499,18 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	When on, splitting a window will put the new window right of the
- 	current one. |:vsplit|
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 3448ed585..fb8b11601 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -325,6 +325,8 @@ js_encode({expr})		String	encode JS style JSON
+ json_decode({string})		any	decode JSON
+ json_encode({expr})		String	encode JSON
+ keys({dict})			List	keys in {dict}
++keytrans({string})		String	translate internal keycodes to a form
++					that can be used by |:map|
+ len({expr})			Number	the length of {expr}
+ libcall({lib}, {func}, {arg})	String	call {func} in library {lib} with {arg}
+ libcallnr({lib}, {func}, {arg})	Number	idem, but return a Number
+@@ -5205,6 +5207,16 @@ keys({dict})						*keys()*
+ 		Can also be used as a |method|: >
+ 			mydict->keys()
  
-+			*'splitscroll'* *'spsc'* *'nosplitscroll'* *'nospsc'*
-+'splitscroll' 'spsc'	boolean	(default on)
-+			global
-+	The value of this option determines the scroll behavior when opening,
-+	closing or resizing horizontal splits. When "on", splitting a window
-+	horizontally will keep the same relative cursor position in the old and
-+	new window, as well windows that are resized. When "off", scrolling
-+	will be avoided to stabilize the window content. Instead, the cursor
-+	position will be changed when necessary. In this case, the jumplist
-+	will be populated with the previous cursor position. Scrolling cannot
-+	be guaranteed to be avoided when 'wrap' is enabled.
++keytrans({string})					*keytrans()*
++		Turn the internal byte representation of keys into a form that
++		can be used for |:map|.  E.g. >
++			:let xx = "\<C-Home>"
++			:echo keytrans(xx)
++<			<C-Home>
 +
- 			   *'startofline'* *'sol'* *'nostartofline'* *'nosol'*
- 'startofline' 'sol'	boolean	(default on)
- 			global
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 67fc28e17..2cc2358e9 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -919,6 +919,7 @@ Short explanation of each option:		*option-list*
- 'spellsuggest'	  'sps'     method(s) used to suggest spelling corrections
- 'splitbelow'	  'sb'	    new window from split is below the current one
- 'splitright'	  'spr'     new window is put right of the current one
-+'splitscroll'	  'spsc'    determines scroll behavior when splitting windows
- 'startofline'	  'sol'     commands move cursor to first non-blank in line
- 'statusline'	  'stl'     custom format for the status line
- 'suffixes'	  'su'	    suffixes that are ignored with multiple match
++		Can also be used as a |method|: >
++			"\<C-Home>"->keytrans()
++
+ <							*len()* *E701*
+ len({expr})	The result is a Number, which is the length of the argument.
+ 		When {expr} is a String or a Number the length in bytes is
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index e2d32f94f..e2d5cfe68 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -737,6 +737,8 @@ String manipulation:					*string-functions*
+ 	fnameescape()		escape a file name for use with a Vim command
+ 	tr()			translate characters from one set to another
+ 	strtrans()		translate a string to make it printable
++	keytrans()		translate internal keycodes to a form that
++				can be used by |:map|
+ 	tolower()		turn a string to lowercase
+ 	toupper()		turn a string to uppercase
+ 	charclass()		class of a character
