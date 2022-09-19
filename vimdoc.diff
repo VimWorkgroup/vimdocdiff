@@ -1,289 +1,397 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 53179ca85..4a05fdc52 100644
+index 4a05fdc52..80300113f 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -753,8 +753,6 @@ abs({expr})							*abs()*
- 		Can also be used as a |method|: >
- 			Compute()->abs()
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Sep 10
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Sep 17
  
--<		{only available when compiled with the |+float| feature}
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 5ac2f63f7..a51dadb7d 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.0.  Last change: 2022 May 26
++*change.txt*    For Vim version 9.0.  Last change: 2022 Sep 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1188,11 +1188,20 @@ used.  If you do need it you can use |p| with another register.  E.g., yank
+ the text to copy, Visually select the text to replace and use "0p .  You can
+ repeat this as many times as you like, and the unnamed register will be
+ changed each time.
 -
+-When you use a blockwise Visual mode command and yank only a single line into
+-a register, a paste on a visual selected area will paste that single line on
+-each of the selected lines (thus replacing the blockwise selected region by a
+-block of the pasted line).
++							*blockwise-put*
++When a register contains text from one line (characterwise), using a
++blockwise Visual selection, putting that register will paste that text
++repeatedly in each of the selected lines, thus replacing the blockwise
++selected region by multiple copies of the register text.  For example:
++	- yank the word "TEXT" into a register with `yw`
++	- select a visual block, marked with "v" in this text:
++	    aaavvaaa
++	    bbbvvbbb
++	    cccvvccc
++	- press `p`, results in:
++	    aaaTEXTaaa
++	    bbbTEXTbbb
++	    cccTEXTccc
  
- acos({expr})							*acos()*
- 		Return the arc cosine of {expr} measured in radians, as a
-@@ -770,8 +768,6 @@ acos({expr})							*acos()*
- 		Can also be used as a |method|: >
- 			Compute()->acos()
- 
--<		{only available when compiled with the |+float| feature}
--
- 
- add({object}, {expr})					*add()*
- 		Append the item {expr} to |List| or |Blob| {object}.  Returns
-@@ -904,8 +900,6 @@ asin({expr})						*asin()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->asin()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- assert_ functions are documented here: |assert-functions-details|
-@@ -925,8 +919,6 @@ atan({expr})						*atan()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->atan()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- atan2({expr1}, {expr2})					*atan2()*
-@@ -943,8 +935,6 @@ atan2({expr1}, {expr2})					*atan2()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->atan2(1)
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- autocmd_add({acmds})					*autocmd_add()*
-@@ -1428,8 +1418,6 @@ ceil({expr})							*ceil()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->ceil()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- ch_ functions are documented here: |channel-functions-details|
-@@ -1801,8 +1789,6 @@ cos({expr})						*cos()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->cos()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- cosh({expr})						*cosh()*
-@@ -1818,8 +1804,6 @@ cosh({expr})						*cosh()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->cosh()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- count({comp}, {expr} [, {ic} [, {start}]])			*count()*
-@@ -2405,8 +2389,6 @@ exp({expr})							*exp()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->exp()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- expand({string} [, {nosuf} [, {list}]])				*expand()*
-@@ -2807,8 +2789,6 @@ float2nr({expr})					*float2nr()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->float2nr()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- floor({expr})							*floor()*
-@@ -2826,8 +2806,6 @@ floor({expr})							*floor()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->floor()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- fmod({expr1}, {expr2})					*fmod()*
-@@ -2848,8 +2826,6 @@ fmod({expr1}, {expr2})					*fmod()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->fmod(1.22)
--<
--		{only available when compiled with |+float| feature}
- 
- 
- fnameescape({string})					*fnameescape()*
-@@ -5050,8 +5026,6 @@ isinf({expr})						*isinf()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->isinf()
--<
--		{only available when compiled with the |+float| feature}
- 
- islocked({expr})					*islocked()* *E786*
- 		The result is a Number, which is |TRUE| when {expr} is the
-@@ -5080,8 +5054,6 @@ isnan({expr})						*isnan()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->isnan()
--<
--		{only available when compiled with the |+float| feature}
- 
- items({dict})						*items()*
- 		Return a |List| with all the key-value pairs of {dict}.  Each
-@@ -5510,8 +5482,6 @@ log({expr})						*log()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->log()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- log10({expr})						*log10()*
-@@ -5526,8 +5496,6 @@ log10({expr})						*log10()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->log10()
--<
--		{only available when compiled with the |+float| feature}
- 
- luaeval({expr} [, {expr}])					*luaeval()*
- 		Evaluate Lua expression {expr} and return its result converted
-@@ -5535,8 +5503,7 @@ luaeval({expr} [, {expr}])					*luaeval()*
- 		argument accessible as _A inside first {expr}.
- 		Strings are returned as they are.
- 		Boolean objects are converted to numbers.
--		Numbers are converted to |Float| values if vim was compiled
--		with |+float| and to numbers otherwise.
-+		Numbers are converted to |Float| values.
- 		Dictionaries and lists obtained by vim.eval() are returned
- 		as-is.
- 		Other objects are returned as zero without any errors.
-@@ -6483,8 +6450,6 @@ pow({x}, {y})						*pow()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->pow(3)
--<
--		{only available when compiled with the |+float| feature}
- 
- prevnonblank({lnum})					*prevnonblank()*
- 		Return the line number of the first line at or above {lnum}
-@@ -7366,8 +7331,6 @@ round({expr})							*round()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->round()
--<
--		{only available when compiled with the |+float| feature}
- 
- rubyeval({expr})					*rubyeval()*
- 		Evaluate Ruby expression {expr} and return its result
-@@ -8536,8 +8499,6 @@ sin({expr})						*sin()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->sin()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- sinh({expr})						*sinh()*
-@@ -8553,8 +8514,6 @@ sinh({expr})						*sinh()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->sinh()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- slice({expr}, {start} [, {end}])			*slice()*
-@@ -8821,8 +8780,6 @@ sqrt({expr})						*sqrt()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->sqrt()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- srand([{expr}])						*srand()*
-@@ -8896,8 +8853,6 @@ str2float({string} [, {quoted}])				*str2float()*
- 
- 		Can also be used as a |method|: >
- 			let f = text->substitute(',', '', 'g')->str2float()
--<
--		{only available when compiled with the |+float| feature}
- 
- str2list({string} [, {utf8}])					*str2list()*
- 		Return a list containing the number values which represent
-@@ -9643,8 +9598,6 @@ tan({expr})						*tan()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->tan()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- tanh({expr})						*tanh()*
-@@ -9660,8 +9613,6 @@ tanh({expr})						*tanh()*
- 
- 		Can also be used as a |method|: >
- 			Compute()->tanh()
--<
--		{only available when compiled with the |+float| feature}
- 
- 
- tempname()					*tempname()* *temp-file-name*
-@@ -9897,8 +9848,6 @@ trunc({expr})							*trunc()*
- 		Can also be used as a |method|: >
- 			Compute()->trunc()
- <
--		{only available when compiled with the |+float| feature}
--
- 							*type()*
- type({expr})	The result is a Number representing the type of {expr}.
- 		Instead of using the number directly, it is better to use the
+ 							*blockwise-register*
+ If you use a blockwise Visual mode command to get the text into the register,
 diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index e99e9baa0..145d3bd76 100644
+index 145d3bd76..fe7516963 100644
 --- a/runtime/doc/eval.txt
 +++ b/runtime/doc/eval.txt
-@@ -54,7 +54,6 @@ Number		A 32 or 64 bit signed number.  |expr-number|
- 		Examples:  -123  0x10  0177  0o177 0b1011
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2022 Sep 09
++*eval.txt*	For Vim version 9.0.  Last change: 2022 Sep 17
  
- Float		A floating point number. |floating-point-format| *Float*
--		{only when compiled with the |+float| feature} *E1076*
- 		Examples: 123.456  1.15e-6  -1.1e3
  
- String		A NUL terminated string of 8-bit unsigned characters (bytes).
-@@ -1441,7 +1440,6 @@ digits are ignored.
- {exp} is the exponent, power of 10.
- Only a decimal point is accepted, not a comma.  No matter what the current
- locale is.
--{only when compiled with the |+float| feature}
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
+index c9e04f3be..0cf012b10 100644
+--- a/runtime/doc/gui_w32.txt
++++ b/runtime/doc/gui_w32.txt
+@@ -106,8 +106,7 @@ when you have got a new version):
+ You can also install Vim in the "Send To" menu:
+ 1. Start a Windows Explorer
+ 2. Navigate to your sendto directory:
+-   Windows XP: C:\Documents and Settings\%user%\SendTo
+-   Windows Vista: C:\Users\%user%\AppData\Roaming\Microsoft\Windows\SendTo .
++   C:\Users\%user%\AppData\Roaming\Microsoft\Windows\SendTo .
+ 3. Right-click in the file pane and select New->Shortcut
+ 4. Follow the shortcut wizard, using the full path to VIM/GVIM.
  
- Examples:
- 	123.456
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 6904091b4..7813177c2 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
+@@ -1,4 +1,4 @@
+-*intro.txt*     For Vim version 9.0.  Last change: 2022 Apr 03
++*intro.txt*     For Vim version 9.0.  Last change: 2022 Sep 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -533,6 +533,10 @@ examples and use them directly.  Or type them literally, including the '<' and
+ '>' characters.  This does NOT work for other commands, like ":set" and
+ ":autocmd"!
+ 
++The notation can be used in a double quoted strings, using "\<" at the start,
++e.g. "\<C-Space>".  This results in a special key code.  To convert this back
++to readable text use `keytrans()`.
++
+ ==============================================================================
+ 5. Modes, introduction				*vim-modes-intro* *vim-modes*
+ 
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 6beae6ee2..f1bfd75de 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2022 Jun 18
++*map.txt*       For Vim version 9.0.  Last change: 2022 Sep 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1583,7 +1583,7 @@ completion candidates as the return value.
+ 
+ For the "custom" argument, the function should return the completion
+ candidates one per line in a newline separated string.
+-
++							*E1303*
+ For the "customlist" argument, the function should return the completion
+ candidates as a Vim List.  Non-string items in the list are ignored.
+ 
 diff --git a/runtime/doc/mlang.txt b/runtime/doc/mlang.txt
-index edab4d43c..724ec46a8 100644
+index 724ec46a8..8997e1c27 100644
 --- a/runtime/doc/mlang.txt
 +++ b/runtime/doc/mlang.txt
-@@ -82,9 +82,9 @@ use of "-" and "_".
- 			characters. This sets $LC_COLLATE.
- 			Without an argument all are set, and additionally
- 			$LANG is set.
--			When compiled with the |+float| feature the LC_NUMERIC
--			value will always be set to "C", so that floating
--			point numbers use '.' as the decimal point.
-+			If available the LC_NUMERIC value will always be set
-+			to "C", so that floating point numbers use '.' as the
-+			decimal point.
- 			This will make a difference for items that depend on
- 			the language (some messages, time and date format).
- 			Not fully supported on all systems
+@@ -1,4 +1,4 @@
+-*mlang.txt*     For Vim version 9.0.  Last change: 2020 Aug 15
++*mlang.txt*     For Vim version 9.0.  Last change: 2022 Sep 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index 0eb065f72..e72ecc880 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
+@@ -1,4 +1,4 @@
+-*os_win32.txt*  For Vim version 9.0.  Last change: 2022 May 24
++*os_win32.txt*  For Vim version 9.0.  Last change: 2022 Sep 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by George Reilly
+@@ -7,8 +7,11 @@
+ 						*win32* *Win32* *MS-Windows*
+ This file documents the idiosyncrasies of the Win32 version of Vim.
+ 
+-The Win32 version of Vim works on Windows XP, Vista, 7, 8, 10 and 11.  There are
+-both console and GUI versions.
++The Win32 version of Vim works on Windows 7, 8, 10 and 11.  There are both
++console and GUI versions.
++
++If you have Windows XP or Vista then Vim 9.0 up to patch level 495 can be
++used.
+ 
+ The 32 bit version also runs on 64 bit MS-Windows systems.
+ 
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 2cc2358e9..b3090915e 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.0.  Last change: 2022 May 05
++*quickref.txt*  For Vim version 9.0.  Last change: 2022 Sep 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -919,7 +919,7 @@ Short explanation of each option:		*option-list*
+ 'spellsuggest'	  'sps'     method(s) used to suggest spelling corrections
+ 'splitbelow'	  'sb'	    new window from split is below the current one
+ 'splitright'	  'spr'     new window is put right of the current one
+-'splitscroll'	  'spsc'    determines scroll behavior when splitting windows
++'splitscroll'	  'spsc'    determines scroll behavior for split windows
+ 'startofline'	  'sol'     commands move cursor to first non-blank in line
+ 'statusline'	  'stl'     custom format for the status line
+ 'suffixes'	  'su'	    suffixes that are ignored with multiple match
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index f15d3b1cb..024f26516 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
+@@ -1600,7 +1600,7 @@ CHECKCOMPOUNDTRIPLE  (Hunspell)			*spell-CHECKCOMPOUNDTRIPLE*
+ 		Forbid three identical characters when compounding.  Not
+ 		supported.
+ 
+-CHECKSHARPS  (Hunspell))			*spell-CHECKSHARPS*
++CHECKSHARPS  (Hunspell)				*spell-CHECKSHARPS*
+ 		SS letter pair in uppercased (German) words may be upper case
+ 		sharp s (ß). Not supported.
+ 
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 8d7c0ecf3..5fb53aff1 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2021 Nov 23
++*textprop.txt*  For Vim version 9.0.  Last change: 2022 Sep 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -142,9 +142,11 @@ prop_add({lnum}, {col}, {props})
+ 				then "id" must not be present and will be set
+ 				automatically to a negative number; otherwise
+ 				zero is used
++							*E1305*
+ 		   text		text to be displayed before {col}, or after the
+ 				line if {col} is zero; prepend and/or append
+-				spaces for padding with highlighting
++				spaces for padding with highlighting; cannot
++				be used with "length", "end_lnum" and "end_col"
+ 		   					*E1294*
+ 		   text_align	when "text" is present and {col} is zero;
+ 				specifies where to display the text:
+@@ -156,7 +158,7 @@ prop_add({lnum}, {col}, {props})
+ 				   above   just above the line
+ 				When omitted "after" is used.  Only one
+ 				"right" property can fit in each line, if
+-				there are two ore more these will go in a
++				there are two or more these will go in a
+ 				separate line (still right aligned).
+ 		   text_padding_left				*E1296*
+ 				used when "text" is present and {col} is zero;
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index b22c2564f..864f0b2cf 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Sep 10
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Sep 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,6 +38,39 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++Closure created in for loop can use loop variable?  #11094
++    Nested loops do not work correctly yet.
++    Would need to save vars for each block separately.
++
++Virtual text:
++- Virtual text below: padding is highlighted when 'number' is set  #11138
++- Virtual text above: do not highlight until end of line?  #11138
++- 'number' should be below "above" virtual text?  Might be difficult to
++  implement.
++- Add highlight for the gap before/after virtual text above/below?
++- option to hide virtual text?
++
++Fail with valgrind: test_edit
++Found errors in Test_edit_insertmode_ex_edit():
++        Run 1, 01:19:51 - 01:20:01:
++        command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[469]..function RunTheTest[44]..Test_edit_insertmode_ex_edit[13]..WaitForAssert[2]..<SNR>6_WaitForCommon[11]..<lambda>4 line 1: Pattern '^-- INSERT --\\s*$' does not match ''
++
++From test_global
++        Found errors in Test_interrupt_global():
++        Run 1, 02:16:22 - 02:16:27:
++        command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[469]..function RunTheTest[44]..Test_interrupt_global[13]..WaitForAssert[2]..<SNR>7_WaitForCommon[11]..<lambda>20 line 1: Pattern 'Interrupted' does not match 'Type  :qa!  and press...l changes and exit Vim           1,1           All'
++        command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[469]..function RunTheTest[44]..Test_interrupt_global[20]..WaitForAssert[2]..<SNR>7_WaitForCommon[11]..<lambda>21 line 1: Pattern 'Interrupted' does not match 'Entering Ex mode.  Type "visual" to go to Normal mode.'
++
++test_terminal3:
++Conditional jump or move depends on uninitialised value(s)
++==2819005==    at 0x2E9134: jump_to_mouse (mouse.c:2015)
++==2819005==    by 0x2E69E6: do_mouse (mouse.c:702)
++==2819005==    by 0x2E95C2: nv_mouse (mouse.c:2166)
++
++option_set():  "get a bit too much"
++    - refactor to separate function
++    - check for empty result
++
+ Use :defer command:
+     - Use "D" flag of writefile() and mkdir() in tests.
+ 	(testdir/test_c*.vim done)
+@@ -45,7 +78,7 @@ Use :defer command:
+ When using :echomessage do use msg_row and msg_col, but save and restore.
+ How to test any failure?  If nothing fails perhaps it's OK alrady.
+ 
+-Drop Windows XP?  #11089
++New Vim indent script: #11079  Not done yet.
+ 
+ Further Vim9 improvements, possibly after launch:
+ - Use Vim9 for more runtime files.
+@@ -185,8 +218,6 @@ Terminal emulator window:
+ - When 'encoding' is not utf-8, or the job is using another encoding, setup
+   conversions.
+ 
+-Add 'splitscroll'  #10682  Anything remaining
+-
+ Autoconf: must use autoconf 2.69, later version generates lots of warnings
+ - try using autoconf 2.71 and fix all "obsolete" warnings
+ 
+@@ -197,6 +228,13 @@ reduced?
+ 
+ Add BufDeletePost.  #11041
+ 
++Add a string to the 'display' option ("smoothscroll" ?) to make CTRL-E and
++CTRL-Y scroll one screen line, also if this means the first line doesn't start
++with the first character (like what happens with a last line that doesn't
++fit).  Display "<<<" at the start of the first visible line (like "@@@" is
++displayed in the last line). (Arseny Nasokin,  #5154)
++Neovim PR: https://github.com/neovim/neovim/pull/11014
++
+ NFA regexp does not handle composing characters well: #10286
+     [ɔ̃] matches both ɔ and ɔ̃
+     \(ɔ\|ɔ̃\) matches ɔ and not ɔ̃
+@@ -556,12 +594,6 @@ Bug: script written with "-W scriptout" contains Key codes, while the script
+ read with "-s scriptin" expects escape codes.  Probably "scriptout" needs to
+ be adjusted. (Daniel Steinberg, 2019 Feb 24, #4041)
+ 
+-Add a string to the 'display' option ("smoothscroll" ?) to make CTRL-E and
+-CTRL-Y scroll one screen line, also if this means the first line doesn't start
+-with the first character (like what happens with a last line that doesn't
+-fit).  Display "<<<" at the start of the first visible line (like "@@@" is
+-displayed in the last line). (Arseny Nasokin,  #5154)
+-
+ Window size changes after closing a tab. (#4741)
+ 
+ Problem with colors in terminal window. (Jason Franklin, 2019 May 12)
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 24e3fd7da..806d8f76b 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -15,7 +15,7 @@ This is introduced in section |41.7| of the user manual.
+ 
+ ==============================================================================
+ 
+-1. Defining a fuction ~
++1. Defining a function ~
+ 						*define-function*
+ New functions can be defined.  These can be called just like builtin
+ functions.  The function executes a sequence of Ex commands.  Normal mode
+@@ -308,7 +308,7 @@ This function can then be called with: >
+ <
+ ==============================================================================
+ 
+-2. Calling a fuction ~
++2. Calling a function ~
+ 						*:cal* *:call* *E107*
+ :[range]cal[l] {name}([arguments])
+ 		Call a function.  The name of the function and its arguments
 diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index ac8b4afcd..6e4afec5b 100644
+index 6e4afec5b..fa4ad07d0 100644
 --- a/runtime/doc/various.txt
 +++ b/runtime/doc/various.txt
-@@ -381,7 +381,7 @@ N  *+find_in_path*	include file searches: |[I|, |:isearch|,
- N  *+folding*		|folding|
-    *+footer*		|gui-footer|
-    *+fork*		Unix only: |fork| shell commands
--   *+float*		Floating point support
-+T  *+float*		Floating point support  Always enabled since 9.0.0491
- N  *+gettext*		message translations |multi-lang|
- -  *+GUI_Athena*	Unix only: Athena |GUI|
-    *+GUI_neXtaw*	Unix only: neXtaw |GUI|
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2022 Jun 25
++*various.txt*   For Vim version 9.0.  Last change: 2022 Sep 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index ce9cbdf3b..2a953eedf 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2022 Sep 10
++*vim9.txt*	For Vim version 9.0.  Last change: 2022 Sep 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -107,7 +107,7 @@ script and `:def` functions; details are below:
+ 	`:t`
+   	`:xit`
+ - Some commands, especially those used for flow control, cannot be shortened.
+-  E.g., `:throw` cannot be written as `:th`.
++  E.g., `:throw` cannot be written as `:th`.  *vim9-no-shorten*
+ - You cannot use curly-braces names.
+ - A range before a command must be prefixed with a colon: >
+ 	:%s/this/that
+@@ -1336,16 +1336,15 @@ This will generate error |E1302|: >
+ 	       })
+ 	endfor
+ 
+-You need to create a closure to store the current value of "n", so that it is
+-evaluated at the time the closure is created: >
+-	def GetClosure(nr: number): func
+-	  return (_) => {
+-	    echowindow nr
+-	  }
+-	enddef
+-
++You need to use a block and define a variable there, and use that one in the
++closure: >
+ 	for n in range(4)
+-	    timer_start(500 * n, GetClosure(n))
++	{
++	   var nr = n
++	   timer_start(500 * n, (_) => {
++	          echowin nr
++	      })
++	}
+ 	endfor
+ 
+ Using `echowindow` is useful in a timer, the messages go into a popup and will
+@@ -1684,7 +1683,7 @@ deleted.
+ 
+ In Vim9 script the global "g:" namespace can still be used as before.  And the
+ "w:", "b:" and "t:" namespaces.  These have in common that variables are not
+-declared and they can be deleted.
++declared, have no specific type and they can be deleted.  *E1304*
+ 
+ A side effect of `:vim9script` is that the 'cpoptions' option is set to the
+ Vim default value, like with: >
+@@ -1825,7 +1824,7 @@ And using the "as name" form: >
+ 	import "otherfile.vim9script" as that
+ 	call s:that.OtherFunc()
+ 
+-However, the namespace cannot be resolved on it's own: >
++However, the namespace cannot be resolved on its own: >
+ 	import "that.vim"
+ 	echo s:that
+ 	" ERROR: E1060: Expected dot after name: s:that
