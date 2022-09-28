@@ -1,39 +1,560 @@
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index e29369cb6..a9d3b3642 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 9.0.  Last change: 2022 Jun 16
++*cmdline.txt*   For Vim version 9.0.  Last change: 2022 Sep 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -806,7 +806,7 @@ Count and Range						*N:*
+ 
+ When giving a count before entering ":", this is translated into:
+ 		:.,.+(count - 1)
+-In words: The 'count' lines at and after the cursor.  Example: To delete
++In words: The "count" lines at and after the cursor.  Example: To delete
+ three lines: >
+ 		3:d<CR>		is translated into: .,.+2d<CR>
+ <
 diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
-index 4739a102a..f76a9456e 100644
+index f76a9456e..932569475 100644
 --- a/runtime/doc/develop.txt
 +++ b/runtime/doc/develop.txt
-@@ -188,8 +188,8 @@ C COMPILER				*style-compiler* *ANSI-C* *C89* *C99*
+@@ -1,4 +1,4 @@
+-*develop.txt*   For Vim version 9.0.  Last change: 2020 Aug 15
++*develop.txt*   For Vim version 9.0.  Last change: 2022 Sep 20
  
- The minimal C compiler version supported is C89, also known as ANSI C.
- Later standards, such as C99, are not widely supported, or at least not 100%
--supported.  Therefore we use only some of the C99 features and disallow some
--(at least for now).
-+supported.  Therefore we use only some of the C99 features and explicitly
-+disallow some (this will gradually be adjusted over time).
  
- Please don't make changes everywhere to use the C99 features, it causes merge
- problems for existing patches.  Only use them for new and changed code.
-@@ -215,12 +215,21 @@ Types ~
- "long long" is allowed and can be expected to be 64 bits.  Use %lld in printf
- formats.  Also "long long unsigned" with %llu.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/ft_context.txt b/runtime/doc/ft_context.txt
+index ba6bd0d81..e608c5b84 100644
+--- a/runtime/doc/ft_context.txt
++++ b/runtime/doc/ft_context.txt
+@@ -1,4 +1,4 @@
+-*ft_context.txt*	For Vim version 9.0.  Last change: 2022 Aug 12
++*ft_context.txt*	For Vim version 9.0.  Last change: 2022 Sep 27
  
-+Declarations ~
-+
-+Now that the minimal supported compiler is MSVC 2015 declarations do not need
-+to be at the start of a block.  However, it is often a good idea to do this
-+anyway.
-+
-+Declaration of the for loop variable inside the loop is recommended:
-+	for (int i = 0; i < len; ++i)
-+Since this is clearly an advantage we'll use this more often.
-+
-+
- Not to be used ~
+ This is the documentation for the ConTeXt filetype plugin.
  
- These C99 features are not to be used, because not enough compilers support
- them:
--- Declaration after Statements (MSVC 2012 does not support it).  All
--  declarations need to be at the start of the block.
- - Variable length arrays (even in C11 this is an optional feature).
- - _Bool and _Complex types.
- - "inline" (it's hardly ever needed, let the optimizer do its work)
+@@ -23,13 +23,12 @@ ConTeXt, similarly to LaTeX, is a macro-based typesetting system built on TeX:
+ <
+ The ConTeXt plugin provides syntax highlighting, completion and support for
+ typesetting ConTeXt documents. The recommended way to typeset a document is to
+-use |:ConTeXt|. This will invoke the `mtxrun` script that is found in $PATH.
++use |:ConTeXt|. This will invoke the `mtxrun` script that is found in `$PATH`.
+ 
+-For more fine grained control over the command and its environment, you may
+-invoke `context.Typeset()` directly (or `context#Typeset()` from legacy Vim
+-script). For instance, if you have installed a version of ConTeXt in
+-`~/context`, you may define a function to use it (you may put the following
+-code in `~/.vim/after/ftplugin/context.vim`) similar to the following:
++For more fine grained control over the command and its environment,
++`context.Typeset()` can be used directly (or `context#Typeset()` from legacy
++Vim script). For instance, if a version of ConTeXt is installed in
++`~/context`, you may define a function to use it similar to the following:
+ >
+ 	import autoload 'context.vim'
+ 
+@@ -38,14 +37,15 @@ code in `~/.vim/after/ftplugin/context.vim`) similar to the following:
+ 	      printf("%s/context/tex/texmf-<os>-<arch>/bin:%s", $HOME, $PATH)}
+ 	    context.Typeset("%", env)
+ 	enddef
+-<
+-and perhaps use it with a mapping:
++
++This code may go in `~/.vim/after/ftplugin/context.vim`. A mapping can then be
++defined to invoke the custom command:
+ >
+ 	nnoremap <silent><buffer><leader>t <scriptcmd>MyConTeXt()<cr>
+ <
+ `context.Typeset()` accepts a third optional argument to specify a custom
+-typesetting command. Such argument must be a function that takes a path and
+-returns the command as a List. For example:
++typesetting command. That must be a function that takes a path and returns the
++command as a List. For example:
+ >
+ 	def ConTeXtCustomCommand(path: string): list<string>
+ 	  return ['mtxrun', '--script', 'context', '--nonstopmode, path]
+@@ -103,14 +103,20 @@ Stop all the ConTeXt jobs currently running in the background.
+ Settings ~
+ 					*'b:context_ignore_makefile'*
+ 					*'g:context_ignore_makefile'*
+-`make` can be used to (synchronously) typeset a document. If a Makefile exists
++`:make` can be used to (synchronously) typeset a document. If a Makefile exists
+ and this option is not set, standard `make` is used. If this option is set,
+ `mtxrun` is invoked instead, even if a Makefile exists.
+ >
+ 	g:context_ignore_makefile = 0
+ <
+-NOTE: before using `make`, set the working directory of the buffer to the
++NOTE: before using `:make`, set the working directory of the buffer to the
+ directory of the file to be typeset.
++
++					*'g:context_extra_options'*
++A list of additional options to pass to `mtxrun`.
++>
++	g:context_extra_options = []
++<
+ 					*'b:context_include'*
+ 					*'g:context_include'*
+ Dictionary of filetype/GROUP pairs for which syntax highlighting should be
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 2ebbadbf8..38c173bce 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -1227,13 +1227,31 @@ comments will be indented according to the correctly indented code.
+ 
+ 
+ VIM							*ft-vim-indent*
+-							*g:vim_indent_cont*
+-For indenting Vim scripts there is one variable that specifies the amount of
+-indent for a continuation line, a line that starts with a backslash: >
+-
+-	:let g:vim_indent_cont = shiftwidth() * 3
++							*g:vim_indent*
++Vim scripts indentation can be configured with the `g:vim_indent` dictionary
++variable.  It supports 3 keys, `line_continuation`, `more_in_bracket_block`,
++and `searchpair_timeout`.
++`line_continuation` expects a number which will be added to the indent level of
++a continuation line starting with a backslash, and defaults to
++`shiftwidth() * 3`.  It also accepts a string, which is evaluated at runtime.
++`more_in_bracket_block` expects a boolean value; when on, an extra
++`shiftwidth()` is added inside blocks surrounded with brackets.  It defaults to
++`v:false`.
++`searchpair_timeout` expects a number which will be passed to `searchpair()` as
++a timeout.  Increasing the value might give more accurate results, but also
++causes the indentation to take more time.  It defaults to 100 (milliseconds).
++
++Example of configuration:
++
++	let g:vim_indent = #{
++	    \ line_continuation: shiftwidth() * 3,
++	    \ more_in_bracket_block: v:false,
++	    \ searchpair_timeout: 100,
++	    \ }
+ 
+-Three times shiftwidth is the default value.
++							*g:vim_indent_cont*
++This variable is equivalent to `g:vim_indent.line_continuation`.
++It's supported for backward compatibility.
+ 
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index f1bfd75de..bd1381a37 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2022 Sep 12
++*map.txt*       For Vim version 9.0.  Last change: 2022 Sep 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1761,7 +1761,8 @@ The valid escape sequences are
+ If the first two characters of an escape sequence are "q-" (for example,
+ <q-args>) then the value is quoted in such a way as to make it a valid value
+ for use in an expression.  This uses the argument as one single value.
+-When there is no argument <q-args> is an empty string.
++When there is no argument <q-args> is an empty string.  See the
++|q-args-example| below.
+ 							*<f-args>*
+ To allow commands to pass their arguments on to a user-defined function, there
+ is a special form <f-args> ("function args").  This splits the command
+@@ -1771,7 +1772,7 @@ See the Mycmd example below.  If no arguments are given <f-args> is removed.
+    To embed whitespace into an argument of <f-args>, prepend a backslash.
+ <f-args> replaces every pair of backslashes (\\) with one backslash.  A
+ backslash followed by a character other than white space or a backslash
+-remains unmodified.  Overview:
++remains unmodified.  Also see |f-args-example| below.  Overview:
+ 
+ 	command		   <f-args> ~
+ 	XX ab		   'ab'
+@@ -1785,7 +1786,8 @@ remains unmodified.  Overview:
+ 	XX a\\\\b	   'a\\b'
+ 	XX a\\\\ b	   'a\\', 'b'
+ 
+-Examples >
++
++Examples for user commands: >
+ 
+    " Delete everything after here to the end
+    :com Ddel +,$d
+@@ -1801,7 +1803,8 @@ Examples >
+    " Count the number of lines in the range
+    :com! -range -nargs=0 Lines  echo <line2> - <line1> + 1 "lines"
+ 
+-   " Call a user function (example of <f-args>)
++<						*f-args-example*
++Call a user function (example of <f-args>) >
+    :com -nargs=* Mycmd call Myfunc(<f-args>)
+ 
+ When executed as: >
+@@ -1809,7 +1812,8 @@ When executed as: >
+ This will invoke: >
+ 	:call Myfunc("arg1","arg2")
+ 
+-   :" A more substantial example
++<						*q-args-example* 
++A more substantial example: >
+    :function Allargs(command)
+    :   let i = 0
+    :   while i < argc()
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 4253684d1..263c4f3ac 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1,4 +1,4 @@
+-*motion.txt*    For Vim version 9.0.  Last change: 2022 Apr 18
++*motion.txt*    For Vim version 9.0.  Last change: 2022 Sep 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1145,7 +1145,7 @@ g;			Go to [count] older position in change list.
+ 			(not a motion command)
+ 
+ 							*g,* *E663*
+-g,			Go to [count] newer cursor position in change list.
++g,			Go to [count] newer position in change list.
+ 			Just like |g;| but in the opposite direction.
+ 			(not a motion command)
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 336d4497d..4ea75ba2d 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2022 Sep 09
++*options.txt*	For Vim version 9.0.  Last change: 2022 Sep 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1702,7 +1702,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	after that.  Therefore do not append an item with += but use ^= to
+ 	prepend, e.g.: >
+ 		set clipboard^=unnamed
+-<	These names are recognized:
++<	When using the GUI see |'go-A'|.
++	These names are recognized:
+ 
+ 						*clipboard-unnamed*
+ 	unnamed		When included, Vim will use the clipboard register '*'
+@@ -3978,6 +3979,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			 "A"		 -			yes
+ 			 "aA"		yes			yes
+ 
++		When using a terminal see the 'clipboard' option.
++
+ 								*'go-c'*
+ 	  'c'	Use console dialogs instead of popup dialogs for simple
+ 		choices.
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index 7700d26e1..a9452c5c3 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
+@@ -1,4 +1,4 @@
+-*pattern.txt*   For Vim version 9.0.  Last change: 2022 Mar 04
++*pattern.txt*   For Vim version 9.0.  Last change: 2022 Sep 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -134,6 +134,11 @@ gD			Goto global Declaration.  When the cursor is on a
+ CTRL-C			Interrupt current (search) command.  Use CTRL-Break on
+ 			MS-Windows |dos-CTRL-Break|.
+ 			In Normal mode, any pending command is aborted.
++			When Vim was started with output redirected and there
++			are no changed buffers CTRL-C exits Vim.  That is to
++			help users who use "vim file | grep word" and don't
++			know how to get out (blindly typing :qa<CR> would
++			work).
+ 
+ 							*:noh* *:nohlsearch*
+ :noh[lsearch]		Stop the highlighting for the 'hlsearch' option.  It
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 67947854d..032e9a796 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1,4 +1,4 @@
+-*quickfix.txt*  For Vim version 9.0.  Last change: 2022 Feb 22
++*quickfix.txt*  For Vim version 9.0.  Last change: 2022 Sep 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -478,7 +478,7 @@ You can parse a list of lines using 'errorformat' without creating or
+ modifying a quickfix list using the |getqflist()| function. Examples: >
+ 	echo getqflist({'lines' : ["F1:10:Line10", "F2:20:Line20"]})
+ 	echo getqflist({'lines' : systemlist('grep -Hn quickfix *')})
+-This returns a dictionary where the 'items' key contains the list of quickfix
++This returns a dictionary where the "items" key contains the list of quickfix
+ entries parsed from lines. The following shows how to use a custom
+ 'errorformat' to parse the lines without modifying the 'errorformat' option: >
+ 	echo getqflist({'efm' : '%f#%l#%m', 'lines' : ['F1#10#Line']})
+@@ -597,7 +597,7 @@ can go back to the unfiltered list using the |:colder|/|:lolder| command.
+ 			quickfix command or function, the |b:changedtick|
+ 			variable is incremented.  You can get the number of
+ 			this buffer using the getqflist() and getloclist()
+-			functions by passing the 'qfbufnr' item. For a
++			functions by passing the "qfbufnr" item. For a
+ 			location list, this buffer is wiped out when the
+ 			location list is removed.
+ 
+@@ -2011,7 +2011,7 @@ The function should return a single line of text to display in the quickfix
+ window for each entry from start_idx to end_idx. The function can obtain
+ information about the entries using the |getqflist()| function and specifying
+ the quickfix list identifier "id". For a location list, getloclist() function
+-can be used with the 'winid' argument. If an empty list is returned, then the
++can be used with the "winid" argument. If an empty list is returned, then the
+ default format is used to display all the entries. If an item in the returned
+ list is an empty string, then the default format is used to display the
+ corresponding entry.
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index f8602ba8c..059c6393d 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*    For Vim version 9.0.  Last change: 2022 Jun 18
++*repeat.txt*    For Vim version 9.0.  Last change: 2022 Sep 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -92,7 +92,8 @@ pattern and do not match another pattern: >
+ This first finds all lines containing "found", but only executes {cmd} when
+ there is no match for "notfound".
+ 
+-To execute a non-Ex command, you can use the `:normal` command: >
++Any Ex command can be used, see |ex-cmd-index|.  To execute a Normal mode
++command, you can use the `:normal` command: >
+ 	:g/pat/normal {commands}
+ Make sure that {commands} ends with a whole command, otherwise Vim will wait
+ for you to type the rest of the command for each match.  The screen will not
+@@ -200,7 +201,8 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 							*:source-range*
+ :[range]so[urce] [++clear]
+ 			Read Ex commands from the [range] of lines in the
+-			current buffer.
++			current buffer.  When [range] is omitted read all
++			lines.
+ 
+ 			When sourcing commands from the current buffer, the
+ 			same script-ID |<SID>| is used even if the buffer is
+@@ -904,6 +906,11 @@ executed like a normal Ex command, "step" will stop once in the compiled
+ context, where local variables can be inspected, and once just before
+ executing the command.
+ 
++In a :def function variables that haven't been declared yet cannot be
++inspected.  Variables that have been declared can be inspected, also when the
++block they were declared in has finished.  In commands this would not be
++possible, thus is slightly misleading (but can be useful).
++
+ The backtrace shows the hierarchy of function calls, e.g.:
+ 	>bt ~
+ 	  3 function One[3] ~
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index adc1d5695..1587df5e7 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2022 Jun 10
++*syntax.txt*	For Vim version 9.0.  Last change: 2022 Sep 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3153,7 +3153,7 @@ The default is to use the twice sh_minlines.  Set it to a smaller number to
+ speed up displaying.  The disadvantage is that highlight errors may appear.
+ 
+ syntax/sh.vim tries to flag certain problems as errors; usually things like
+-extra ']'s, 'done's, 'fi's, etc.  If you find the error handling problematic
++unmatched "]", "done", "fi", etc.  If you find the error handling problematic
+ for your purposes, you may suppress such error highlighting by putting
+ the following line in your .vimrc: >
+ 
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 5fb53aff1..5a849fed6 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2022 Sep 17
++*textprop.txt*  For Vim version 9.0.  Last change: 2022 Sep 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -143,10 +143,11 @@ prop_add({lnum}, {col}, {props})
+ 				automatically to a negative number; otherwise
+ 				zero is used
+ 							*E1305*
+-		   text		text to be displayed before {col}, or after the
+-				line if {col} is zero; prepend and/or append
+-				spaces for padding with highlighting; cannot
+-				be used with "length", "end_lnum" and "end_col"
++		   text		text to be displayed before {col}, or
++				above/below the line if {col} is zero; prepend
++				and/or append spaces for padding with
++				highlighting; cannot be used with "length",
++				"end_lnum" and "end_col" |virtual-text|
+ 		   					*E1294*
+ 		   text_align	when "text" is present and {col} is zero;
+ 				specifies where to display the text:
+@@ -191,12 +192,23 @@ prop_add({lnum}, {col}, {props})
+ 		If not found an error is given.
+ 							*virtual-text*
+ 		When "text" is used and the column is non-zero then this text
+-		will be displayed at the start location of the text property
+-		after the text.  The text of the buffer line will be shifted
+-		to make room.  This is called "virtual text".
+-		When the column is zero the virtual text will appear after the
+-		buffer text.  The "text_align" and "text_wrap" arguments
+-		determine how it is displayed.
++		will be displayed at the specified start location of the text
++		property.  The text of the buffer line will be shifted to make
++		room.  This is called "virtual text".
++		When the column is zero the virtual text will appear above,
++		after or below the buffer text.  The "text_align" and
++		"text_wrap" arguments determine how it is displayed.
++		To separate the virtual text from the buffer text prepend
++		and/or append spaces to the "text" field or use the
++		"text_padding_left" value.
++
++		Make sure to use a highlight that makes clear to the user that
++		this is virtual text, otherwise it will be very confusing that
++		the text cannot be edited.  When using "above" you need to
++		make clear this text belongs to the text line below it, when
++		using "below" you need to make sure it belongs to the text
++		line above it.
++
+ 		The text will be displayed but it is not part of the actual
+ 		buffer line, the cursor cannot be placed on it.  A mouse click
+ 		in the text will move the cursor to the first character after
+@@ -208,11 +220,6 @@ prop_add({lnum}, {col}, {props})
+ 		property with "text" has been added for a buffer then using a
+ 		negative "id" for any other property will give an error:
+ 		*E1293*
+-		Make sure to use a highlight that makes clear to the user that
+-		this is virtual text, otherwise it will be very confusing that
+-		the text cannot be edited.
+-		To separate the virtual text from the buffer text prepend
+-		and/or append spaces to the "text" field.
+ 
+ 		Can also be used as a |method|: >
+ 			GetLnum()->prop_add(col, props)
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 864f0b2cf..75aef3101 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Sep 18
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Sep 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,49 +38,21 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
+-Closure created in for loop can use loop variable?  #11094
+-    Nested loops do not work correctly yet.
+-    Would need to save vars for each block separately.
+-
+-Virtual text:
+-- Virtual text below: padding is highlighted when 'number' is set  #11138
+-- Virtual text above: do not highlight until end of line?  #11138
+-- 'number' should be below "above" virtual text?  Might be difficult to
+-  implement.
+-- Add highlight for the gap before/after virtual text above/below?
+-- option to hide virtual text?
+-
+-Fail with valgrind: test_edit
+-Found errors in Test_edit_insertmode_ex_edit():
+-        Run 1, 01:19:51 - 01:20:01:
+-        command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[469]..function RunTheTest[44]..Test_edit_insertmode_ex_edit[13]..WaitForAssert[2]..<SNR>6_WaitForCommon[11]..<lambda>4 line 1: Pattern '^-- INSERT --\\s*$' does not match ''
+-
+ From test_global
+         Found errors in Test_interrupt_global():
+         Run 1, 02:16:22 - 02:16:27:
+         command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[469]..function RunTheTest[44]..Test_interrupt_global[13]..WaitForAssert[2]..<SNR>7_WaitForCommon[11]..<lambda>20 line 1: Pattern 'Interrupted' does not match 'Type  :qa!  and press...l changes and exit Vim           1,1           All'
+         command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[469]..function RunTheTest[44]..Test_interrupt_global[20]..WaitForAssert[2]..<SNR>7_WaitForCommon[11]..<lambda>21 line 1: Pattern 'Interrupted' does not match 'Entering Ex mode.  Type "visual" to go to Normal mode.'
+ 
+-test_terminal3:
+-Conditional jump or move depends on uninitialised value(s)
+-==2819005==    at 0x2E9134: jump_to_mouse (mouse.c:2015)
+-==2819005==    by 0x2E69E6: do_mouse (mouse.c:702)
+-==2819005==    by 0x2E95C2: nv_mouse (mouse.c:2166)
+-
+-option_set():  "get a bit too much"
+-    - refactor to separate function
+-    - check for empty result
+-
+ Use :defer command:
+     - Use "D" flag of writefile() and mkdir() in tests.
+-	(testdir/test_c*.vim done)
+-
+-When using :echomessage do use msg_row and msg_col, but save and restore.
+-How to test any failure?  If nothing fails perhaps it's OK alrady.
++	(testdir/test_e*.vim done)
+ 
+-New Vim indent script: #11079  Not done yet.
++New Vim indent script: #11079  OK? 
+ 
+ Further Vim9 improvements, possibly after launch:
++- For map(), reduce() and filter() use a specific implementation if the second
++  argument is a compiled function.  #11163
+ - Use Vim9 for more runtime files.
+ - Check performance with callgrind and kcachegrind.
+     getline()/substitute()/setline() in #5632
+@@ -228,6 +200,9 @@ reduced?
+ 
+ Add BufDeletePost.  #11041
+ 
++Test property disappears when using CR twice in a row.  OK when some text was
++entered. (#11151)
++
+ Add a string to the 'display' option ("smoothscroll" ?) to make CTRL-E and
+ CTRL-Y scroll one screen line, also if this means the first line doesn't start
+ with the first character (like what happens with a last line that doesn't
+@@ -312,7 +287,9 @@ Adding "10" to 'spellsuggest' causes spell suggestions to become very slow.
+ Also, z= in German on a long word can take a very long time, but CTRL-C to
+ interrupt does not work. Where to add ui_breakcheck()?
+ New English spell files also have very slow suggestions.
++
+ French spell files don't work correctly.  #4916
++    Make Vim understand the format somehow?
+ 
+ Make "g>" and "g<" in Visual mode move the text right or left.
+ Also for a block selection.  #8558
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index fa4ad07d0..448091ec4 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2022 Sep 17
++*various.txt*   For Vim version 9.0.  Last change: 2022 Sep 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -29,6 +29,8 @@ CTRL-L			Clear and redraw the screen.  The redraw may happen
+ 			Useful to update the status line(s) when 'statusline'
+ 			includes an item that doesn't cause automatic
+ 			updating.
++			If the command line is being edited the redraw is
++			postponed until later.
+ 
+ 						*:redrawt* *:redrawtabline*
+ :redrawt[abline]	Redraw the tabline.  Useful to update the tabline when
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 2a953eedf..b73011a09 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2022 Sep 15
++*vim9.txt*	For Vim version 9.0.  Last change: 2022 Sep 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -962,6 +962,8 @@ In compiled Vim9 script you get:
+ 	3
+ Generally, you should not change the list that is iterated over.  Make a copy
+ first if needed.
++							*E1306*
++The depth of loops, :for and :while loops added together, cannot exceed 10.
+ 
+ 
+ Conditions and expressions ~
