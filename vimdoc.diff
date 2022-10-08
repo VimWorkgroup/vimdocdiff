@@ -1,63 +1,64 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index a9d3b3642..8b3787010 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -1124,7 +1124,6 @@ Also see |`=|.
- In the command-line window the command line can be edited just like editing
- text in any window.  It is a special kind of window, because you cannot leave
- it in a normal way.
--{not available when compiled without the |+cmdwin| feature}
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 686cc84cc..2ed73999c 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -396,6 +396,7 @@ popup_create({what}, {options}) Number	create a popup window
+ popup_dialog({what}, {options}) Number	create a popup window used as a dialog
+ popup_filter_menu({id}, {key})  Number	filter for a menu popup window
+ popup_filter_yesno({id}, {key}) Number	filter for a dialog popup window
++popup_findecho()		Number	get window ID of popup for `:echowin`
+ popup_findinfo()		Number	get window ID of info popup window
+ popup_findpreview()		Number	get window ID of preview popup window
+ popup_getoptions({id})		Dict	get options of popup window {id}
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index fe7516963..b1bf1a924 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -3392,7 +3392,7 @@ text...
+ 			when the screen is redrawn.
+ 
+ 					*:echow* *:echowin* *:echowindow*
+-:echow[indow] {expr1} ..
++:[N]echow[indow] {expr1} ..
+ 			Like |:echomsg| but when the messages popup window is
+ 			available the message is displayed there.  This means
+ 			it will show for three seconds and avoid a
+@@ -3400,6 +3400,9 @@ text...
+ 			that, press Esc in Normal mode (when it would
+ 			otherwise beep).  If it disappears too soon you can
+ 			use `:messages` to see the text.
++			When [N] is given then the window will show up for
++			this number of seconds.  The last `:echowindow` with a
++			count matters, it is used once only.
+ 			The message window is available when Vim was compiled
+ 			with the +timer and the +popupwin features.
+ 
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index d11557c79..59896ecfc 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -347,6 +347,12 @@ popup_filter_yesno({id}, {key})				*popup_filter_yesno()*
+ 		See the example here: |popup_dialog-example|
  
  
- OPEN						*c_CTRL-F* *q:* *q/* *q?*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a0098a7bd..b3c4a408e 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -2956,6 +2956,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	When neither "lastline" nor "truncate" is included, a last line that
- 	doesn't fit is replaced with "@" lines.
- 
-+	The "@" character can be changed by setting the "lastline" item in
-+	'fillchars'.  The character is highlighted with |hl-NonText|.
++popup_findecho()					*popup_findecho()*
++		Get the |window-ID| for the popup that shows messages for the
++		`:echowindow` command.  Return zero if there is none.
++		Mainly useful to hide the popup.
 +
- 						*'eadirection'* *'ead'*
- 'eadirection' 'ead'	string	(default "both")
- 			global
-@@ -3420,6 +3423,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  foldsep	'|'		open fold middle character
- 	  diff		'-'		deleted lines of the 'diff' option
- 	  eob		'~'		empty lines below the end of a buffer
-+	  lastline	'@'		'display' contains lastline/truncate
- 
- 	Any one that is omitted will fall back to the default.  For "stl" and
- 	"stlnc" the space will be used when there is highlighting, '^' or '='
-@@ -3442,6 +3446,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  fold		Folded			|hl-Folded|
- 	  diff		DiffDelete		|hl-DiffDelete|
- 	  eob		EndOfBuffer		|hl-EndOfBuffer|
-+	  lastline	NonText			|hl-NonText|
- 
- 		*'fixendofline'* *'fixeol'* *'nofixendofline'* *'nofixeol'*
- 'fixendofline' 'fixeol'	boolean	(default on)
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 448091ec4..fdb744cb9 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -349,14 +349,14 @@ T  *++builtin_terms*	maximal terminals builtin |builtin-terms| Always
- N  *+byte_offset*	support for 'o' flag in 'statusline' option, "go"
- 			and ":goto" commands.
- m  *+channel*		inter process communication |channel|
--6  *+cindent*		|'cindent'|, C indenting
-+T  *+cindent*		|'cindent'|, C indenting; Always enabled
- N  *+clientserver*	Unix and Win32: Remote invocation |clientserver|
-    *+clipboard*		|clipboard| support compiled-in
-    *+clipboard_working*	|clipboard| support compiled-in and working
- T  *+cmdline_compl*	command line completion |cmdline-completion|
- T  *+cmdline_hist*	command line history |cmdline-history|
- N  *+cmdline_info*	|'showcmd'| and |'ruler'|
--S  *+cmdwin*		|cmdline-window| support
-+T  *+cmdwin*		|cmdline-window| support; Always enabled since 9.0.0657
- T  *+comments*		|'comments'| support
- B  *+conceal*		"conceal" support, see |conceal| |:syn-conceal| etc.
- N  *+cryptv*		encryption support |encryption|
++
+ popup_findinfo()					*popup_findinfo()*
+ 		Get the |window-ID| for the popup info window, as it used by
+ 		the popup menu.  See |complete-popup|.  The info popup is
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index e2d5cfe68..97e1d5ce9 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1289,6 +1289,7 @@ Popup window:					*popup-window-functions*
+ 	popup_filter_yesno()	block until 'y' or 'n' is pressed
+ 	popup_getoptions()	get current options for a popup
+ 	popup_getpos()		get actual position and size of a popup
++	popup_findecho()	get window ID for popup used for `:echowindow`
+ 	popup_findinfo()	get window ID for popup info window
+ 	popup_findpreview()	get window ID for popup preview window
+ 	popup_list()		get list of all popup window IDs
