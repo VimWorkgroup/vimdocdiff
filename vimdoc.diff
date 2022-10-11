@@ -1,16 +1,52 @@
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 0b94f8a04..4d02558e4 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -288,9 +288,8 @@ way to kill or interrupt the job.  For example: >
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 0cba7c215..c2283358b 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Sep 30
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Oct 10
  
- So long as the job is running the window behaves like it contains a modified
- buffer.  Trying to close the window with `CTRL-W :quit` fails.  When using
--`CTRL-W :quit!` the job is ended.  The text in the window is lost.  The buffer
--still exists, but getting it in a window with `:buffer` will show an empty
--buffer.
-+`CTRL-W :quit!` the job is ended.  The text in the window is lost, the buffer
-+is deleted.  With `CTRL-W :bunload!` the buffer remains but will be empty.
  
- Trying to close the window with `CTRL-W :close` also fails.   Using
- `CTRL-W :close!` will close the window and make the buffer hidden.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1882,10 +1882,10 @@ cursor({list})
+ 		|setcursorcharpos()|.
+ 
+ 		Does not change the jumplist.
+-		{lnum} is used like with |getline()|.
++		{lnum} is used like with |getline()|, except that if {lnum} is
++		zero, the cursor will stay in the current line.
+ 		If {lnum} is greater than the number of lines in the buffer,
+ 		the cursor will be positioned at the last line in the buffer.
+-		If {lnum} is zero, the cursor will stay in the current line.
+ 		If {col} is greater than the number of bytes in the line,
+ 		the cursor will be positioned at the last character in the
+ 		line.
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index b1bf1a924..5ba2af08b 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2022 Sep 17
++*eval.txt*	For Vim version 9.0.  Last change: 2022 Oct 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index f3a2ab6ee..3dfcf6afc 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2022 Oct 03
++*vim9.txt*	For Vim version 9.0.  Last change: 2022 Oct 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -962,6 +962,8 @@ In compiled Vim9 script you get:
+ 	3
+ Generally, you should not change the list that is iterated over.  Make a copy
+ first if needed.
++When looping over a list of lists, the nested lists can be changed.  The loop
++variable is "final", it cannot be changed but what its value can be changed.
+ 							*E1306*
+ The depth of loops, :for and :while loops added together, cannot exceed 10.
+ 
