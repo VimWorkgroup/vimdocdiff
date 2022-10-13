@@ -1,52 +1,16 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0cba7c215..c2283358b 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.0.  Last change: 2022 Sep 30
-+*builtin.txt*	For Vim version 9.0.  Last change: 2022 Oct 10
+diff --git a/runtime/doc/rileft.txt b/runtime/doc/rileft.txt
+index 7c5a60a5a..31a382b6c 100644
+--- a/runtime/doc/rileft.txt
++++ b/runtime/doc/rileft.txt
+@@ -35,6 +35,11 @@ encoded for every character (or group of characters) are not supported either
+ as this kind of support is out of the scope of a simple addition to an
+ existing editor (and it's not sanctioned by Unicode either).
  
++As many people working on the code do not use the right-to-left mode, this
++feature may not work in some situations.  If you can describe what is wrong
++and how it would work when fixed, please create an issue on github, see
++|bug-reports|.
++
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1882,10 +1882,10 @@ cursor({list})
- 		|setcursorcharpos()|.
- 
- 		Does not change the jumplist.
--		{lnum} is used like with |getline()|.
-+		{lnum} is used like with |getline()|, except that if {lnum} is
-+		zero, the cursor will stay in the current line.
- 		If {lnum} is greater than the number of lines in the buffer,
- 		the cursor will be positioned at the last line in the buffer.
--		If {lnum} is zero, the cursor will stay in the current line.
- 		If {col} is greater than the number of bytes in the line,
- 		the cursor will be positioned at the last character in the
- 		line.
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index b1bf1a924..5ba2af08b 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.0.  Last change: 2022 Sep 17
-+*eval.txt*	For Vim version 9.0.  Last change: 2022 Oct 07
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index f3a2ab6ee..3dfcf6afc 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.0.  Last change: 2022 Oct 03
-+*vim9.txt*	For Vim version 9.0.  Last change: 2022 Oct 11
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -962,6 +962,8 @@ In compiled Vim9 script you get:
- 	3
- Generally, you should not change the list that is iterated over.  Make a copy
- first if needed.
-+When looping over a list of lists, the nested lists can be changed.  The loop
-+variable is "final", it cannot be changed but what its value can be changed.
- 							*E1306*
- The depth of loops, :for and :while loops added together, cannot exceed 10.
- 
+ Highlights
+ ----------
