@@ -1,83 +1,91 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 61db274bb..5051cc3dc 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -409,6 +409,7 @@ Name			triggered by ~
+ 			when popup menu is not visible
+ |TextChangedP|		after a change was made to the text in Insert mode
+ 			when popup menu visible
++|TextChangedT|		after a change was made to the text in Terminal mode
+ |TextYankPost|		after text has been yanked or deleted
+ 
+ |SafeState|		nothing pending, going to wait for the user to type a
+@@ -1237,6 +1238,10 @@ TextChangedP			After a change was made to the text in the
+ 				current buffer in Insert mode, only when the
+ 				popup menu is visible.  Otherwise the same as
+ 				TextChanged.
++							*TextChangedT*
++TextChangedT			After a change was made to the text in the
++				current buffer in Terminal mode.
++				Otherwise the same as TextChanged.
+ 							*TextYankPost*
+ TextYankPost			After text has been yanked or deleted in the
+ 				current buffer.  The following values of
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index 8bf341d02..4c0d653c7 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -1150,7 +1150,7 @@ tag		command		action ~
+ |:!!|		:!!		repeat last ":!" command
+ |:#|		:#		same as ":number"
+ |:&|		:&		repeat last ":substitute"
+-|:star|		:*		execute contents of a register
++|:star|		:*		use the last Visual area, like :'<,'>
+ |:<|		:<		shift lines one 'shiftwidth' left
+ |:=|		:=		print the last line number
+ |:>|		:>		shift lines one 'shiftwidth' right
+@@ -1277,6 +1277,7 @@ tag		command		action ~
+ |:debuggreedy|	:debugg[reedy]	read debug mode commands from normal input
+ |:def|		:def		define a Vim9 user function
+ |:defcompile|	:defc[ompile]	compile Vim9 user functions in current script
++|:defer|	:defer		call function when current function is done
+ |:delcommand|	:delc[ommand]	delete user-defined command
+ |:delfunction|	:delf[unction]	delete a user function
+ |:delmarks|	:delm[arks]	delete marks
+@@ -1308,6 +1309,7 @@ tag		command		action ~
+ |:echohl|	:echoh[l]	set highlighting for echo commands
+ |:echomsg|	:echom[sg]	same as :echo, put message in history
+ |:echon|	:echon		same as :echo, but without <EOL>
++|:echowindow|	:echow[indow]	same as :echomsg, but use a popup window
+ |:else|		:el[se]		part of an :if command
+ |:elseif|	:elsei[f]	part of an :if command
+ |:emenu|	:em[enu]	execute a menu by name
+@@ -1356,6 +1358,7 @@ tag		command		action ~
+ |:highlight|	:hi[ghlight]	specify highlighting methods
+ |:hide|		:hid[e]		hide current buffer for a command
+ |:history|	:his[tory]	print a history list
++|:horizontal|	:hor[izontal]	following window command work horizontally
+ |:insert|	:i[nsert]	insert text
+ |:iabbrev|	:ia[bbrev]	like ":abbrev" but for Insert mode
+ |:iabclear|	:iabc[lear]	like ":abclear" but for Insert mode
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index b3c4a408e..6f479bdc9 100644
+index 6f479bdc9..9ecb64e59 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -6476,8 +6476,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 					 *'ruler'* *'ru'* *'noruler'* *'noru'*
- 'ruler' 'ru'		boolean	(default off, set in |defaults.vim|)
- 			global
--			{not available when compiled without the
--			|+cmdline_info| feature}
- 	Show the line and column number of the cursor position, separated by a
- 	comma.  When there is room, the relative position of the displayed
- 	text in the file is shown on the far right:
-@@ -7079,6 +7077,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  c	don't give |ins-completion-menu| messages.  For example,
- 		"-- XXX completion (YYY)", "match 1 of 2", "The only match",
- 		"Pattern not found", "Back at original", etc.
-+	  C	don't give messages while scanning for ins-completion items,
-+		for instance "scanning tags"
- 	  q	use "recording" instead of "recording @a"
- 	  F	don't give the file info when editing a file, like `:silent`
- 		was used for the command; note that this also affects messages
-@@ -7135,8 +7135,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 'showcmd' 'sc'		boolean	(Vim default: on, off for Unix,
- 				       Vi default: off, set in |defaults.vim|)
- 			global
--			{not available when compiled without the
--			|+cmdline_info| feature}
- 	Show (partial) command in the last line of the screen.  Set this
- 	option off if your terminal is slow.
- 	In Visual mode the size of the selected area is shown:
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 5a849fed6..4aa00acae 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -225,7 +225,7 @@ prop_add({lnum}, {col}, {props})
- 			GetLnum()->prop_add(col, props)
- <
- 						*prop_add_list()*
--prop_add_list({props}, [[{lnum}, {col}, {end-lnum}, {end-col}], ...])
-+prop_add_list({props}, [{item}, ...])
- 		Similar to prop_add(), but attaches a text property at
- 		multiple positions in a buffer.
+@@ -4621,7 +4621,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	in Insert mode as specified with the 'indentkeys' option.
+ 	When this option is not empty, it overrules the 'cindent' and
+ 	'smartindent' indenting.  When 'lisp' is set, this option is
+-	overridden by the Lisp indentation algorithm.
++	is only used when 'lispoptions' contains "expr:1".
+ 	When 'paste' is set this option is not used for indenting.
+ 	The expression is evaluated with |v:lnum| set to the line number for
+ 	which the indent is to be computed.  The cursor is also in this line
+@@ -5063,6 +5063,17 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	calling an external program if 'equalprg' is empty.
+ 	This option is not used when 'paste' is set.
  
-@@ -237,12 +237,18 @@ prop_add_list({props}, [[{lnum}, {col}, {end-lnum}, {end-col}], ...])
- 		   type		name of the text property type
- 		All fields except "type" are optional.
- 
--		The second argument is a List of Lists where each list
--		specifies the starting and ending position of the text.  The
--		first two items {lnum} and {col} specify the starting position
--		of the text where the property will be attached and the last
--		two items {end-lnum} and {end-col} specify the position just
--		after the text.
-+		The second argument is a List of items, where each {item} is a
-+		list that specifies the starting and ending position of the
-+		text: [{lnum}, {col}, {end-lnum}, {end-col}]
-+		or:   [{lnum}, {col}, {end-lnum}, {end-col}, {id}]
++						*'lispoptions'* *'lop'*
++'lispoptions' 'lop'	string	(default "")
++			local to buffer
++	Comma-separated list of items that influence the Lisp indenting when
++	enabled with the |'lisp'| option.  Currently only one item is
++	supported:
++		expr:1	use 'indentexpr' for Lisp indenting when it is set
++		expr:0	do not use 'indentexpr' for Lisp indenting (default)
++	Note that when using 'indentexpr' the `=` operator indents all the
++	lines, otherwise the first line is not indented (Vi-compatible).
 +
-+		The first two items {lnum} and {col} specify the starting
-+		position of the text where the property will be attached.
-+		The next two items {end-lnum} and {end-col} specify the
-+		position just after the text.
-+		An optional fifth item {id} can be used to give a different ID
-+		to a property.  When omitted the ID from {props} is used,
-+		falling back to zero if none are present.
- 
- 		It is not possible to add a text property with a "text" field
- 		here.
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 469e84c3b..6a6c3b666 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -355,7 +355,8 @@ N  *+clientserver*	Unix and Win32: Remote invocation |clientserver|
-    *+clipboard_working*	|clipboard| support compiled-in and working
- T  *+cmdline_compl*	command line completion |cmdline-completion|
- T  *+cmdline_hist*	command line history |cmdline-history|
--N  *+cmdline_info*	|'showcmd'| and |'ruler'|
-+T  *+cmdline_info*	|'showcmd'| and |'ruler'|; Always enabled since
-+			9.0.0747
- T  *+cmdwin*		|cmdline-window| support; Always enabled since 9.0.0657
- T  *+comments*		|'comments'| support
- N  *+conceal*		"conceal" support, see |conceal| |:syn-conceal| etc.
+ 						*'lispwords'* *'lw'*
+ 'lispwords' 'lw'	string	(default is very long)
+ 			global or local to buffer |global-local|
