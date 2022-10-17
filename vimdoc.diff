@@ -1,91 +1,435 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 61db274bb..5051cc3dc 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -409,6 +409,7 @@ Name			triggered by ~
- 			when popup menu is not visible
- |TextChangedP|		after a change was made to the text in Insert mode
- 			when popup menu visible
-+|TextChangedT|		after a change was made to the text in Terminal mode
- |TextYankPost|		after text has been yanked or deleted
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index c2283358b..d1d18c5c7 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Oct 10
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Oct 14
  
- |SafeState|		nothing pending, going to wait for the user to type a
-@@ -1237,6 +1238,10 @@ TextChangedP			After a change was made to the text in the
- 				current buffer in Insert mode, only when the
- 				popup menu is visible.  Otherwise the same as
- 				TextChanged.
-+							*TextChangedT*
-+TextChangedT			After a change was made to the text in the
-+				current buffer in Terminal mode.
-+				Otherwise the same as TextChanged.
- 							*TextYankPost*
- TextYankPost			After text has been yanked or deleted in the
- 				current buffer.  The following values of
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5404,7 +5404,8 @@ listener_add({callback} [, {buf}])			*listener_add()*
+ 				the change; one if unknown or the whole line
+ 				was affected; this is a byte index, first
+ 				character has a value of one.
+-		When lines are inserted the values are:
++		When lines are inserted (not when a line is split, e.g. by
++		typing CR in Insert mode) the values are:
+ 		    lnum	line above which the new line is added
+ 		    end		equal to "lnum"
+ 		    added	number of lines inserted
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 38c173bce..8cae93ab8 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -1,4 +1,4 @@
+-*indent.txt*    For Vim version 9.0.  Last change: 2022 May 21
++*indent.txt*    For Vim version 9.0.  Last change: 2022 Oct 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -982,9 +982,12 @@ indentation: >
+ 
+ PYTHON							*ft-python-indent*
+ 
+-The amount of indent can be set for the following situations.  The examples
+-given are the defaults.  Note that the dictionary values are set to an
+-expression, so that you can change the value of 'shiftwidth' later.
++The amount of indent can be set with the `g:python_indent` |Dictionary|, which
++needs to be created before adding the items: >
++	let g:python_indent = {}
++The examples given are the defaults.  Note that the dictionary values are set
++to an expression, so that you can change the value of 'shiftwidth' later
++without having to update these values.
+ 
+ Indent after an open paren: >
+ 	let g:python_indent.open_paren = 'shiftwidth() * 2'
 diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index 8bf341d02..4c0d653c7 100644
+index 4c0d653c7..9de498b37 100644
 --- a/runtime/doc/index.txt
 +++ b/runtime/doc/index.txt
-@@ -1150,7 +1150,7 @@ tag		command		action ~
- |:!!|		:!!		repeat last ":!" command
- |:#|		:#		same as ":number"
- |:&|		:&		repeat last ":substitute"
--|:star|		:*		execute contents of a register
-+|:star|		:*		use the last Visual area, like :'<,'>
- |:<|		:<		shift lines one 'shiftwidth' left
- |:=|		:=		print the last line number
- |:>|		:>		shift lines one 'shiftwidth' right
-@@ -1277,6 +1277,7 @@ tag		command		action ~
- |:debuggreedy|	:debugg[reedy]	read debug mode commands from normal input
- |:def|		:def		define a Vim9 user function
- |:defcompile|	:defc[ompile]	compile Vim9 user functions in current script
-+|:defer|	:defer		call function when current function is done
- |:delcommand|	:delc[ommand]	delete user-defined command
- |:delfunction|	:delf[unction]	delete a user function
- |:delmarks|	:delm[arks]	delete marks
-@@ -1308,6 +1309,7 @@ tag		command		action ~
- |:echohl|	:echoh[l]	set highlighting for echo commands
- |:echomsg|	:echom[sg]	same as :echo, put message in history
- |:echon|	:echon		same as :echo, but without <EOL>
-+|:echowindow|	:echow[indow]	same as :echomsg, but use a popup window
- |:else|		:el[se]		part of an :if command
- |:elseif|	:elsei[f]	part of an :if command
- |:emenu|	:em[enu]	execute a menu by name
-@@ -1356,6 +1358,7 @@ tag		command		action ~
- |:highlight|	:hi[ghlight]	specify highlighting methods
- |:hide|		:hid[e]		hide current buffer for a command
- |:history|	:his[tory]	print a history list
-+|:horizontal|	:hor[izontal]	following window command work horizontally
- |:insert|	:i[nsert]	insert text
- |:iabbrev|	:ia[bbrev]	like ":abbrev" but for Insert mode
- |:iabclear|	:iabc[lear]	like ":abclear" but for Insert mode
+@@ -1,4 +1,4 @@
+-*index.txt*     For Vim version 9.0.  Last change: 2022 Jun 11
++*index.txt*     For Vim version 9.0.  Last change: 2022 Oct 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 7813177c2..5cbaf6733 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
+@@ -1,4 +1,4 @@
+-*intro.txt*     For Vim version 9.0.  Last change: 2022 Sep 12
++*intro.txt*     For Vim version 9.0.  Last change: 2022 Oct 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -122,10 +122,10 @@ http://www.vim.org/maillist.php
+ Bug reports:				*bugs* *bug-reports* *bugreport.vim*
+ 
+ There are three ways to report bugs:
+-1. Open an issue on GitHub: https://github.com/vim/vim/issues
+-   The text will be forwarded to the vim-dev maillist.
+-2. For issues with runtime files, look in the header for an email address or
++1. For issues with runtime files, look in the header for an email address or
+    any other way to report it to the maintainer.
++2. Open an issue on GitHub: https://github.com/vim/vim/issues
++   The text will be forwarded to the vim-dev maillist.
+ 3. Send bug reports to: Vim Developers <vim-dev@vim.org>
+    This is a maillist, you need to become a member first and many people will
+    see the message.  If you don't want that, e.g. because it is a security
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 6f479bdc9..9ecb64e59 100644
+index 9ecb64e59..5beb6a283 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -4621,7 +4621,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	in Insert mode as specified with the 'indentkeys' option.
- 	When this option is not empty, it overrules the 'cindent' and
- 	'smartindent' indenting.  When 'lisp' is set, this option is
--	overridden by the Lisp indentation algorithm.
-+	is only used when 'lispoptions' contains "expr:1".
- 	When 'paste' is set this option is not used for indenting.
- 	The expression is evaluated with |v:lnum| set to the line number for
- 	which the indent is to be computed.  The cursor is also in this line
-@@ -5063,6 +5063,17 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	calling an external program if 'equalprg' is empty.
- 	This option is not used when 'paste' is set.
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2022 Oct 03
++*options.txt*	For Vim version 9.0.  Last change: 2022 Oct 15
  
-+						*'lispoptions'* *'lop'*
-+'lispoptions' 'lop'	string	(default "")
-+			local to buffer
-+	Comma-separated list of items that influence the Lisp indenting when
-+	enabled with the |'lisp'| option.  Currently only one item is
-+	supported:
-+		expr:1	use 'indentexpr' for Lisp indenting when it is set
-+		expr:0	do not use 'indentexpr' for Lisp indenting (default)
-+	Note that when using 'indentexpr' the `=` operator indents all the
-+	lines, otherwise the first line is not indented (Vi-compatible).
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -7534,7 +7534,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	When on, splitting a window will put the new window below the current
+ 	one. |:split|
+ 
+-			*'splitkeep'* *'spk'
++			*'splitkeep'* *'spk'*
+ 'splitkeep' 'spk'	string	(default "cursor")
+ 			global
+ 	The value of this option determines the scroll behavior when opening,
+@@ -7548,7 +7548,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	For the "screen" and "topline" values, the cursor position will be
+ 	changed when necessary. In this case, the jumplist will be populated
+ 	with the previous cursor position. For "screen", the text cannot always
+-	be kept on the same screen line	when 'wrap' is enabled.
++	be kept on the same screen line when 'wrap' is enabled.
+ 
+ 			*'splitright'* *'spr'* *'nosplitright'* *'nospr'*
+ 'splitright' 'spr'	boolean	(default off)
+diff --git a/runtime/doc/os_haiku.txt b/runtime/doc/os_haiku.txt
+index be08b4a31..1a808625f 100644
+--- a/runtime/doc/os_haiku.txt
++++ b/runtime/doc/os_haiku.txt
+@@ -47,7 +47,7 @@ features you can enable/disable.
+ 
+ Haiku uses "ncurses6" as its terminal library, therefore you need to have
+ "ncurses6_devel" package installed from HaikuDepot in order to configure
+-the Haiku build.  Just append "--with-tlib=ncurses6" to ./configure command
++the Haiku build.  Just append "--with-tlib=ncurses" to ./configure command.
+ 
+ Now you should use "make" to compile Vim, then "make install" to install it.
+ For seamless integration into Haiku, the GUI-less vim binary should be
+@@ -56,12 +56,14 @@ additionally installed over the GUI version.  Typical build commands are:
+   ./configure --prefix=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY` \
+     --datarootdir=`finddir B_SYSTEM_NONPACKAGED_DATA_DIRECTORY` \
+     --mandir=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`/documentation/man \
++    --with-tlib=ncurses \
+   make clean
+   make install
+ 
+   ./configure --prefix=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`  \
+     --datarootdir=`finddir B_SYSTEM_NONPACKAGED_DATA_DIRECTORY` \
+     --mandir=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`/documentation/man \
++    --with-tlib=ncurses \
+     --disable-gui
+   make clean
+   make install
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index 59896ecfc..f611fd977 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -1,4 +1,4 @@
+-*popup.txt*  For Vim version 9.0.  Last change: 2022 Jun 16
++*popup.txt*  For Vim version 9.0.  Last change: 2022 Oct 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -366,7 +366,6 @@ popup_findpreview()					*popup_findpreview()*
+ 		Get the |window-ID| for the popup preview window.
+ 		Return zero if there is none.
+ 
+-
+ popup_getoptions({id})					*popup_getoptions()*
+ 		Return the {options} for popup {id} in a Dict.
+ 		A zero value means the option was not set.  For "zindex" the
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index fab98302f..370e1f2fa 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.0.  Last change: 2022 Oct 02
++*quickref.txt*  For Vim version 9.0.  Last change: 2022 Oct 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -785,6 +785,7 @@ Short explanation of each option:		*option-list*
+ 'lines'			    number of lines in the display
+ 'linespace'	  'lsp'     number of pixel lines to use between characters
+ 'lisp'			    automatic indenting for Lisp
++'lispoptions'	  'lop'     changes how Lisp indenting is done
+ 'lispwords'	  'lw'	    words that change how lisp indenting works
+ 'list'			    show <Tab> and <EOL>
+ 'listchars'	  'lcs'     characters for displaying in list mode
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 059c6393d..0f79afdf4 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -628,6 +628,11 @@ When Vim starts up, after processing your .vimrc, it scans all directories in
+ directories are added to 'runtimepath'.  Then all the plugins are loaded.
+ See |packload-two-steps| for how these two steps can be useful.
+ 
++To allow for calling into package functionality while parsing your .vimrc,
++|:colorscheme| and |autoload| will both automatically search under 'packpath'
++as well in addition to 'runtimepath'.  See the documentation for each for
++details.
 +
- 						*'lispwords'* *'lw'*
- 'lispwords' 'lw'	string	(default is very long)
- 			global or local to buffer |global-local|
+ In the example Vim will find "pack/foo/start/foobar/plugin/foo.vim" and adds
+ "~/.vim/pack/foo/start/foobar" to 'runtimepath'.
+ 
+diff --git a/runtime/doc/rileft.txt b/runtime/doc/rileft.txt
+index 31a382b6c..623ac387b 100644
+--- a/runtime/doc/rileft.txt
++++ b/runtime/doc/rileft.txt
+@@ -1,4 +1,4 @@
+-*rileft.txt*    For Vim version 9.0.  Last change: 2022 Apr 03
++*rileft.txt*    For Vim version 9.0.  Last change: 2022 Oct 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Avner Lottem
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 1775af73b..89ac893fe 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2022 Oct 03
++*syntax.txt*	For Vim version 9.0.  Last change: 2022 Oct 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3021,16 +3021,25 @@ satisfied with it for my own projects.
+ SED						*sed.vim* *ft-sed-syntax*
+ 
+ To make tabs stand out from regular blanks (accomplished by using Todo
+-highlighting on the tabs), define "highlight_sedtabs" by putting >
+-
+-	:let highlight_sedtabs = 1
++highlighting on the tabs), define "g:sed_highlight_tabs" by putting >
+ 
++	:let g:sed_highlight_tabs = 1
++<
+ in the vimrc file.  (This special highlighting only applies for tabs
+ inside search patterns, replacement texts, addresses or text included
+ by an Append/Change/Insert command.)  If you enable this option, it is
+ also a good idea to set the tab width to one character; by doing that,
+ you can easily count the number of tabs in a string.
+ 
++GNU sed allows comments after text on the same line.  BSD sed only allows
++comments where "#" is the first character of the line.  To enforce BSD-style
++comments, i.e. mark end-of-line comments as errors, use: >
++
++	:let g:sed_dialect = "bsd"
++<
++Note that there are other differences between GNU sed and BSD sed which are
++not (yet) affected by this setting.
++
+ Bugs:
+ 
+   The transform command (y) is treated exactly like the substitute
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 4d02558e4..3acc51382 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.0.  Last change: 2022 Jun 09
++*terminal.txt*	For Vim version 9.0.  Last change: 2022 Oct 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 4aa00acae..2ecf4af2e 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2022 Sep 21
++*textprop.txt*  For Vim version 9.0.  Last change: 2022 Oct 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -172,6 +172,9 @@ prop_add({lnum}, {col}, {props})
+ 				   wrap      wrap the text to the next line
+ 				   truncate  truncate the text to make it fit
+ 		   		When omitted "truncate" is used.
++				Note that this applies to the individual text
++				property, the 'wrap' option sets the overall
++				behavior
+ 		All fields except "type" are optional.
+ 
+ 		It is an error when both "length" and "end_lnum" or "end_col"
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 0e125204c..d6562d5a9 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Oct 03
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Oct 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -39,22 +39,12 @@ browser use: https://github.com/vim/vim/issues/1234
+ -------------------- Known bugs and current work -----------------------
+ 
+ 'smoothscroll':
++- CTRL-E and gj in long line with 'scrolloff' 5 not working well yet.
+ - computing 'scrolloff' position row use w_skipcol
+ 
+-Add a string to the 'display' option ("smoothscroll" ?) to make CTRL-E and
+-CTRL-Y scroll one screen line, also if this means the first line doesn't start
+-with the first character (like what happens with a last line that doesn't
+-fit).  Display "<<<" at the start of the first visible line (like "@@@" is
+-displayed in the last line). (Arseny Nasokin,  #5154)
+-Neovim PR: https://github.com/neovim/neovim/pull/11014
++Check textprop right/above/below with 'number' set and "n" in 'cpo'.
+ 
+-Use :defer command:
+-    - Use "D" flag of writefile() and mkdir() in tests.
+-	(testdir/test_p*.vim done)
+-
+-Fix for powershell: #11257
+-
+-Change boolean 'splitscroll' into string 'splitkeep'. #11258
++Don't do anything for ":!". #11372
+ 
+ 
+ Further Vim9 improvements, possibly after launch:
+@@ -70,7 +60,8 @@ Further Vim9 improvements, possibly after launch:
+ Popup windows:
+ - Add a function to redraw a specific popup window.  Esp. to be used when
+   editing the command line, when screen updating doesn't happen. (Shougo)
+-  #10210  Probably need to update all popup windows (they may overlap)
++  #10210  Example that shows the need on the issue.
++  Probably need to update all popup windows (they may overlap)
+   If the display is scrolled need to redraw everything later.
+ - Add a flag to make a popup window focusable?
+     CTRL-W P cycle over any preview window or focusable popup, end up back in
+@@ -174,7 +165,10 @@ Terminal emulator window:
+   conversions.
+ 
+ Autoconf: must use autoconf 2.69, later version generates lots of warnings
+-- try using autoconf 2.71 and fix all "obsolete" warnings
++- try using autoconf 2.71 and fix all "obsolete" warnings  #11322
++
++Problem with Visual highlight when 'linebreak' and 'showbreak' are set.
++#11272
+ 
+ Can deref_func_name() and deref_function_name() be merged?
+ 
+@@ -196,10 +190,17 @@ feature is supported or not.  Replaces the xterm mechanism to request each
+ entry separately. #6609
+ Multiplexers (screen, tmux) can request it to the underlying terminal, and
+ pass it on with modifications.
++How to get all the text quickly (also over ssh)?  Can we use a side channel?
+ 
+ Using "A" and "o" in manually created fold (in empty buffer) does not behave
+ consistenly (James McCoy, #10698)
+ 
++In a timer callback, when using ":echo" and then input() the message is
++overwritten.  Could use ":echowin" and call redraw_cmd() in get_user_input().
++#11299
++
++Syntax include problem: #11277.  Related to Patch 8.2.2761
++
+ To avoid flicker: add an option that when a screen clear is requested, instead
+ of clearing it draws everything and uses "clear to end of line" for every line.
+ Resetting 't_ut' already causes this?
+@@ -233,11 +234,10 @@ MS-Windows: did path modifier :p:8 stop working?  #8600
+ Version of getchar() that does not move the cursor - #10603 Use a separate
+ argument for the new flag.
+ 
+-Add "lastline" entry to 'fillchars' to specify a character instead of '@'.
+-#10963
+-
+ test_arglist func Test_all_not_allowed_from_cmdwin() hangs on MS-Windows.
+ 
++Can we add highlighting to ":echowindow"?
++
+ Information for a specific terminal (e.g. gnome, tmux, konsole, alacritty) is
+ spread out.  Make a section with copy/paste examples of script and pointers to
+ more information.
+@@ -450,8 +450,6 @@ find them. (Max Kukartsev, #6218)
+ 
+ Enable 'termbidi' if $VTE_VERSION >= 5703 ?
+ 
+-Sound: support on Mac?  Or does libcanberra work there?
+-
+ Python 3.8 doesn't work. (Antonios Hadjigeorgalis, #5509)
+ 
+ "--cleanFOO" does not result in an error. (#5537)
+@@ -601,6 +599,11 @@ negative. (see #4326)
+ tab page. (Ingo Karkat, #4324)
+ :call settabwinvar(1, 1, '&cmdheight', 2) also doesn't work well.
+ 
++When opening a file, allow for specifying the initial column position:
++    vim +12:5 file.txt   line 12 column 5
++    :edit +12:5 file.txt
++Should probably use the column as the character index.
++
+ This modeline throws unexpected errors: (#4165)
+     vim: syn=nosyntax
+ 
+@@ -3074,9 +3077,6 @@ Macintosh:
+     line is too short.  Add a word in 'scrollopt' to allow moving the cursor
+     to longer line that is visible.  A similar thing is done for the GUI when
+     using the horizontal scrollbar.
+-7   VisVim can only open one file.  Hard to solve: each opened file is passed
+-    with a separate invocation, would need to use timestamps to know the
+-    invocations belong together.
+ 8   When giving a ":bwipeout" command a file-changed dialog may popup for this
+     buffer, which is pointless.  (Mike Williams)
+ 8   On MS-Windows ":make" doesn't show output while it is working.  Use the
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 806d8f76b..46bd0c855 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -482,6 +482,10 @@ then define the function like this: >
+ 	   echo "Done!"
+ 	endfunction
+ 
++If the file doesn't exist, Vim will also search in 'packpath' (under "start")
++to allow calling packages' functions from your .vimrc when the packages have
++not been added to 'runtimepath' yet (see |packages|).
++
+ The file name and the name used before the # in the function must match
+ exactly, and the defined function must have the name exactly as it will be
+ called.  In Vim9 script the "g:" prefix must be used: >
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 97e1d5ce9..1d5c7e58a 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Jun 23
++*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Oct 07
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index 46f01089d..787dd91e6 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
+@@ -159,6 +159,7 @@ relative path: >
+ 
+ This will search for the script "monthlib.vim" in the autoload directories of
+ 'runtimepath'.  With Unix one of the directories often is "~/.vim/autoload".
++It will also search under 'packpath', under "start".
+ 
+ The main advantage of this is that this script can be easily shared with other
+ scripts.  You do need to make sure that the script name is unique, since Vim
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 6a6c3b666..6f24515d7 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2022 Sep 19
++*various.txt*   For Vim version 9.0.  Last change: 2022 Oct 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
