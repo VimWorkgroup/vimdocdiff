@@ -1,26 +1,53 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index d04e4ac13..23501f0de 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -150,6 +150,7 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.fs		g:filetype_fs	|ft-forth-syntax|
- 	*.i		g:filetype_i	|ft-progress-syntax|
- 	*.inc		g:filetype_inc
-+	*.lsl		g:filetype_lsl
- 	*.m		g:filetype_m	|ft-mathematica-syntax|
- 	*.mod		g:filetype_mod
- 	*.p		g:filetype_p	|ft-pascal-syntax|
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 6f24515d7..1d21e1a9e 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -249,7 +249,8 @@ g8			Print the hex values of the bytes used in the
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index d1d18c5c7..9b46d2517 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -445,7 +445,8 @@ pyxeval({expr})			any	evaluate |python_x| expression
+ rand([{expr}])			Number	get pseudo-random number
+ range({expr} [, {max} [, {stride}]])
+ 				List	items from {expr} to {max}
+-readblob({fname})		Blob	read a |Blob| from {fname}
++readblob({fname} [, {offset} [, {size}]])
++				Blob	read a |Blob| from {fname}
+ readdir({dir} [, {expr} [, {dict}]])
+ 				List	file names in {dir} selected by {expr}
+ readdirex({dir} [, {expr} [, {dict}]])
+@@ -6847,10 +6848,21 @@ range({expr} [, {max} [, {stride}]])				*range()*
+ 			GetExpr()->range()
+ <
  
- 							*:!cmd* *:!*
- :!{cmd}			Execute {cmd} with the shell.  See also the 'shell'
--			and 'shelltype' option.
-+			and 'shelltype' option. `:!` without a {cmd} is a no-op,
-+			it does nothing.
- 							*E34*
- 			Any '!' in {cmd} is replaced with the previous
- 			external command (see also 'cpoptions').  But not when
+-readblob({fname})					*readblob()*
++readblob({fname} [, {offset} [, {size}]])			*readblob()*
+ 		Read file {fname} in binary mode and return a |Blob|.
++		If {offset} is specified, read the file from the specified
++		offset.  If it is a negative value, it is used as an offset
++		from the end of the file.  E.g., to read the last 12 bytes: >
++			readblob('file.bin', -12)
++<		If {size} is specified, only the specified size will be read.
++		E.g. to read the first 100 bytes of a file: >
++			readblob('file.bin', 0, 100)
++<		If {size} is -1 or omitted, the whole data starting from
++		{offset} will be read.
+ 		When the file can't be opened an error message is given and
+ 		the result is an empty |Blob|.
++		When trying to read bytes beyond the end of the file the
++		result is an empty blob.
+ 		Also see |readfile()| and |writefile()|.
+ 
+ 
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index bd1381a37..4ac307cee 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -989,6 +989,11 @@ mapping, see |map-bar|.
+ WARNING: if you map <C-[> you may very well break any key codes that start
+ with Esc.  Make sure it comes AFTER other mappings.
+ 
++Vim automatically detects if the modifyOtherKeys mode was enabled when it
++spots an escape sequence that must have been created by it.  To see if Vim
++detected such an escape sequence use `:verbose map`, the first line will then
++show "Seen modifyOtherKeys: true" (possibly translated).
++
+ A known side effect is that in Insert mode the raw escape sequence is inserted
+ after the CTRL-V key.  This can be used to check whether modifyOtherKeys is
+ enabled: In Insert mode type CTRL-SHIFT-V CTRL-V, if you get one byte then
