@@ -1,18 +1,25 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 9b46d2517..5b383fdfc 100644
+index 5b383fdfc..bf0ae8564 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -6859,7 +6859,12 @@ readblob({fname} [, {offset} [, {size}]])			*readblob()*
- 			readblob('file.bin', 0, 100)
- <		If {size} is -1 or omitted, the whole data starting from
- 		{offset} will be read.
--		When the file can't be opened an error message is given and
-+		This can be also used to read the data from a character device
-+		on Unix when {size} is explicitly set.  Only if the device
-+		supports seeking {offset} can be used.  Otherwise it should be
-+		zero.  E.g. to read 10 bytes from a serial console: >
-+			readblob('/dev/ttyS0', 0, 10)
-+<		When the file can't be opened an error message is given and
+@@ -6866,8 +6866,10 @@ readblob({fname} [, {offset} [, {size}]])			*readblob()*
+ 			readblob('/dev/ttyS0', 0, 10)
+ <		When the file can't be opened an error message is given and
  		the result is an empty |Blob|.
- 		When trying to read bytes beyond the end of the file the
- 		result is an empty blob.
+-		When trying to read bytes beyond the end of the file the
+-		result is an empty blob.
++		When the offset is beyond the end of the file the result is an
++		empty blob.
++		When trying to read more bytes than are available the result
++		is truncated.
+ 		Also see |readfile()| and |writefile()|.
+ 
+ 
+@@ -9668,6 +9670,7 @@ terminalprops()						*terminalprops()*
+ 		   cursor_blink_mode	whether sending |t_RC| works  **
+ 		   underline_rgb	whether |t_8u| works **
+ 		   mouse		mouse type supported
++		   kitty		whether Kitty terminal was detected
+ 
+ 		** value 'u' for unknown, 'y' for yes, 'n' for no
+ 
