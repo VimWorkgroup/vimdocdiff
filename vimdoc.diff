@@ -1,76 +1,61 @@
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index 522831f99..e5661b1bb 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -578,6 +578,43 @@ single <NL> characters are unexpectedly replaced with <CR><NL>.
- You can encrypt files that are written by setting the 'key' option.  This
- provides some security against others reading your files. |encryption|
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 98fd13840..1ee2dcbb0 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -806,8 +806,10 @@ append({lnum}, {text})					*append()*
+ 		{lnum} can be zero to insert a line before the first one.
+ 		{lnum} is used like with |getline()|.
+ 		Returns 1 for failure ({lnum} out of range or out of memory),
+-		0 for success.  In |Vim9| script an invalid argument or
+-		negative number results in an error.  Example: >
++		0 for success.  When {text} is an empty list zero is returned,
++		no matter the value of {lnum}.
++		In |Vim9| script an invalid argument or negative number
++		results in an error.  Example: >
+ 			:let failed = append(line('$'), "# THE END")
+ 			:let failed = append(0, ["Chapter 1", "the beginning"])
  
-+END OF LINE AND END OF FILE				*eol-and-eof*
+@@ -835,7 +837,9 @@ appendbufline({buf}, {lnum}, {text})			*appendbufline()*
+ 		If {buf} is not a valid buffer or {lnum} is not valid, an
+ 		error message is given. Example: >
+ 			:let failed = appendbufline(13, 0, "# THE START")
+-<
++<		However, when {text} is an empty list then no error is given
++		for an invalid {lnum}, since {lnum} isn't actually used.
 +
-+Vim has several options to control the file format:
-+	'fileformat'	the <EOL> style: Unix, DOS, Mac
-+	'endofline'	whether the last line ends with a <EOL>
-+	'endooffile'	whether the file ends with a CTRL-Z
-+	'fixendofline'	whether to fix eol and eof
-+
-+The first three values are normally detected automatically when reading the
-+file and are used when writing the text to a file.  While editing the buffer
-+it looks like every line has a line ending and the CTRL-Z isn't there (an
-+exception is when 'binary' is set, it works differently then).
-+
-+The 'fixendofline' option can be used to choose what to write.  You can also
-+change the option values to write the file differently than how it was read.
-+
-+Here are some examples how to use them.
-+
-+If you want files in Unix format (every line NL terminated): >
-+	setl ff=unix fixeol
-+You should probably do this on any Unix-like system.  Also modern MS-Windows
-+systems tend to work well with this.  It is recommended to always use this
-+format for Vim scripts.
-+
-+If you want to use an old MS-DOS file in a modern environment, fixing line
-+endings and dropping CTRL-Z, but keeping the <CR><NL> style <EOL>: >
-+	setl ff=dos fixeol
-+This is useful for many MS-Windows programs, they regularly expect the
-+<CR><NL> line endings.
-+
-+If you want to drop the final <EOL> and add a final CTRL-Z (e.g. for an old
-+system like CP/M): >
-+	setl ff=dos nofixeol noeol eof
-+
-+If you want to preserve the fileformat exactly as-is, including any final
-+<EOL> and final CTRL-Z: >
-+	setl nofixeol
+ 		Can also be used as a |method| after a List, the base is
+ 		passed as the second argument: >
+ 			mylist->appendbufline(buf, lnum)
+@@ -981,7 +985,7 @@ autocmd_add({acmds})					*autocmd_add()*
+ 			let acmd.bufnr = 5
+ 			let acmd.cmd = 'call BufEnterFunc()'
+ 			call autocmd_add([acmd])
+-
++<
+ 		Can also be used as a |method|: >
+ 			GetAutocmdList()->autocmd_add()
+ <
+@@ -7873,9 +7877,10 @@ setbufline({buf}, {lnum}, {text})			*setbufline()*
+ 		To insert lines use |appendbufline()|.
+ 		Any text properties in {lnum} are cleared.
  
- ==============================================================================
- 3. The argument list				*argument-list* *arglist*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 0a4df61df..bdc473df3 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -3056,6 +3056,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	When writing a file and this option is off and the 'binary' option
- 	is on, or 'fixeol' option is off, no CTRL-Z will be written at the
- 	end of the file.
-+	See |eol-and-eof| for example settings.
+-		{text} can be a string to set one line, or a list of strings
+-		to set multiple lines.  If the list extends below the last
+-		line then those lines are added.
++		{text} can be a string to set one line, or a List of strings
++		to set multiple lines.  If the List extends below the last
++		line then those lines are added.  If the List is empty then
++		nothing is changed and zero is returned.
  
- 			*'endofline'* *'eol'* *'noendofline'* *'noeol'*
- 'endofline' 'eol'	boolean	(default on)
-@@ -3071,6 +3072,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	to remember the presence of a <EOL> for the last line in the file, so
- 	that when you write the file the situation from the original file can
- 	be kept.  But you can change it if you want to.
-+	See |eol-and-eof| for example settings.
+ 		For the use of {buf}, see |bufname()| above.
  
- 			     *'equalalways'* *'ea'* *'noequalalways'* *'noea'*
- 'equalalways' 'ea'	boolean	(default on)
-@@ -3466,6 +3468,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	When the 'binary' option is set the value of this option doesn't
- 	matter.
- 	See the 'endofline' option.
-+	See |eol-and-eof| for example settings.
+@@ -8060,7 +8065,8 @@ setline({lnum}, {text})					*setline()*
+ 		When {lnum} is just below the last line the {text} will be
+ 		added below the last line.
+ 		{text} can be any type or a List of any type, each item is
+-		converted to a String.
++		converted to a String.  When {text} is an empty List then
++		nothing is changed and FALSE is returned.
  
- 					*'fkmap'* *'fk'* *'nofkmap'* *'nofk'*
- 'fkmap' 'fk'		boolean (default off)
+ 		If this succeeds, FALSE is returned.  If this fails (most likely
+ 		because {lnum} is invalid) TRUE is returned.
