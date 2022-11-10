@@ -1,61 +1,547 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 98fd13840..1ee2dcbb0 100644
+index 1ee2dcbb0..372fa1f68 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -806,8 +806,10 @@ append({lnum}, {text})					*append()*
- 		{lnum} can be zero to insert a line before the first one.
- 		{lnum} is used like with |getline()|.
- 		Returns 1 for failure ({lnum} out of range or out of memory),
--		0 for success.  In |Vim9| script an invalid argument or
--		negative number results in an error.  Example: >
-+		0 for success.  When {text} is an empty list zero is returned,
-+		no matter the value of {lnum}.
-+		In |Vim9| script an invalid argument or negative number
-+		results in an error.  Example: >
- 			:let failed = append(line('$'), "# THE END")
- 			:let failed = append(0, ["Chapter 1", "the beginning"])
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Oct 21
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Nov 09
  
-@@ -835,7 +837,9 @@ appendbufline({buf}, {lnum}, {text})			*appendbufline()*
- 		If {buf} is not a valid buffer or {lnum} is not valid, an
- 		error message is given. Example: >
- 			:let failed = appendbufline(13, 0, "# THE START")
--<
-+<		However, when {text} is an empty list then no error is given
-+		for an invalid {lnum}, since {lnum} isn't actually used.
-+
- 		Can also be used as a |method| after a List, the base is
- 		passed as the second argument: >
- 			mylist->appendbufline(buf, lnum)
-@@ -981,7 +985,7 @@ autocmd_add({acmds})					*autocmd_add()*
- 			let acmd.bufnr = 5
- 			let acmd.cmd = 'call BufEnterFunc()'
- 			call autocmd_add([acmd])
--
-+<
- 		Can also be used as a |method|: >
- 			GetAutocmdList()->autocmd_add()
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1321,7 +1321,8 @@ bufwinid({buf})						*bufwinid()*
+ 
+ 	echo "A window containing buffer 1 is " .. (bufwinid(1))
  <
-@@ -7873,9 +7877,10 @@ setbufline({buf}, {lnum}, {text})			*setbufline()*
- 		To insert lines use |appendbufline()|.
- 		Any text properties in {lnum} are cleared.
+-		Only deals with the current tab page.
++		Only deals with the current tab page.  See |win_findbuf()| for
++		finding more.
  
--		{text} can be a string to set one line, or a list of strings
--		to set multiple lines.  If the list extends below the last
--		line then those lines are added.
-+		{text} can be a string to set one line, or a List of strings
-+		to set multiple lines.  If the List extends below the last
-+		line then those lines are added.  If the List is empty then
-+		nothing is changed and zero is returned.
+ 		Can also be used as a |method|: >
+ 			FindBuffer()->bufwinid()
+@@ -1589,7 +1590,7 @@ col({expr})	The result is a Number, which is the byte index of the column
+ 		column is one higher if the cursor is after the end of the
+ 		line.  Also, when using a <Cmd> mapping the cursor isn't
+ 		moved, this can be used to obtain the column in Insert mode: >
+-			:imap <F2> <Cmd>echo col(".")<CR>
++			:imap <F2> <Cmd>echowin col(".")<CR>
  
- 		For the use of {buf}, see |bufname()| above.
+ <		Can also be used as a |method|: >
+ 			GetPos()->col()
+@@ -2773,7 +2774,7 @@ flattennew({list} [, {maxdepth}])			*flattennew()*
+ float2nr({expr})					*float2nr()*
+ 		Convert {expr} to a Number by omitting the part after the
+ 		decimal point.
+-		{expr} must evaluate to a |Float| or a Number.
++		{expr} must evaluate to a |Float| or a |Number|.
+ 		Returns 0 if {expr} is not a |Float| or a |Number|.
+ 		When the value of {expr} is out of range for a |Number| the
+ 		result is truncated to 0x7fffffff or -0x7fffffff (or when
+@@ -10204,6 +10205,7 @@ win_move_separator({nr}, {offset})			*win_move_separator()*
+ 		FALSE otherwise.
+ 		This will fail for the rightmost window and a full-width
+ 		window, since it has no separator on the right.
++		Only works for the current tab page. *E1308*
  
-@@ -8060,7 +8065,8 @@ setline({lnum}, {text})					*setline()*
- 		When {lnum} is just below the last line the {text} will be
- 		added below the last line.
- 		{text} can be any type or a List of any type, each item is
--		converted to a String.
-+		converted to a String.  When {text} is an empty List then
-+		nothing is changed and FALSE is returned.
+ 		Can also be used as a |method|: >
+ 			GetWinnr()->win_move_separator(offset)
+@@ -10218,6 +10220,7 @@ win_move_statusline({nr}, {offset})			*win_move_statusline()*
+ 		movement may be smaller than specified (e.g., as a consequence
+ 		of maintaining 'winminheight'). Returns TRUE if the window can
+ 		be found and FALSE otherwise.
++		Only works for the current tab page.
  
- 		If this succeeds, FALSE is returned.  If this fails (most likely
- 		because {lnum} is invalid) TRUE is returned.
+ 		Can also be used as a |method|: >
+ 			GetWinnr()->win_move_statusline(offset)
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 5b4ea2bc9..fbe4d3fc2 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -465,7 +465,7 @@ a close callback to the channel.
+ 
+ To read all normal output from a RAW channel that is available: >
+ 	let output = ch_readraw(channel)
+-To read all error output from a RAW channel that is available:: >
++To read all error output from a RAW channel that is available: >
+ 	let output = ch_readraw(channel, {"part": "err"})
+ Note that if the channel is in NL mode, ch_readraw() will only return one line
+ for each call.
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 8b3787010..f01a862ba 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -804,7 +804,7 @@ always be swapped then.
+ 
+ Count and Range						*N:*
+ 
+-When giving a count before entering ":", this is translated into:
++When giving a count before entering ":", this is translated into: >
+ 		:.,.+(count - 1)
+ In words: The "count" lines at and after the cursor.  Example: To delete
+ three lines: >
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index e5661b1bb..c3e1d0d61 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.0.  Last change: 2022 Apr 16
++*editing.txt*   For Vim version 9.0.  Last change: 2022 Nov 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -583,7 +583,7 @@ END OF LINE AND END OF FILE				*eol-and-eof*
+ Vim has several options to control the file format:
+ 	'fileformat'	the <EOL> style: Unix, DOS, Mac
+ 	'endofline'	whether the last line ends with a <EOL>
+-	'endooffile'	whether the file ends with a CTRL-Z
++	'endoffile'	whether the file ends with a CTRL-Z
+ 	'fixendofline'	whether to fix eol and eof
+ 
+ The first three values are normally detected automatically when reading the
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 5ba2af08b..ba95f3291 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1965,7 +1965,7 @@ v:collate	The current locale setting for collation order of the runtime
+ 		command.
+ 		See |multi-lang|.
+ 
+-                                                                *v:colornames*
++								*v:colornames*
+ v:colornames    A dictionary that maps color names to hex color strings. These
+ 		color names can be used with the |highlight-guifg|,
+ 		|highlight-guibg|, and |highlight-guisp| parameters. Updating
+@@ -3598,7 +3598,7 @@ this pending exception or command is discarded.
+ For examples see |throw-catch| and |try-finally|.
+ 
+ 
+-NESTING	OF TRY CONDITIONALS				*try-nesting*
++NESTING OF TRY CONDITIONALS				*try-nesting*
+ 
+ Try conditionals can be nested arbitrarily.  That is, a complete try
+ conditional can be put into the try block, a catch clause, or the finally
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 23501f0de..bf61e86e3 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -571,7 +571,7 @@ used.
+ For example, to set the dialect to a default of "fblite" but still allow for
+ any #lang directive overrides, use the following command: >
+ 
+-     let g:freebasic_lang = "fblite"
++	let g:freebasic_lang = "fblite"
+ 
+ 
+ GIT COMMIT                                              *ft-gitcommit-plugin*
+diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
+index db803ef80..d1af85eff 100644
+--- a/runtime/doc/help.txt
++++ b/runtime/doc/help.txt
+@@ -161,6 +161,8 @@ Programming language support ~
+ |filetype.txt|	settings done specifically for a type of file
+ |quickfix.txt|	commands for a quick edit-compile-fix cycle
+ |ft_ada.txt|	Ada (the programming language) support
++|ft_context.txt|	Filetype plugin for ConTeXt
++|ft_mp.txt|	Filetype plugin for METAFONT and MetaPost
+ |ft_ps1.txt|	Filetype plugin for Windows PowerShell
+ |ft_raku.txt|	Filetype plugin for Raku
+ |ft_rust.txt|	Filetype plugin for Rust
+diff --git a/runtime/doc/os_haiku.txt b/runtime/doc/os_haiku.txt
+index 1a808625f..01c64ecf0 100644
+--- a/runtime/doc/os_haiku.txt
++++ b/runtime/doc/os_haiku.txt
+@@ -56,7 +56,7 @@ additionally installed over the GUI version.  Typical build commands are:
+   ./configure --prefix=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY` \
+     --datarootdir=`finddir B_SYSTEM_NONPACKAGED_DATA_DIRECTORY` \
+     --mandir=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`/documentation/man \
+-    --with-tlib=ncurses \
++    --with-tlib=ncurses
+   make clean
+   make install
+ 
+diff --git a/runtime/doc/pi_tar.txt b/runtime/doc/pi_tar.txt
+index d1b2959a4..37b2886d8 100644
+--- a/runtime/doc/pi_tar.txt
++++ b/runtime/doc/pi_tar.txt
+@@ -82,7 +82,7 @@ Copyright 2005-2017:					*tar-copyright*
+    <.vimrc> file.
+ 			 Default
+    Variable		  Value   Explanation
+-   *g:tar_browseoptions*  "Ptf"   used to get a list of contents
++   *g:tar_browseoptions*    "Ptf"   used to get a list of contents
+    *g:tar_readoptions*	  "OPxf"  used to extract a file from a tarball
+    *g:tar_cmd*		  "tar"   the name of the tar program
+    *g:tar_nomax*	    0	  if true, file window will not be maximized
+@@ -98,7 +98,7 @@ Copyright 2005-2017:					*tar-copyright*
+ 					"-"
+ 				  Not all tar's support the "--" which is why
+ 				  it isn't default.
+-   *g:tar_writeoptions*   "uf"    used to update/replace a file
++   *g:tar_writeoptions*	  "uf"    used to update/replace a file
+ 
+ 
+ ==============================================================================
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index 024f26516..b5d152a36 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
+@@ -1008,8 +1008,8 @@ Note: even when using "num" or "long" the number of flags available to
+ compounding and prefixes is limited to about 250.
+ 
+ 
+-AFFIXES
+-					    *spell-PFX* *spell-SFX*
++AFFIXES						*spell-PFX* *spell-SFX*
++
+ The usual PFX (prefix) and SFX (suffix) lines are supported (see the Myspell
+ documentation or the Aspell manual:
+ http://aspell.net/man-html/Affix-Compression.html).
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index fc93378e1..0a3e31946 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2022 Oct 17
++*syntax.txt*	For Vim version 9.0.  Last change: 2022 Nov 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2416,7 +2416,7 @@ you set the variable: >
+ 
+ 	:let papp_include_html=1
+ 
+-in your startup file it will try to syntax-hilight html code inside phtml
++in your startup file it will try to syntax-highlight html code inside phtml
+ sections, but this is relatively slow and much too colourful to be able to
+ edit sensibly. ;)
+ 
+@@ -4943,7 +4943,7 @@ Change a couple more colors: >
+ 	augroup my_colorschemes
+ 	  au!
+ 	  au Colorscheme pablo hi Normal ctermbg=NONE
+-		      \ | higlight Special ctermfg=63
++		      \ | highlight Special ctermfg=63
+ 		      \ | highlight Identifier ctermfg=44
+ 	augroup END
+ 
+@@ -5386,10 +5386,10 @@ LineNrBelow	Line number for when the 'relativenumber'
+ 							*hl-CursorLineNr*
+ CursorLineNr	Like LineNr when 'cursorline' is set and 'cursorlineopt'
+ 		contains "number" or is "both", for the cursor line.
+-							*hl-CursorLineSign*
+-CursorLineSign	Like SignColumn when 'cursorline' is set for the cursor line.
+ 							*hl-CursorLineFold*
+ CursorLineFold	Like FoldColumn when 'cursorline' is set for the cursor line.
++							*hl-CursorLineSign*
++CursorLineSign	Like SignColumn when 'cursorline' is set for the cursor line.
+ 							*hl-MatchParen*
+ MatchParen	Character under the cursor or just before it, if it
+ 		is a paired bracket, and its match. |pi_paren.txt|
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index e1971b686..ff59a2028 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Oct 28
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Nov 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,6 +38,8 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++Add test for what 9.0.0827 fixes - '@' in termcap key code
++
+ 'smoothscroll':
+ - CTRL-E and gj in long line with 'scrolloff' 5 not working well yet.
+ - computing 'scrolloff' position row use w_skipcol
+@@ -176,6 +178,8 @@ reduced?
+ 
+ Add BufDeletePost.  #11041
+ 
++Add winid arg to col() and charcol()  #11466 (request #11461)
++
+ Test property disappears when using CR twice in a row.  OK when some text was
+ entered. (#11151)
+ 
+@@ -183,6 +187,10 @@ NFA regexp does not handle composing characters well: #10286
+     [ɔ̃] matches both ɔ and ɔ̃
+     \(ɔ\|ɔ̃\) matches ɔ and not ɔ̃
+ 
++Is there a way to make 'autowriteall' make a clean exit when the xterm is
++closed? (Dennis Nazic says files are preserved, okt 28).  Perhaps handle TERM
++like HUP?
++
+ Improvement in terminal configuration mess: Request the terminfo entry from
+ the terminal itself.  The $TERM value then is only relevant for whether this
+ feature is supported or not.  Replaces the xterm mechanism to request each
+@@ -191,6 +199,16 @@ Multiplexers (screen, tmux) can request it to the underlying terminal, and
+ pass it on with modifications.
+ How to get all the text quickly (also over ssh)?  Can we use a side channel?
+ 
++Horizontal mouse scroll only works when compiled with GUI?  #11374
++
++In the libvterm fork properly implement:
++- modifyOtherKeys 2 - follow xterm implementation as close as possible, that
++  is the reference.
++- Kitty key protocol - just like the latest Kitty
++So that in TermDebug the key handling can be stepped through (instead of
++having to log messages all over the place to see what happens).
++Ask Leonerd about location of code, he might want to take over some of it.
++
+ Using "A" and "o" in manually created fold (in empty buffer) does not behave
+ consistenly (James McCoy, #10698)
+ 
+@@ -301,6 +319,9 @@ when redirecting to a local variable (function or script) storing the value
+ won't work.  At least give an error.  Is there a way to make it work?
+ #10616
+ 
++Completion for ":runtime" should show valid values, not what's in the current
++directory. (#11447)
++
+ Add an option to start_timer() to return from the input loop with K_IGNORE.
+ This is useful e.g. when a popup was created that disables mappings, we need
+ to return from vgetc() to make this happen.  #7011
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 46bd0c855..0ebc82a77 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -405,7 +405,7 @@ function to abort.  `:defer` can be used to avoid that: >
+ 	  call Handle('Outfile')
+ 	endfunc
+ 
+-Note that deleting "Outfile" is scheduled before calling system(), since it
++Note that deleting "Outfile" is scheduled before calling `system()`, since it
+ can be created even when `system()` fails.
+ 
+ The deferred functions are called in reverse order, the last one added is
+diff --git a/runtime/doc/usr_03.txt b/runtime/doc/usr_03.txt
+index b0a9d66c2..baae7f843 100644
+--- a/runtime/doc/usr_03.txt
++++ b/runtime/doc/usr_03.txt
+@@ -1,4 +1,4 @@
+-*usr_03.txt*	For Vim version 9.0.  Last change: 2020 Sep 03
++*usr_03.txt*	For Vim version 9.0.  Last change: 2022 Oct 30
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -223,7 +223,7 @@ you can see?  This figure shows the three commands you can use:
+ 			+---------------------------+
+ 
+ Hints: "H" stands for Home, "M" for Middle and "L" for Last.  Alternatively,
+-"H" for high, "M" for Middle and "L" for low.
++"H" for High, "M" for Middle and "L" for Low.
+ 
+ ==============================================================================
+ *03.6*	Telling where you are
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 1d5c7e58a..e449003a5 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -139,7 +139,7 @@ FOUR KINDS OF NUMBERS
+ Numbers can be decimal, hexadecimal, octal and binary.
+ 
+ A hexadecimal number starts with "0x" or "0X".  For example "0x1f" is decimal
+-31 and 0x1234 is decimal 4660.
++31 and "0x1234" is decimal 4660.
+ 
+ An octal number starts with "0o", "0O".  "0o17" is decimal 15.
+ 
+@@ -687,7 +687,7 @@ search() function uses its first argument as a search pattern and the second
+ one as flags.  The "W" flag means the search doesn't wrap around the end of
+ the file.
+ 
+-Using the  `call` command is optional in |Vim9| script.  It is required in
++Using the `call` command is optional in |Vim9| script.  It is required in
+ legacy script and on the command line: >
+ 
+ 	call search("Date: ", "W")
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 56b304076..a88f3181d 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2022 Oct 17
++*various.txt*   For Vim version 9.0.  Last change: 2022 Nov 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -298,7 +298,8 @@ g8			Print the hex values of the bytes used in the
+ 				:silent !{cmd}
+ <			The screen is not redrawn then, thus you have to use
+ 			CTRL-L or ":redraw!" if the command did display
+-			something.
++			something.  However, this depends on what the |t_ti|
++			and |t_te| termcap entries are set to.
+ 			Also see |shell-window|.
+ 
+ 							*:!!*
+diff --git a/runtime/doc/version5.txt b/runtime/doc/version5.txt
+index 40f58b777..cde0ad05a 100644
+--- a/runtime/doc/version5.txt
++++ b/runtime/doc/version5.txt
+@@ -1,4 +1,4 @@
+-*version5.txt*  For Vim version 9.0.  Last change: 2022 Apr 06
++*version5.txt*  For Vim version 9.0.  Last change: 2022 Nov 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -118,7 +118,7 @@ Added					|added-5.8|
+ Fixed					|fixed-5.8|
+ 
+ ==============================================================================
+-				 INCOMPATIBLE		*incompatible-5*
++INCOMPATIBLE						*incompatible-5*
+ 
+ Default value for 'compatible' changed			*cp-default*
+ --------------------------------------
+@@ -360,7 +360,7 @@ CTRL-_ key for this |i_CTRL-_|. >
+    :imap <C-B> <C-O>:set revins!<CR>
+ 
+ ==============================================================================
+-				 NEW FEATURES		*new-5*
++NEW FEATURES						*new-5*
+ 
+ Syntax highlighting					*new-highlighting*
+ -------------------
+@@ -635,7 +635,7 @@ Included support for the Farsi language (Shiran).  Only when enabled at
+ compile time.  See |farsi|.
+ 
+ ==============================================================================
+-				 IMPROVEMENTS		*improvements-5*
++IMPROVEMENTS						*improvements-5*
+ 
+ Performance:
+ - When 'showcmd' was set, mappings would execute much more slowly because the
+@@ -929,7 +929,7 @@ Some versions of Motif require "-lXpm".  Added check for this in configure.
+ Don't add "-L/usr/lib" to the link line, causes problems on a few systems.
+ 
+ ==============================================================================
+-			     COMPILE TIME CHANGES	*compile-changes-5*
++COMPILE TIME CHANGES					*compile-changes-5*
+ 
+ When compiling, allow a choice for minimal, normal or maximal features in an
+ easy way, by changing a single line in src/feature.h.
+@@ -975,7 +975,7 @@ Don't use HPUX digraphs by default, but only when HPUX_DIGRAPHS is defined.
+ |digraphs-default|
+ 
+ ==============================================================================
+-				 BUG FIXES		*bug-fixes-5*
++BUG FIXES						*bug-fixes-5*
+ 
+ Note:	Some of these fixes may only apply to test versions which were
+ 	created after version 4.6, but before 5.0.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 9ec13872a..2ea210dd8 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -259,7 +259,7 @@ Support for evaluating Vim expressions in a heredoc. |:let-heredoc|
+ 
+ Support for fuzzy matching:
+ - a string in a List of strings. |fuzzy-matching|
+-- completion support for command line completion using 'wildoptions'
++- completion support for command line completion using 'wildoptions'.
+ - for |:vimgrep|.
+ 
+ Added support for the |Haiku| OS.
+@@ -398,22 +398,22 @@ Update xdiff to version 2.33.  Update libvterm to revision 789.
+ 
+ Support 'trim' for Python/Lua/Perl/Tcl/Ruby/MzScheme interface heredoc.
+ 
+-Add the |t_AU| and |t_8u| termap codes for underline and undercurl.  Add the
++Add the |t_AU| and |t_8u| termcap codes for underline and undercurl.  Add the
+ t_fd and t_fe termcap codes for detecting focus events.
+ 
+ Support for indenting C pragmas like normal code. (|cino-P|)
+ 
+-Add support for defining the syntax fold level (|:syn-foldlevel|)
++Add support for defining the syntax fold level. (|:syn-foldlevel|)
+ 
+ Add support for using \<*xxx> in a string to prepend a modifier to a
+-character. (|expr-quote|).
++character. (|expr-quote|)
+ 
+ Add support trimming characters at the beginning or end of a string using
+ |trim()|.
+ 
+ Make ":verbose pwd" show the scope of the directory. |:pwd-verbose|
+ 
+-Add the "0o" notation for specifying octal numbers |scriptversion-4|
++Add the "0o" notation for specifying octal numbers. |scriptversion-4|
+ 
+ Support for changing to the previous tab-local and window-local directories
+ using the "tcd -" and "lcd -" commands. (|:tcd-| and |:lcd-|)
+@@ -428,7 +428,7 @@ Add support for executing (|:@|) a register containing line continuation.
+ Lua support:
+ - Call Vim functions from Lua (vim.call() and vim.fn()).
+ - Convert a Lua function and a closure to a Vim funcref so that it can be
+-  accessed in a Vimscript (|lua-funcref|).
++  accessed in a Vim script (|lua-funcref|).
+ - Not backwards compatible: Make Lua arrays one based.
+ - Add support for using table.insert() and table.remove() functions with Vim
+   lists.
+@@ -27366,7 +27366,7 @@ Files:      src/evalfunc.c, src/testdir/test_vim9_builtin.vim
+ Patch 8.2.4460
+ Problem:    Vim9: wrong error for defining dict function.
+ Solution:   Explicitly check for trying to define a dict function.
+-            (closes 9827)
++            (closes #9827)
+ Files:      src/errors.h, src/userfunc.c, src/vim9compile.c,
+             src/testdir/test_vim9_func.vim
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 3dfcf6afc..7c5b2b829 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1039,7 +1039,7 @@ In Vim9 script one can use the following predefined values: >
+ `true` is the same as `v:true`, `false` the same as `v:false`, `null` the same
+ as `v:null`.
+ 
+-While `null` has the type "special", the other "null_" types have the type
++While `null` has the type "special", the other "null_" values have the type
+ indicated by their name.  Quite often a null value is handled the same as an
+ empty value, but not always.  The values can be useful to clear a script-local
+ variable, since they cannot be deleted with `:unlet`.  E.g.: >
+diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
+index c7163c3ff..43c320403 100644
+--- a/runtime/doc/visual.txt
++++ b/runtime/doc/visual.txt
+@@ -116,7 +116,7 @@ gn			Search forward for the last used search pattern, like
+ 			E.g., "dgn" deletes the text of the next match.
+ 			If Visual mode is active, extends the selection
+ 			until the end of the next match.
+-			'wrapscan' applies
++			'wrapscan' applies.
+ 			Note: Unlike `n` the search direction does not depend
+ 			on the previous search command.
+ 
+@@ -510,11 +510,11 @@ mode Vim automatically switches to Visual mode, so that the same behavior as
+ in Visual mode is effective.  If you don't want this use |:xmap| or |:smap|.
+ 
+ One particular edge case: >
+-  	:vnoremap <C-K> <Esc>
++	:vnoremap <C-K> <Esc>
+ This ends Visual mode when in Visual mode, but in Select mode it does not
+ work, because Select mode is restored after executing the mapped keys.  You
+ need to use: >
+-  	:snoremap <C-K> <Esc>
++	:snoremap <C-K> <Esc>
+ <
+ Users will expect printable characters to replace the selected area.
+ Therefore avoid mapping printable characters in Select mode.  Or use
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index b60d44c5d..2d96b043b 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -561,9 +561,9 @@ CTRL-W =	Make all windows (almost) equally high and wide, but use
+ 		Windows with 'winfixheight' set keep their height and windows
+ 		with 'winfixwidth' set keep their width.
+ 		To equalize only vertically (make window equally high) use
+-		`vertical wincmd =`
++		`vertical wincmd =`.
+ 		To equalize only horizontally (make window equally wide) use
+-		`horizontal wincmd =`
++		`horizontal wincmd =`.
+ 
+ :res[ize] -N					*:res* *:resize* *CTRL-W_-*
+ CTRL-W -	Decrease current window height by N (default 1).
