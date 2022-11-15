@@ -1,72 +1,51 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 372fa1f68..ff93437ca 100644
+index ff93437ca..727ff2a5e 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -116,13 +116,13 @@ ch_status({handle} [, {options}])
- changenr()			Number	current change number
- char2nr({expr} [, {utf8}])	Number	ASCII/UTF-8 value of first char in {expr}
- charclass({string})		Number	character class of {string}
--charcol({expr})			Number	column number of cursor or mark
-+charcol({expr} [, {winid}])	Number	column number of cursor or mark
- charidx({string}, {idx} [, {countcc}])
- 				Number	char index of byte {idx} in {string}
- chdir({dir})			String	change current working directory
- cindent({lnum})			Number	C indent for line {lnum}
- clearmatches([{win}])		none	clear all matches
--col({expr})			Number	column byte index of cursor or mark
-+col({expr} [, {winid}])		Number	column byte index of cursor or mark
- complete({startcol}, {matches}) none	set Insert mode completion
- complete_add({expr})		Number	add completion match
- complete_check()		Number	check for key typed during completion
-@@ -1474,7 +1474,7 @@ charclass({string})					*charclass()*
- 		Returns 0 if {string} is not a |String|.
+@@ -246,6 +246,7 @@ getloclist({nr}, {what})	Dict	get specific location list properties
+ getmarklist([{buf}])		List	list of global/local marks
+ getmatches([{win}])		List	list of current matches
+ getmousepos()			Dict	last known mouse position
++getmouseshape()			String	current mouse shape name
+ getpid()			Number	process ID of Vim
+ getpos({expr})			List	position of cursor, mark, etc.
+ getqflist()			List	list of quickfix items
+@@ -3879,6 +3880,12 @@ getmousepos()						*getmousepos()*
+ 		When using |getchar()| the Vim variables |v:mouse_lnum|,
+ 		|v:mouse_col| and |v:mouse_winid| also provide these values.
  
- 
--charcol({expr})						*charcol()*
-+charcol({expr} [, {winid}])				*charcol()*
- 		Same as |col()| but returns the character index of the column
- 		position given with {expr} instead of the byte position.
- 
-@@ -1557,8 +1557,8 @@ clearmatches([{win}])					*clearmatches()*
- 		Can also be used as a |method|: >
- 			GetWin()->clearmatches()
- <
--							*col()*
--col({expr})	The result is a Number, which is the byte index of the column
-+col({expr} [, {winid})					*col()*
-+		The result is a Number, which is the byte index of the column
- 		position given with {expr}.  The accepted positions are:
- 		    .	    the cursor position
- 		    $	    the end of the cursor line (the result is the
-@@ -1573,6 +1573,8 @@ col({expr})	The result is a Number, which is the byte index of the column
- 		and column number. Most useful when the column is "$", to get
- 		the last column of a specific line.  When "lnum" or "col" is
- 		out of range then col() returns zero.
-+		With the optional {winid} argument the values are obtained for
-+		that window instead of the current window.
- 		To get the line number use |line()|.  To get both use
- 		|getpos()|.
- 		For the screen column position use |virtcol()|.  For the
-@@ -1583,7 +1585,8 @@ col({expr})	The result is a Number, which is the byte index of the column
- 			col("$")		length of cursor line plus one
- 			col("'t")		column of mark t
- 			col("'" .. markname)	column of mark markname
--<		The first column is 1.  Returns 0 if {expr} is invalid.
-+<		The first column is 1.  Returns 0 if {expr} is invalid or when
-+		the window with ID {winid} is not found.
- 		For an uppercase mark the column may actually be in another
- 		buffer.
- 		For the cursor position, when 'virtualedit' is active, the
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index bdc473df3..4642bdd48 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -3049,7 +3049,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	not set yet, the default for 'fileencodings' is changed.
- 
- 			*'endoffile'* *'eof'* *'noendoffile'* *'noeof'*
--'endoffile' 'eof'	boolean	(default on)
-+'endoffile' 'eof'	boolean	(default off)
- 			local to buffer
- 	Indicates that a CTRL-Z character was found at the end of the file
- 	when reading it.  Normally only happens when 'fileformat' is "dos".
++getmouseshape()						*getmouseshape()*
++		Returns the name of the currently showing mouse pointer.
++		When the |+mouseshape| feature is not supported or the shape
++		is unknown an empty string is returned.
++		This function is mainly intended for testing.
++
+ 							*getpid()*
+ getpid()	Return a Number which is the process ID of the Vim process.
+ 		On Unix and MS-Windows this is a unique number, until Vim
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index c33c9f869..494b6290f 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -234,6 +234,9 @@ The search string will not be echoed when using this mapping.  Messages from
+ the executed command are still given though.  To shut them up too, add a
+ ":silent" in the executed command: >
+ 	:map <silent> ,h :exe ":silent normal /Header\r"<CR>
++Note that the effect of a command might also be silenced, e.g., when the
++mapping selects another entry for command line completion it won't be
++displayed.
+ Prompts will still be given, e.g., for inputdialog().
+ Using "<silent>" for an abbreviation is possible, but will cause redrawing of
+ the command line to fail.
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index e449003a5..5a7820ed7 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1110,6 +1110,7 @@ Interactive:					*interactive-functions*
+ 	getcharstr()		get a character from the user as a string
+ 	getcharmod()		get modifiers for the last typed character
+ 	getmousepos()		get last known mouse position
++	getmouseshape()		get name of the current mouse shape
+ 	echoraw()		output characters as-is
+ 	feedkeys()		put characters in the typeahead queue
+ 	input()			get a line from the user
