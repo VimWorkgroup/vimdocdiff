@@ -1,44 +1,56 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 5051cc3dc..86ae60f67 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -1372,16 +1372,32 @@ WinNew				When a new window was created.  Not done for
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index f17a892da..04cadadd8 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -208,6 +208,7 @@ get({func}, {what})		any	get property of funcref/partial {func}
+ getbufinfo([{buf}])		List	information about buffers
+ getbufline({buf}, {lnum} [, {end}])
+ 				List	lines {lnum} to {end} of buffer {buf}
++getbufoneline({buf}, {lnum})	String	line {lnum} of buffer {buf}
+ getbufvar({buf}, {varname} [, {def}])
+ 				any	variable {varname} in buffer {buf}
+ getchangelist([{buf}])		List	list of change list items
+@@ -3204,7 +3205,8 @@ getbufinfo([{dict}])
+ getbufline({buf}, {lnum} [, {end}])
+ 		Return a |List| with the lines starting from {lnum} to {end}
+ 		(inclusive) in the buffer {buf}.  If {end} is omitted, a
+-		|List| with only the line {lnum} is returned.
++		|List| with only the line {lnum} is returned.  See
++		`getbufoneline()` for only getting the line.
  
- 							*WinScrolled*
- WinScrolled			After scrolling the content of a window or
--				resizing a window.
--				The pattern is matched against the
--				|window-ID|.  Both <amatch> and <afile> are
--				set to the |window-ID|.
--				Non-recursive (the event cannot trigger
--				itself).  However, if the command causes the
--				window to scroll or change size another
-+				resizing a window in the current tab page.
-+
-+				When more than one window scrolled or resized
-+				only one WinScrolled event is triggered.  You
-+				can use the `winlayout()` and `getwininfo()`
-+				functions to see what changed.
-+
-+				The pattern is matched against the |window-ID|
-+				of the first window that scrolled or resized.
-+				Both <amatch> and <afile> are set to the
-+				|window-ID|.
-+
-+				Only starts triggering after startup finished
-+				and the first screen redraw was done.
-+
-+				Non-recursive: the event will not trigger
-+				while executing commands for the WinScrolled
-+				event.  However, if the command causes a
-+				window to scroll or change size, then another
- 				WinScrolled event will be triggered later.
-+
- 				Does not trigger when the command is added,
- 				only after the first scroll or resize.
-+							*E1312*
-+				It is not allowed to change the window layout
-+				here (split, close or move windows).
+ 		For the use of {buf}, see |bufname()| above.
  
- ==============================================================================
- 6. Patterns					*autocmd-patterns* *{aupat}*
+@@ -3227,6 +3229,11 @@ getbufline({buf}, {lnum} [, {end}])
+ 
+ <		Can also be used as a |method|: >
+ 			GetBufnr()->getbufline(lnum)
++<
++							*getbufoneline()*
++getbufoneline({buf}, {lnum})
++		Just like `getbufline()` but only get one line and return it
++		as a string.
+ 
+ getbufvar({buf}, {varname} [, {def}])				*getbufvar()*
+ 		The result is the value of option or local buffer variable
+@@ -3771,7 +3778,8 @@ getline({lnum} [, {end}])
+ <		Can also be used as a |method|: >
+ 			ComputeLnum()->getline()
+ 
+-<		To get lines from another buffer see |getbufline()|
++<		To get lines from another buffer see |getbufline()| and
++		|getbufoneline()|
+ 
+ getloclist({nr} [, {what}])				*getloclist()*
+ 		Returns a |List| with all the entries in the location list for
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 086081f72..b6d98b979 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -935,6 +935,7 @@ Working with text in the current buffer:		*text-functions*
+ 
+ Working with text in another buffer:
+ 	getbufline()		get a list of lines from the specified buffer
++	getbufoneline()		get a one line from the specified buffer
+ 	setbufline()		replace a line in the specified buffer
+ 	appendbufline()		append a list of lines in the specified buffer
+ 	deletebufline()		delete lines from a specified buffer
