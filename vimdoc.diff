@@ -1,139 +1,524 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index fbd0b0df3..5acf7333d 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.0.  Last change: 2022 May 24
++*autocmd.txt*   For Vim version 9.0.  Last change: 2022 Nov 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1058,8 +1058,8 @@ QuickFixCmdPre			Before a quickfix command is run (|:make|,
+ QuickFixCmdPost			Like QuickFixCmdPre, but after a quickfix
+ 				command is run, before jumping to the first
+ 				location. For |:cfile| and |:lfile| commands
+-				it is run after error file is read and before
+-				moving to the first error.
++				it is run after the error file is read and
++				before moving to the first error.
+ 				See |QuickFixCmdPost-example|.
+ 							*QuitPre*
+ QuitPre				When using `:quit`, `:wq` or `:qall`, before
+@@ -1342,8 +1342,9 @@ VimSuspend			When the Vim instance is suspended.  Only when
+ 				CTRL-Z was typed inside Vim, or when the SIGTSTP
+ 				signal was sent to Vim, but not for SIGSTOP.
+ 							*WinClosed*
+-WinClosed			After closing a window.  The pattern is
+-				matched against the |window-ID|.  Both
++WinClosed			When closing a window, just before it is
++				removed from the window layout.  The pattern
++				is matched against the |window-ID|.  Both
+ 				<amatch> and <afile> are set to the
+ 				|window-ID|.  Non-recursive (event cannot
+ 				trigger itself).
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 04cadadd8..1d701379c 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Nov 14
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Nov 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5572,6 +5572,10 @@ map({expr1}, {expr2})					*map()*
+ 		If {expr2} is a |Funcref| it is called with two arguments:
+ 			1. The key or the index of the current item.
+ 			2. the value of the current item.
++		With a legacy script lambda you don't get an error if it only
++		accepts one argument, but with a Vim9 lambda you get "E1106:
++		One argument too many", the number of arguments must match.
++
+ 		The function must return the new value of the item. Example
+ 		that changes each value by "key-value": >
+ 			func KeyValue(key, val)
+@@ -7938,29 +7942,38 @@ setbufvar({buf}, {varname}, {val})			*setbufvar()*
+ 
+ setcellwidths({list})					*setcellwidths()*
+ 		Specify overrides for cell widths of character ranges.  This
+-		tells Vim how wide characters are, counted in screen cells.
+-		This overrides 'ambiwidth'.  Example: >
+-		   setcellwidths([[0xad, 0xad, 1],
+-				\ [0x2194, 0x2199, 2]])
+-
+-<				*E1109* *E1110* *E1111* *E1112* *E1113* *E1114*
+-		The {list} argument is a list of lists with each three
+-		numbers. These three numbers are [low, high, width].  "low"
+-		and "high" can be the same, in which case this refers to one
+-		character. Otherwise it is the range of characters from "low"
+-		to "high" (inclusive).  "width" is either 1 or 2, indicating
+-		the character width in screen cells.
+-		An error is given if the argument is invalid, also when a
+-		range overlaps with another.
++		tells Vim how wide characters are when displayed in the
++		terminal, counted in screen cells.  The values override
++		'ambiwidth'.  Example: >
++		   call setcellwidths([
++		   		\ [0x111, 0x111, 1],
++				\ [0x2194, 0x2199, 2],
++				\ ])
++
++<		The {list} argument is a List of Lists with each three
++		numbers: [{low}, {high}, {width}].	*E1109* *E1110*
++		{low} and {high} can be the same, in which case this refers to
++		one character.  Otherwise it is the range of characters from
++		{low} to {high} (inclusive).		*E1111* *E1114*
+ 		Only characters with value 0x100 and higher can be used.
+ 
++		{width} must be either 1 or 2, indicating the character width
++		in screen cells.			*E1112*
++		An error is given if the argument is invalid, also when a
++		range overlaps with another. 		*E1113*
++
+ 		If the new value causes 'fillchars' or 'listchars' to become
+ 		invalid it is rejected and an error is given.
+ 
+-		To clear the overrides pass an empty list: >
++		To clear the overrides pass an empty {list}: >
+ 		   setcellwidths([]);
++
+ <		You can use the script $VIMRUNTIME/tools/emoji_list.vim to see
+-		the effect for known emoji characters.
++		the effect for known emoji characters.  Move the cursor
++		through the text to check if the cell widths of your terminal
++		match with what Vim knows about each emoji.  If it doesn't
++		look right you need to adjust the {list} argument.
++
+ 
+ setcharpos({expr}, {list})				*setcharpos()*
+ 		Same as |setpos()| but uses the specified column number as the
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index a51dadb7d..5811b8e59 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.0.  Last change: 2022 Sep 13
++*change.txt*    For Vim version 9.0.  Last change: 2022 Nov 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/digraph.txt b/runtime/doc/digraph.txt
+index cd4b30eae..918bdd86b 100644
+--- a/runtime/doc/digraph.txt
++++ b/runtime/doc/digraph.txt
+@@ -1,4 +1,4 @@
+-*digraph.txt*   For Vim version 9.0.  Last change: 2021 Jul 19
++*digraph.txt*   For Vim version 9.0.  Last change: 2022 Nov 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -162,7 +162,7 @@ These are the RFC1345 digraphs for the one-byte characters.  See the output of
+ ":digraphs" for the others.
+ 
+ EURO
+-
++							*euro* *euro-digraph*
+ Exception: RFC1345 doesn't specify the euro sign.  In Vim the digraph =e was
+ added for this.  Note the difference between latin1, where the digraph Cu is
+ used for the currency sign, and latin9 (iso-8859-15), where the digraph =e is
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 3515891c6..c22b3d032 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2022 Nov 13
++*eval.txt*	For Vim version 9.0.  Last change: 2022 Nov 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1548,7 +1548,7 @@ to be doubled.  These two commands are equivalent: >
+ 	if a =~ '\s*'
+ 
+ 
+-interpolated-string				*$quote* *interp-string*
++interpolated-string				*$quote* *interpolated-string*
+ --------------------
+ $"string"		interpolated string constant		*expr-$quote*
+ $'string'		interpolated literal string constant	*expr-$'*
+@@ -2859,7 +2859,7 @@ text...
+ 			does not need to be doubled.
+ 			If "eval" is specified, then any Vim expression in the
+ 			form {expr} is evaluated and the result replaces the
+-			expression, like with |interp-string|.
++			expression, like with |interpolated-string|.
+ 			Example where $HOME is expanded: >
+ 				let lines =<< trim eval END
+ 				  some text
+diff --git a/runtime/doc/ft_context.txt b/runtime/doc/ft_context.txt
+index e608c5b84..9b081976e 100644
+--- a/runtime/doc/ft_context.txt
++++ b/runtime/doc/ft_context.txt
+@@ -79,7 +79,7 @@ The last command will create the following syntax files:
+ - `context-data-context.vim`;
+ - `context-data-interfaces.vim`;
+ - `context-data-metafun.vim`;
+-- `context-data-tex.vim`. 
++- `context-data-tex.vim`.
+ 
+ The same command can be used to update those syntax files.
+ 
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 9e8762696..0db0e4176 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -892,7 +892,7 @@ Groß): >
+       endfor
+       return res
+     endfunc
+-    
++
+     if exists('+thesaurusfunc')
+       set thesaurusfunc=Thesaur
+     endif
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 5cbaf6733..04d5f5cb8 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
+@@ -1,4 +1,4 @@
+-*intro.txt*     For Vim version 9.0.  Last change: 2022 Oct 12
++*intro.txt*     For Vim version 9.0.  Last change: 2022 Nov 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
 diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index f2b6a6121..adccae8ac 100644
+index adccae8ac..19797b226 100644
 --- a/runtime/doc/map.txt
 +++ b/runtime/doc/map.txt
-@@ -10,18 +10,19 @@ This subject is introduced in sections |05.4|, |24.7| and |40.1| of the user
- manual.
- 
- 1. Key mapping			|key-mapping|
--   1.1 MAP COMMANDS			|:map-commands|
--   1.2 Special arguments		|:map-arguments|
--   1.3 Mapping and modes		|:map-modes|
--   1.4 Listing mappings			|map-listing|
--   1.5 Mapping special keys		|:map-special-keys|
--   1.6 Special characters		|:map-special-chars|
--   1.7 What keys to map			|map-which-keys|
--   1.8 Examples				|map-examples|
--   1.9 Using mappings			|map-typing|
--   1.10 Mapping alt-keys		|:map-alt-keys|
--   1.11 Mapping in modifyOtherKeys mode	|modifyOtherKeys|
--   1.12 Mapping an operator		|:map-operator|
-+   1.1 MAP COMMANDS				|:map-commands|
-+   1.2 Special arguments			|:map-arguments|
-+   1.3 Mapping and modes			|:map-modes|
-+   1.4 Listing mappings				|map-listing|
-+   1.5 Mapping special keys			|:map-special-keys|
-+   1.6 Special characters			|:map-special-chars|
-+   1.7 What keys to map				|map-which-keys|
-+   1.8 Examples					|map-examples|
-+   1.9 Using mappings				|map-typing|
-+   1.10 Mapping alt-keys			|:map-alt-keys|
-+   1.11 Mapping in modifyOtherKeys mode		|modifyOtherKeys|
-+   1.12 Mapping with Kitty keyboard protocol	|kitty-keyboard-protocol|
-+   1.13 Mapping an operator			|:map-operator|
- 2. Abbreviations		|abbreviations|
- 3. Local mappings and functions	|script-local|
- 4. User-defined commands	|user-commands|
-@@ -1009,7 +1010,34 @@ When the 'esckeys' option is off, then modifyOtherKeys will be disabled in
- Insert mode to avoid every key with a modifier causing Insert mode to end.
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2022 Nov 14
++*map.txt*       For Vim version 9.0.  Last change: 2022 Nov 23
  
  
--1.12 MAPPING AN OPERATOR				*:map-operator*
-+1.12 MAPPING WITH KITTY KEYBOARD PROTOCOL	 *kitty-keyboard-protocol*
-+
-+If the value of 'term' contains "kitty" then Vim will send out an escape
-+sequence to enable the Kitty keyboard protocol.  This can be changed with the
-+'keyprotocol' option.
-+
-+Like modifyOtherKeys, this will make it possible to distinguish between more
-+keys with modifiers.  Also, this protocol sends an escape sequence for the Esc
-+key, so that Vim does not need to use a timeout to know whether receiving an
-+Esc character means the Esc key was pressed or it's the start of an escape
-+sequence.
-+
-+Vim automatically detects if the Kitty keyboard protocol was enabled when it
-+spots the response to the status request (this should be part of the |t_TI|
-+termcap entry).  To see if Vim detected such an escape sequence use: >
-+	:verbose map
-+The first line will then show "Kitty keyboard protocol: {value}" (possibly
-+translated).  The meaning of {value}:
-+	Unknown		no status received yet
-+	Off		protocol is not used
-+	On		protocol is used
-+	Disabled	protocol was used but expected to have been disabled
-+			by 't_TE'
-+	Cleared		protocol expected to have beeen disabled by 't_TE',
-+			previous state is unknown 
-+
-+
-+1.13 MAPPING AN OPERATOR				*:map-operator*
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1853,7 +1853,7 @@ When executed as: >
+ This will invoke: >
+ 	:call Myfunc("arg1","arg2")
  
- An operator is used before a {motion} command.  To define your own operator
- you must create a mapping that first sets the 'operatorfunc' option and then
+-<						*q-args-example* 
++<						*q-args-example*
+ A more substantial example: >
+    :function Allargs(command)
+    :   let i = 0
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f4bf37987..d062af4c9 100644
+index d062af4c9..c730527cf 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -4888,6 +4888,50 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	<PageUp> and <PageDown>.
- 	The 'keymodel' option is set by the |:behave| command.
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2022 Nov 12
++*options.txt*	For Vim version 9.0.  Last change: 2022 Nov 23
  
-+						*'keyprotocol'* *'kpc'*
-+'keyprotocol' 'kpc'	string	(default: see below)
-+			global
-+	Specifies what keyboard protocol to use depending on the value of
-+	'term'.  The supported keyboard protocols names are:
-+		none	whatever the terminal uses
-+		mok2	modifyOtherKeys level 2, as supported by xterm
-+		kitty	Kitty keyboard protocol, as supported by Kitty
-+
-+	The option value is a list of command separated items.  Each item has
-+	a pattern that is matched against the 'term' option, a colon and the
-+	protocol name to be used.  To illustrate this, the default value would
-+	be set with: >
-+	   set keyprotocol=kitty:kitty,foot:kitty,wezterm:kitty,xterm:mok2
-+
-+<	This means that when 'term' contains "kitty, "foot" or "wezterm"
-+	somewhere then the "kitty" protocol is used.  When 'term' contains
-+	"xterm" somewhere, then the "mok2" protocol is used. 
-+
-+	The first match is used, thus if you want to have "kitty" use the
-+	kitty protocol, but "badkitty" not, then you should match "badkitty"
-+	first and use the "none" value: >
-+	   set keyprotocol=badkitty:none,kitty:kitty
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4548,17 +4548,21 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			|+find_in_path| or |+eval| features}
+ 	Expression to be used to transform the string found with the 'include'
+ 	option to a file name.  Mostly useful to change "." to "/" for Java: >
+-		:set includeexpr=substitute(v:fname,'\\.','/','g')
++		:setlocal includeexpr=substitute(v:fname,'\\.','/','g')
+ <	The "v:fname" variable will be set to the file name that was detected.
+-
++	Note the double backslash: the `:set` command first halves them, then
++	one remains it the value, where "\." matches a dot literally.  For
++	simple character replacements `tr()` avoids the need for escaping: >
++		:setlocal includeexpr=tr(v:fname,'.','/')
 +<
-+	The option is used after 'term' has been changed.  First the termcap
-+	entries are set, possibly using the builtin list, see |builtin-terms|.
-+	Then this option is inspected and if there is a match and a protocol
-+	is specified the following happens:
-+		none	Nothing, the regular t_TE and t_TI values remain
+ 	Also used for the |gf| command if an unmodified file name can't be
+ 	found.  Allows doing "gf" on the name after an 'include' statement.
+ 	Also used for |<cfile>|.
+ 
+ 	If the expression starts with s: or |<SID>|, then it is replaced with
+ 	the script ID (|local-function|). Example: >
+-		set includeexpr=s:MyIncludeExpr()
+-		set includeexpr=<SID>SomeIncludeExpr()
++		setlocal includeexpr=s:MyIncludeExpr()
++		setlocal includeexpr=<SID>SomeIncludeExpr()
+ <	Otherwise, the expression is evaluated in the context of the script
+ 	where the option was set, thus script-local items are available.
+ 
+diff --git a/runtime/doc/os_haiku.txt b/runtime/doc/os_haiku.txt
+index 01c64ecf0..fdcf7fe78 100644
+--- a/runtime/doc/os_haiku.txt
++++ b/runtime/doc/os_haiku.txt
+@@ -95,7 +95,7 @@ The default value for $VIM is set at compile time and can be determined with:
+ 
+   :version
+ 
+-The normal value is /boot/system/data/vim for Haikuports version, 
++The normal value is /boot/system/data/vim for Haikuports version,
+ /boot/system/non-packaged/data/vim for manual builds.  If you don't like it
+ you can set the VIM environment variable to override this, or set 'helpfile'
+ in your .vimrc: >
+@@ -223,11 +223,11 @@ Thank you, all!
+ 
+ 
+ 14. Bugs & to-do					*haiku-bugs*
+- 
 +
-+		mok2	The t_TE value is changed to:
-+			    CSI >4;m	disables modifyOtherKeys
-+			The t_TI value is changed to:
-+			    CSI >4;2m	enables modifyOtherKeys
+ The port is under development now and far away from the perfect state. For bug
+ reports, patches and wishes, please use the Vim mailing list or Vim Github
+ repository.
+- 
 +
-+		kitty	The t_TE value is changed to:
-+			    CSI >4;m	disables modifyOtherKeys
-+			    CSI <u	disables the kitty keyboard protocol
-+			The t_TI value is changed to:
-+			    CSI >1u	enables the kitty keyboard protocol
-+			    CSI ?u	request kitty keyboard protocol state
-+			    CSI >c	request the termresponse
-+
-+
- 					*'keywordprg'* *'kp'*
- 'keywordprg' 'kp'	string	(default "man" or "man -s",  DOS: ":help",
- 								  VMS: "help")
+ Mailing list: https://www.vim.org/maillist.php
+ Vim Github repository: https://github.com/vim/vim
+ 
 diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index adf2b4f0a..ddabeef66 100644
+index ddabeef66..ff508b5db 100644
 --- a/runtime/doc/quickref.txt
 +++ b/runtime/doc/quickref.txt
-@@ -775,6 +775,7 @@ Short explanation of each option:		*option-list*
- 'key'			    encryption key
- 'keymap'	  'kmp'     name of a keyboard mapping
- 'keymodel'	  'km'	    enable starting/stopping selection with keys
-+'keyprotocol'	  'kpc'	    what keyboard protocol to use for what terminal
- 'keywordprg'	  'kp'	    program to use for the "K" command
- 'langmap'	  'lmap'    alphabetic characters for other language mode
- 'langmenu'	  'lm'	    language to be used for the menus
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.0.  Last change: 2022 Oct 28
++*quickref.txt*  For Vim version 9.0.  Last change: 2022 Nov 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 17d4b85df..483c46e31 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -4901,7 +4901,7 @@ is mostly used, because it looks better.
+ In the next section you can find information about indivisual highlight groups
+ and how to specify colors for them.  Most likely you want to just select a set
+ of colors by using the `:colorscheme` command, for example: >
+-	
++
+ 	    colorscheme pablo
+ <
+ 						*:colo* *:colorscheme* *E185*
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 2ecf4af2e..086742a8f 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2022 Oct 13
++*textprop.txt*  For Vim version 9.0.  Last change: 2022 Nov 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -147,7 +147,8 @@ prop_add({lnum}, {col}, {props})
+ 				above/below the line if {col} is zero; prepend
+ 				and/or append spaces for padding with
+ 				highlighting; cannot be used with "length",
+-				"end_lnum" and "end_col" |virtual-text|
++				"end_lnum" and "end_col"
++				See |virtual-text| for more information.
+ 		   					*E1294*
+ 		   text_align	when "text" is present and {col} is zero;
+ 				specifies where to display the text:
+diff --git a/runtime/doc/tips.txt b/runtime/doc/tips.txt
+index 5c0d205a2..ea8d538bf 100644
+--- a/runtime/doc/tips.txt
++++ b/runtime/doc/tips.txt
+@@ -539,7 +539,7 @@ the current window, try this custom `:HelpCurwin` command:
+ >
+ 	command -bar -nargs=? -complete=help HelpCurwin execute s:HelpCurwin(<q-args>)
+ 	let s:did_open_help = v:false
+-	
++
+ 	function s:HelpCurwin(subject) abort
+ 	  let mods = 'silent noautocmd keepalt'
+ 	  if !s:did_open_help
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 8ff194ad1..f08f5721b 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Nov 18
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Nov 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,24 +38,25 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++Keyboard protocol (also see below):
++- Use the kitty_protocol_state value, similar to seenModifyOtherKeys
++- When kitty_protocol_state is set then reset seenModifyOtherKeys.
++    Do not set seenModifyOtherKeys for kitty-protocol sequences in
++	handle_key_with_modifier().
++
+ virtual text issues:
+-- #11463  `after` is sometimes wrapped with `list`, `nowrap` and
+-  `listchars+=extends:>`, cursor position is also wrong
+ - #11520   `below` cannot be placed below empty lines
+     James Alvarado looks into it
++- virtual text `below` highlighted incorrectly when `cursorline` enabled
++  (Issue #11588)
+ 
+ 'smoothscroll':
+-- PR #11502 -  cursor position wrong
+-- PR #11514 -  mouse click is off
+ - CTRL-E and gj in long line with 'scrolloff' 5 not working well yet.
+ - computing 'scrolloff' position row use w_skipcol
+ - Check this list: https://github.com/vim/vim/pulls?q=is%3Apr+is%3Aopen+smoothscroll+author%3Aychin
+ - Long line spanning multiple pages:  After a few CTRL-E then gj causes a
+   scroll. (Ernie Rael, 18 Nov)  Also pressing space or "l"
+ 
+-Switching to window for a buffer in set_buffer_lines() doesn't work if there
+-is no window.  Use aucmd_prepbuf() instead.  #11558
+-
+ 
+ Upcoming larger works:
+ - Make spell checking work with recent .dic/.aff files, e.g. French.  #4916
+@@ -70,12 +71,6 @@ Upcoming larger works:
+    - example plugin: https://github.com/uga-rosa/dps-vsctm.vim
+ - Better support for detecting terminal emulator behavior (esp. special key
+   handling) and taking away the need for users to tweak their config.
+-  > In the libvterm fork properly implement:
+-    - modifyOtherKeys 2 - follow xterm implementation as close as possible
+-    - Kitty key protocol - just like the latest Kitty
+-    So that in TermDebug the key handling can be stepped through (instead of
+-    having to log messages all over the place to see what happens).  Ask
+-    Leonerd about location of code, he might want to take over some of it.
+   > In the table of names pointing to the list of entries, with an additional
+     one.  So that "xterm-kitty" can first load "xterm" and then add "kitty"
+     entries.
+@@ -88,11 +83,6 @@ Upcoming larger works:
+     -> May also send t_RV and delay starting a shell command until the
+        response has been seen, to make sure the other responses don't get read
+        by a shell command.
+-  > Add an option with a list of names that, when matching $TERM, indicate the
+-    kitty keyboard protocol should be used?  Allows adding "foot" and others
+-    later, without modifying Vim.  Perhaps a pattern-value pair:
+-	set keyprotocol=kitty:kitty,foot:kitty,xterm:mok2,doggy:mok2
+-    Here "mok2" means modifyOtherKeys level 2.
+   > Can we use the req_more_codes_from_term() mechanism with more terminals?
+     Should we repeat it after executing a shell command?
+     Can also add this to the 'keyprotocol' option: "mok2+tcap"
+@@ -294,7 +284,7 @@ Resetting 't_ut' already causes this?
+ 
+ When scheme can't be found by configure there is no clear "not found" message:
+     configure:5769: checking MzScheme install prefix
+-    configure:5781: result: 
++    configure:5781: result:
+ 
+ Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
+ 
+@@ -4568,8 +4558,11 @@ Autocommands:
+ 		      BufChangePre, BufChangePost and RevertBuf. (Shah)
+     ViewChanged	    - triggered when the text scrolls and when the window size
+ 		      changes.
+-    WinResized	    - After a window has been resized
+-    WinClose	    - Just before closing a window
++    QuickfixList    - when any entry in the current list changes or another
++		      list is selected
++    QuickfixPosition - when selecting another entry in the current quickfix
++		       list
++
+ -   Write the file now and then ('autosave'):
+ 				  *'autosave'* *'as'* *'noautosave'* *'noas'*
+     'autosave' 'as' number  (default 0)
+diff --git a/runtime/doc/usr_12.txt b/runtime/doc/usr_12.txt
+index 68f6cbed6..a5f75ec8c 100644
+--- a/runtime/doc/usr_12.txt
++++ b/runtime/doc/usr_12.txt
+@@ -1,4 +1,4 @@
+-*usr_12.txt*	For Vim version 9.0.  Last change: 2021 Apr 19
++*usr_12.txt*	For Vim version 9.0.  Last change: 2022 Nov 19
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index b6d98b979..43a13d986 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Nov 14
++*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Nov 22
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -442,7 +442,7 @@ If you don't like the concatenation you can use the $"string" form, which
+ accepts an expression in curly braces: >
+ 	echo $"Name: {name}"
+ 
+-See |interp-string| for more information.
++See |interpolated-string| for more information.
+ 
+ Borrowed from the C language is the conditional expression: >
+ 
+@@ -803,7 +803,7 @@ List manipulation:					*list-functions*
+ 	call()			call a function with List as arguments
+ 	index()			index of a value in a List or Blob
+ 	indexof()		index in a List or Blob where an expression
+-				evaluates to true 
++				evaluates to true
+ 	max()			maximum value in a List
+ 	min()			minimum value in a List
+ 	count()			count number of times a value appears in a List
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 2ea210dd8..ef8f927d7 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.0.  Last change: 2022 Jun 28
++*version9.txt*  For Vim version 9.0.  Last change: 2022 Nov 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -254,7 +254,7 @@ summary.
+ Many memory leaks, invalid memory accesses and crashes have been fixed.
+ See the list of patches below: |bug-fixes-9|.
+ 
+-Support for Vim expression evaluation in a string. |interp-string|
++Support for Vim expression evaluation in a string. |interpolated-string|
+ Support for evaluating Vim expressions in a heredoc. |:let-heredoc|
+ 
+ Support for fuzzy matching:
+@@ -28478,7 +28478,7 @@ Files:      src/change.c, src/drawscreen.c, src/structs.h
+ 
+ Patch 8.2.4645
+ Problem:    'shortmess' changed when session does not store options.
+-Solution:   Save and restore 'shortmess' if needed. (James Charti,
++Solution:   Save and restore 'shortmess' if needed. (James Cherti,
+             closes #10037)
+ Files:      src/session.c, src/testdir/test_mksession.vim
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 387f9a130..d7f78087a 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1993,10 +1993,10 @@ Some commands have already been reserved:
+ 
+ Some examples: >
+ 
+-	abstract class Person 
++	abstract class Person
+ 	    static const prefix = 'xxx'
+ 	    var name: string
+-	    
++
+ 	    def constructor(name: string)
+ 		this.name = name
+ 	    enddef
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 12676ff3a..b29a9a9ac 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.0.  Last change: 2022 May 11
++*windows.txt*   For Vim version 9.0.  Last change: 2022 Nov 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
