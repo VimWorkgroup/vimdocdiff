@@ -1,41 +1,92 @@
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 19797b226..e0c710664 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
-@@ -971,13 +971,18 @@ using other applications but not when inside Vim.
- Xterm and a few other terminals can be put in a mode where keys with modifiers
- are sent with a special escape code.  Vim recognizes these codes and can then
- make a difference between CTRL-H and Backspace, even when Backspace sends the
--character 8.  And many more special keys.
-+character 8.  And many more special keys, such as Tab and CTRL-I, which cannot
-+be mapped separately otherwise.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index c730527cf..83a4904c3 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -8569,10 +8569,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	xterm entries...).
  
- For xterm modifyOtherKeys is enabled in the builtin termcap entry.  If this is
- not used you can enable modifyOtherKeys with these lines in your vimrc: >
-       let &t_TI = "\<Esc>[>4;2m"
-       let &t_TE = "\<Esc>[>4;m"
+ 				     *'ttyfast'* *'tf'* *'nottyfast'* *'notf'*
+-'ttyfast' 'tf'		boolean	(default off, on when 'term' is xterm, hpterm,
+-					sun-cmd, screen, rxvt, dtterm or
+-					iris-ansi; also on when running Vim in
+-					a DOS console)
++'ttyfast' 'tf'		boolean	(default on)
+ 			global
+ 	Indicates a fast terminal connection.  More characters will be sent to
+ 	the screen for redrawing, instead of using insert/delete line
+@@ -8582,6 +8579,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	line for lines that wrap.  This helps when using copy/paste with the
+ 	mouse in an xterm and other terminals.
  
-+This sets modifyOtherKeys to level 2.  Note that modifyOtherKeys level 1 does
-+not work.  Some terminals do not support level 2 and then send key codes that
-+Vim will not be able to correctly recognize.
-+
- In case the modifyOtherKeys mode causes problems you can disable it: >
-       let &t_TI = ""
-       let &t_TE = ""
-@@ -1001,10 +1006,15 @@ spots an escape sequence that must have been created by it.  To see if Vim
- detected such an escape sequence use `:verbose map`, the first line will then
- show "Seen modifyOtherKeys: true" (possibly translated).
++	The default used to be set only for some terminal names, but these
++	days nearly all terminals are fast, therefore the default is now "on".
++	If you have a slow connection you may want to set this option off,
++	e.g. depending on the host name: >
++		if hostname() =~ 'faraway'
++		   set nottyfast
++		endif
++<
+ 						*'ttymouse'* *'ttym'*
+ 'ttymouse' 'ttym'	string	(default depends on 'term')
+ 			global
+diff --git a/runtime/doc/os_unix.txt b/runtime/doc/os_unix.txt
+index 0b0f389bc..f875f160d 100644
+--- a/runtime/doc/os_unix.txt
++++ b/runtime/doc/os_unix.txt
+@@ -28,10 +28,11 @@ system() is used, which is a bit slower.  The output of ":version" includes
+ can be changed at compile time.
+ (For forking of the GUI version see |gui-fork|.)
  
-+This automatic detection depends on receiving an escape code starting with 
-+"<1b>[27;".  This is the normal way xterm sends these key codes.  However, if
-+the *formatOtherKeys* resource is set another form is used that is not
-+recognized, therefore you must not set formatOtherKeys.
-+
- A known side effect is that in Insert mode the raw escape sequence is inserted
- after the CTRL-V key.  This can be used to check whether modifyOtherKeys is
- enabled: In Insert mode type CTRL-SHIFT-V CTRL-V, if you get one byte then
--modifyOtherKeys is off, if you get <1b>27;5;118~ then it is on.
-+modifyOtherKeys is off, if you get <1b>[27;5;118~ then it is on.
+-Because terminal updating under Unix is often slow (e.g. serial line
+-terminal, shell window in suntools), the 'showcmd' and 'ruler' options
+-are off by default.  If you have a fast terminal, try setting them on.  You
+-might also want to set 'ttyfast'.
++For historic reasons terminal updating under Unix is expected to be slow (e.g.
++serial line terminal, shell window in suntools), the 'showcmd' and 'ruler'
++options are off by default.  If you have a fast terminal, try setting them
++on: >
++	set showcmd ruler
  
- When the 'esckeys' option is off, then modifyOtherKeys will be disabled in
- Insert mode to avoid every key with a modifier causing Insert mode to end.
+ When using Vim in an xterm the mouse clicks can be used by Vim by setting
+ 'mouse' to "a".  If there is access to an X-server gui style copy/paste will
+diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
+index b2a159018..8ba12baa7 100644
+--- a/runtime/doc/os_vms.txt
++++ b/runtime/doc/os_vms.txt
+@@ -458,18 +458,11 @@ Ins, Del buttons etc., except Backspace in GUI mode.  To solve it, add to
+ 
+ Vim will also recognize that they are fast terminals.
+ 
+-If you have some annoying line jumping on the screen between windows add to
+-your .vimrc file: >
+-
+-	set ttyfast	" set fast terminal
+-
+-Note: if you're using Vim on remote host or through a very slow connection, it's
+-recommended to avoid the fast terminal option with: >
++If you're using Vim on remote host or through a very slow connection, you
++might want to reset fast terminal option with: >
+ 
+ 	set nottyfast   " set terminal to slow mode
+ 
+-(Zoltan Arpadffy, Vim 5.6)
+-
+ 
+ 8.7 Hex-editing and other external tools
+ 
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index fdbcc7d41..2bd83c712 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -768,8 +768,9 @@ See the "Options" chapter |options|.
+ 
+ If your terminal does not support a scrolling region, but it does support
+ insert/delete line commands, scrolling with multiple windows may make the
+-lines jump up and down.  If you don't want this set the 'ttyfast' option.
+-This will redraw the window instead of scroll it.
++lines jump up and down.  This would happen if the 'ttyfast' option has been
++reset.  Check that with: >
++	verbose set ttyfast?
+ 
+ If your terminal scrolls very slowly, but redrawing is not slow, set the
+ 'ttyscroll' option to a small number, e.g., 3.  This will make Vim redraw the
