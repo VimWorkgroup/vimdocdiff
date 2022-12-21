@@ -1,882 +1,122 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 1d701379c..7ff969d7c 100644
+index 7ff969d7c..05e8d701f 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.0.  Last change: 2022 Nov 21
-+*builtin.txt*	For Vim version 9.0.  Last change: 2022 Dec 05
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -608,6 +608,7 @@ submatch({nr} [, {list}])	String or List
- 					specific match in ":s" or substitute()
- substitute({expr}, {pat}, {sub}, {flags})
- 				String	all {pat} in {expr} replaced with {sub}
-+swapfilelist()			List	swap files found in 'directory'
- swapinfo({fname})		Dict	information about swap file {fname}
- swapname({buf})			String	swap file of buffer {buf}
- synID({lnum}, {col}, {trans})	Number	syntax ID at {lnum} and {col}
-@@ -9314,6 +9315,17 @@ substitute({string}, {pat}, {sub}, {flags})		*substitute()*
- 		Can also be used as a |method|: >
- 			GetString()->substitute(pat, sub, flags)
- 
-+swapfilelist()						*swapfilelist()*
-+		Returns a list of swap file names, like what "vim -r" shows.
-+		See the |-r| command argument.  The 'directory' option is used
-+		for the directories to inspect.  If you only want to get a
-+		list of swap files in the current directory then temporarily
-+		set 'directory' to a dot: >
-+			let save_dir = &directory
-+			let &directory = '.'
-+			let swapfiles = swapfilelist()
-+			let &directory = save_dir
-+
- swapinfo({fname})					*swapinfo()*
- 		The result is a dictionary, which holds information about the
- 		swapfile {fname}. The available fields are:
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index fbe4d3fc2..535c17546 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -1,4 +1,4 @@
--*channel.txt*      For Vim version 9.0.  Last change: 2022 Jun 23
-+*channel.txt*      For Vim version 9.0.  Last change: 2022 Dec 01
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -618,6 +618,9 @@ ch_info({handle})						*ch_info()*
- ch_log({msg} [, {handle}])					*ch_log()*
- 		Write String {msg} in the channel log file, if it was opened
- 		with |ch_logfile()|.
-+		The text "ch_log():" is prepended to the message to make clear
-+		it came from this function call and make it easier to find in
-+		the log file.
- 		When {handle} is passed the channel number is used for the
- 		message.
- 		{handle} can be a Channel or a Job that has a Channel.  The
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index c22b3d032..98c48699c 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.0.  Last change: 2022 Nov 22
-+*eval.txt*	For Vim version 9.0.  Last change: 2022 Dec 11
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -163,9 +163,10 @@ Note that " " and "0" are also non-empty strings, thus considered to be TRUE.
- A List, Dictionary or Float is not a Number or String, thus evaluate to FALSE.
- 
- 		*E611* *E745* *E728* *E703* *E729* *E730* *E731* *E908* *E910*
--		*E913* *E974* *E975* *E976*
--|List|, |Dictionary|, |Funcref|, |Job|, |Channel| and |Blob| types are not
--automatically converted.
-+		*E913* *E974* *E975* *E976* *E1319* *E1320* *E1321* *E1322*
-+		*E1323* *E1324*
-+|List|, |Dictionary|, |Funcref|, |Job|, |Channel|, |Blob|, |Class| and
-+|object| types are not automatically converted.
- 
- 							*E805* *E806* *E808*
- When mixing Number and Float the Number is converted to Float.  Otherwise
-@@ -633,6 +634,10 @@ This removes all entries from "dict" with a value not matching 'x'.
- This can also be used to remove all entries: >
- 	call filter(dict, 0)
- 
-+In some situations it is not allowed to remove or add entries to a Dictionary.
-+Especially when iterating over all the entries.  You will get *E1313* or
-+another error in that case.
-+
- 
- Dictionary function ~
- 				*Dictionary-function* *self* *E725* *E862*
-@@ -646,7 +651,8 @@ special way with a dictionary.  Example: >
- 
- This is like a method in object oriented programming.  The entry in the
- Dictionary is a |Funcref|.  The local variable "self" refers to the dictionary
--the function was invoked from.
-+the function was invoked from.  When using |Vim9| script you can use classes
-+and objects, see `:class`.
- 
- It is also possible to add a function without the "dict" attribute as a
- Funcref to a Dictionary, but the "self" variable is not available then.
-diff --git a/runtime/doc/fold.txt b/runtime/doc/fold.txt
-index 7c702ff2d..6da244d5a 100644
---- a/runtime/doc/fold.txt
-+++ b/runtime/doc/fold.txt
-@@ -1,4 +1,4 @@
--*fold.txt*      For Vim version 9.0.  Last change: 2022 Oct 01
-+*fold.txt*      For Vim version 9.0.  Last change: 2022 Nov 26
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -598,6 +598,11 @@ line is folded, it cannot be displayed there.
- Many movement commands handle a sequence of folded lines like an empty line.
- For example, the "w" command stops once in the first column.
- 
-+When starting a search in a closed fold it will not find a match in the
-+current fold.  It's like a forward search always starts from the end of the
-+closed fold, while a backwards search starts from the start of the closed
-+fold.
-+
- When in Insert mode, the cursor line is never folded.  That allows you to see
- what you type!
- 
-diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
-index d1af85eff..e4e25ab0d 100644
---- a/runtime/doc/help.txt
-+++ b/runtime/doc/help.txt
-@@ -1,4 +1,4 @@
--*help.txt*	For Vim version 9.0.  Last change: 2022 May 13
-+*help.txt*	For Vim version 9.0.  Last change: 2022 Dec 03
- 
- 			VIM - main help file
- 									 k
-@@ -153,6 +153,7 @@ Special issues ~
- |terminal.txt|	Terminal window support
- |popup.txt|	popup window support
- |vim9.txt|	using Vim9 script
-+|vim9class.txt|	using Vim9 script classes
- 
- Programming language support ~
- |indent.txt|	automatic indenting for C and other languages
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index e0c710664..5c7b4f8a6 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
-@@ -1,4 +1,4 @@
--*map.txt*       For Vim version 9.0.  Last change: 2022 Nov 23
-+*map.txt*       For Vim version 9.0.  Last change: 2022 Dec 01
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1001,10 +1001,15 @@ mapping, see |map-bar|.
- WARNING: if you map <C-[> you may very well break any key codes that start
- with Esc.  Make sure it comes AFTER other mappings.
- 
--Vim automatically detects if the modifyOtherKeys mode was enabled when it
--spots an escape sequence that must have been created by it.  To see if Vim
--detected such an escape sequence use `:verbose map`, the first line will then
--show "Seen modifyOtherKeys: true" (possibly translated).
-+Starting with xterm version 377 Vim can detect the modifyOtherKeys state by
-+requesting it.  For this the 't_RK' termcap entry is used.  When the response
-+is found then Vim will know whether modifyOtherKeys level 2 is enabled, and
-+handle mappings accordingly.
-+
-+Before version 377 Vim automatically detects if the modifyOtherKeys mode was
-+enabled when it spots an escape sequence that must have been created by it.
-+To see if Vim detected such an escape sequence use `:verbose map`, the first
-+line will then show "Seen modifyOtherKeys: true" (possibly translated).
- 
- This automatic detection depends on receiving an escape code starting with 
- "<1b>[27;".  This is the normal way xterm sends these key codes.  However, if
-@@ -1016,6 +1021,9 @@ after the CTRL-V key.  This can be used to check whether modifyOtherKeys is
- enabled: In Insert mode type CTRL-SHIFT-V CTRL-V, if you get one byte then
- modifyOtherKeys is off, if you get <1b>[27;5;118~ then it is on.
- 
-+Note that xterm up to version 376 has a bug that makes Shift-Esc send a
-+regular Esc code, the Shift modifier is dropped.
-+
- When the 'esckeys' option is off, then modifyOtherKeys will be disabled in
- Insert mode to avoid every key with a modifier causing Insert mode to end.
- 
-@@ -1687,7 +1695,7 @@ Possible attributes are:
- 		    number.
- 	-count=N    A count (default N) which is specified either in the line
- 		    number position, or as an initial argument (like |:Next|).
--	-count	    acts like -count=0
-+	-count	    Acts like -count=0
- 
- Note that -range=N and -count=N are mutually exclusive - only one should be
- specified.
-@@ -1705,7 +1713,7 @@ Possible values are (second column is the short name used in listing):
-     -addr=windows	  win	Range for windows
-     -addr=tabs		  tab	Range for tab pages
-     -addr=quickfix	  qf	Range for quickfix entries
--    -addr=other		  ?	other kind of range; can use ".", "$" and "%"
-+    -addr=other		  ?	Other kind of range; can use ".", "$" and "%"
- 				as with "lines" (this is the default for
- 				-count)
- 
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e9404478f..87fd2cf32 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.0.  Last change: 2022 Nov 23
-+*options.txt*	For Vim version 9.0.  Last change: 2022 Dec 09
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7117,45 +7117,49 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	messages, for example  with CTRL-G, and to avoid some other messages.
- 	It is a list of flags:
- 	 flag	meaning when present	~
--	  f	use "(3 of 5)" instead of "(file 3 of 5)"
--	  i	use "[noeol]" instead of "[Incomplete last line]"
--	  l	use "999L, 888B" instead of "999 lines, 888 bytes"
--	  m	use "[+]" instead of "[Modified]"
--	  n	use "[New]" instead of "[New File]"
--	  r	use "[RO]" instead of "[readonly]"
--	  w	use "[w]" instead of "written" for file write message
-+	  f	use "(3 of 5)" instead of "(file 3 of 5)"		*shm-f*
-+	  i	use "[noeol]" instead of "[Incomplete last line]"	*shm-i*
-+	  l	use "999L, 888B" instead of "999 lines, 888 bytes"	*shm-l*
-+	  m	use "[+]" instead of "[Modified]"			*shm-m*
-+	  n	use "[New]" instead of "[New File]"			*shm-n*
-+	  r	use "[RO]" instead of "[readonly]"			*shm-r*
-+	  w	use "[w]" instead of "written" for file write message	*shm-w*
- 		and "[a]" instead of "appended" for ':w >> file' command
--	  x	use "[dos]" instead of "[dos format]", "[unix]" instead of
--		"[unix format]" and "[mac]" instead of "[mac format]".
--	  a	all of the above abbreviations
--
--	  o	overwrite message for writing a file with subsequent message
--		for reading a file (useful for ":wn" or when 'autowrite' on)
--	  O	message for reading a file overwrites any previous message.
--		Also for quickfix message (e.g., ":cn").
--	  s	don't give "search hit BOTTOM, continuing at TOP" or "search
--		hit TOP, continuing at BOTTOM" messages; when using the search
--		count do not show "W" after the count message (see S below)
--	  t	truncate file message at the start if it is too long to fit
--		on the command-line, "<" will appear in the left most column.
--		Ignored in Ex mode.
--	  T	truncate other messages in the middle if they are too long to
--		fit on the command line.  "..." will appear in the middle.
--		Ignored in Ex mode.
--	  W	don't give "written" or "[w]" when writing a file
--	  A	don't give the "ATTENTION" message when an existing swap file
--		is found.
--	  I	don't give the intro message when starting Vim |:intro|.
--	  c	don't give |ins-completion-menu| messages.  For example,
--		"-- XXX completion (YYY)", "match 1 of 2", "The only match",
--		"Pattern not found", "Back at original", etc.
--	  C	don't give messages while scanning for ins-completion items,
--		for instance "scanning tags"
--	  q	use "recording" instead of "recording @a"
--	  F	don't give the file info when editing a file, like `:silent`
--		was used for the command; note that this also affects messages
--		from autocommands
--	  S     do not show search count message when searching, e.g.
-+	  x	use "[dos]" instead of "[dos format]", "[unix]"		*shm-x*
-+		instead of "[unix format]" and "[mac]" instead of "[mac
-+		format]".
-+	  a	all of the above abbreviations				*shm-a*
-+
-+	  o	overwrite message for writing a file with subsequent	*shm-o*
-+		message for reading a file (useful for ":wn" or when
-+		'autowrite' on)
-+	  O	message for reading a file overwrites any previous	*smh-O*
-+		message.  Also for quickfix message (e.g., ":cn").
-+	  s	don't give "search hit BOTTOM, continuing at TOP" or	*shm-s*
-+		"search hit TOP, continuing at BOTTOM" messages; when using
-+		the search count do not show "W" after the count message (see
-+		S below)
-+	  t	truncate file message at the start if it is too long	*shm-t*
-+		to fit on the command-line, "<" will appear in the left most
-+		column.  Ignored in Ex mode.
-+	  T	truncate other messages in the middle if they are too	*shm-T*
-+		long to fit on the command line.  "..." will appear in the
-+		middle.  Ignored in Ex mode.
-+	  W	don't give "written" or "[w]" when writing a file	*shm-W*
-+	  A	don't give the "ATTENTION" message when an existing	*shm-A*
-+		swap file is found.
-+	  I	don't give the intro message when starting Vim,		*shm-I*
-+	  	see |:intro|.
-+	  c	don't give |ins-completion-menu| messages.  For		*shm-c*
-+		example, "-- XXX completion (YYY)", "match 1 of 2", "The only
-+		match", "Pattern not found", "Back at original", etc.
-+	  C	don't give messages while scanning for ins-completion	*shm-C*
-+		items, for instance "scanning tags"
-+	  q	use "recording" instead of "recording @a"		*shm-q*
-+	  F	don't give the file info when editing a file, like	*shm-F*
-+		`:silent` was used for the command; note that this also
-+		affects messages from autocommands
-+	  S     do not show search count message when searching, e.g.	*shm-S*
- 	        "[1/5]"
- 
- 	This gives you the opportunity to avoid that a change between buffers
-@@ -7216,9 +7220,25 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	- When selecting more than one line, the number of lines.
- 	- When selecting a block, the size in screen characters:
- 	  {lines}x{columns}.
-+	This information can be displayed in an alternative location using the
-+	'showcmdloc' option.
- 	NOTE: This option is set to the Vi default value when 'compatible' is
- 	set and to the Vim default value when 'compatible' is reset.
- 
-+			*'showcmdloc'* *'sloc'*
-+'showcmdloc' 'sloc'	string	(default "last")
-+	This option can be used to display the (partially) entered command in
-+	another location.  Possible values are:
-+	  last		Last line of the screen (default).
-+	  statusline	Status line of the current window.
-+	  tabline	First line of the screen if 'showtabine' is enabled.
-+	Setting this option to "statusline" or "tabline" means that these will
-+	be redrawn whenever the command changes, which can be on every key
-+	pressed.
-+	The %S 'statusline' item can be used in 'statusline' or 'tabline' to
-+	place the text.  Without a custom 'statusline' or 'tabline' it will be
-+	displayed in a convenient location.
-+
- 			*'showfulltag'* *'sft'* *'noshowfulltag'* *'nosft'*
- 'showfulltag' 'sft'	boolean (default off)
- 			global
-@@ -7716,6 +7736,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	P S   Percentage through file of displayed window.  This is like the
- 	      percentage described for 'ruler'.  Always 3 in length, unless
- 	      translated.
-+	S S   'showcmd' content, see 'showcmdloc'.
- 	a S   Argument list status as in default title.  ({current} of {max})
- 	      Empty if the argument file count is zero or one.
- 	{ NF  Evaluate expression between '%{' and '}' and substitute result.
-diff --git a/runtime/doc/os_unix.txt b/runtime/doc/os_unix.txt
-index f875f160d..9908b154c 100644
---- a/runtime/doc/os_unix.txt
-+++ b/runtime/doc/os_unix.txt
-@@ -1,4 +1,4 @@
--*os_unix.txt*   For Vim version 9.0.  Last change: 2005 Mar 29
-+*os_unix.txt*   For Vim version 9.0.  Last change: 2022 Nov 25
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
-index 8ba12baa7..619f4e409 100644
---- a/runtime/doc/os_vms.txt
-+++ b/runtime/doc/os_vms.txt
-@@ -1,4 +1,4 @@
--*os_vms.txt*    For Vim version 9.0.  Last change: 2022 Sep 30
-+*os_vms.txt*    For Vim version 9.0.  Last change: 2022 Nov 25
- 
- 
- 		  VIM REFERENCE MANUAL
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 032e9a796..7dc4fa303 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1273,6 +1273,21 @@ not "b:current_compiler".  What the command actually does is the following:
- For writing a compiler plugin, see |write-compiler-plugin|.
- 
- 
-+DOTNET							*compiler-dotnet*
-+
-+The .NET CLI compiler outputs both errors and warnings by default. The output
-+may be limited to include only errors, by setting the g:dotnet_errors_only
-+variable to |v:true|.
-+
-+The associated project name is included in each error and warning. To supress
-+the project name, set the g:dotnet_show_project_file variable to |v:false|.
-+
-+Example: limit output to only display errors, and suppress the project name: >
-+	let dotnet_errors_only = v:true
-+	let dotnet_show_project_file = v:false
-+	compiler dotnet
-+<
-+
- GCC					*quickfix-gcc*	*compiler-gcc*
- 
- There's one variable you can set for the GCC compiler:
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 619fc18ed..5993f6557 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.0.  Last change: 2022 Jun 14
-+*starting.txt*  For Vim version 9.0.  Last change: 2022 Nov 30
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 483c46e31..cd3dbca53 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.0.  Last change: 2022 Nov 15
-+*syntax.txt*	For Vim version 9.0.  Last change: 2022 Nov 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3621,6 +3621,14 @@ highlighting is to put the following line in your |vimrc|: >
- <
- 
- 
-+WDL							*wdl.vim* *wdl-syntax*
-+
-+The Workflow Description Language is a way to specify data processing workflows
-+with a human-readable and writeable syntax.  This is used a lot in
-+bioinformatics.  More info on the spec can be found here:
-+https://github.com/openwdl/wdl
-+
-+
- XF86CONFIG				*xf86conf.vim* *ft-xf86conf-syntax*
- 
- The syntax of XF86Config file differs in XFree86 v3.x and v4.x.  Both
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index 2bd83c712..146ef478f 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.0.  Last change: 2022 Oct 21
-+*term.txt*      For Vim version 9.0.  Last change: 2022 Dec 01
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -90,6 +90,11 @@ Note: When 't_ti' is not empty, Vim assumes that it causes switching to the
- alternate screen.  This may slightly change what happens when executing a
- shell command or exiting Vim.  To avoid this use 't_TI' and 't_TE'.
- 
-+Vim will try to detect what keyboard protocol the terminal is using with the
-+'t_RK' termcap entry.  This is sent after 't_TI', but only when there is no
-+work to do (no typeahead and no pending commands).  That is to avoid the
-+response to end up in a shell command or arrive after Vim exits.
-+
- 						*xterm-bracketed-paste*
- When the 't_BE' option is set then 't_BE' will be sent to the
- terminal when entering "raw" mode and 't_BD' when leaving "raw" mode.  The
-@@ -289,6 +294,31 @@ When Vim receives a response to the |t_RV| (request version) sequence and it
- starts with CSI, it assumes that the terminal is in 8-bit mode and will
- convert all key sequences to their 8-bit variants.
- 
-+						*xterm-kitty* *kitty-terminal*
-+The Kitty terminal is a special case.  Mainly because it works different from
-+most other terminals, but also because, instead of trying the fit in and make
-+it behave like other terminals by default, it dictates how applications need
-+to work when using Kitty.  This makes it very difficult for Vim to work in a
-+Kitty terminal.  Some exceptions have been hard coded, but it is not at all
-+nice to have to make exceptions for one specific terminal.
-+
-+One of the problems is that the value for $TERM is set to "xterm-kitty".  For
-+Vim this is an indication that the terminal is xterm-compatible and the
-+builtin xterm termcap entries should be used.  Many other terminals depend on
-+this.  However, Kitty is not fully xterm compatible.  The author suggested to
-+ignore the "xterm-" prefix and use the terminfo entry anyway, so that is what
-+happens now, the builtin xterm termcap entries are not used.  However, the
-+t_RV is set, otherwise other things would not work, such as automatically
-+setting 'ttymouse' to "sgr".
-+
-+It is not clear why kitty sets $TERM to "xterm-kitty", the terminal isn't
-+really xterm compatible.  "kitty" would be more appropriate, but a terminfo
-+entry with that name is not widespread.
-+
-+Note that using the kitty keyboard protocol is a separate feature, see
-+|kitty-keyboard-protocol|.
-+
-+
- ==============================================================================
- 2. Terminal options		*terminal-options* *termcap-options* *E436*
- 
-@@ -388,6 +418,8 @@ Added by Vim (there are no standard codes for these):
- 		xterm and other terminal emulators)  The
- 		response is stored in |v:termresponse| |xterm-8bit|
- 		|'ttymouse'| |xterm-codes|
-+	t_RK	request terminal keyboard protocol state;	*t_RK* *'t_RK'*
-+		sent after |t_TI|
- 	t_u7	request cursor position (for xterm)		*t_u7* *'t_u7'*
- 		see |'ambiwidth'|
- 		The response is stored in |v:termu7resp|
+@@ -666,6 +666,8 @@ test_garbagecollect_soon()	none	free memory soon for testing
+ test_getvalue({string})		any	get value of an internal variable
+ test_gui_event({event}, {args})	bool	generate a GUI event for testing
+ test_ignore_error({expr})	none	ignore a specific error
++test_mswin_event({event}, {args})
++				bool	generate MS-Windows event for testing
+ test_null_blob()		Blob	null value for testing
+ test_null_channel()		Channel	null value for testing
+ test_null_dict()		Dict	null value for testing
 diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index f251781c4..558553f5a 100644
+index 558553f5a..b03726572 100644
 --- a/runtime/doc/testing.txt
 +++ b/runtime/doc/testing.txt
-@@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 9.0.  Last change: 2022 May 16
-+*testing.txt*	For Vim version 9.0.  Last change: 2022 Nov 28
+@@ -94,7 +94,7 @@ test_gui_event({event}, {args})
+ 		    "findrepl"  search and replace text.
+ 		    "mouse"	mouse button click event.
+ 		    "scrollbar" move or drag the scrollbar.
+-		    "sendevent" send a low-level GUI event.
++		    "key"	send a low-level keyboard event.
+ 		    "tabline"	select a tab page by mouse click.
+ 		    "tabmenu"	select a tabline menu entry.
  
+@@ -178,8 +178,8 @@ test_gui_event({event}, {args})
+ 		    dragging:	1 to drag the scrollbar and 0 to click in the
+ 				scrollbar.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -135,9 +135,9 @@ test_gui_event({event}, {args})
- 		  Inject either a mouse button click, or a mouse move, event.
+-		"sendevent":
+-		  Send a low-level GUI event (e.g. key-up or down).
++		"key":
++		  Send a low-level keyboard event (e.g. key-up or down).
+ 		  Currently only supported on MS-Windows.
  		  The supported items in {args} are:
- 		    button:	mouse button.  The supported values are:
--				    0	right mouse button
-+				    0	left mouse button
- 				    1	middle mouse button
--				    2	left mouse button
-+				    2	right mouse button
- 				    3	mouse button release
- 				    4	scroll wheel down
- 				    5	scroll wheel up
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index f08f5721b..4474632c3 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.0.  Last change: 2022 Nov 23
-+*todo.txt*      For Vim version 9.0.  Last change: 2022 Dec 11
+ 		    event:	The supported string values are:
+@@ -223,6 +223,72 @@ test_ignore_error({expr})			 *test_ignore_error()*
+ 		Can also be used as a |method|: >
+ 			GetErrorText()->test_ignore_error()
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,26 +38,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--Keyboard protocol (also see below):
--- Use the kitty_protocol_state value, similar to seenModifyOtherKeys
--- When kitty_protocol_state is set then reset seenModifyOtherKeys.
--    Do not set seenModifyOtherKeys for kitty-protocol sequences in
--	handle_key_with_modifier().
--
--virtual text issues:
--- #11520   `below` cannot be placed below empty lines
--    James Alvarado looks into it
--- virtual text `below` highlighted incorrectly when `cursorline` enabled
--  (Issue #11588)
--
--'smoothscroll':
--- CTRL-E and gj in long line with 'scrolloff' 5 not working well yet.
--- computing 'scrolloff' position row use w_skipcol
--- Check this list: https://github.com/vim/vim/pulls?q=is%3Apr+is%3Aopen+smoothscroll+author%3Aychin
--- Long line spanning multiple pages:  After a few CTRL-E then gj causes a
--  scroll. (Ernie Rael, 18 Nov)  Also pressing space or "l"
--
--
- Upcoming larger works:
- - Make spell checking work with recent .dic/.aff files, e.g. French.  #4916
-     Make Vim understand the format somehow?   Search for "spell" below.
-@@ -67,32 +47,24 @@ Upcoming larger works:
-    - Other mechanism than group and cluster to nest syntax items, to be used
-      for grammars.
-    - Possibly keeping the parsed syntax tree and incremental updates.
-+   - tree-sitter doesn't handle incorrect syntax (while typing) properly.
-    - Make clear how it relates to LSP.
-    - example plugin: https://github.com/uga-rosa/dps-vsctm.vim
--- Better support for detecting terminal emulator behavior (esp. special key
--  handling) and taking away the need for users to tweak their config.
--  > In the table of names pointing to the list of entries, with an additional
--    one.  So that "xterm-kitty" can first load "xterm" and then add "kitty"
--    entries.
--  > Add an "expectKittyEsc" flag (Esc is always sent as a sequence, not one
--    character) and always wait after an Esc for more to come, don't leave
--    Insert mode.
--    -> Request code for Esc after outputting t_KI, use "k!" value.
--       Use response to set "expectKittyEsc".
--    -> Add ESC[>1uESC[?u to t_KI, parse flag response.
--    -> May also send t_RV and delay starting a shell command until the
--       response has been seen, to make sure the other responses don't get read
--       by a shell command.
--  > Can we use the req_more_codes_from_term() mechanism with more terminals?
--    Should we repeat it after executing a shell command?
--    Can also add this to the 'keyprotocol' option: "mok2+tcap"
- 
- 
- Further Vim9 improvements, possibly after launch:
--- Use Vim9 for more runtime files.
-+- implement :class and :interface: See |vim9-classes|  #11544
-+    make default constructor use "this.member = void"
-+    make public / default read access / private work for members.
-+    string value of class and object in echo_string_core()
-+    object empty(), len() - can class define a method?
-+    tv_equal() should compare values, not identity.
-+    garbage collection: set_ref_in_item(): Mark items in class as used ?
-+    type() should return different type for each class?
-+    how about lock/unlock?
- - implement :type
- - implement :enum
--- implement :class and :interface: See |vim9-classes|  #11544
-+- Use Vim9 for more runtime files.
- - Inline call to map() and filter(), better type checking.
- - When evaluating constants for script variables, some functions could work:
-     has(featureName), len(someString)
-@@ -222,9 +194,6 @@ Add BufDeletePost.  #11041
- 
- Add winid arg to col() and charcol()  #11466 (request #11461)
- 
--Make the default for 'ttyfast' on, checking $TERM names doesn't make much
--sense right now, most terminals are fast.  #11549
--
- Can we make 'noendofline' and 'endoffile' visible?  Should show by default,
- since it's an unusual situation.
- - Show 'noendofline' when it would be used for writing ('fileformat' "dos")
-@@ -241,6 +210,11 @@ entered. (#11151)
- Add 'keywordprg' to various ftplugin files:
- https://github.com/vim/vim/pull/5566
- 
-+PR #11579 to add visualtext(), return Visually selected text.
++				
++test_mswin_event({event}, {args})		*test_mswin_event()*
++		Generate a low-level MS-Windows {event} with arguments {args}
++		for testing Vim functionality.  It works for MS-Windows GUI 
++		and for the console.
++		
++		{event} is a String and the supported values are:
++		    "mouse"	mouse event.
++		    "key"	keyboard event.
 +
-+Issue #10512: Dynamic loading broken with Perl 5.36
-+Damien has a patch (2022 Dec 4)
++		"mouse":
++		  Inject either a mouse button click, or a mouse move, event.
++		  The supported items in {args} are:
++		    button:	mouse button.  The supported values are:
++				    0	right mouse button
++				    1	middle mouse button
++				    2	left mouse button
++				    3	mouse button release
++				    4	scroll wheel down
++				    5	scroll wheel up
++				    6	scroll wheel left
++				    7	scroll wheel right
++		    row:	mouse click row number.  The first row of the
++				Vim window is 1 and the last row is 'lines'.
++		    col:	mouse click column number.  The maximum value
++				of {col} is 'columns'.
++				Note: row and col are always interpreted as
++				screen cells for the console application.
++				But, they may be interpreted as pixels
++				for the GUI, depending on "cell".
++		    multiclick:	set to 1 to inject a double-click mouse event.
++		    modifiers:	key modifiers.  The supported values are:
++				    4	shift is pressed
++				    8	alt is pressed
++				   16	ctrl is pressed
++		    move:	Optional; if used and TRUE then a mouse move
++			        event can be generated.
++				Only {args} row: and col: are used and
++				required.
++				Only results in an event when 'mousemoveevent'
++				is set or a popup uses mouse move events.
++		    cell:	Optional for the GUI: when present and TRUE
++				then "move" uses screen cells instead of pixel
++				positions.  Not used by the console.
 +
- Add some kind of ":whathappend" command and functions to make visible what the
- last few typed keys and executed commands are.  To be used when the user
- wonders what went wrong.
-@@ -257,15 +231,27 @@ Is there a way to make 'autowriteall' make a clean exit when the xterm is
- closed? (Dennis Nazic says files are preserved, okt 28).  Perhaps handle TERM
- like HUP?
- 
--Improvement in terminal configuration mess: Request the terminfo entry from
--the terminal itself.  The $TERM value then is only relevant for whether this
--feature is supported or not.  Replaces the xterm mechanism to request each
--entry separately. #6609
--Multiplexers (screen, tmux) can request it to the underlying terminal, and
--pass it on with modifications.
--How to get all the text quickly (also over ssh)?  Can we use a side channel?
--
--Horizontal mouse scroll only works when compiled with GUI?  #11374
-+Better terminal emulator support:
-+  > Somehow request the terminfo entry from the terminal itself.  The $TERM
-+    value then is only relevant for whether this feature is supported or not.
-+    Replaces the xterm mechanism to request each entry separately. #6609
-+    Multiplexers (screen, tmux) can request it to the underlying terminal, and
-+    pass it on with modifications.
-+    How to get all the text quickly (also over ssh)? Can we use a side channel?
-+  > When xterm supports sending an Escape sequence for the Esc key, should
-+    have a way to request this state.  That could be an XTGETTCAP entry, e.g.
-+    "k!".  Add "esc_sends_sequence" flag.
-+    If we know this state, then do not pretend going out of Insert mode in
-+    vgetorpeek(), where kitty_protocol_state is checked.
-+  > If a response ends up in a shell command, one way to avoid this is by
-+    sending t_RV last and delay starting a shell command until the response
-+    has been seen.
-+  > Can we use the req_more_codes_from_term() mechanism with more terminals?
-+    Should we repeat it after executing a shell command?
-+    Can also add this to the 'keyprotocol' option: "mok2+tcap"
-+  > In the table of terminal names pointing to the list of termcap entries,
-+    add an optional additional one.  So that "xterm-kitty" can first load
-+    "xterm" and then add "kitty" entries.
- 
- Using "A" and "o" in manually created fold (in empty buffer) does not behave
- consistenly (James McCoy, #10698)
-@@ -276,8 +262,6 @@ overwritten.  Could use ":echowin" and call redraw_cmd() in get_user_input().
- 
- Syntax include problem: #11277.  Related to Patch 8.2.2761
- 
--Add str2blob() and blob2str() ?  #4049
--
- To avoid flicker: add an option that when a screen clear is requested, instead
- of clearing it draws everything and uses "clear to end of line" for every line.
- Resetting 't_ut' already causes this?
-@@ -299,6 +283,15 @@ Idea: when typing ":e /some/dir/" and "dir" does not exist, highlight in red.
- initialization to figure out the default value from 'shell'.  Add a test for
- this.
- 
-+Support translations for plugins: #11637
-+- Need a tool like xgettext for Vim script, generates a .pot file.
-+  Need the equivalent of _() and N_(), perhaps TR() and TRN().
-+- Instructions for how to create .po files and translate.
-+- Script or Makefile to generate .mo files.
-+- Instructions and perhaps a script to install the .mo files in the right
-+  place.
-+- Add variant of gettext() that takes a package name.
++		"key":
++		  Send a low-level keyboard event (e.g. keyup or keydown).
++		  The supported items in {args} are:
++		    event:	The supported string values are:
++				    keyup   generate a keyup event
++				    keydown generate a keydown event
++		    keycode:    Keycode to use for a keyup or a keydown event.
++		    modifiers:	Optional; key modifiers.
++				The supported values are:
++				    2	shift is pressed
++				    4	ctrl is pressed
++				    8	alt is pressed
++				Note: These values are different from the
++				mouse modifiers.
++								*E1291*
++		Returns TRUE if the event is successfully added, FALSE if
++		there is a failure.
 +
- With concealed text mouse click doesn't put the cursor in the right position.
- (Herb Sitz)  Fix by Christian Brabandt, 2011 Jun 16.  Doesn't work properly,
- need to make the change in where RET_WIN_BUF_CHARTABSIZE() is called.
-@@ -2668,13 +2661,6 @@ Awaiting updated patches:
- -   Add possibility to highlight specific columns (for Fortran).  Or put a
-     line in between columns (e.g., for 'textwidth').
-     Patch to add 'hlcolumn' from Vit Stradal, 2004 May 20.
--8   Add functions:
--    gettext()		Translate a message.  (Patch from Yasuhiro Matsumoto)
--			Update 2004 Sep 10
--			Another patch from Edward L. Fox (2005 Nov 24)
--			Search in 'runtimepath'?
--			More docs needed about how to use this.
--			How to get the messages into the .po files?
-     confirm()		add "flags" argument, with 'v' for vertical
- 			    layout and 'c' for console dialog. (Haegg)
- 			    Flemming Madsen has a patch for the 'c' flag
++		Can also be used as a |method|: >
++			GetEvent()->test_mswin_event({args})
++<
+ 
+ test_null_blob()					*test_null_blob()*
+ 		Return a |Blob| that is null. Only useful for testing.
 diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 43a13d986..aa51fe3e9 100644
+index aa51fe3e9..c67bd99ef 100644
 --- a/runtime/doc/usr_41.txt
 +++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Nov 22
-+*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Dec 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -1031,6 +1031,7 @@ Buffers, windows and the argument list:
- 	getwininfo()		get a list with window information
- 	getchangelist()		get a list of change list entries
- 	getjumplist()		get a list of jump list entries
-+	swapfilelist()		list of existing swap files in 'directory'
- 	swapinfo()		information about a swap file
- 	swapname()		get the swap file path of a buffer
- 
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index d7f78087a..e13feee46 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.0.  Last change: 2022 Nov 14
-+*vim9.txt*	For Vim version 9.0.  Last change: 2022 Dec 08
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -16,7 +16,7 @@ features in Vim9 script.
- 3.  New style functions			|fast-functions|
- 4.  Types				|vim9-types|
- 5.  Namespace, Import and Export	|vim9script|
--6.  Future work: classes		|vim9-classes|
-+6.  Classes and interfaces		|vim9-classes|
- 
- 9.  Rationale				|vim9-rationale|
- 
-@@ -1023,7 +1023,9 @@ always converted to string: >
- 
- Simple types are Number, Float, Special and Bool.  For other types |string()|
- should be used.
--						*false* *true* *null* *E1034*
-+			*false* *true* *null* *null_blob* *null_channel*
-+			*null_dict* *null_function* *null_job* *null_list*
-+			*null_partial* *null_string* *E1034*
- In Vim9 script one can use the following predefined values: >
- 	true
- 	false
-@@ -1940,73 +1942,17 @@ Or: >
- 
- ==============================================================================
- 
--6. Future work: classes					*vim9-classes*
--
--Above "class" was mentioned a few times, but it has not been implemented yet.
--Most of Vim9 script can be created without this functionality, and since
--implementing classes is going to be a lot of work, it is left for the future.
--For now we'll just make sure classes can be added later.
--
--Thoughts:
--- `class` / `endclass`, the whole class must be in one file
--- Class names are always CamelCase (to avoid a name clash with builtin types)
--- A single constructor called "constructor" (similar to TypeScript)
--- Single inheritance: `class ThisClass extends BaseClass`
--- `interface` / `endinterface` (looks like a class without any implementation)
--- Explicit declaration that the class supports an interface, so that type
--  checking works properly:
--  `class SomeClass implements SomeInterface, OtherInterface`
--- `abstract class` (class with incomplete implementation) - not really needed?
--- Class (static) methods and Object methods: syntax to be defined.
--- Class (static) members and Object members: syntax to be defined.
--- Access control: private / protected / shared / public ?  Keep it simple.
--- Access object members with `this.member` ?
--- Generics for class: `class <Tkey, Tentry>`
--- Generics for function: `def <Tkey> GetLast(key: Tkey)`
--- Method overloading (two methods with the same name but different argument
--  types): Most likely not
--- Mixins: not sure if that is useful, leave out for simplicity.
--
--Again, much of this is from TypeScript with a slightly different syntax.
--
--Some things that look like good additions:
--- Use a class as an interface (like Dart)
--- Extend a class with methods, using an import (like Dart)
--- Mixins
--- For testing: Mock mechanism
--
--An important class that will be provided is "Promise".  Since Vim is single
--threaded, connecting asynchronous operations is a natural way of allowing
--plugins to do their work without blocking the user.  It's a uniform way to
--invoke callbacks and handle timeouts and errors.
--
--Some commands have already been reserved:
--	*:class*
--	*:endclass*
--	*:abstract*
--	*:enum*
--	*:endenum*
--	*:interface*
--	*:endinterface*
--	*:static*
--	*:type*
--
--Some examples: >
--
--	abstract class Person
--	    static const prefix = 'xxx'
--	    var name: string
--
--	    def constructor(name: string)
--		this.name = name
--	    enddef
--
--	    def display(): void
--		echo name
--	    enddef
--
--	    abstract def find(string): Person
--	endclass
-+6. Classes and interfaces				*vim9-classes*
-+
-+In legacy script a Dictionary could be used as a kind-of object, by adding
-+members that are functions.  However, this is quite inefficient and requires
-+the writer to do the work of making sure all the objects have the right
-+members.  See |Dictionary-function|.
-+
-+In |Vim9| script you can have classes, objects and interfaces like in most
-+popular object-oriented programming languages.  Since this is a lot of
-+functionality it is located in a separate help file: |vim9class.txt|.
-+
- 
- ==============================================================================
- 
-@@ -2293,18 +2239,5 @@ tool need to be supported.  Since most languages support classes the lack of
- support for classes in Vim is then a problem.
- 
- 
--Classes ~
--
--Vim supports a kind-of object oriented programming by adding methods to a
--dictionary.  With some care this can be made to work, but it does not look
--like real classes.  On top of that, it's quite slow, because of the use of
--dictionaries.
--
--It would be good to support real classes, and this is planned for a later
--version.  The support is a "minimal common functionality" of class support in
--most languages.  It will work much like Java, which is the most popular
--programming language.
--
--
- 
-  vim:tw=78:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
-index 43c320403..540d5c574 100644
---- a/runtime/doc/visual.txt
-+++ b/runtime/doc/visual.txt
-@@ -1,4 +1,4 @@
--*visual.txt*    For Vim version 9.0.  Last change: 2022 Jun 18
-+*visual.txt*    For Vim version 9.0.  Last change: 2022 Dec 04
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -152,6 +152,11 @@ gN			Like |gn| but searches backward, like with `N`.
- 			environment variable or the -display argument).  Only
- 			when 'mouse' option contains 'n' or 'a'.
- 
-+<LeftMouseNM>		Internal mouse code, used for clicking on the status
-+<LeftReleaseNM>		line to focus a window.  NM stands for non-mappable.
-+			You cannot use these, but they might show up in some
-+			places.
-+
- If Visual mode is not active and the "v", "V" or CTRL-V is preceded with a
- count, the size of the previously highlighted area is used for a start.  You
- can then move the end of the highlighted area and give an operator.  The type
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index b29a9a9ac..924a93250 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
-@@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.0.  Last change: 2022 Nov 22
-+*windows.txt*   For Vim version 9.0.  Last change: 2022 Nov 27
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -639,6 +639,8 @@ autocommand event can be used.
- If you want to get notified of text in windows scrolling vertically or
- horizontally, the |WinScrolled| autocommand event can be used.  This will also
- trigger in window size changes.
-+Exception: the events will not be triggered when the text scrolls for
-+'incsearch'.
- 							*WinResized-event*
- The |WinResized| event is triggered after updating the display, several
- windows may have changed size then.  A list of the IDs of windows that changed
-@@ -655,9 +657,9 @@ The information provided by |WinScrolled| is a dictionary for each window that
- has changes, using the window ID as the key, and a total count of the changes
- with the key "all".  Example value for |v:event| (|Vim9| syntax):
- 	{
--	   all: {width: 0, height: 2, leftcol: 0, topline: 1, skipcol: 0},
--	   1003: {width: 0, height: -1, leftcol: 0, topline: 0, skipcol: 0},
--	   1006: {width: 0, height: 1, leftcol: 0, topline: 1, skipcol: 0},
-+	   all: {width: 0, height: 2, leftcol: 0, skipcol: 0, topline: 1, topfill: 0},
-+	   1003: {width: 0, height: -1, leftcol: 0, skipcol: 0, topline: 0, topfill: 0},
-+	   1006: {width: 0, height: 1, leftcol: 0, skipcol: 0, topline: 1, topfill: 0},
- 	}
- 
- Note that the "all" entry has the absolute values of the individual windows
+@@ -1186,6 +1186,7 @@ Testing:				    *test-functions*
+ 	test_getvalue()		get value of an internal variable
+ 	test_gui_event()	generate a GUI event for testing
+ 	test_ignore_error()	ignore a specific error message
++	test_mswin_event()	generate an MS-Windows event
+ 	test_null_blob()	return a null Blob
+ 	test_null_channel()	return a null Channel
+ 	test_null_dict()	return a null Dict
