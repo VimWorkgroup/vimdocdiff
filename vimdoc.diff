@@ -1,31 +1,654 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 5acf7333d..73506cc4c 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.0.  Last change: 2022 Nov 22
++*autocmd.txt*   For Vim version 9.0.  Last change: 2022 Dec 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -97,7 +97,7 @@ If the `:autocmd` is in Vim9 script (a script that starts with `:vim9script`
+ and in a `:def` function) then {cmd} will be executed as in Vim9
+ script.  Thus this depends on where the autocmd is defined, not where it is
+ triggered.
+-
++							*:autocmd-block*
+ {cmd} can be a block, like with `:command`, see |:command-repl|.  Example: >
+ 	au BufReadPost *.xml {
+ 		  setlocal matchpairs+=<:>
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 05e8d701f..ea3ce61e9 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2022 Dec 05
++*builtin.txt*	For Vim version 9.0.  Last change: 2022 Dec 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4137,7 +4137,7 @@ getscriptinfo([{opts})					*getscriptinfo()*
+ 				this script name links to, if any, otherwise
+ 				zero
+ 		    variables   A dictionary with the script-local variables.
+-				Present only when the a particular script is
++				Present only when a particular script is
+ 				specified using the "sid" item in {opts}.
+ 				Note that this is a copy, the value of
+ 				script-local variables cannot be changed using
+@@ -9113,6 +9113,8 @@ string({expr})	Return {expr} converted to a String.  If {expr} is a Number,
+ 			Blob		0z00112233.44556677.8899
+ 			List		[item, item]
+ 			Dictionary	{key: value, key: value}
++			Class		class SomeName
++			Object		object of SomeName {lnum: 1, col: 3}
+ 
+ 		When a |List| or |Dictionary| has a recursive reference it is
+ 		replaced by "[...]" or "{...}".  Using eval() on the result
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 1c93de4d7..2c1233bf6 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -1,4 +1,4 @@
+-*diff.txt*      For Vim version 9.0.  Last change: 2022 Oct 01
++*diff.txt*      For Vim version 9.0.  Last change: 2022 Dec 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -148,6 +148,10 @@ Otherwise they are set to their default value:
+ 	'foldmethod'	"manual"
+ 	'foldcolumn'	0
+ 
++'foldenable' will most-likely be reset to off.  That is when 'foldmethod' is
++is restored to "manual".  The folds themselves are not cleared but they should
++not show up, resetting 'foldenable' is the best way to do that.
++
+ ==============================================================================
+ 2. Viewing diffs						*view-diffs*
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 87fd2cf32..dc6e16bc7 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2022 Dec 09
++*options.txt*	For Vim version 9.0.  Last change: 2022 Dec 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -34,6 +34,8 @@ achieve special effects.  These options come in three forms:
+ 			key codes are not shown, because they are generated
+ 			internally and can't be changed.  Changing the terminal
+ 			codes in the GUI is not useful either...
++			The options have the form t_AB, see
++			|terminal-options|.
+ 
+ :se[t]! termcap		Idem, but don't use multiple columns.
+ 
+@@ -1249,7 +1251,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		\ ' on word "' .. v:beval_text .. '"'
+     endfunction
+     set bexpr=MyBalloonExpr()
+-    set ballooneval
++    set ballooneval balloonevalterm
+ <
+ 	Also see |balloon_show()|, it can be used if the content of the balloon
+ 	is to be fetched asynchronously.  In that case evaluating
+@@ -4936,6 +4938,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			    CSI ?u	request kitty keyboard protocol state
+ 			    CSI >c	request the termresponse
+ 
++	If you notice problems, such as characters being displayed that
++	disappear after `CTRL-L`, you might want to try making this option
++	empty.  Then set the 'term' option to have it take effect: >
++		set keyprotocol=
++		let &term = &term
++
+ 
+ 					*'keywordprg'* *'kp'*
+ 'keywordprg' 'kp'	string	(default "man" or "man -s",  DOS: ":help",
+@@ -7112,7 +7120,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'shortmess'* *'shm'*
+ 'shortmess' 'shm'	string	(Vim default "filnxtToOS", Vi default: "S",
+ 							POSIX default: "AS")
+-			global
++			global					*E1336*
+ 	This option helps to avoid all the |hit-enter| prompts caused by file
+ 	messages, for example  with CTRL-G, and to avoid some other messages.
+ 	It is a list of flags:
+@@ -7127,30 +7135,30 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		and "[a]" instead of "appended" for ':w >> file' command
+ 	  x	use "[dos]" instead of "[dos format]", "[unix]"		*shm-x*
+ 		instead of "[unix format]" and "[mac]" instead of "[mac
+-		format]".
++		format]"
+ 	  a	all of the above abbreviations				*shm-a*
+ 
+ 	  o	overwrite message for writing a file with subsequent	*shm-o*
+ 		message for reading a file (useful for ":wn" or when
+ 		'autowrite' on)
+-	  O	message for reading a file overwrites any previous	*smh-O*
+-		message.  Also for quickfix message (e.g., ":cn").
++	  O	message for reading a file overwrites any previous	*shm-O*
++		message;  also for quickfix message (e.g., ":cn")
+ 	  s	don't give "search hit BOTTOM, continuing at TOP" or	*shm-s*
+ 		"search hit TOP, continuing at BOTTOM" messages; when using
+ 		the search count do not show "W" after the count message (see
+ 		S below)
+ 	  t	truncate file message at the start if it is too long	*shm-t*
+ 		to fit on the command-line, "<" will appear in the left most
+-		column.  Ignored in Ex mode.
++		column; ignored in Ex mode
+ 	  T	truncate other messages in the middle if they are too	*shm-T*
+-		long to fit on the command line.  "..." will appear in the
+-		middle.  Ignored in Ex mode.
++		long to fit on the command line; "..." will appear in the
++		middle; ignored in Ex mode
+ 	  W	don't give "written" or "[w]" when writing a file	*shm-W*
+ 	  A	don't give the "ATTENTION" message when an existing	*shm-A*
+-		swap file is found.
++		swap file is found
+ 	  I	don't give the intro message when starting Vim,		*shm-I*
+-	  	see |:intro|.
+-	  c	don't give |ins-completion-menu| messages.  For		*shm-c*
++	  	see |:intro|
++	  c	don't give |ins-completion-menu| messages; for		*shm-c*
+ 		example, "-- XXX completion (YYY)", "match 1 of 2", "The only
+ 		match", "Pattern not found", "Back at original", etc.
+ 	  C	don't give messages while scanning for ins-completion	*shm-C*
+@@ -7227,11 +7235,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 			*'showcmdloc'* *'sloc'*
+ 'showcmdloc' 'sloc'	string	(default "last")
++			global
+ 	This option can be used to display the (partially) entered command in
+ 	another location.  Possible values are:
+ 	  last		Last line of the screen (default).
+ 	  statusline	Status line of the current window.
+-	  tabline	First line of the screen if 'showtabine' is enabled.
++	  tabline	First line of the screen if 'showtabline' is enabled.
+ 	Setting this option to "statusline" or "tabline" means that these will
+ 	be redrawn whenever the command changes, which can be on every key
+ 	pressed.
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index ff508b5db..ffdfd108a 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.0.  Last change: 2022 Nov 23
++*quickref.txt*  For Vim version 9.0.  Last change: 2022 Dec 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -902,7 +902,8 @@ Short explanation of each option:		*option-list*
+ 'shortmess'	  'shm'     list of flags, reduce length of messages
+ 'shortname'	  'sn'	    Filenames assumed to be 8.3 chars
+ 'showbreak'	  'sbr'     string to use at the start of wrapped lines
+-'showcmd'	  'sc'	    show (partial) command in status line
++'showcmd'	  'sc'	    show (partial) command somewhere
++'showcmdloc'	  'sloc'    where to show (partial) command
+ 'showfulltag'	  'sft'     show full tag pattern when completing tag
+ 'showmatch'	  'sm'	    briefly jump to matching bracket if insert one
+ 'showmode'	  'smd'     message on status line to show current mode
+diff --git a/runtime/doc/sign.txt b/runtime/doc/sign.txt
+index c366ae5f5..c69849940 100644
+--- a/runtime/doc/sign.txt
++++ b/runtime/doc/sign.txt
+@@ -1,4 +1,4 @@
+-*sign.txt*      For Vim version 9.0.  Last change: 2021 Dec 05
++*sign.txt*      For Vim version 9.0.  Last change: 2022 Dec 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur
+@@ -625,9 +625,9 @@ sign_placelist({list})
+ 				then a new unique identifier is allocated.
+ 				Otherwise the specified number is used. See
+ 				|sign-identifier| for more information.
+-		    lnum	line number in the buffer {expr} where the
+-				sign is to be placed. For the accepted values,
+-				see |line()|.
++		    lnum	line number in the buffer where the sign is to
++				be placed. For the accepted values, see
++				|line()|.
+ 		    name	name of the sign to place. See |sign_define()|
+ 		    		for more information.
+ 		    priority	priority of the sign. When multiple signs are
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index cd3dbca53..27c65dacc 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2022 Nov 24
++*syntax.txt*	For Vim version 9.0.  Last change: 2022 Dec 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5003,7 +5003,7 @@ in their own color.
+ 
+ 						*highlight-clear* *:hi-clear*
+ :hi[ghlight] clear	Reset all highlighting to the defaults.  Removes all
+-			highlighting for groups added by the user!
++			highlighting for groups added by the user.
+ 			Uses the current value of 'background' to decide which
+ 			default colors to use.
+ 			If there was a default link, restore it. |:hi-link|
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 146ef478f..f519bed76 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -1,4 +1,4 @@
+-*term.txt*      For Vim version 9.0.  Last change: 2022 Dec 01
++*term.txt*      For Vim version 9.0.  Last change: 2022 Dec 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -88,7 +88,8 @@ Output resumes when you hit <BS>.
+ 
+ Note: When 't_ti' is not empty, Vim assumes that it causes switching to the
+ alternate screen.  This may slightly change what happens when executing a
+-shell command or exiting Vim.  To avoid this use 't_TI' and 't_TE'.
++shell command or exiting Vim.  To avoid this use 't_TI' and 't_TE' (but make
++sure to add to them, not overwrite).
+ 
+ Vim will try to detect what keyboard protocol the terminal is using with the
+ 't_RK' termcap entry.  This is sent after 't_TI', but only when there is no
+@@ -126,7 +127,11 @@ automatically, you can try using something like this: >
+ 	  exec "set t_PS=\e[200~"
+ 	  exec "set t_PE=\e[201~"
+ 	endif
+-<
++
++The terminfo entries "BE", "BD", "PS" and "PE" were added in ncurses version
++6.4, early 2023, for some terminals.  If you have this version then you may
++not have to manually configure your terminal.
++
+ 							*tmux-integration*
+ If you experience issues when running Vim inside tmux, here are a few hints.
+ You can comment-out parts if something doesn't work (it may depend on the
+@@ -294,13 +299,32 @@ When Vim receives a response to the |t_RV| (request version) sequence and it
+ starts with CSI, it assumes that the terminal is in 8-bit mode and will
+ convert all key sequences to their 8-bit variants.
+ 
++						*xterm-terminfo-entries*
++For some time the terminfo entries were insufficient to describe all the
++features tht Vim can use.  The builtin xterm termcap entries did have these,
++with the result that several terminals that were similar enough to xterm took
++advantage of these by prefixing "xterm-" to the terminal name in $TERM.
++
++This leads to problems, because quite often these terminals are not 100%
++compatible with xterm.  At the start of 2023 several entries have been added
++to the terminfo database to make it possible to use these features without
++using the "xterm" workaround.  These are the relevant entries (so far):
++
++	name	xterm value	description ~
++	RV	"\033[>c"	Request version |t_RV|
++
++	BE	"\033[?2004h"	enable bracketed paste mode |t_BE|
++	BD	"\033[?2004l"	disable bracketed paste mode |t_BD|
++	PS	"\033[200~"	pasted text start |t_PS|
++	PE	"\033[201~"	pasted text end |t_PE|
++
+ 						*xterm-kitty* *kitty-terminal*
+-The Kitty terminal is a special case.  Mainly because it works different from
+-most other terminals, but also because, instead of trying the fit in and make
+-it behave like other terminals by default, it dictates how applications need
+-to work when using Kitty.  This makes it very difficult for Vim to work in a
+-Kitty terminal.  Some exceptions have been hard coded, but it is not at all
+-nice to have to make exceptions for one specific terminal.
++The Kitty terminal is a special case.  Mainly because it works differently
++from most other terminals, but also because, instead of trying the fit in and
++make it behave like other terminals by default, it dictates how applications
++need to work when using Kitty.  This makes it very difficult for Vim to work
++in a Kitty terminal.  Some exceptions have been hard coded, but it is not at
++all nice to have to make exceptions for one specific terminal.
+ 
+ One of the problems is that the value for $TERM is set to "xterm-kitty".  For
+ Vim this is an indication that the terminal is xterm-compatible and the
+@@ -448,10 +472,10 @@ Added by Vim (there are no standard codes for these):
+ 	t_Si	save icon text to stack				*t_Si* *'t_Si'*
+ 	t_Ri	restore icon text from stack			*t_Ri* *'t_Ri'*
+ 	t_TE	end of "raw" mode				*t_TE* *'t_TE'*
+-	t_TI	put terminal into "raw" mode 			*t_TI* *'t_TI'*
+-	t_fe	enable focus-event tracking 			*t_fe* *'t_fe'*
++	t_TI	put terminal into "raw" mode			*t_TI* *'t_TI'*
++	t_fe	enable focus-event tracking			*t_fe* *'t_fe'*
+ 		|xterm-focus-event|
+-	t_fd	disable focus-event tracking 			*t_fd* *'t_fd'*
++	t_fd	disable focus-event tracking			*t_fd* *'t_fd'*
+ 		|xterm-focus-event|
+ 
+ Some codes have a start, middle and end part.  The start and end are defined
+@@ -461,8 +485,8 @@ by the termcap option, the middle part is text.
+ 	set cursor color:   t_SC  {color name}  t_EC
+ 
+ t_SH must take one argument:
+-	0, 1 or none  	blinking block cursor
+-	2	      	block cursor
++	0, 1 or none	blinking block cursor
++	2		block cursor
+ 	3		blinking underline cursor
+ 	4		underline cursor
+ 	5		blinking vertical bar cursor
+@@ -531,6 +555,7 @@ Note: Use the <> form if possible
+ 	t_%1	<Help>		help key			*t_%1* *'t_%1'*
+ 	t_&8	<Undo>		undo key			*t_&8* *'t_&8'*
+ 	t_kI	<Insert>	insert key			*t_kI* *'t_kI'*
++		<kInsert>	keypad insert key
+ 	t_kD	<Del>		delete key			*t_kD* *'t_kD'*
+ 	t_kb	<BS>		backspace key			*t_kb* *'t_kb'*
+ 	t_kB	<S-Tab>		back-tab (shift-tab)  *<S-Tab>*	*t_kB* *'t_kB'*
+@@ -563,9 +588,13 @@ Note: Use the <> form if possible
+ 	t_KK	<k8>		keypad 8		 *<k8>*	*t_KK* *'t_KK'*
+ 	t_KL	<k9>		keypad 9		 *<k9>*	*t_KL* *'t_KL'*
+ 		<Mouse>		leader of mouse code		*<Mouse>*
+-								*t_PS* *'t_PS'*
+-	t_PS	start of bracketed paste |xterm-bracketed-paste|
+-	t_PE	end of bracketed paste |xterm-bracketed-paste|  *t_PE* *'t_PE'*
++
++	t_PS	<PasteStart>	start of bracketed paste	*t_PS* *'t_PS'*
++				|xterm-bracketed-paste|
++	t_PE	<PasteEnd>	end of bracketed paste		*t_PE* *'t_PE'*
++				|xterm-bracketed-paste|
++		<FocusGained>	Vim window got focus (internal only)
++		<FocusLost>	Vim window lost focus (internal only)
+ 
+ Note about t_so and t_mr: When the termcap entry "so" is not present the
+ entry for "mr" is used.  And vice versa.  The same is done for "se" and "me".
+@@ -604,12 +633,15 @@ work the 'termguicolors' option needs to be set.
+ See https://github.com/termstandard/colors for a list of terminals that
+ support true colors.
+ 
+-Sometimes setting 'termguicolors' is not enough and one has to set the |t_8f|
+-and |t_8b| options explicitly. Default values of these options are
+-"^[[38;2;%lu;%lu;%lum" and "^[[48;2;%lu;%lu;%lum" respectively, but it is only
+-set when `$TERM` is `xterm`. Some terminals accept the same sequences, but
+-with all semicolons replaced by colons (this is actually more compatible, but
+-less widely supported): >
++For telling the terminal what RGB color to use the |t_8f| and |t_8b| termcap
++entries are used.  These are set by default to values that work for most
++terminals.  If that does not work for your terminal you can set them manually.
++The default values are set like this: >
++	 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
++	 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
++
++Some terminals accept the same sequences, but with all semicolons replaced by
++colons (this is actually more compatible, but less widely supported): >
+ 	 let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+ 	 let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+ 
+@@ -627,7 +659,7 @@ is actually the case.
+ To overrule the default, put this line in your ~/.Xdefaults or
+ ~/.Xresources:
+ >
+-	XTerm*allowWindowOps: 		true
++	XTerm*allowWindowOps:		true
+ 
+ And run "xrdb -merge .Xresources" to make it effective.  You can check the
+ value with the context menu (right mouse button while CTRL key is pressed),
 diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index b03726572..089e61fa0 100644
+index 089e61fa0..beef79d48 100644
 --- a/runtime/doc/testing.txt
 +++ b/runtime/doc/testing.txt
-@@ -274,7 +274,7 @@ test_mswin_event({event}, {args})		*test_mswin_event()*
- 		    event:	The supported string values are:
- 				    keyup   generate a keyup event
- 				    keydown generate a keydown event
--		    keycode:    Keycode to use for a keyup or a keydown event.
-+		    keycode:	Keycode to use for a keyup or a keydown event.
- 		    modifiers:	Optional; key modifiers.
- 				The supported values are:
- 				    2	shift is pressed
-@@ -282,9 +282,14 @@ test_mswin_event({event}, {args})		*test_mswin_event()*
- 				    8	alt is pressed
- 				Note: These values are different from the
- 				mouse modifiers.
--								*E1291*
--		Returns TRUE if the event is successfully added, FALSE if
--		there is a failure.
-+		    execute:	Optional. Similar to |feedkeys()| mode x.
-+				When this is included and set to true
-+				(non-zero) then Vim will process any buffered
-+				unprocessed key events.  All other {args}
-+				items are optional when this is set and true.
+@@ -1,4 +1,4 @@
+-*testing.txt*	For Vim version 9.0.  Last change: 2022 Nov 28
++*testing.txt*	For Vim version 9.0.  Last change: 2022 Dec 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 086742a8f..c6178c39c 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2022 Nov 18
++*textprop.txt*  For Vim version 9.0.  Last change: 2022 Dec 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -220,10 +220,16 @@ prop_add({lnum}, {col}, {props})
+ 		Any Tab and other control character in the text will be
+ 		changed to a space (Rationale: otherwise the size of the text
+ 		is difficult to compute).
+-		A negative "id" will be chosen and is returned.  Once a
+-		property with "text" has been added for a buffer then using a
+-		negative "id" for any other property will give an error:
+-		*E1293*
++		A negative "id" will be chosen and is returned.
 +
-+		Returns TRUE if the event is successfully added or executed,
-+		FALSE if there is a failure.
++		Before text properties with text were supported it was
++		possible to use a negative "id", even though this was very
++		rare.  Now that negative "id"s are reserved for text
++		properties with text an error is given when using a negative
++		"id".  When a text property with text already exists using a
++		negative "id" results in *E1293* .  If a negative "id" was
++		used and later a text property with text is added results in
++		*E1339* .
  
  		Can also be used as a |method|: >
- 			GetEvent()->test_mswin_event({args})
+ 			GetLnum()->prop_add(col, props)
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 4474632c3..c7fefa6d8 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Dec 11
++*todo.txt*      For Vim version 9.0.  Last change: 2022 Dec 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -54,13 +54,19 @@ Upcoming larger works:
+ 
+ Further Vim9 improvements, possibly after launch:
+ - implement :class and :interface: See |vim9-classes|  #11544
+-    make default constructor use "this.member = void"
+-    make public / default read access / private work for members.
+-    string value of class and object in echo_string_core()
+-    object empty(), len() - can class define a method?
++    class members: add test for read/write access
++	Test for E1337
++    Should object members be declared with "var"?  Looks more normal.
++    Don't use "class method" in the help but use "class function", more people
++    are used to that.
++    implement class functions: static def Method()
++    Disallow shadowing class members, e.g. by function arguments.
+     tv_equal() should compare values, not identity.
++    import/export of a class
++    using a class name as a type
+     garbage collection: set_ref_in_item(): Mark items in class as used ?
+     type() should return different type for each class?
++    object empty(), len() - can class define a method to be used for them?
+     how about lock/unlock?
+ - implement :type
+ - implement :enum
+@@ -70,6 +76,56 @@ Further Vim9 improvements, possibly after launch:
+     has(featureName), len(someString)
+ - Implement as part of an expression: ++expr, --expr, expr++, expr--.
+ 
++Information missing in terminfo:
++Priority:
++- t_RV	request terminal version string; xterm:	"\033[>c"
++Codes used for focus gained and lost (currently using use_xterm_like_mouse())
++  termcodes are hard-coded in set_termname(), not named.
++- t_fe	enable focus-event tracking
++- t_fd	disable focus-event tracking
++Underline and similar:
++- t_AU - Set underline color: like "AF" and "AB" entries.
++- t_Ce	undercurl and underline end
++- t_Cs	undercurl (curly underline) mode
++- t_Us	double underline mode
++- t_ds	dotted underline mode
++- t_Ds	dashed underline mode
++- t_Te	strikethrough end
++- t_Ts	strikethrough mode
++Cursor codes: |termcap-cursor-shape|
++- t_RC	request terminal cursor blinking
++- t_RS	request terminal cursor style
++- t_VS	cursor normally visible (no blink)
++- t_SI	start insert mode (bar cursor shape)
++- t_SR	start replace mode (underline cursor shape)
++- t_EI	end insert or replace mode (block cursor shape)
++- t_SC	set cursor color start
++- t_EC	set cursor color end
++- t_SH	set cursor shape
++State requests:
++- t_RF	request terminal foreground color
++- t_RB	request terminal background color
++Less important (not needed for regular editing):
++- t_IS	set icon text start
++- t_IE	set icon text end
++- t_ST	save window title to stack
++- t_RT	restore window title from stack
++- t_Si	save icon text to stack
++- t_Ri	restore icon text from stack
++- t_WP	set window position (Y, X) in pixels
++- t_GP	get window position (Y, X) in pixels
++- t_WS	set window size (height, width in cells)
++Vim internal, but there should be a terminfo entry for these:
++- t_8f	set foreground color (R, G, B) in printf() format
++- t_8b	set background color (R, G, B) in printf() format
++- t_8u	set underline color (R, G, B) in printf() format
++Probably Vim internal, not in terminfo:
++- t_TE	end of "raw" mode
++- t_TI	put terminal into "raw" mode
++- t_RK	request terminal keyboard protocol state; sent after |t_TI|
++Already working, not properly documented:
++- t_u7	request cursor position
++
+ Popup windows:
+ - Add a function to redraw a specific popup window.  Esp. to be used when
+   editing the command line, when screen updating doesn't happen. (Shougo)
+@@ -177,6 +233,10 @@ Terminal emulator window:
+ - When 'encoding' is not utf-8, or the job is using another encoding, setup
+   conversions.
+ 
++Patch adds showcmd() function  #11708  - tests missing StopVimInTerminal()
++
++Some setaf/setab/t_AF/t_AB values support RGB somehow?  Can we use that?
++
+ Crash when a variable is removed while listing variables (Issue #11435)
+ 
+ Autoconf: must use autoconf 2.69, later version generates lots of warnings
+@@ -212,6 +272,12 @@ https://github.com/vim/vim/pull/5566
+ 
+ PR #11579 to add visualtext(), return Visually selected text.
+ 
++Stray characters in the shell #11719, caused by requesting a response for:
++- XT key sequences
++- Whether modifyOtherKeys is active
++- Whether kitty keyboard protocol is active
++Can we not request XT key sequences, or reduce them drastically?
++
+ Issue #10512: Dynamic loading broken with Perl 5.36
+ Damien has a patch (2022 Dec 4)
+ 
+@@ -426,6 +492,10 @@ work.
+ Using "au!" after "filetype on" is a bit slow.  Can the matching of
+ autocommands be made faster?  (#7056)
+ 
++Using a search pattern containing "\%V" and 'hlsearch' set keeps old matches
++when the Visual area changes.  #11694.  Do a redraw when starting a Visual
++selection?
++
+ Append in Visual block mode inserts the wrong character.
+ Test_visual_block_mode() already has the proper check, which is commented out.
+ (#8288)
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index c67bd99ef..559707737 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Dec 05
++*usr_41.txt*	For Vim version 9.0.  Last change: 2022 Dec 20
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index a88f3181d..a11e166c3 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2022 Nov 04
++*various.txt*   For Vim version 9.0.  Last change: 2022 Dec 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -496,7 +496,7 @@ T  *+visualextra*	extra Visual mode commands |blockwise-operators|
+ T  *+vreplace*		|gR| and |gr|
+    *+vtp*		on MS-Windows console: support for 'termguicolors'
+ T  *+wildignore*	|'wildignore'|  Always enabled since 9.0.0278
+-T  *+wildmenu*		|'wildmenu'||  Always enabled since 9.0.0279
++T  *+wildmenu*		|'wildmenu'|  Always enabled since 9.0.0279
+ T  *+windows*		more than one window; Always enabled since 8.0.1118.
+ m  *+writebackup*	|'writebackup'| is default on
+ m  *+xim*		X input method |xim|
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 4dc84f3ef..cabe55b31 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.0.  Last change: 2022 Dec 11
++*vim9class.txt*	For Vim version 9.0.  Last change: 2022 Dec 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -117,7 +117,7 @@ Member write access ~
+ Now try to change an object member directly: >
+ 
+ 	pos.lnum = 9
+-
++<								*E1335*
+ This will give you an error!  That is because by default object members can be
+ read but not set.  That's why the class provides a method for it: >
+ 
+@@ -128,7 +128,7 @@ way.  Most often there is no problem using a value, while setting a value may
+ have side effects that need to be taken care of.  In this case, the SetLnum()
+ method could check if the line number is valid and either give an error or use
+ the closest valid value.
+-
++						*:public* *E1331*
+ If you don't care about side effects and want to allow the object member to be
+ changed at any time, you can make it public: >
+ 
+@@ -137,10 +137,14 @@ changed at any time, you can make it public: >
+ 
+ Now you don't need the SetLnum(), SetCol() and SetPosition() methods, setting
+ "pos.lnum" directly above will no longer give an error.
++							*E1334*
++If you try to set an object member that doesn't exist you get an error: >
++	pos.other = 9
++<	E1334: Object member not found: other ~
+ 
+ 
+ Private members ~
+-
++							*E1332* *E1333*
+ On the other hand, if you do not want the object members to be read directly,
+ you can make them private.  This is done by prefixing an underscore to the
+ name: >
+@@ -245,7 +249,7 @@ class, for which objects can be created.  Example: >
+ 	   enddef
+ 	endclass
+ <
+-						*class-member* *:static*
++					*class-member* *:static* *E1337* *E1338*
+ Class members are declared with "static".  They are used by the name without a
+ prefix: >
+ 
+@@ -389,6 +393,17 @@ Inside a class, in betweeen `:class` and `:endclass`, these items can appear:
+   	def newName(arguments)
+ - An object method: >
+   	def SomeMethod(arguments)
++<							*E1329*
++For the object member the type must be specified.  The best way is to do this
++explicitly with ": {type}".  For simple types you can also use an initializer,
++such as "= 123", and Vim will see that the type is a number.  Avoid doing this
++for more complex types and when the type will be incomplete.  For example: >
++	this.nameList = []
++This specifies a list, but the item type is unknown.  Better use: >
++	this.nameList: list<string>
++The initialization isn't needed, the list is empty by default.
++							*E1330*
++Some types cannot be used, such as "void", "null" and "v:none".
+ 
+ 
+ Defining an interface ~
