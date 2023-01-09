@@ -1,21 +1,462 @@
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index f519bed76..8b8214c30 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 98c48699c..556b17156 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.0.  Last change: 2022 Dec 31
-+*term.txt*      For Vim version 9.0.  Last change: 2023 Jan 01
+-*eval.txt*	For Vim version 9.0.  Last change: 2022 Dec 11
++*eval.txt*	For Vim version 9.0.  Last change: 2023 Jan 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2970,6 +2970,8 @@ text...
+ 			deleted when the script ends).  Function-local
+ 			variables are automatically deleted when the function
+ 			ends.
++			In |Vim9| script variables declared in a function or
++			script cannot be removed.
+ 
+ :unl[et] ${env-name} ...			*:unlet-environment* *:unlet-$*
+ 			Remove environment variable {env-name}.
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index 9de498b37..c4363a89f 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -1,4 +1,4 @@
+-*index.txt*     For Vim version 9.0.  Last change: 2022 Oct 15
++*index.txt*     For Vim version 9.0.  Last change: 2023 Jan 09
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -118,6 +118,10 @@ have a problem with this, disable bracketed paste by putting this in your
- If this is done while Vim is running the 't_BD' will be sent to the terminal
- to disable bracketed paste.
+@@ -1239,6 +1239,7 @@ tag		command		action ~
+ |:checkpath|	:che[ckpath]	list included files
+ |:checktime|	:checkt[ime]	check timestamp of loaded buffers
+ |:chistory|	:chi[story]	list the error lists
++|:class|	:class		start of a class specification
+ |:clast|	:cla[st]	go to the specified error, default last one
+ |:clearjumps|	:cle[arjumps]	clear the jump list
+ |:clist|	:cl[ist]	list all errors
+@@ -1313,6 +1314,7 @@ tag		command		action ~
+ |:else|		:el[se]		part of an :if command
+ |:elseif|	:elsei[f]	part of an :if command
+ |:emenu|	:em[enu]	execute a menu by name
++|:endclass|	:endclass	end of a class specification
+ |:enddef|	:enddef		end of a user function started with :def
+ |:endif|	:en[dif]	end previous :if
+ |:endfor|	:endfo[r]	end previous :for
+@@ -1529,6 +1531,7 @@ tag		command		action ~
+ |:ptprevious|	:ptp[revious]	|:tprevious| in preview window
+ |:ptrewind|	:ptr[ewind]	|:trewind| in preview window
+ |:ptselect|	:pts[elect]	|:tselect| and show tag in preview window
++|:public|	:public		prefix for a class or object member
+ |:put|		:pu[t]		insert contents of register in the text
+ |:pwd|		:pw[d]		print current directory
+ |:py3|		:py3		execute Python 3 command
+@@ -1639,6 +1642,7 @@ tag		command		action ~
+ |:startinsert|	:star[tinsert]	start Insert mode
+ |:startgreplace|  :startg[replace] start Virtual Replace mode
+ |:startreplace|	:startr[eplace]	start Replace mode
++|:static|	:static		prefix for a class member or function
+ |:stopinsert|	:stopi[nsert]	stop Insert mode
+ |:stjump|	:stj[ump]	do ":tjump" and split window
+ |:stselect|	:sts[elect]	do ":tselect" and split window
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 5c7b4f8a6..175643644 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2022 Dec 01
++*map.txt*       For Vim version 9.0.  Last change: 2023 Jan 09
  
-+If |t_PS| or |t_PE| is not set, then |t_BE| will not be used.  This is to make
-+sure that bracketed paste is not enabled when the escape codes surrounding
-+pasted text cannot be recognized.
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -777,8 +777,8 @@ To avoid mapping of the characters you type in insert or Command-line mode,
+ type a CTRL-V first.  The mapping in Insert mode is disabled if the 'paste'
+ option is on.
+ 							*map-error*
+-Note that when an error is encountered (that causes an error message or beep)
+-the rest of the mapping is not executed.  This is Vi-compatible.
++Note that when an error is encountered (that causes an error message or might
++cause a beep) the rest of the mapping is not executed.  This is Vi-compatible.
+ 
+ Note that the second character (argument) of the commands @zZtTfF[]rm'`"v
+ and CTRL-X is not mapped.  This was done to be able to use all the named
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index dc6e16bc7..a514b6f28 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2022 Dec 31
++*options.txt*	For Vim version 9.0.  Last change: 2023 Jan 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -7686,6 +7686,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	When there is error while evaluating the option then it will be made
+ 	empty to avoid further errors.  Otherwise screen updating would loop.
++	When the result contains unprintable characters the result is
++	unpredictable.
+ 
+ 	Note that the only effect of 'ruler' when this option is set (and
+ 	'laststatus' is 2) is controlling the output of |CTRL-G|.
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 8b8214c30..333688985 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -1,4 +1,4 @@
+-*term.txt*      For Vim version 9.0.  Last change: 2023 Jan 01
++*term.txt*      For Vim version 9.0.  Last change: 2023 Jan 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -322,6 +322,9 @@ using the "xterm" workaround.  These are the relevant entries (so far):
+ 	PS	"\033[200~"	pasted text start |t_PS|
+ 	PE	"\033[201~"	pasted text end |t_PE|
+ 
++	XM	"\033[?1006;1000%?%p1%{1}%=%th%el%;"
++				mouse enable / disable |t_XM|
 +
- If your terminal supports bracketed paste, but the options are not set
- automatically, you can try using something like this: >
+ 						*xterm-kitty* *kitty-terminal*
+ The Kitty terminal is a special case.  Mainly because it works differently
+ from most other terminals, but also because, instead of trying the fit in and
+@@ -337,7 +340,7 @@ this.  However, Kitty is not fully xterm compatible.  The author suggested to
+ ignore the "xterm-" prefix and use the terminfo entry anyway, so that is what
+ happens now, the builtin xterm termcap entries are not used.  However, the
+ t_RV is set, otherwise other things would not work, such as automatically
+-setting 'ttymouse' to "sgr".
++setting 'ttymouse' to "sgr" (at least until |t_XM| is being used for this).
  
+ It is not clear why kitty sets $TERM to "xterm-kitty", the terminal isn't
+ really xterm compatible.  "kitty" would be more appropriate, but a terminfo
+@@ -446,6 +449,8 @@ Added by Vim (there are no standard codes for these):
+ 		xterm and other terminal emulators)  The
+ 		response is stored in |v:termresponse| |xterm-8bit|
+ 		|'ttymouse'| |xterm-codes|
++	t_XM	enable/disable mouse reporting,			*t_XM* *'t_XM'*
++		see |mouse-reporting| below
+ 	t_RK	request terminal keyboard protocol state;	*t_RK* *'t_RK'*
+ 		sent after |t_TI|
+ 	t_u7	request cursor position (for xterm)		*t_u7* *'t_u7'*
+@@ -499,6 +504,21 @@ t_SH must take one argument:
+ t_RS is sent only if the response to t_RV has been received.  It is not used
+ on Mac OS when Terminal.app could be recognized from the termresponse.
+ 
++							*mouse-reporting*
++Many terminals can report mouse clicks and some can report mouse movement and
++dragging.  Vim needs to know what codes are being used for this.
++
++The "XM" terminfo/termcap entry is used for this.  Vim also has the 'ttymouse'
++option to specify the mouse protocol being used.  See the option for the
++possible values.
++
++If Vim can read the "XM" terminfo/termcap entry then it will be used for
++enabling and disabling the mouse reporting.  If it is missing, then the value
++from 'ttymouse' is used to decide how to do this.
++
++If the "XM" entry exists and the first number is "1006" then 'ttymouse' will
++be set to "sgr", unless it was already set earlier.
++
+ 
+ KEY CODES						*terminal-key-codes*
+ Note: Use the <> form if possible
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index c7fefa6d8..be1487177 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2022 Dec 31
++*todo.txt*      For Vim version 9.0.  Last change: 2023 Jan 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -54,20 +54,15 @@ Upcoming larger works:
+ 
+ Further Vim9 improvements, possibly after launch:
+ - implement :class and :interface: See |vim9-classes|  #11544
+-    class members: add test for read/write access
+-	Test for E1337
+-    Should object members be declared with "var"?  Looks more normal.
+-    Don't use "class method" in the help but use "class function", more people
+-    are used to that.
+-    implement class functions: static def Method()
+-    Disallow shadowing class members, e.g. by function arguments.
+-    tv_equal() should compare values, not identity.
++    inheritance: how about super()?
++    inheritance: new() method from parent used in child?
+     import/export of a class
+-    using a class name as a type
+-    garbage collection: set_ref_in_item(): Mark items in class as used ?
+     type() should return different type for each class?
++    give error for shadowing (variable and argument) when defining a class or
++    interface, not later when compiling it.
+     object empty(), len() - can class define a method to be used for them?
+     how about lock/unlock?
++    When checking "implements" also check types of members and function args.
+ - implement :type
+ - implement :enum
+ - Use Vim9 for more runtime files.
+@@ -79,6 +74,10 @@ Further Vim9 improvements, possibly after launch:
+ Information missing in terminfo:
+ Priority:
+ - t_RV	request terminal version string; xterm:	"\033[>c"
++    change in terminfo for "RV" uses the wrong escape sequence... ?
++Mouse support:
++    on/off: hard coded in mch_setmouse() - use "XM" terminfo/termcap entry;
++       If it starts with "\E[?1006;1000%" then set 'ttymouse' to "sgr".
+ Codes used for focus gained and lost (currently using use_xterm_like_mouse())
+   termcodes are hard-coded in set_termname(), not named.
+ - t_fe	enable focus-event tracking
+@@ -233,9 +232,7 @@ Terminal emulator window:
+ - When 'encoding' is not utf-8, or the job is using another encoding, setup
+   conversions.
+ 
+-Patch adds showcmd() function  #11708  - tests missing StopVimInTerminal()
+-
+-Some setaf/setab/t_AF/t_AB values support RGB somehow?  Can we use that?
++Patch adds showcmd() function  #11708
+ 
+ Crash when a variable is removed while listing variables (Issue #11435)
+ 
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index ab2005ef5..fe7e906cc 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.0.  Last change: 2022 Nov 17
++*userfunc.txt*	For Vim version 9.0.  Last change: 2023 Jan 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -187,12 +187,21 @@ See |:verbose-cmd| for more information.
+ 			If "[expr]" is not given, the number 0 is returned.
+ 			When a function ends without an explicit ":return",
+ 			the number 0 is returned.
++
+ 			In a :def function *E1095* is given if unreachable
+ 			code follows after the `:return`.
+ 			In legacy script there is no check for unreachable
+ 			lines, thus there is no warning if commands follow
+-			`:return`.
+-
++			`:return`.  Also, there is no check if the following
++			line contains a valid command.  Forgetting the line
++			continuation backslash may go unnoticed: >
++				return 'some text'
++				       .. ' some more text'
++<			Will happily return "some text" without an error.  It
++			should have been: >
++				return 'some text'
++				       \ .. ' some more text'
++<
+ 			If the ":return" is used after a |:try| but before the
+ 			matching |:finally| (if present), the commands
+ 			following the ":finally" up to the matching |:endtry|
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index cabe55b31..135b3093b 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.0.  Last change: 2022 Dec 20
++*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Jan 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -261,10 +261,22 @@ prefix: >
+ 	      totalSize += this.size
+ 	   enddef
+ 	endclass
++<							*E1340* *E1341*
++Since the name is used as-is, shadowing the name by a function argument name
++or variable name is not allowed.
++
++Just like object members the access can be made private by using an underscore
++as the first character in the name, and it can be made public by prefixing
++"public": >
++	class OtherThing
++	   static total: number	# anybody can read, only class can write
++	   static _sum: number		# only class can read and write
++	   public static result: number	# anybody can read and write
++	endclass
+ <
+-						*class-method*
+-Class methods are also declared with "static".  They have no access to object
+-members, they cannot use the "this" keyword. >
++						*class-function*
++Class functions are also declared with "static".  They have no access to
++object members, they cannot use the "this" keyword. >
+ 
+ 	class OtherThing
+ 	   this.size: number
+@@ -320,6 +332,9 @@ a number.  This example extends the one above: >
+ 	   enddef
+ 	endclass
+ 
++If a class declares to implement an interface, all the items specified in the
++interface must appear in the class, with the same types. *E1348* *E1349*
++
+ The interface name can be used as a type: >
+ 
+ 	var shapes: list<HasSurface> = [
+@@ -372,9 +387,11 @@ once.  They can appear in any order, although this order is recommended: >
+ 	implements InterfaceName, OtherInterface
+ 	specifies SomeInterface
+ <							*extends*
+-A class can extend one other class.
+-							*implements*
+-A class can implement one or more interfaces.
++A class can extend one other class. *E1352* *E1353* *E1354*
++						*implements* *E1346* *E1347*
++A class can implement one or more interfaces.  The "implements" keyword can
++only appear once *E1350* .  Multiple interfaces can be specified, separated by
++commas.  Each interface name can appear only once. *E1351*
+ 							*specifies*
+ A class can declare its interface, the object members and methods, with a
+ named interface.  This avoids the need for separately specifying the
+@@ -416,10 +433,10 @@ prefixed with `:export`: >
+ 
+ 	export interface InterfaceName
+ 	endinterface
+-
++<							*E1344*
+ An interface can declare object members, just like in a class but without any
+ initializer.
+-
++							*E1345*
+ An interface can declare methods with `:def`, including the arguments and
+ return type, but without the body and without `:enddef`.  Example: >
+ 
+@@ -428,8 +445,10 @@ return type, but without the body and without `:enddef`.  Example: >
+ 	   def Surface(): number
+ 	endinterface
+ 
++An interface name must start with an uppercase letter. *E1343*
+ The "Has" prefix can be used to make it easier to guess this is an interface
+ name, with a hint about what it provides.
++An interface can only be defined in a |Vim9| script file.  *E1342*
+ 
+ 
+ Default constructor ~
+@@ -449,8 +468,6 @@ Then The default constructor will be: >
+ 	def new(this.name = v:none, this.age = v:none, this.gender = v:none)
+ 	enddef
+ 
+-All object members will be used, also private access ones.
+-
+ The "= v:none" default values make the arguments optional.  Thus you can also
+ call `new()` without any arguments.  No assignment will happen and the default
+ value for the object members will be used.  This is a more useful example,
+@@ -472,6 +489,12 @@ Note that you cannot use another default value than "v:none" here.  If you
+ want to initialize the object members, do it where they are declared.  This
+ way you only need to look in one place for the default values.
+ 
++All object members will be used in the default constructor, also private
++access ones.
++
++If the class extends another one, the object members of that class will come
++first.
++
+ 
+ Multiple constructors ~
+ 
+@@ -610,6 +633,22 @@ type checking will make sure it works as you intended.  This rules out
+ polymorphism, which we don't really need anyway.
+ 
+ 
++Single inheritance and interfaces ~
++
++Some languages support multiple inheritance.  Although that can be useful in
++some cases, it makes the rules of how a class works quite complicated.
++Instead, using interfaces to declare what is supported is much simpler.  The
++very popular Java language does it this way, and it should be good enough for
++Vim.  The "keep it simple" rule applies here.  
++
++Explicitly declaring that a class supports an interface makes it easy to see
++what a class is intended for.  It also makes it possible to do proper type
++checking.  When an interface is changed any class that declares to implement
++it will be checked if that change was also changed.  The mechanism to assume a
++class implements an interface just because the methods happen to match is
++brittle and leads to obscure problems, let's not do that.
++
++
+ Using "this.member" everywhere ~
+ 
+ The object members in various programming languages can often be accessed in
+@@ -628,22 +667,6 @@ also directly clear which variable references are object members and which
+ aren't.
+ 
+ 
+-Single inheritance and interfaces ~
+-
+-Some languages support multiple inheritance.  Although that can be useful in
+-some cases, it makes the rules of how a class works quite complicated.
+-Instead, using interfaces to declare what is supported is much simpler.  The
+-very popular Java language does it this way, and it should be good enough for
+-Vim.  The "keep it simple" rule applies here.  
+-
+-Explicitly declaring that a class supports an interface makes it easy to see
+-what a class is intended for.  It also makes it possible to do proper type
+-checking.  When an interface is changed any class that declares to implement
+-it will be checked if that change was also changed.  The mechanism to assume a
+-class implements an interface just because the methods happen to match is
+-brittle and leads to obscure problems, let's not do that.
+-
+-
+ Using class members ~
+ 
+ Using "static member" to declare a class member is very common, nothing new
+@@ -658,6 +681,55 @@ quite a bit of space, and when the class is renamed all these places need to
+ be changed too.
+ 
+ 
++Declaring object and class members ~
++
++The main choice is whether to use "var" as with variable declarations.
++TypeScript does not use it: >
++	class Point {
++	  x: number;
++	  y = 0;
++	}
++
++Following that Vim object members could be declared like this: >
++	class Point
++	  this.x: number
++	  this.y = 0
++	endclass
++
++Some users pointed out that this looks more like an assignment than a
++declaration.  Adding "var" changes that: >
++	class Point
++	  var this.x: number
++	  var this.y = 0
++	endclass
++
++We also need to be able to declare class members using the "static" keyword.
++There we can also choose to leave out "var": >
++	class Point
++	  var this.x: number
++	  static count = 0
++	endclass
++
++Or do use it, before "static": >
++	class Point
++	  var this.x: number
++	  var static count = 0
++	endclass
++
++Or after "static": >
++	class Point
++	  var this.x: number
++	  static var count = 0
++	endclass
++
++This is more in line with "static def Func()".
++
++There is no clear preference whether to use "var" or not.  The two main
++reasons to leave it out are:
++1. TypeScript, Java and other popular languages do not use it.
++2. Less clutter.
++
++
+ Using "ClassName.new()" to construct an object ~
+ 
+ Many languages use the "new" operator to create an object, which is actually
