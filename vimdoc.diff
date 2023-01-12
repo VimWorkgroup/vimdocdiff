@@ -1,14 +1,28 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a514b6f28..0fc00b4fb 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -8679,6 +8679,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	set to a name that starts with "xterm", "mlterm", "screen", "tmux",
- 	"st" (full match only), "st-" or "stterm", and 'ttymouse' is not set
- 	already.
-+	If the terminfo/termcap entry "XM" exists and the first number is
-+	"1006" then 'ttymouse' will be set to "sgr".  This works for many
-+	modern terminals.
- 	Additionally, if vim is compiled with the |+termresponse| feature and
- 	|t_RV| is set to the escape sequence to request the xterm version
- 	number, more intelligent detection is done.
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index ea3ce61e9..f202da058 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -9947,6 +9947,8 @@ type({expr})	The result is a Number representing the type of {expr}.
+ 			Job:	    8  |v:t_job|
+ 			Channel:    9  |v:t_channel|
+ 			Blob:	   10  |v:t_blob|
++			Class	   12  |v:t_class|
++			Object	   13  |v:t_object|
+ 		For backward compatibility, this method can be used: >
+ 			:if type(myvar) == type(0)
+ 			:if type(myvar) == type("")
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 556b17156..5fff3e859 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -2504,6 +2504,10 @@ v:t_number	Value of |Number| type.  Read-only.  See: |type()|
+ v:t_string	Value of |String| type.  Read-only.  See: |type()|
+ 					*v:t_blob* *t_blob-variable*
+ v:t_blob	Value of |Blob| type.  Read-only.  See: |type()|
++					*v:t_class* *t_class-variable*
++v:t_class	Value of |class| type.  Read-only.  See: |type()|
++					*v:t_object* *t_object-variable*
++v:t_object	Value of |object| type.  Read-only.  See: |type()|
+ 
+ 				*v:termresponse* *termresponse-variable*
+ v:termresponse	The escape sequence returned by the terminal for the |t_RV|
