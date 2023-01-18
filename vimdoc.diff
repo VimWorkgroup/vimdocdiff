@@ -1,28 +1,47 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index ea3ce61e9..f202da058 100644
+index f202da058..3544b5df8 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -9947,6 +9947,8 @@ type({expr})	The result is a Number representing the type of {expr}.
- 			Job:	    8  |v:t_job|
- 			Channel:    9  |v:t_channel|
- 			Blob:	   10  |v:t_blob|
-+			Class	   12  |v:t_class|
-+			Object	   13  |v:t_object|
- 		For backward compatibility, this method can be used: >
- 			:if type(myvar) == type(0)
- 			:if type(myvar) == type("")
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 556b17156..5fff3e859 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -2504,6 +2504,10 @@ v:t_number	Value of |Number| type.  Read-only.  See: |type()|
- v:t_string	Value of |String| type.  Read-only.  See: |type()|
- 					*v:t_blob* *t_blob-variable*
- v:t_blob	Value of |Blob| type.  Read-only.  See: |type()|
-+					*v:t_class* *t_class-variable*
-+v:t_class	Value of |class| type.  Read-only.  See: |type()|
-+					*v:t_object* *t_object-variable*
-+v:t_object	Value of |object| type.  Read-only.  See: |type()|
+@@ -211,6 +211,7 @@ getbufline({buf}, {lnum} [, {end}])
+ getbufoneline({buf}, {lnum})	String	line {lnum} of buffer {buf}
+ getbufvar({buf}, {varname} [, {def}])
+ 				any	variable {varname} in buffer {buf}
++getcellwidths()			List	get character cell width overrides
+ getchangelist([{buf}])		List	list of change list items
+ getchar([expr])			Number or String
+ 					get one character from the user
+@@ -3262,6 +3263,13 @@ getbufvar({buf}, {varname} [, {def}])				*getbufvar()*
+ <		Can also be used as a |method|: >
+ 			GetBufnr()->getbufvar(varname)
+ <
++getcellwidths()						*getcellwidths()*
++		Returns a |List| of cell widths of character ranges overridden
++		by |setcellwidths()|.  The format is equal to the argument of
++		|setcellwidths()|.  If no character ranges have their cell
++		widths overridden, an empty List is returned.
++
++
+ getchangelist([{buf}])					*getchangelist()*
+ 		Returns the |changelist| for the buffer {buf}. For the use
+ 		of {buf}, see |bufname()| above. If buffer {buf} doesn't
+@@ -9969,7 +9977,7 @@ typename({expr})					*typename()*
+ 		Return a string representation of the type of {expr}.
+ 		Example: >
+ 			echo typename([1, 2, 3])
+-			list<number>
++<			list<number> ~
  
- 				*v:termresponse* *termresponse-variable*
- v:termresponse	The escape sequence returned by the terminal for the |t_RV|
+ 
+ undofile({name})					*undofile()*
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 559707737..7a706af3c 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -757,6 +757,7 @@ String manipulation:					*string-functions*
+ 	strwidth()		size of string when displayed
+ 	strdisplaywidth()	size of string when displayed, deals with tabs
+ 	setcellwidths()		set character cell width overrides
++	getcellwidths()		get character cell width overrides
+ 	substitute()		substitute a pattern match with a string
+ 	submatch()		get a specific match in ":s" and substitute()
+ 	strpart()		get part of a string using byte index
