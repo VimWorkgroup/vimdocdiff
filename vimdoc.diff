@@ -1,16 +1,1450 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 73506cc4c..04f019174 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.0.  Last change: 2022 Dec 12
++*autocmd.txt*   For Vim version 9.0.  Last change: 2023 Feb 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -64,7 +64,7 @@ Example in Vim9 script: >
+ In legacy script: >
+    call autocmd_add(#{replace: v:true,
+ 		    \ group: 'DemoGroup',
+-   		    \ event: 'BufEnter',
++		    \ event: 'BufEnter',
+ 		    \ pattern: '*.txt',
+ 		    \ cmd: 'call DemoBufEnter()'
+ 		    \ })
+@@ -398,7 +398,7 @@ Name			triggered by ~
+ |InsertEnter|		starting Insert mode
+ |InsertChange|		when typing <Insert> while in Insert or Replace mode
+ |InsertLeave|		when leaving Insert mode
+-|InsertLeavePre| 	just before leaving Insert mode
++|InsertLeavePre|	just before leaving Insert mode
+ |InsertCharPre|		when a character was typed in Insert mode, before
+ 			inserting it
+ 
+@@ -611,9 +611,11 @@ CmdlineEnter			After moving the cursor to the command line,
+ 				where the user can type a command or search
+ 				string; including non-interactive use of ":"
+ 				in a mapping, but not when using |<Cmd>|.
++				The pattern is matched against the character
++				representing the type of command-line.
++				|cmdwin-char|
+ 				<afile> is set to a single character,
+ 				indicating the type of command-line.
+-				|cmdwin-char|
+ 							*CmdlineLeave*
+ CmdlineLeave			Before leaving the command line; including
+ 				non-interactive use of ":" in a mapping, but
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 8b0da25ec..a065fcea2 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2023 Jan 17
++*builtin.txt*	For Vim version 9.0.  Last change: 2023 Feb 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -266,7 +266,7 @@ gettabwinvar({tabnr}, {winnr}, {name} [, {def}])
+ gettagstack([{nr}])		Dict	get the tag stack of window {nr}
+ gettext({text})			String	lookup translation of {text}
+ getwininfo([{winid}])		List	list of info about each window
+-getwinpos([{timeout}])		List	X and Y coord in pixels of the Vim window
++getwinpos([{timeout}])		List	X and Y coord in pixels of Vim window
+ getwinposx()			Number	X coord in pixels of the Vim window
+ getwinposy()			Number	Y coord in pixels of the Vim window
+ getwinvar({nr}, {varname} [, {def}])
+@@ -382,7 +382,7 @@ matchstrpos({expr}, {pat} [, {start} [, {count}]])
+ max({expr})			Number	maximum value of items in {expr}
+ menu_info({name} [, {mode}])	Dict	get menu item information
+ min({expr})			Number	minimum value of items in {expr}
+-mkdir({name} [, {path} [, {prot}]])
++mkdir({name} [, {flags} [, {prot}]])
+ 				Number	create directory {name}
+ mode([expr])			String	current editing mode
+ mzeval({expr})			any	evaluate |MzScheme| expression
+@@ -6261,17 +6261,20 @@ min({expr})	Return the minimum value of all items in {expr}. Example:  >
+ 			mylist->min()
+ 
+ <							*mkdir()* *E739*
+-mkdir({name} [, {path} [, {prot}]])
++mkdir({name} [, {flags} [, {prot}]])
+ 		Create directory {name}.
+ 
+-		If {path} contains "p" then intermediate directories are
+-		created as necessary.  Otherwise it must be "".
++		When {flags} is present it must be a string.  An empty string
++		has no effect.
+ 
+-		If {path} contains "D" then {name} is deleted at the end of
++		If {flags} contains "p" then intermediate directories are
++		created as necessary.
++
++		If {flags} contains "D" then {name} is deleted at the end of
+ 		the current function, as with: >
+ 			defer delete({name}, 'd')
+ <
+-		If {path} contains "R" then {name} is deleted recursively at
++		If {flags} contains "R" then {name} is deleted recursively at
+ 		the end of the current function, as with: >
+ 			defer delete({name}, 'rf')
+ <		Note that when {name} has more than one part and "p" is used
+@@ -7958,7 +7961,7 @@ setcellwidths({list})					*setcellwidths()*
+ 		terminal, counted in screen cells.  The values override
+ 		'ambiwidth'.  Example: >
+ 		   call setcellwidths([
+-		   		\ [0x111, 0x111, 1],
++				\ [0x111, 0x111, 1],
+ 				\ [0x2194, 0x2199, 2],
+ 				\ ])
+ 
+@@ -7972,7 +7975,7 @@ setcellwidths({list})					*setcellwidths()*
+ 		{width} must be either 1 or 2, indicating the character width
+ 		in screen cells.			*E1112*
+ 		An error is given if the argument is invalid, also when a
+-		range overlaps with another. 		*E1113*
++		range overlaps with another.		*E1113*
+ 
+ 		If the new value causes 'fillchars' or 'listchars' to become
+ 		invalid it is rejected and an error is given.
+@@ -10551,7 +10554,7 @@ writefile({object}, {fname} [, {flags}])
+ <
+ 		'D'  Delete the file when the current function ends.  This
+ 		     works like: >
+-		     	:defer delete({fname})
++			:defer delete({fname})
+ <		     Fails when not in a function.  Also see |:defer|.
+ 
+ 		's'  fsync() is called after writing the file.  This flushes
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 5811b8e59..85bacbb03 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1842,9 +1842,9 @@ editing text paragraphs.  A few hints on how to use this:
+ 
+ - Set 'formatoptions' to "aw2tq" to make text with indents like this:
+ 
+-	    bla bla foobar bla 
++	    bla bla foobar bla
+ 	bla foobar bla foobar bla
+-	    bla bla foobar bla 
++	    bla bla foobar bla
+ 	bla foobar bla bla foobar
+ 
+ - Add the 'c' flag to only auto-format comments.  Useful in source code.
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index b30271e6f..55b1a63a0 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 9.0.  Last change: 2022 Nov 11
++*cmdline.txt*   For Vim version 9.0.  Last change: 2023 Feb 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -617,6 +617,7 @@ followed by another Vim command:
+     :read !
+     :scscope
+     :sign
++    :tabdo
+     :tcl
+     :tcldo
+     :tclfile
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 40167a1b5..216922ad1 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -181,7 +181,7 @@ possible to view the changes you have made to a buffer since the file was
+ loaded.  Since Vim doesn't allow having two buffers for the same file, you
+ need another buffer.  This command is useful: >
+ 	 command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_
+-	 	\ | diffthis | wincmd p | diffthis
++		\ | diffthis | wincmd p | diffthis
+ (this is in |defaults.vim|).  Use ":DiffOrig" to see the differences between
+ the current buffer and the file it was loaded from.
+ 
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index b133c5aa1..bee0ad6cb 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1372,7 +1372,7 @@ Note that the dot is also used for String concatenation.  To avoid confusion
+ always put spaces around the dot for String concatenation.
+ 
+ 
+-expr10(expr1, ...)	|Funcref| function call  	*E1085*
++expr10(expr1, ...)	|Funcref| function call		*E1085*
+ 
+ When expr10 is a |Funcref| type variable, invoke the function it refers to.
+ 
+@@ -1654,7 +1654,7 @@ See below |functions|.
+ 
+ lambda expression				*expr-lambda* *lambda*
+ -----------------
+-{args -> expr1}		legacy lambda expression 		*E451*
++{args -> expr1}		legacy lambda expression		*E451*
+ (args) => expr1		|Vim9| lambda expression
+ 
+ A lambda expression creates a new unnamed function which returns the result of
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index bf61e86e3..b8686a189 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*  For Vim version 9.0.  Last change: 2022 Apr 09
++*filetype.txt*  For Vim version 9.0.  Last change: 2023 Feb 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -679,7 +679,10 @@ MARKDOWN                                                *ft-markdown-plugin*
+ 
+ To enable folding use this: >
+ 	let g:markdown_folding = 1
+-<
++
++'expandtab' will be set by default.  If you do not want that use this: >
++	let g:markdown_recommended_style = 0
++
+ 
+ PDF							*ft-pdf-plugin*
+ 
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 668b4d4ac..17fa848c8 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
+@@ -95,11 +95,11 @@ terminal version.
+ 
+ Recommended place for your personal GUI initializations:
+ 	Unix		    $HOME/.gvimrc or $HOME/.vim/gvimrc
+-	Win32    	    $HOME/_gvimrc, $HOME/vimfiles/gvimrc
++	Win32		    $HOME/_gvimrc, $HOME/vimfiles/gvimrc
+ 			    or $VIM/_gvimrc
+ 	Amiga		    s:.gvimrc, home:.gvimrc, home:vimfiles:gvimrc
+ 			    or $VIM/.gvimrc
+-	Haiku	            $HOME/config/settings/vim/gvimrc
++	Haiku		    $HOME/config/settings/vim/gvimrc
+ 
+ The personal initialization files are searched in the order specified above
+ and only the first one that is found is read.
+@@ -1181,7 +1181,7 @@ When 'guifont' is set and a valid font is found in it and 'guifontwide' is
+ empty Vim will attempt to find a matching double-width font and set
+ 'guifontwide' to it.
+ 
+-GTK+ GUI only:  		    	*guifontwide_gtk*
++GTK+ GUI only:				*guifontwide_gtk*
+ 
+ If set and valid, 'guifontwide' is always used for double width characters,
+ even if 'encoding' is not set to "utf-8".
+diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
+index 0cf012b10..d8ce03e51 100644
+--- a/runtime/doc/gui_w32.txt
++++ b/runtime/doc/gui_w32.txt
+@@ -17,7 +17,7 @@ Vim's Win32 Graphical User Interface			*gui-w32* *win32-gui*
+ 
+ Other relevant documentation:
+ |gui.txt|	For generic items of the GUI.
+-|os_win32.txt| 	For Win32 specific items.
++|os_win32.txt|	For Win32 specific items.
+ 
+ 
+ ==============================================================================
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index 9ea630806..2f1e3be6e 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
+@@ -101,7 +101,7 @@ Help on help files					*helphelp*
+ 			find a tag in a file with the same language as the
+ 			current file.  See |help-translated|.
+ 
+-						 	*:helpc* *:helpclose*
++							*:helpc* *:helpclose*
+ :helpc[lose]		Close one help window, if there is one.
+ 			Vim will try to restore the window layout (including
+ 			cursor position) to the same layout it was before
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index 0cf2b0f56..c2a0094b6 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
+@@ -857,7 +857,7 @@ You can test what Python version is available with: >
+ 	if has('python')
+ 	  echo 'there is Python 2.x'
+ 	endif
+-  	if has('python3')
++	if has('python3')
+ 	  echo 'there is Python 3.x'
+ 	endif
+ 
+@@ -874,7 +874,7 @@ python support: >
+ 	    echo 'Python 2.x dynamically loaded'
+ 	  endif
+ 	endif
+-  	if has('python3_compiled')
++	if has('python3_compiled')
+ 	  echo 'compiled with Python 3.x support'
+ 	  if has('python3_dynamic')
+ 	    echo 'Python 3.x dynamically loaded'
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index c4363a89f..a302c59fe 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -236,7 +236,7 @@ tag		char	      note action in Normal mode	~
+ |CTRL-\_CTRL-N|	CTRL-\ CTRL-N	   go to Normal mode (no-op)
+ |CTRL-\_CTRL-G|	CTRL-\ CTRL-G	   go to mode specified with 'insertmode'
+ 		CTRL-\ a - z	   reserved for extensions
+-		CTRL-\ others      not used
++		CTRL-\ others	   not used
+ |CTRL-]|	CTRL-]		   :ta to ident under cursor
+ |CTRL-^|	CTRL-^		   edit Nth alternate file (equivalent to
+ 				   ":e #N")
+@@ -247,7 +247,7 @@ tag		char	      note action in Normal mode	~
+ 				2  filter Nmove text through the {filter}
+ 				   command
+ |!!|		!!{filter}	2  filter N lines through the {filter} command
+-|quote|		"{register}  	   use {register} for next delete, yank or put
++|quote|		"{register}	   use {register} for next delete, yank or put
+ 				   ({.%#:} only work with put)
+ |#|		#		1  search backward for the Nth occurrence of
+ 				   the ident under the cursor
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 0db0e4176..ccf5178a8 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -877,7 +877,7 @@ Groß): >
+ 
+     func Thesaur(findstart, base)
+       if a:findstart
+-    	return searchpos('\<', 'bnW', line('.'))[1] - 1
++	return searchpos('\<', 'bnW', line('.'))[1] - 1
+       endif
+       let res = []
+       let h = ''
+@@ -1118,8 +1118,8 @@ cursor column will be replaced with the matches.  If the returned value is
+ larger than the cursor column, the cursor column is used.
+ 
+ Negative return values:
+-   -2 	To cancel silently and stay in completion mode.
+-   -3 	To cancel silently and leave completion mode.
++   -2	To cancel silently and stay in completion mode.
++   -3	To cancel silently and leave completion mode.
+    Another negative value: completion starts at the cursor column
+ 
+ On the second invocation the arguments are:
+@@ -1176,7 +1176,7 @@ items:
+ 			item with the same word is already present.
+ 	empty		when non-zero this match will be added even when it is
+ 			an empty string
+-	user_data 	custom data which is associated with the item and
++	user_data	custom data which is associated with the item and
+ 			available in |v:completed_item|; it can be any type;
+ 			defaults to an empty string
+ 
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index c2eb76c5f..ef3126193 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2023 Jan 09
++*map.txt*       For Vim version 9.0.  Last change: 2023 Feb 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -845,7 +845,7 @@ option).  After that it assumes that the 'q' is to be interpreted as such.  If
+ you type slowly, or your system is slow, reset the 'timeout' option.  Then you
+ might want to set the 'ttimeout' option.
+ 
+-			      				*map-precedence*
++							*map-precedence*
+ Buffer-local mappings (defined using |:map-<buffer>|) take precedence over
+ global mappings.  When a buffer-local mapping is the same as a global mapping,
+ Vim will use the buffer-local mapping.  In addition, Vim will use a complete
+@@ -923,6 +923,11 @@ in the original Vi, you would get back the text before the first undo).
+ 
+ 1.10 MAPPING ALT-KEYS					*:map-alt-keys*
+ 
++For a readable mapping command the <A-k> form can be used.  Note that <A-k>
++and <A-K> are different, the latter will use an upper case letter.  Actually,
++<A-K> and <A-S-K> are the same.  Instead of "A" you can use "M".  If you have
++an actual Meta modifier key, please see |:map-meta-keys|.
++
+ In the GUI Vim handles the Alt key itself, thus mapping keys with ALT should
+ always work.  But in a terminal Vim gets a sequence of bytes and has to figure
+ out whether ALT was pressed or not.
+@@ -1028,7 +1033,7 @@ enabled when it spots an escape sequence that must have been created by it.
+ To see if Vim detected such an escape sequence use `:verbose map`, the first
+ line will then show "Seen modifyOtherKeys: true" (possibly translated).
+ 
+-This automatic detection depends on receiving an escape code starting with 
++This automatic detection depends on receiving an escape code starting with
+ "<1b>[27;".  This is the normal way xterm sends these key codes.  However, if
+ the *formatOtherKeys* resource is set another form is used that is not
+ recognized, therefore you must not set formatOtherKeys.
+@@ -1069,7 +1074,7 @@ translated).  The meaning of {value}:
+ 	Disabled	protocol was used but expected to have been disabled
+ 			by 't_TE'
+ 	Cleared		protocol expected to have beeen disabled by 't_TE',
+-			previous state is unknown 
++			previous state is unknown
+ 
+ 
+ 1.14 MAPPING AN OPERATOR				*:map-operator*
+@@ -1212,7 +1217,7 @@ non-id	  The "non-id" type ends in a non-keyword character, the other
+ Examples of strings that cannot be abbreviations: "a.b", "#def", "a b", "_$r"
+ 
+ An abbreviation is only recognized when you type a non-keyword character.
+-This can also be the <Esc> that ends insert mode or the <CR> that ends a
++This can also be the <Esc> that ends Insert mode or the <CR> that ends a
+ command.  The non-keyword character which ends the abbreviation is inserted
+ after the expanded abbreviation.  An exception to this is the character <C-]>,
+ which is used to expand an abbreviation without inserting any extra
+@@ -1723,7 +1728,7 @@ by default correspond to the current line, last line and the whole buffer,
+ relate to arguments, (loaded) buffers, windows or tab pages.
+ 
+ Possible values are (second column is the short name used in listing):
+-    -addr=lines		  	Range of lines (this is the default for -range)
++    -addr=lines			Range of lines (this is the default for -range)
+     -addr=arguments	  arg	Range for arguments
+     -addr=buffers	  buf	Range for buffers (also not loaded buffers)
+     -addr=loaded_buffers  load	Range for loaded buffers
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index eece6008e..3d1f2ff8d 100644
+index 3d1f2ff8d..4f0ac45f4 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -7776,7 +7776,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	      mark.  This information is used for mouse clicks.
- 	< -   Where to truncate line if too long.  Default is at the start.
- 	      No width fields allowed.
--	= -   Separation point between left and right aligned items.
-+	= -   Separation point between alignment sections.  Each section will
-+	      be separated by an equal number of spaces.  With one %= what
-+	      comes after it will be right-aligned.  With two %= there is a
-+	      middle part, with white space left and right of it.
- 	      No width fields allowed.
- 	# -   Set highlight group.  The name must follow and then a # again.
- 	      Thus use %#HLname# for highlight group HLname.  The same
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Feb 01
++*options.txt*	For Vim version 9.0.  Last change: 2023 Feb 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1547,7 +1547,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			case mapping, the current locale is not effective.
+ 			This probably only matters for Turkish.
+ 
+-						*'cdhome'* *'cdh'*
++				*'cdhome'* *'cdh'* *'nocdhome'* *'nocdh'*
+ 'cdhome' 'cdh'		boolean	(default: off)
+ 			global
+ 	When on, |:cd|, |:tcd| and |:lcd| without an argument changes the
+@@ -4911,7 +4911,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ <	This means that when 'term' contains "kitty, "foot" or "wezterm"
+ 	somewhere then the "kitty" protocol is used.  When 'term' contains
+-	"xterm" somewhere, then the "mok2" protocol is used. 
++	"xterm" somewhere, then the "mok2" protocol is used.
+ 
+ 	The first match is used, thus if you want to have "kitty" use the
+ 	kitty protocol, but "badkitty" not, then you should match "badkitty"
+@@ -5665,7 +5665,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	The 'mousemodel' option is set by the |:behave| command.
+ 
+-						*'mousemoveevent'* *'mousemev'*
++	      *'mousemoveevent'* *'mousemev'* *'nomousemoveevent'* *'nomousemev'*
+ 'mousemoveevent' 'mousemev'  boolean	(default off)
+ 			global
+ 			{only works in the GUI}
+@@ -7157,7 +7157,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  A	don't give the "ATTENTION" message when an existing	*shm-A*
+ 		swap file is found
+ 	  I	don't give the intro message when starting Vim,		*shm-I*
+-	  	see |:intro|
++		see |:intro|
+ 	  c	don't give |ins-completion-menu| messages; for		*shm-c*
+ 		example, "-- XXX completion (YYY)", "match 1 of 2", "The only
+ 		match", "Pattern not found", "Back at original", etc.
+@@ -7167,8 +7167,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  F	don't give the file info when editing a file, like	*shm-F*
+ 		`:silent` was used for the command; note that this also
+ 		affects messages from autocommands
+-	  S     do not show search count message when searching, e.g.	*shm-S*
+-	        "[1/5]"
++	  S	do not show search count message when searching, e.g.	*shm-S*
++		"[1/5]"
+ 
+ 	This gives you the opportunity to avoid that a change between buffers
+ 	requires you to hit <Enter>, but still gives as useful a message as
+@@ -7345,9 +7345,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			{not available when compiled without the |+signs|
+ 			feature}
+ 	Whether or not to draw the signcolumn. Valid values are:
+-	   "auto"   	only when there is a sign to display
+-	   "no"	    	never
+-	   "yes"    	always
++	   "auto"	only when there is a sign to display
++	   "no"		never
++	   "yes"	always
+ 	   "number"	display signs in the 'number' column. If the number
+ 			column is not present, then behaves like "auto".
+ 
+@@ -8234,7 +8234,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		:set encoding=utf-8
+ <	You need to do this when your system has no locale support for UTF-8.
+ 
+-					*'termguicolors'* *'tgc'* *E954*
++		*'termguicolors'* *'tgc'* *'notermguicolors'* *'notgc'* *E954*
+ 'termguicolors' 'tgc'	boolean (default off)
+ 			global
+ 			{not available when compiled without the
+diff --git a/runtime/doc/os_390.txt b/runtime/doc/os_390.txt
+index 8dce4a56e..42c8a8b51 100644
+--- a/runtime/doc/os_390.txt
++++ b/runtime/doc/os_390.txt
+@@ -10,7 +10,7 @@ This file contains the particulars for the z/OS UNIX version of Vim.
+ 2. Putty and Colors                     |zOS-PuTTY|
+ 3. Motif Problems			|zOS-Motif|
+ 4. Bugs					|zOS-Bugs|
+-5. Limitations     			|zOS-limitations|
++5. Limitations				|zOS-limitations|
+ 6. Open source on z/OS UNIX		|zOS-open-source|
+ 
+ Contributors: ~
+@@ -75,7 +75,7 @@ There is no solution for this yet.
+   this occurs in both the terminal and gui versions.
+ 
+ ==============================================================================
+-5. Limitations     			*OS390-limitations* *zOS-limitations*
++5. Limitations				*OS390-limitations* *zOS-limitations*
+ 
+ - No binary search in tag files.
+   The program /bin/sort sorts by ASCII value by default.  This program is
+diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
+index 619f4e409..54eb63cad 100644
+--- a/runtime/doc/os_vms.txt
++++ b/runtime/doc/os_vms.txt
+@@ -203,7 +203,7 @@ You can check that everything is at the right place with the :version command.
+ 
+ Example LOGIN.COM: >
+ 
+- 	$ define/nolog VIM DKA0:[UTIL.VIM81]
++	$ define/nolog VIM DKA0:[UTIL.VIM81]
+ 	$ vi*m :== mcr VIM:VIM.EXE
+ 	$ gv*im:== spawn/nowait/input=NLA0 mcr VIM:VIM.EXE -g -GEOMETRY 80x40
+ 	$ set disp/create/node=192.168.10.202/trans=tcpip
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index a9452c5c3..9e048ff64 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
+@@ -1,4 +1,4 @@
+-*pattern.txt*   For Vim version 9.0.  Last change: 2022 Sep 24
++*pattern.txt*   For Vim version 9.0.  Last change: 2023 Feb 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -101,6 +101,8 @@ g#			Like "#", but don't put "\<" and "\>" around the word.
+ 							*gd*
+ gd			Goto local Declaration.  When the cursor is on a local
+ 			variable, this command will jump to its declaration.
++			This was made to work for C code, in other languages
++			it may not work well.
+ 			First Vim searches for the start of the current
+ 			function, just like "[[".  If it is not found the
+ 			search stops in line 1.  If it is found, Vim goes back
+@@ -1142,21 +1144,21 @@ x	A single character, with no special meaning, matches itself
+ 	  are supported:
+ 		  Name	      Func	Contents ~
+ *[:alnum:]*	  [:alnum:]   isalnum	ASCII letters and digits
+-*[:alpha:]*	  [:alpha:]   isalpha  	ASCII letters
+-*[:blank:]*	  [:blank:]     	space and tab
+-*[:cntrl:]*	  [:cntrl:]   iscntrl 	ASCII control characters
+-*[:digit:]*	  [:digit:]     	decimal digits '0' to '9'
++*[:alpha:]*	  [:alpha:]   isalpha	ASCII letters
++*[:blank:]*	  [:blank:]		space and tab
++*[:cntrl:]*	  [:cntrl:]   iscntrl	ASCII control characters
++*[:digit:]*	  [:digit:]		decimal digits '0' to '9'
+ *[:graph:]*	  [:graph:]   isgraph	ASCII printable characters excluding
+ 					space
+ *[:lower:]*	  [:lower:]   (1)	lowercase letters (all letters when
+ 					'ignorecase' is used)
+-*[:print:]*	  [:print:]   (2) 	printable characters including space
++*[:print:]*	  [:print:]   (2)	printable characters including space
+ *[:punct:]*	  [:punct:]   ispunct	ASCII punctuation characters
+-*[:space:]*	  [:space:]     	whitespace characters: space, tab, CR,
++*[:space:]*	  [:space:]		whitespace characters: space, tab, CR,
+ 					NL, vertical tab, form feed
+ *[:upper:]*	  [:upper:]   (3)	uppercase letters (all letters when
+ 					'ignorecase' is used)
+-*[:xdigit:]*	  [:xdigit:]    	hexadecimal digits: 0-9, a-f, A-F
++*[:xdigit:]*	  [:xdigit:]		hexadecimal digits: 0-9, a-f, A-F
+ *[:return:]*	  [:return:]		the <CR> character
+ *[:tab:]*	  [:tab:]		the <Tab> character
+ *[:escape:]*	  [:escape:]		the <Esc> character
+diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
+index 87d4a4a84..77805880a 100644
+--- a/runtime/doc/pi_getscript.txt
++++ b/runtime/doc/pi_getscript.txt
+@@ -24,7 +24,7 @@ get the latest versions of scripts listed therein from http://vim.sf.net/.
+ 
+ ==============================================================================
+ 1. Contents				*glvs-contents* *glvs* *getscript*
+-   					*GetLatestVimScripts*
++					*GetLatestVimScripts*
+ 
+ 	1. Contents........................................: |glvs-contents|
+ 	2. GetLatestVimScripts -- Getting Started..........: |glvs-install|
+@@ -116,7 +116,7 @@ reflect the latest version of script(s) so downloaded.
+ 
+ ==============================================================================
+ 4. GetLatestVimScripts Data File		*getscript-data* *glvs-data*
+- 						*:GetLatestVimScripts_dat*
++						*:GetLatestVimScripts_dat*
+ The data file <GetLatestVimScripts.dat> must have for its first two lines
+ the following text:
+ >
+@@ -330,7 +330,7 @@ after/syntax/c.vim contained in it to overwrite a user's c.vim.
+ 		This variable holds the options to be used with the
+ 		g:GetLatestVimScripts_wget command.
+ >
+- 	g:GetLatestVimScripts_allowautoinstall
++	g:GetLatestVimScripts_allowautoinstall
+ <	default= 1
+ 		This variable indicates whether GetLatestVimScripts is allowed
+ 		to attempt to automatically install scripts.  Furthermore, the
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 71c752ac4..f24243024 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -1085,8 +1085,8 @@ QUICK REFERENCE: MAPS				*netrw-browse-maps* {{{2
+ 	 <c-tab> Shrink/expand a netrw/explore window                |netrw-c-tab|
+ 	   -	Makes Netrw go up one directory                      |netrw--|
+ 	   a	Cycles between normal display,                       |netrw-a|
+-	    	hiding (suppress display of files matching g:netrw_list_hide)
+-	    	and showing (display only files which match g:netrw_list_hide)
++		hiding (suppress display of files matching g:netrw_list_hide)
++		and showing (display only files which match g:netrw_list_hide)
+ 	   cd	Make browsing directory the current directory        |netrw-cd|
+ 	   C	Setting the editing window                           |netrw-C|
+ 	   d	Make a directory                                     |netrw-d|
+@@ -1118,7 +1118,7 @@ QUICK REFERENCE: MAPS				*netrw-browse-maps* {{{2
+ 	   mX	Apply arbitrary shell command to marked files en bloc|netrw-mX|
+ 	   mz	Compress/decompress marked files                     |netrw-mz|
+ 	   o	Enter the file/directory under the cursor in a new   |netrw-o|
+-	    	browser window.  A horizontal split is used.
++		browser window.  A horizontal split is used.
+ 	   O	Obtain a file specified by cursor                    |netrw-O|
+ 	   p	Preview the file                                     |netrw-p|
+ 	   P	Browse in the previously used window                 |netrw-P|
+@@ -1134,7 +1134,7 @@ QUICK REFERENCE: MAPS				*netrw-browse-maps* {{{2
+ 	   u	Change to recently-visited directory                 |netrw-u|
+ 	   U	Change to subsequently-visited directory             |netrw-U|
+ 	   v	Enter the file/directory under the cursor in a new   |netrw-v|
+-	    	browser window.  A vertical split is used.
++		browser window.  A vertical split is used.
+ 	   x	View file with an associated program                 |netrw-x|
+ 	   X	Execute filename under cursor via |system()|           |netrw-X|
+ 
+@@ -2271,7 +2271,7 @@ Example:
+ 	...
+ 
+ 
+-MARKED FILES, ARBITRARY SHELL COMMAND, EN BLOC 			*netrw-mX* {{{2
++MARKED FILES, ARBITRARY SHELL COMMAND, EN BLOC			*netrw-mX* {{{2
+ 	    (See |netrw-mf| and |netrw-mr| for how to mark files)
+ 		      (uses the global marked-file list)
+ 
+@@ -2620,7 +2620,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				Used to change access permission for a file.
+ 
+   *g:netrw_clipboard*		=1
+-  				By default, netrw will attempt to insure that
++				By default, netrw will attempt to insure that
+ 				the clipboard's values will remain unchanged.
+ 				However, some users report that they have
+ 				speed problems with this; consequently, this
+@@ -2768,7 +2768,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				escaped before applying glob()
+ 
+   *g:netrw_gx*			="<cfile>"
+- 				This option controls how gx (|netrw-gx|) picks
++				This option controls how gx (|netrw-gx|) picks
+ 				up the text under the cursor.  See |expand()|
+ 				for possibilities.
+ 
+@@ -2834,11 +2834,11 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				directory (|netrw-mt|, |netrw-mc|)
+ 
+   *g:netrw_localcopycmdopt*	=''             Linux/Unix/MacOS/Cygwin
+-  				=' \c copy'                     Windows
++				=' \c copy'                     Windows
+ 				Options for the |g:netrw_localcopycmd|
+ 
+   *g:netrw_localcopydircmd*	="cp"           Linux/Unix/MacOS/Cygwin
+- 				=expand("$COMSPEC")             Windows
++				=expand("$COMSPEC")             Windows
+ 				Copies directories to target directory.
+ 				(|netrw-mc|, |netrw-mt|)
+ 
+@@ -2864,7 +2864,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				Options for |g:netrw_localmovecmd|
+ 
+   *g:netrw_localrmdir*		="rmdir"        Linux/Unix/MacOS/Cygwin
+- 				=expand("$COMSPEC")             Windows
++				=expand("$COMSPEC")             Windows
+ 				Remove directory command (rmdir)
+ 				This variable is only used if your vim is
+ 				earlier than 7.4 or if your vim doesn't
+@@ -2900,10 +2900,10 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				(see |'ballooneval'|)
+ 
+  *g:netrw_sizestyle*		not defined: actual bytes (default)
+- 				="b" : actual bytes       (default)
+- 				="h" : human-readable (ex. 5k, 4m, 3g)
++				="b" : actual bytes       (default)
++				="h" : human-readable (ex. 5k, 4m, 3g)
+ 				       uses 1000 base
+- 				="H" : human-readable (ex. 5K, 4M, 3G)
++				="H" : human-readable (ex. 5K, 4M, 3G)
+ 				       uses 1024 base
+ 				The long listing (|netrw-i|) and query-file
+ 				maps (|netrw-qf|) will display file size
+@@ -2951,7 +2951,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				 default: "NETRWSERVER"
+ 
+   *g:netrw_sort_by*		sort by "name", "time", "size", or
+-  				"exten".
++				"exten".
+ 				 default: "name"
+ 
+   *g:netrw_sort_direction*	sorting direction: "normal" or "reverse"
+@@ -3008,7 +3008,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 					.vim/after/syntax/netrw.vim.
+ <				 The netrwGray highlighting is set up by
+ 				netrw when >
+-	       				* netrwGray has not been previously
++					* netrwGray has not been previously
+ 					  defined
+ 					* the gui is running
+ <				 As an example, I myself use a dark-background
+@@ -3266,7 +3266,7 @@ If there are marked files:  (see |netrw-mf|)
+     name, applying that substitute, and renaming each file to the result.
+     As an example : >
+ 
+-    	mr  [query: reply with *.c]
++	mr  [query: reply with *.c]
+ 	R   [query: reply with s/^\(.*\)\.c$/\1.cpp/]
+ <
+     This example will mark all *.c files and then rename them to *.cpp
+@@ -3275,7 +3275,7 @@ If there are marked files:  (see |netrw-mf|)
+ 
+     The ctrl-X character has special meaning for renaming files: >
+ 
+-    	<c-x>      : a single ctrl-x tells netrw to ignore the portion of the response
++	<c-x>      : a single ctrl-x tells netrw to ignore the portion of the response
+ 	             lying between the last '/' and the ctrl-x.
+ 
+ 	<c-x><c-x> : a pair of contiguous ctrl-x's tells netrw to ignore any
+@@ -3843,7 +3843,7 @@ netrw:
+ 	  Decho.vim is provided as a "vimball"; see |vimball-intro|.  You
+ 	  should edit the Decho.vba.gz file and source it in: >
+ 
+-	  	vim Decho.vba.gz
++		vim Decho.vba.gz
+ 		:so %
+ 		:q
+ <
+@@ -3885,7 +3885,7 @@ netrw:
+ 	   To save the file: under linux, the output will be in a separate
+ 	   remote server window; in it, just save the file with >
+ 
+-	   	:w! DBG
++		:w! DBG
+ 
+ <	   Under a vim that doesn't support clientserver, your debugging
+ 	   output will appear in another tab: >
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index f611fd977..463bc9a2b 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -770,7 +770,7 @@ The second argument of |popup_create()| is a dictionary with options:
+ 	cursorline	TRUE:	 Highlight the cursor line. Also scrolls the
+ 				 text to show this line (only works properly
+ 				 when 'wrap' is off).
+-			zero: 	 Do not highlight the cursor line.
++			zero:	 Do not highlight the cursor line.
+ 			Default is zero, except for |popup_menu()|.
+ 	filter		A callback that can filter typed characters, see
+ 			|popup-filter|.
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 438cc6f65..96ba38248 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1277,7 +1277,7 @@ The .NET CLI compiler outputs both errors and warnings by default. The output
+ may be limited to include only errors, by setting the g:dotnet_errors_only
+ variable to |v:true|.
+ 
+-The associated project name is included in each error and warning. To supress
++The associated project name is included in each error and warning. To suppress
+ the project name, set the g:dotnet_show_project_file variable to |v:false|.
+ 
+ Example: limit output to only display errors, and suppress the project name: >
+diff --git a/runtime/doc/remote.txt b/runtime/doc/remote.txt
+index e38a6ddde..724b58ccc 100644
+--- a/runtime/doc/remote.txt
++++ b/runtime/doc/remote.txt
+@@ -64,7 +64,7 @@ The following command line arguments are available:
+ 				below).  The name used will be uppercase.
+ 								*--remote-send*
+    --remote-send {keys}		Send {keys} to server and exit.  The {keys}
+-   				are not mapped.  Special key names are
++				are not mapped.  Special key names are
+ 				recognized, e.g., "<CR>" results in a CR
+ 				character.
+ 								*--remote-expr*
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 0f79afdf4..56e9ad82f 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -267,7 +267,7 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			When [where] is omitted only 'runtimepath' is used.
+ 			Other values:
+ 				START	search under "start" in 'packpath'
+-				OPT 	search under "opt" in 'packpath'
++				OPT	search under "opt" in 'packpath'
+ 				PACK	search under "start" and "opt" in
+ 					'packpath'
+ 				ALL	first use 'runtimepath', then search
+@@ -729,15 +729,15 @@ up-to-date easily, but it requires a program like "git" to be available.
+ You can do both, github can automatically create an archive for a release.
+ 
+ Your directory layout would be like this:
+-   start/foobar/plugin/foo.vim    	" always loaded, defines commands
+-   start/foobar/plugin/bar.vim    	" always loaded, defines commands
+-   start/foobar/autoload/foo.vim  	" loaded when foo command used
+-   start/foobar/doc/foo.txt       	" help for foo.vim
+-   start/foobar/doc/tags          	" help tags
+-   opt/fooextra/plugin/extra.vim  	" optional plugin, defines commands
+-   opt/fooextra/autoload/extra.vim  	" loaded when extra command used
+-   opt/fooextra/doc/extra.txt  	        " help for extra.vim
+-   opt/fooextra/doc/tags  	        " help tags
++   start/foobar/plugin/foo.vim		" always loaded, defines commands
++   start/foobar/plugin/bar.vim		" always loaded, defines commands
++   start/foobar/autoload/foo.vim	" loaded when foo command used
++   start/foobar/doc/foo.txt		" help for foo.vim
++   start/foobar/doc/tags		" help tags
++   opt/fooextra/plugin/extra.vim	" optional plugin, defines commands
++   opt/fooextra/autoload/extra.vim	" loaded when extra command used
++   opt/fooextra/doc/extra.txt		" help for extra.vim
++   opt/fooextra/doc/tags		" help tags
+ 
+ This allows for the user to do: >
+ 	mkdir ~/.vim/pack
+diff --git a/runtime/doc/sign.txt b/runtime/doc/sign.txt
+index c69849940..1a500a4a5 100644
+--- a/runtime/doc/sign.txt
++++ b/runtime/doc/sign.txt
+@@ -629,7 +629,7 @@ sign_placelist({list})
+ 				be placed. For the accepted values, see
+ 				|line()|.
+ 		    name	name of the sign to place. See |sign_define()|
+-		    		for more information.
++			for more information.
+ 		    priority	priority of the sign. When multiple signs are
+ 				placed on a line, the sign with the highest
+ 				priority is used. If not specified, the
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 27c65dacc..eed82f1e8 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2022 Dec 26
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Feb 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1307,18 +1307,32 @@ When not set 4 is used.
+ 
+ DOSBATCH				*dosbatch.vim* *ft-dosbatch-syntax*
+ 
+-There is one option with highlighting DOS batch files.	This covers new
+-extensions to the Command Interpreter introduced with Windows 2000 and
+-is controlled by the variable dosbatch_cmdextversion.  For Windows NT
+-this should have the value 1, and for Windows 2000 it should be 2.
++Select the set of Windows Command interpreter extensions that should be
++supported with the variable dosbatch_cmdextversion.  For versions of Windows
++NT (before Windows 2000) this should have the value of 1.  For Windows 2000
++and later it should be 2.
+ Select the version you want with the following line: >
+ 
+    :let dosbatch_cmdextversion = 1
+ 
+ If this variable is not defined it defaults to a value of 2 to support
+-Windows 2000.
++Windows 2000 and later.
+ 
+-A second option covers whether *.btm files should be detected as type
++The original MS-DOS supports an idiom of using a double colon (::) as an
++alternative way to enter a comment line.  This idiom can be used with the
++current Windows Command Interpreter, but it can lead to problems when used
++inside ( ... ) command blocks.  You can find a discussion about this on
++Stack Overflow -
++
++https://stackoverflow.com/questions/12407800/which-comment-style-should-i-use-in-batch-files
++
++To allow the use of the :: idiom for comments in the Windows Command
++Interpreter or working with MS-DOS bat files, set the
++dosbatch_colons_comment variable to anything: >
++
++   :let dosbatch_colons_comment = 1
++
++There is an option that covers whether *.btm files should be detected as type
+ "dosbatch" (MS-DOS batch files) or type "btm" (4DOS batch files).  The latter
+ is used by default.  You may select the former with the following line: >
+ 
+@@ -3836,7 +3850,7 @@ SYNTAX ISKEYWORD SETTING				*:syn-iskeyword*
+ 
+ 	clear:		Syntax specific iskeyword setting is disabled and the
+ 			buffer-local 'iskeyword' setting is used.
+-	{option}       	Set the syntax 'iskeyword' option to a new value.
++	{option}	Set the syntax 'iskeyword' option to a new value.
+ 
+ 	Example: >
+   :syntax iskeyword @,48-57,192-255,$,_
+@@ -5283,7 +5297,7 @@ guisp={color-name}					*highlight-guisp*
+ 	(guisp) color to use in the GUI.  "guisp" is used for undercurl and
+ 	strikethrough.
+ 	There are a few special names:
+-		NONE		no color (transparent)
++		NONE		no color (transparent)		*E1361*
+ 		bg		use normal background color
+ 		background	use normal background color
+ 		fg		use normal foreground color
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index e7a522feb..f90632c0c 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
+@@ -1,4 +1,4 @@
+-*tagsrch.txt*   For Vim version 9.0.  Last change: 2020 Dec 19
++*tagsrch.txt*   For Vim version 9.0.  Last change: 2023 Feb 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -98,7 +98,7 @@ The ignore-case matches are found when:
+ - when 'tagcase' is "followscs" and 'ignorecase' is on or the 'smartcase'
+   option is on and the pattern does not contain an upper case character
+ - when 'tagcase' is "ignore"
+-- when 'tagcase' is "smart" and the patter does not contain an upper case
++- when 'tagcase' is "smart" and the pattern does not contain an upper case
+   character
+ 
+ Note that using ignore-case tag searching disables binary searching in the
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index a089ef94b..7bd062fef 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -30,9 +30,9 @@ If the result is "1" you have it.
+       Using the client-server feature		|terminal-client-server|
+ 4. Remote testing			|terminal-testing|
+ 5. Diffing screen dumps			|terminal-diff|
+-      Writing a screen dump test for Vim  	|terminal-dumptest|
+-      Creating a screen dump		  	|terminal-screendump|
+-      Comparing screen dumps		  	|terminal-diffscreendump|
++      Writing a screen dump test for Vim	|terminal-dumptest|
++      Creating a screen dump			|terminal-screendump|
++      Comparing screen dumps			|terminal-diffscreendump|
+ 6. Debugging				|terminal-debug|
+       Starting					|termdebug-starting|
+       Example session				|termdebug-example|
+@@ -240,7 +240,7 @@ Command syntax ~
+ 					in a session file.
+ 			++shell		Instead of executing {command}
+ 					directly, use a shell, like with
+-					`:!command` 		*E279*
++					`:!command`		*E279*
+ 					{only works on Unix and MS-Windows}
+ 			++kill={how}	When trying to close the terminal
+ 					window kill the job with {how}.  See
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 71e5f7ccd..2f6387d02 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -197,7 +197,7 @@ test_gui_event({event}, {args})
+ 		  Inject an event to select a tabline menu entry. The
+ 		  supported items in {args} are:
+ 		    tabnr:	tab page number
+-		    item: 	tab page menu item number. 1 for the first
++		    item:	tab page menu item number. 1 for the first
+ 				menu item, 2 for the second item and so on.
+ 
+ 		After injecting the GUI events you probably should call
+@@ -369,7 +369,7 @@ test_override({name}, {val})				*test_override()*
+ 			     string is detected
+ 		ui_delay     time in msec to use in ui_delay(); overrules a
+ 			     wait time of up to 3 seconds for messages
+-		uptime 	     overrules sysinfo.uptime
++		uptime	     overrules sysinfo.uptime
+ 		vterm_title  setting the window title by a job running in a
+ 			     terminal window
+ 		ALL	     clear all overrides, except alloc_lines ({val} is
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 3d0be6a1d..8c9c0c6ca 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -56,7 +56,7 @@ how to highlight the text.  The property type can have these entries:
+ 			priority will be used.
+ 	"start_incl"	when TRUE inserts at the start position will be
+ 			included in the text property
+-	"end_incl"    	when TRUE inserts at the end position will be
++	"end_incl"	when TRUE inserts at the end position will be
+ 			included in the text property
+ 
+ 
+@@ -107,14 +107,14 @@ prop_type_list([{props}])		get list of property types
+ 
+ Manipulating text properties:
+ 
+-prop_add({lnum}, {col}, {props})  	add a text property
++prop_add({lnum}, {col}, {props})	add a text property
+ prop_add_list({props}, [{item}, ...])
+ 					add a text property at multiple
+ 					positions.
+ prop_clear({lnum} [, {lnum-end} [, {bufnr}]])
+ 					remove all text properties
+ prop_find({props} [, {direction}])	search for a text property
+-prop_list({lnum} [, {props}])  		text properties in {lnum}
++prop_list({lnum} [, {props}])		text properties in {lnum}
+ prop_remove({props} [, {lnum} [, {lnum-end}]])
+ 					remove a text property
+ 
+@@ -149,7 +149,7 @@ prop_add({lnum}, {col}, {props})
+ 				highlighting; cannot be used with "length",
+ 				"end_lnum" and "end_col"
+ 				See |virtual-text| for more information.
+-		   					*E1294*
++							*E1294*
+ 		   text_align	when "text" is present and {col} is zero;
+ 				specifies where to display the text:
+ 				   after   after the end of the line
+@@ -172,7 +172,7 @@ prop_add({lnum}, {col}, {props})
+ 				fit:
+ 				   wrap      wrap the text to the next line
+ 				   truncate  truncate the text to make it fit
+-		   		When omitted "truncate" is used.
++				When omitted "truncate" is used.
+ 				Note that this applies to the individual text
+ 				property, the 'wrap' option sets the overall
+ 				behavior
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 4e58fa552..87aa88e93 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2023 Feb 02
++*todo.txt*      For Vim version 9.0.  Last change: 2023 Feb 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,6 +38,17 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++Crash when splitting window: #11961.  Set RedrawingDisabled in
++win_split_ins().
++
++Do not use tt_member for class_T, add tt_class.
++
++CI: include #12008 end of February.
++
++In runtime/autoload/dist/script.vim change "set ft=" to "setlocal ft=" ?
++
++Include #11952 after a runtime files update.
++
+ Errors when running tests with valgrind:
+ - test_codestyle.vim:  e.g.:
+     command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 6: keycode_check.vim: space before tab: Expected 0 but got 7
+@@ -68,13 +79,17 @@ Further Vim9 improvements, possibly after launch:
+ 	    or: def _Func()
+     Perhaps use "private" keyword instead of "_" prefix?
+   - "final" object members - can only be set in the constructor.
++  - accept line breaks in member initialization.  #11957
+   - object empty(), len() - can class define a method to be used for them?
++  - add to help: when using a default new() method then reordering object
++    members may cause trouble.  Can define new() without arguments to avoid.
++  - TODO items: check types for "implements" - members and methods
+   - how about lock/unlock?
+   - When checking "implements" also check types of members and function args.
+   - For chaining, allow using the class name as type for function return
+     value.
+   - Implement generics
+-  - Add "instanceof"
++  - Add "instanceof" (exact class name).  And "assignable" (class or child)?
+   - More efficient way for interface member index than iterating over list?
+   - a variant of type() that returns a different type for each class?
+       list<number> and list<string> should also differ.
+@@ -90,6 +105,8 @@ Further Vim9 improvements, possibly after launch:
+ - Implement as part of an expression: ++expr, --expr, expr++, expr--.
+ 
+ Information missing in terminfo:
++- Accept "hyper" and "meta" modifiers (16 and 32) from Kitty like Meta?
++    8 is actually "super".
+ - t_RV	request terminal version string; xterm:	"\033[>c"
+     change in terminfo for "RV" uses the wrong escape sequence 7 - 14 Jan only
+ Codes used for focus gained and lost (currently using use_xterm_like_mouse())
+@@ -101,7 +118,6 @@ Codes used for focus gained and lost (currently using use_xterm_like_mouse())
+ - t_fe	enable focus-event tracking
+ - t_fd	disable focus-event tracking
+ Modifiers for various keys
+-- Decode kitty key protocol Meta and use MOD_MASK_META.  Document <T-k>
+ - flag to indicate "xterm compatible modifiers" ?
+ Underline and similar:
+ - t_AU - Set underline color: like "AF" and "AB" entries.
+@@ -145,8 +161,6 @@ Probably Vim internal, not in terminfo:
+ - t_RK	request terminal keyboard protocol state; sent after |t_TI|
+ Already working, not properly documented:
+ - t_u7	request cursor position
+-Also, with Alt-b we get â, with Alt-Shift-b we should bet another character.
+-That does not appear to work with Kitty.  #11913
+ 
+ Popup windows:
+ - Add a function to redraw a specific popup window.  Esp. to be used when
+@@ -301,6 +315,9 @@ Can we not request XT key sequences, or reduce them drastically?
+ Issue #10512: Dynamic loading broken with Perl 5.36
+ Damien has a patch (2022 Dec 4)
+ 
++Request #11965: Allow severaql "%=" items in 'statusline', makes it possible
++to have text in the center.
++
+ Add some kind of ":whathappend" command and functions to make visible what the
+ last few typed keys and executed commands are.  To be used when the user
+ wonders what went wrong.
+@@ -340,7 +357,7 @@ Better terminal emulator support:
+     "xterm" and then add "kitty" entries.
+ 
+ Using "A" and "o" in manually created fold (in empty buffer) does not behave
+-consistenly (James McCoy, #10698)
++consistently (James McCoy, #10698)
+ 
+ In a timer callback, when using ":echo" and then input() the message is
+ overwritten.  Could use ":echowin" and call redraw_cmd() in get_user_input().
+@@ -385,8 +402,6 @@ IDEA: when drawing the text, store the text byte index in ScreenLinesIdx[].
+ When converting screen column to text position use this.
+ The line number can be obtained from win->w_lines[].
+ 
+-MS-Windows: did path modifier :p:8 stop working?  #8600
+-
+ Version of getchar() that does not move the cursor - #10603 Use a separate
+ argument for the new flag.
+ 
+@@ -468,6 +483,9 @@ Any way to convert "$" back by using a special value? (#6901)
+ Can we detect true color support?  https://gist.github.com/XVilka/8346728
+ Try setting a color then request the current color, like using t_u7.
+ 
++Add a v:register_used variable, which has the name of the register used for
++the last command, e.g. put.  #12003
++
+ Make the jumplist behave like a tag stack. (#7738)  Should there be a more
+ time bound navigation, like with undo?
+ 
+@@ -1173,9 +1191,6 @@ Avoids exceptions, e.g. when using the b: namespace as a dict.
+ Patch to make v:shell_error writable. (Christian Brabandt, 2016 Sep 27)
+ Useful to restore it.  Is there another solution?
+ 
+-"ci[" does not look for next [ like ci" does look for next ".
+-(J.F. 2017 Jan 7)
+-
+ Patch for wrong cursor position on wrapped line, involving breakindent.
+ (Ozaki Kiichi, 2016 Nov 25)
+ 
+@@ -1199,9 +1214,6 @@ Should :vmap in matchit.vim be :xmap?  (Tony Mechelynck)
+ 
+ Problem with whitespace in errorformat. (Gerd Wachsmuth, 2016 May 15, #807)
+ 
+-Add "unicode true" to NSIS installer.  Doesn't work with Windows 95, which we
+-no longer support.
+-
+ Support sort(l, 'F'), convert strings to float. (#7857)
+ 
+ sort() is not stable when using numeric/float sort (Nikolay Pavlov, 2016 Sep
+@@ -1387,9 +1399,6 @@ Do not include the linebreak at the start?
+ Feature request: add the "al" text object, to manipulate a screen line.
+ Especially useful when using 'linebreak'
+ 
+-":cd C:\Windows\System32\drivers\etc*" does not work, even though the
+-directory exists. (Sergio Gallelli, 2013 Dec 29)
+-
+ Patch to avoid redrawing tabline when the popup menu is visible.
+ (Christian Brabandt, 2016 Jan 28)
+ 
+@@ -2974,10 +2983,6 @@ Win32 GUI known bugs:
+     console, go back to Vim and click "reload" in the dialog for the changed
+     file: Window moves with the cursor!
+     Put focus event in input buffer and let generic Vim code handle it?
+-8   Win32 GUI: With maximized window, ":set go-=r" doesn't use the space that
+-    comes available. (Poucet)  It works OK on Win 98 but doesn't work on Win
+-    NT 4.0.  Leaves a grey area where the scrollbar was.  ":set go+=r" also
+-    doesn't work properly.
+ 8   When Vim is minimized and when maximizing it a file-changed dialog pops
+     up, Vim isn't maximized.  It should be done before the dialog, so that it
+     appears in the right position. (Webb)
+@@ -3501,8 +3506,6 @@ Problems that will (probably) not be solved:
+     input method called from GDK code.  Without Perl it doesn't crash.
+ -   VMS: Vimdiff doesn't work with the VMS diff, because the output looks
+     different.  This makes test 47 fail.  Install a Unix-compatible diff.
+--   Win32 GUI: mouse wheel always scrolls rightmost window.  The events arrive
+-    in Vim as if the rightmost scrollbar was used.
+ -   GTK with Gnome: Produces an error message when starting up:
+ 	Gdk-WARNING **: locale not supported by C library
+     This is caused by the gnome library gnome_init() setting $LC_CTYPE to
+@@ -4459,8 +4462,6 @@ Tags:
+ Win32 GUI:
+ 8   Make debug mode work while starting up (vim -D).  Open console window for
+     the message and input?
+-7   GvimExt: when there are several existing Vims, move the list to a submenu.
+-    (Mike McCollister)
+ 8   When using "Edit with Vim" for one file it changes directory, when several
+     files are selected and using "Edit with single Vim" the directory isn't
+     changed.  At least change directory when the path is the same for all
+@@ -6005,7 +6006,7 @@ Various improvements:
+     many percent down the windows).
+ -   Make it possible for the 'showbreak' to be displayed at the end of the
+     line.  Use a comma to separate the part at the end and the start of the
+-    line?  Highlight the linebreak characters, add flag in 'highlight'.
++    line?  #754  Highlight the linebreak characters, add flag in 'highlight'.
+     Make 'showbreak' local to a window.
+ -   Some string options should be expanded if they have wildcards, e.g.
+     'dictionary' when it is "*.h".
+diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
+index 13c705acf..093da3015 100644
+--- a/runtime/doc/uganda.txt
++++ b/runtime/doc/uganda.txt
+@@ -250,7 +250,7 @@ Credit Card:	You can use PayPal to send money with a Credit card.  This is
+ 		    Bram@iccf-holland.org
+ 
+ Others:		Transfer to this account if possible:
+-		    ING bank: 	IBAN: NL95 INGB 0004 5487 74
++		    ING bank:	IBAN: NL95 INGB 0004 5487 74
+ 				Swift code: INGBNL2A
+ 		    under the name "stichting ICCF Holland", Amersfoort
+ 		Checks are not accepted.
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index fe7e906cc..210c2c544 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.0.  Last change: 2023 Jan 09
++*userfunc.txt*	For Vim version 9.0.  Last change: 2023 Feb 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -211,7 +211,8 @@ See |:verbose-cmd| for more information.
+ 
+ 						*function-argument* *a:var*
+ An argument can be defined by giving its name.  In the function this can then
+-be used as "a:name" ("a:" for argument).
++be used as "a:name" ("a:" for argument) (in a `:def` function "a:" is not
++used).
+ 					*a:0* *a:1* *a:000* *E740* *...*
+ Up to 20 arguments can be given, separated by commas.  After the named
+ arguments an argument "..." can be specified, which means that more arguments
+@@ -246,9 +247,10 @@ Example: >
+   call Something('key', 20)	"key: 20"
+ 
+ The argument default expressions are evaluated at the time of the function
+-call, not definition.  Thus it is possible to use an expression which is
+-invalid the moment the function is defined.  The expressions are also only
+-evaluated when arguments are not specified during a call.
++call, not when the function is defined.  Thus it is possible to use an
++expression which is invalid the moment the function is defined.  The
++expressions are also only evaluated when arguments are not specified during a
++call.
+ 						*none-function_argument*
+ You can pass |v:none| to use the default expression.  Note that this means you
+ cannot pass v:none as an ordinary value when an argument has a default
+diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
+index b6cc5276c..680a4e607 100644
+--- a/runtime/doc/usr_02.txt
++++ b/runtime/doc/usr_02.txt
+@@ -505,7 +505,7 @@ You can use the error ID at the start to find help about it: >
+ 	:help E37
+ 
+ 
+-Summary: 					*help-summary*  >
++Summary:					*help-summary*  >
+ 
+ 1) Use Ctrl-D after typing a topic and let Vim show all available topics.
+    Or press Tab to complete: >
+diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
+index 06fb03bfe..bc68e61b8 100644
+--- a/runtime/doc/usr_05.txt
++++ b/runtime/doc/usr_05.txt
+@@ -409,7 +409,7 @@ an archive or as a repository.  For an archive you can follow these steps:
+ 	   package.
+ 	2. unpack the archive in that directory.  This assumes the top
+ 	   directory in the archive is "start": >
+-	   	cd ~/.vim/pack/fancy
++		cd ~/.vim/pack/fancy
+ 		unzip /tmp/fancy.zip
+ <	   If the archive layout is different make sure that you end up with a
+ 	   path like this:
+diff --git a/runtime/doc/usr_22.txt b/runtime/doc/usr_22.txt
+index d8f47bc09..8ed102850 100644
+--- a/runtime/doc/usr_22.txt
++++ b/runtime/doc/usr_22.txt
+@@ -77,25 +77,25 @@ browser.  This is what you get: >
+     9. Directory Browsing	 netrw-browse   netrw-dir   netrw-list   netrw-help
+ 
+     MAPS								 netrw-maps
+-     	 <F1>.............Help.......................................|netrw-help|
+-     	 <cr>.............Browsing...................................|netrw-cr|
+-     	 <del>............Deleting Files or Directories..............|netrw-delete|
+-     	 -................Going Up...................................|netrw--|
+-     	 a................Hiding Files or Directories................|netrw-a|
+-     	 mb...............Bookmarking a Directory....................|netrw-mb|
+-     	 gb...............Changing to a Bookmarked Directory.........|netrw-gb|
+-     	 cd...............Make Browsing Directory The Current Dir....|netrw-c|
+-     	 d................Make A New Directory.......................|netrw-d|
+-     	 D................Deleting Files or Directories..............|netrw-D|
+-     	 <c-h>............Edit File/Directory Hiding List............|netrw-ctrl-h|
+-     	 i................Change Listing Style.......................|netrw-i|
+-     	 <c-l>............Refreshing the Listing.....................|netrw-ctrl-l|
+-     	 o................Browsing with a Horizontal Split...........|netrw-o|
+-     	 p................Use Preview Window.........................|netrw-p|
+-     	 P................Edit in Previous Window....................|netrw-p|
+-     	 q................Listing Bookmarks and History..............|netrw-qb|
+-     	 r................Reversing Sorting Order....................|netrw-r|
+-<    	(etc)
++	 <F1>.............Help.......................................|netrw-help|
++	 <cr>.............Browsing...................................|netrw-cr|
++	 <del>............Deleting Files or Directories..............|netrw-delete|
++	 -................Going Up...................................|netrw--|
++	 a................Hiding Files or Directories................|netrw-a|
++	 mb...............Bookmarking a Directory....................|netrw-mb|
++	 gb...............Changing to a Bookmarked Directory.........|netrw-gb|
++	 cd...............Make Browsing Directory The Current Dir....|netrw-c|
++	 d................Make A New Directory.......................|netrw-d|
++	 D................Deleting Files or Directories..............|netrw-D|
++	 <c-h>............Edit File/Directory Hiding List............|netrw-ctrl-h|
++	 i................Change Listing Style.......................|netrw-i|
++	 <c-l>............Refreshing the Listing.....................|netrw-ctrl-l|
++	 o................Browsing with a Horizontal Split...........|netrw-o|
++	 p................Use Preview Window.........................|netrw-p|
++	 P................Edit in Previous Window....................|netrw-p|
++	 q................Listing Bookmarks and History..............|netrw-qb|
++	 r................Reversing Sorting Order....................|netrw-r|
++<	(etc)
+ 
+ The <F1> key thus brings you to a netrw directory browsing contents help page.
+ It's a regular help page; use the usual |CTRL-]| to jump to tagged help items
+@@ -106,7 +106,7 @@ To select files for display and editing: (with the cursor is atop a filename)
+ 	<enter>		Open the file in the current window.	   |netrw-cr|
+ 	o		Horizontally split window and display file |netrw-o|
+ 	v		Vertically split window and display file   |netrw-v|
+-	p		Use the |preview-window| 		   |netrw-p|
++	p		Use the |preview-window|		   |netrw-p|
+ 	P		Edit in the previous window		   |netrw-P|
+ 	t		Open file in a new tab			   |netrw-t|
+ 
+diff --git a/runtime/doc/version8.txt b/runtime/doc/version8.txt
+index 3ae5ed489..fd30bbc73 100644
+--- a/runtime/doc/version8.txt
++++ b/runtime/doc/version8.txt
+@@ -342,11 +342,11 @@ New Vim variables: ~
+ |v:mouse_winid|		Window ID for a mouse click obtained with |getchar()|
+ |v:none|		an empty String, used for JSON
+ |v:null|		an empty String, used for JSON
+-|v:option_new|    	new value of the option, used by |OptionSet|
+-|v:option_old|    	old value of the option, used by |OptionSet|
++|v:option_new|		new value of the option, used by |OptionSet|
++|v:option_old|		old value of the option, used by |OptionSet|
+ |v:option_oldlocal|	old local value of the option, used by |OptionSet|
+ |v:option_oldglobal|	old global value of the option, used by |OptionSet|
+-|v:option_type|   	scope of the set command, used by |OptionSet|
++|v:option_type|		scope of the set command, used by |OptionSet|
+ |v:option_command|	command used to set the option, used by |OptionSet|
+ |v:progpath|		the command with which Vim was invoked
+ |v:t_bool|		value of Boolean type
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index eb26982ca..c6c04a985 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -113,7 +113,7 @@ script and `:def` functions; details are below:
+ 	:%s/this/that
+ - Executing a register with "@r" does not work, you can prepend a colon or use
+   `:exe`: >
+-  	:exe @a
++	:exe @a
+ - Unless mentioned specifically, the highest |scriptversion| is used.
+ - When defining an expression mapping, the expression will be evaluated in the
+   context of the script where it was defined.
+@@ -622,7 +622,7 @@ Additionally, a lambda can contain statements in {}: >
+ 	    }
+ This can be useful for a timer, for example: >
+ 	var count = 0
+- 	var timer = timer_start(500, (_) => {
++	var timer = timer_start(500, (_) => {
+ 		 count += 1
+ 		 echom 'Handler called ' .. count
+ 	     }, {repeat: 3})
+@@ -824,7 +824,7 @@ White space is required around most operators.
+ 
+ White space is required in a sublist (list slice) around the ":", except at
+ the start and end: >
+-	otherlist = mylist[v : count]  	# v:count has a different meaning
++	otherlist = mylist[v : count]	# v:count has a different meaning
+ 	otherlist = mylist[:]		# make a copy of the List
+ 	otherlist = mylist[v :]
+ 	otherlist = mylist[: v]
+@@ -879,7 +879,7 @@ This works for alphanumeric characters, underscore and dash.  If you want to
+ use another character, use a single or double quoted string: >
+ 	var dict = {'key with space': value}
+ 	var dict = {"key\twith\ttabs": value}
+-	var dict = {'': value}  		# empty key
++	var dict = {'': value}			# empty key
+ <							*E1139*
+ In case the key needs to be an expression, square brackets can be used, just
+ like in JavaScript: >
+@@ -1402,7 +1402,7 @@ to a Vim9 function:
+ 	  echo line(1) .. line(2)
+ 
+ - line continuation does not always require a backslash: >
+-  	echo ['one',
++	echo ['one',
+ 		\ 'two',
+ 		\ 'three'
+ 		\ ]
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 250e67537..1f6c57f39 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Jan 17
++*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Feb 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -471,14 +471,14 @@ Items in a class ~
+ 						*E1318* *E1325* *E1326*
+ Inside a class, in betweeen `:class` and `:endclass`, these items can appear:
+ - An object member declaration: >
+-  	this._memberName: memberType
+-  	this.memberName: memberType
++	this._memberName: memberType
++	this.memberName: memberType
+ 	public this.memberName: memberType
+ - A constructor method: >
+-  	def new(arguments)
+-  	def newName(arguments)
++	def new(arguments)
++	def newName(arguments)
+ - An object method: >
+-  	def SomeMethod(arguments)
++	def SomeMethod(arguments)
+ <							*E1329*
+ For the object member the type must be specified.  The best way is to do this
+ explicitly with ": {type}".  For simple types you can also use an initializer,
+@@ -520,6 +520,15 @@ name, with a hint about what it provides.
+ An interface can only be defined in a |Vim9| script file.  *E1342*
+ 
+ 
++null object ~
++
++When a variable is decleared to have the type of an object, but it is not
++initialized, the value is null.  When trying to use this null object Vim often
++does not know what class was supposed to be used.  Vim then cannot check if
++a member name is correct and you will get an "Using a null object" error,
++even when the member name is invalid. *E1360*
++
++
+ Default constructor ~
+ 
+ In case you define a class without a new() method, one will be automatically
