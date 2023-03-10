@@ -1,16 +1,43 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index a695547ee..da2bf32f7 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -8641,8 +8641,9 @@ sort({list} [, {how} [, {dict}]])			*sort()* *E702*
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 4f0ac45f4..799e05dab 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -4198,6 +4198,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				     T:DiffText,>:SignColumn,-:Conceal,
+ 				     B:SpellBad,P:SpellCap,R:SpellRare,
+ 				     L:SpellLocal,+:Pmenu,=:PmenuSel,
++				     [:PmenuKind,]:PmenuKindSel,
++				     {:PmenuExtra,}:PmenuExtraSel,
+ 				     x:PmenuSbar,X:PmenuThumb,*:TabLine,
+ 				     #:TabLineSel,_:TabLineFill,!:CursorColumn,
+ 				     .:CursorLine,o:ColorColumn,q:QuickFixLine,
+@@ -4254,6 +4256,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|hl-SpellLocal|	 L  word from other region |spell|
+ 	|hl-Pmenu|	 +  popup menu normal line
+ 	|hl-PmenuSel|	 =  popup menu selected line
++	|hl-PmenuKind|	 [  popup menu "kind" normal line
++	|hl-PmenuKindSel|  ]  popup menu "kind" selected line
++	|hl-PmenuExtra|	 {  popup menu "kind" normal line
++	|hl-PmenuExtraSel| }  popup menu "kind" selected line
+ 	|hl-PmenuSbar|	 x  popup menu scrollbar
+ 	|hl-PmenuThumb|	 X  popup menu scrollbar thumb
  
- 		When {how} is given and it is 'n' then all items will be
- 		sorted numerical (Implementation detail: this uses the
--		strtod() function to parse numbers, Strings, Lists, Dicts and
--		Funcrefs will be considered as being 0).
-+		strtod() function to parse numbers.  Strings, Lists, Dicts and
-+		Funcrefs will be considered as being 0).  Note that this won't
-+		sort a list of strings with numbers!
- 
- 		When {how} is given and it is 'N' then all items will be
- 		sorted numerical. This is like 'n' but a string containing
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index d624e4d46..93c56a2c6 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -5452,6 +5452,14 @@ Normal		Normal text.
+ Pmenu		Popup menu: Normal item.
+ 							*hl-PmenuSel*
+ PmenuSel	Popup menu: Selected item.
++							*hl-PmenuKind*
++PmenuKind	Popup menu: Normal item "kind".
++							*hl-PmenuKindSel*
++PmenuKindSel	Popup menu: Selected item "kind".
++							*hl-PmenuExtra*
++PmenuExtra	Popup menu: Normal item "extra text".
++							*hl-PmenuExtraSel*
++PmenuExtraSel	Popup menu: Selected item "extra text".
+ 							*hl-PmenuSbar*
+ PmenuSbar	Popup menu: Scrollbar.
+ 							*hl-PmenuThumb*
