@@ -1,43 +1,37 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 4f0ac45f4..799e05dab 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -4198,6 +4198,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 				     T:DiffText,>:SignColumn,-:Conceal,
- 				     B:SpellBad,P:SpellCap,R:SpellRare,
- 				     L:SpellLocal,+:Pmenu,=:PmenuSel,
-+				     [:PmenuKind,]:PmenuKindSel,
-+				     {:PmenuExtra,}:PmenuExtraSel,
- 				     x:PmenuSbar,X:PmenuThumb,*:TabLine,
- 				     #:TabLineSel,_:TabLineFill,!:CursorColumn,
- 				     .:CursorLine,o:ColorColumn,q:QuickFixLine,
-@@ -4254,6 +4256,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	|hl-SpellLocal|	 L  word from other region |spell|
- 	|hl-Pmenu|	 +  popup menu normal line
- 	|hl-PmenuSel|	 =  popup menu selected line
-+	|hl-PmenuKind|	 [  popup menu "kind" normal line
-+	|hl-PmenuKindSel|  ]  popup menu "kind" selected line
-+	|hl-PmenuExtra|	 {  popup menu "kind" normal line
-+	|hl-PmenuExtraSel| }  popup menu "kind" selected line
- 	|hl-PmenuSbar|	 x  popup menu scrollbar
- 	|hl-PmenuThumb|	 X  popup menu scrollbar thumb
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index da2bf32f7..0bdeabf70 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -2994,7 +2994,7 @@ funcref({name} [, {arglist}] [, {dict}])
+ 		Can also be used as a |method|: >
+ 			GetFuncname()->funcref([arg])
+ <
+-				*function()* *partial* *E700* *E922* *E923*
++				*function()* *partial* *E700* *E923*
+ function({name} [, {arglist}] [, {dict}])
+ 		Return a |Funcref| variable that refers to function {name}.
+ 		{name} can be the name of a user defined function or an
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index bb4a09607..51f1f16f9 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -340,7 +340,7 @@ function, the function does not need to be defined more than once: >
  
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index d624e4d46..93c56a2c6 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -5452,6 +5452,14 @@ Normal		Normal text.
- Pmenu		Popup menu: Normal item.
- 							*hl-PmenuSel*
- PmenuSel	Popup menu: Selected item.
-+							*hl-PmenuKind*
-+PmenuKind	Popup menu: Normal item "kind".
-+							*hl-PmenuKindSel*
-+PmenuKindSel	Popup menu: Selected item "kind".
-+							*hl-PmenuExtra*
-+PmenuExtra	Popup menu: Normal item "extra text".
-+							*hl-PmenuExtraSel*
-+PmenuExtraSel	Popup menu: Selected item "extra text".
- 							*hl-PmenuSbar*
- PmenuSbar	Popup menu: Scrollbar.
- 							*hl-PmenuThumb*
+ Variable declarations with :var, :final and :const ~
+ 				*vim9-declaration* *:var* *E1079*
+-				*E1017* *E1020* *E1054* *E1087* *E1108* *E1124*
++				*E1017* *E1020* *E1054* *E1087* *E1124*
+ Local variables need to be declared with `:var`.  Local constants need to be
+ declared with `:final` or `:const`.  We refer to both as "variables" in this
+ section.
+@@ -1664,8 +1664,8 @@ type, it can not be used in Vim9 script.
+ 
+ 			 *E1211* *E1217* *E1218* *E1219* *E1220* *E1221*
+ 			 *E1222* *E1223* *E1224* *E1225* *E1226* *E1227*
+-			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1253*
+-			 *E1256* *E1297* *E1298* *E1301*
++			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1256*
++			 *E1297* *E1298* *E1301*
+ Types are checked for most builtin functions to make it easier to spot
+ mistakes.
+ 
