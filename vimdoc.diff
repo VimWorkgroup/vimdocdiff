@@ -1,37 +1,40 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index da2bf32f7..0bdeabf70 100644
+index 0bdeabf70..ec680bec4 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -2994,7 +2994,7 @@ funcref({name} [, {arglist}] [, {dict}])
- 		Can also be used as a |method|: >
- 			GetFuncname()->funcref([arg])
- <
--				*function()* *partial* *E700* *E922* *E923*
-+				*function()* *partial* *E700* *E923*
- function({name} [, {arglist}] [, {dict}])
- 		Return a |Funcref| variable that refers to function {name}.
- 		{name} can be the name of a user defined function or an
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index bb4a09607..51f1f16f9 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -340,7 +340,7 @@ function, the function does not need to be defined more than once: >
+@@ -7150,7 +7150,8 @@ reltimestr({time})				*reltimestr()*
+ 			call MyFunction()
+ 			echo reltimestr(reltime(start))
+ <		Note that overhead for the commands will be added to the time.
+-		The accuracy depends on the system.
++		The accuracy depends on the system. Use reltimefloat() for the
++		greatest accuracy which is nanoseconds on some systems.
+ 		Leading spaces are used to make the string align nicely.  You
+ 		can use split() to remove it. >
+ 			echo split(reltimestr(reltime(start)))[0]
+@@ -10753,6 +10754,7 @@ persistent_undo		Compiled with support for persistent undo history.
+ postscript		Compiled with PostScript file printing.
+ printer			Compiled with |:hardcopy| support.
+ profile			Compiled with |:profile| support.
++prof_nsec		Profile results are in nano seconds.
+ python			Python 2.x interface available. |has-python|
+ python_compiled		Compiled with Python 2.x interface. |has-python|
+ python_dynamic		Python 2.x interface is dynamically loaded. |has-python|
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index c8a0f5d3d..054b8705c 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1148,9 +1148,10 @@ long you take to respond to the input() prompt is irrelevant.
+ Profiling should give a good indication of where time is spent, but keep in
+ mind there are various things that may clobber the results:
  
- Variable declarations with :var, :final and :const ~
- 				*vim9-declaration* *:var* *E1079*
--				*E1017* *E1020* *E1054* *E1087* *E1108* *E1124*
-+				*E1017* *E1020* *E1054* *E1087* *E1124*
- Local variables need to be declared with `:var`.  Local constants need to be
- declared with `:final` or `:const`.  We refer to both as "variables" in this
- section.
-@@ -1664,8 +1664,8 @@ type, it can not be used in Vim9 script.
+-- The accuracy of the time measured depends on the gettimeofday() system
+-  function.  It may only be as accurate as 1/100 second, even though the times
+-  are displayed in micro seconds.
++- The accuracy of the time measured depends on the gettimeofday(), or
++  clock_gettime if available, system function. The accuracy ranges from 1/100
++  second to nano seconds. With clock_gettime the times are displayed in nano
++  seconds, otherwise micro seconds.  You can use `has("prof_nsec")`.
  
- 			 *E1211* *E1217* *E1218* *E1219* *E1220* *E1221*
- 			 *E1222* *E1223* *E1224* *E1225* *E1226* *E1227*
--			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1253*
--			 *E1256* *E1297* *E1298* *E1301*
-+			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1256*
-+			 *E1297* *E1298* *E1301*
- Types are checked for most builtin functions to make it easier to spot
- mistakes.
- 
+ - Real elapsed time is measured, if other processes are busy they may cause
+   delays at unpredictable moments.  You may want to run the profiling several
