@@ -1,40 +1,958 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0bdeabf70..ec680bec4 100644
+index ec680bec4..5c2e7ea41 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -7150,7 +7150,8 @@ reltimestr({time})				*reltimestr()*
- 			call MyFunction()
- 			echo reltimestr(reltime(start))
- <		Note that overhead for the commands will be added to the time.
--		The accuracy depends on the system.
-+		The accuracy depends on the system. Use reltimefloat() for the
-+		greatest accuracy which is nanoseconds on some systems.
- 		Leading spaces are used to make the string align nicely.  You
- 		can use split() to remove it. >
- 			echo split(reltimestr(reltime(start)))[0]
-@@ -10753,6 +10754,7 @@ persistent_undo		Compiled with support for persistent undo history.
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2023 Feb 27
++*builtin.txt*	For Vim version 9.0.  Last change: 2023 Apr 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2235,7 +2235,8 @@ execute({command} [, {silent}])					*execute()*
+ 			redir => var
+ 			{command}
+ 			redir END
+-<
++<		Except that line continuation in {command} is not recognized.
++
+ 		The optional {silent} argument can have these values:
+ 			""		no `:silent` used
+ 			"silent"	`:silent` used
+@@ -4115,7 +4116,7 @@ getregtype([{regname}])					*getregtype()*
+ 		Can also be used as a |method|: >
+ 			GetRegname()->getregtype()
+ 
+-getscriptinfo([{opts})					*getscriptinfo()*
++getscriptinfo([{opts}])					*getscriptinfo()*
+ 		Returns a |List| with information about all the sourced Vim
+ 		scripts in the order they were sourced, like what
+ 		`:scriptnames` shows.
+@@ -4124,7 +4125,7 @@ getscriptinfo([{opts})					*getscriptinfo()*
+ 		optional items:
+ 		    name	Script name match pattern. If specified,
+ 				and "sid" is not specified, information about
+-				scripts with name that match the pattern
++				scripts with a name that match the pattern
+ 				"name" are returned.
+ 		    sid		Script ID |<SID>|.  If specified, only
+ 				information about the script with ID "sid" is
+@@ -5666,7 +5667,7 @@ maparg({name} [, {mode} [, {abbr} [, {dict}]]])			*maparg()*
+ 			     "!"     Insert and Commandline mode
+ 				     (|mapmode-ic|)
+ 		  "sid"	     The script local ID, used for <sid> mappings
+-			     (|<SID>|).
++			     (|<SID>|).  Negative for special contexts.
+ 		  "scriptversion"  The version of the script.  999999 for
+ 				   |Vim9| script.
+ 		  "lnum"     The line number in "sid", zero if unknown.
+@@ -7101,7 +7102,7 @@ reltime({start})
+ reltime({start}, {end})					*reltime()*
+ 		Return an item that represents a time value.  The item is a
+ 		list with items that depend on the system.  In Vim 9 script
+-		list<any> can be used.
++		the type list<any> can be used.
+ 		The item can be passed to |reltimestr()| to convert it to a
+ 		string or |reltimefloat()| to convert to a Float.  For
+ 		example, to see the time spent in function Work(): >
+@@ -10754,7 +10755,7 @@ persistent_undo		Compiled with support for persistent undo history.
  postscript		Compiled with PostScript file printing.
  printer			Compiled with |:hardcopy| support.
  profile			Compiled with |:profile| support.
-+prof_nsec		Profile results are in nano seconds.
+-prof_nsec		Profile results are in nano seconds.
++prof_nsec		Profile results are in nanoseconds.
  python			Python 2.x interface available. |has-python|
  python_compiled		Compiled with Python 2.x interface. |has-python|
  python_dynamic		Python 2.x interface is dynamically loaded. |has-python|
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 4fc20cae4..a00049bef 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.0.  Last change: 2023 Feb 27
++*change.txt*    For Vim version 9.0.  Last change: 2023 Mar 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -455,6 +455,12 @@ Note similarly, when 'nrformats' includes "bin", binary numbers with a leading
+ '0x' or '0X' can be interpreted as hexadecimal rather than binary since '0b'
+ are valid hexadecimal digits.
+ 
++When the number under the cursor is too big to fit into 32 or 64 bit
++(depending on how Vim was build), it will be rounded off to the nearest number
++that can be represented, and the addition/subtraction is skipped.  E.g. with
++64 bit support using CTRL-X on 18446744073709551616 results in
++18446744073709551615.  Same for larger numbers, such as 18446744073709551618.
++
+ The CTRL-A command is very useful in a macro.  Example: Use the following
+ steps to make a numbered list.
+ 
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 216922ad1..3caa7cf60 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -1,4 +1,4 @@
+-*diff.txt*      For Vim version 9.0.  Last change: 2023 Jan 21
++*diff.txt*      For Vim version 9.0.  Last change: 2023 Apr 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -109,6 +109,7 @@ While already in Vim you can start diff mode in three ways.
+ 		accidentally being patched.  But it may still result in
+ 		various ".rej" files to be created.  And when absolute path
+ 		names are present these files may get patched anyway.
++		Using the "patch" command is not allowed in |restricted-mode|.
+ 
+ To make these commands use a vertical split, prepend |:vertical|.  Examples: >
+ 
+diff --git a/runtime/doc/digraph.txt b/runtime/doc/digraph.txt
+index 918bdd86b..e9bdeb5dd 100644
+--- a/runtime/doc/digraph.txt
++++ b/runtime/doc/digraph.txt
+@@ -1,4 +1,4 @@
+-*digraph.txt*   For Vim version 9.0.  Last change: 2022 Nov 22
++*digraph.txt*   For Vim version 9.0.  Last change: 2023 Mar 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -547,7 +547,7 @@ char  digraph	hex	dec	official name ~
+ Θ	H*	0398	0920	GREEK CAPITAL LETTER THETA
+ Ι	I*	0399	0921	GREEK CAPITAL LETTER IOTA
+ Κ	K*	039A	0922	GREEK CAPITAL LETTER KAPPA
+-Λ	L*	039B	0923	GREEK CAPITAL LETTER LAMDA
++Λ	L*	039B	0923	GREEK CAPITAL LETTER LAMDA (aka LAMBDA)
+ Μ	M*	039C	0924	GREEK CAPITAL LETTER MU
+ Ν	N*	039D	0925	GREEK CAPITAL LETTER NU
+ Ξ	C*	039E	0926	GREEK CAPITAL LETTER XI
+@@ -578,7 +578,7 @@ char  digraph	hex	dec	official name ~
+ θ	h*	03B8	0952	GREEK SMALL LETTER THETA
+ ι	i*	03B9	0953	GREEK SMALL LETTER IOTA
+ κ	k*	03BA	0954	GREEK SMALL LETTER KAPPA
+-λ	l*	03BB	0955	GREEK SMALL LETTER LAMDA
++λ	l*	03BB	0955	GREEK SMALL LETTER LAMDA (aka LAMBDA)
+ μ	m*	03BC	0956	GREEK SMALL LETTER MU
+ ν	n*	03BD	0957	GREEK SMALL LETTER NU
+ ξ	c*	03BE	0958	GREEK SMALL LETTER XI
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 84f5f5fcc..5c77c796f 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2023 Feb 25
++*eval.txt*	For Vim version 9.0.  Last change: 2023 Apr 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1788,6 +1788,8 @@ b:changedtick	The total number of changes to the current buffer.  It is
+ 		    :	call My_Update()
+ 		    :endif
+ <		You cannot change or delete the b:changedtick variable.
++		If you need more information about the change see
++		|listener_add()|.
+ 
+ 						*window-variable* *w:var* *w:*
+ A variable name that is preceded with "w:" is local to the current window.  It
+@@ -4584,28 +4586,18 @@ getting the scriptnames in a Dictionary ~
+ The `:scriptnames` command can be used to get a list of all script files that
+ have been sourced.  There is also the `getscriptinfo()` function, but the
+ information returned is not exactly the same.  In case you need to manipulate
+-the output of `scriptnames` this code can be used: >
+-    " Get the output of ":scriptnames" in the scriptnames_output variable.
+-    let scriptnames_output = ''
+-    redir => scriptnames_output
+-    silent scriptnames
+-    redir END
+-
+-    " Split the output into lines and parse each line.	Add an entry to the
+-    " "scripts" dictionary.
+-    let scripts = {}
+-    for line in split(scriptnames_output, "\n")
+-      " Only do non-blank lines.
+-      if line =~ '\S'
+-	" Get the first number in the line.
+-	let nr = matchstr(line, '\d\+')
+-	" Get the file name, remove the script number " 123: ".
+-	let name = substitute(line, '.\+:\s*', '', '')
+-	" Add an item to the Dictionary
+-	let scripts[nr] = name
+-      endif
+-    endfor
+-    unlet scriptnames_output
++the list, this code can be used as a base: >
++
++    # Create or update scripts dictionary, indexed by SNR, and return it.
++    def Scripts(scripts: dict<string> = {}): dict<string>
++      for info in getscriptinfo()
++        if scripts->has_key(info.sid)
++          continue
++        endif
++        scripts[info.sid] = info.name
++      endfor
++      return scripts
++    enddef
+ 
+ ==============================================================================
+ 10. Vim script versions		*vimscript-version* *vimscript-versions*
+diff --git a/runtime/doc/fold.txt b/runtime/doc/fold.txt
+index bb1dcb673..e8078be22 100644
+--- a/runtime/doc/fold.txt
++++ b/runtime/doc/fold.txt
+@@ -1,4 +1,4 @@
+-*fold.txt*      For Vim version 9.0.  Last change: 2023 Jan 29
++*fold.txt*      For Vim version 9.0.  Last change: 2023 Mar 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -353,7 +353,8 @@ zC		Close all folds under the cursor recursively.  Folds that
+ 		'foldenable' will be set.
+ 
+ 							*za*
+-za		When on a closed fold: open it.  When folds are nested, you
++za		Summary: Toggle the fold under the cursor.
++		When on a closed fold: open it.  When folds are nested, you
+ 		may have to use "za" several times.  When a count is given,
+ 		that many closed folds are opened.
+ 		When on an open fold: close it and set 'foldenable'.  This
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 724318dfd..7c22c1c09 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
+@@ -1,4 +1,4 @@
+-*gui.txt*       For Vim version 9.0.  Last change: 2023 Feb 26
++*gui.txt*       For Vim version 9.0.  Last change: 2023 Mar 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -144,7 +144,7 @@ task bar with the 'guiheadroom' option.
+ 		remembered until the window is opened.  The position is
+ 		adjusted to make the window fit on the screen (if possible).
+ 
+-						    *:win* *:winsize* *E465*
++					    *:wi* *:win* *:winsize* *E465*
+ :win[size] {width} {height}
+ 		Set the window height to {width} by {height} characters.
+ 		It is recommended to use `:set lines=11 columns=22` instead,
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 905f9adbe..fb92ea34c 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2023 Feb 27
++*map.txt*       For Vim version 9.0.  Last change: 2023 Mar 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1566,6 +1566,11 @@ can have arguments, or have a range specified.  Arguments are subject to
+ completion as filenames, buffers, etc.  Exactly how this works depends upon the
+ command's attributes, which are specified when the command is defined.
+ 
++When defining a user command in a script, it will be able to call functions
++local to the script and use mappings local to the script.  When the user
++invokes the user command, it will run in the context of the script it was
++defined in.  This matters if |<SID>| is used in a command.
++
+ There are a number of attributes, split into four categories: argument
+ handling, completion behavior, range handling, and special cases.  The
+ attributes are described below, by category.
+@@ -1781,6 +1786,11 @@ functions cannot be used.  Commands where a "|" may appear in the argument,
+ such as commands with an expression argument, cannot be followed by a "|" and
+ another command.
+ 
++If the command is defined in Vim9 script (a script that starts with
++`:vim9script` and in a `:def` function) then {repl} will be executed as in Vim9
++script.  Thus this depends on where the command is defined, not where it is
++used.
++
+ The replacement text {repl} for a user defined command is scanned for special
+ escape sequences, using <...> notation.  Escape sequences are replaced with
+ values from the entered command line, and all other text is copied unchanged.
+@@ -1915,14 +1925,5 @@ errors and the "update" command to write modified buffers): >
+ This will invoke: >
+ 	:call Allargs("%s/foo/bar/ge|update")
+ <
+-If the command is defined in Vim9 script (a script that starts with
+-`:vim9script` and in a `:def` function) then {repl} will be executed as in Vim9
+-script.  Thus this depends on where the command is defined, not where it is
+-used.
+-
+-When defining a user command in a script, it will be able to call functions
+-local to the script and use mappings local to the script.  When the user
+-invokes the user command, it will run in the context of the script it was
+-defined in.  This matters if |<SID>| is used in a command.
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 799e05dab..91f50e7e6 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Feb 17
++*options.txt*	For Vim version 9.0.  Last change: 2023 Apr 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -7657,11 +7657,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			global
+ 	When "on" the commands listed below move the cursor to the first
+ 	non-blank of the line.  When off the cursor is kept in the same column
+-	(if possible).  This applies to the commands: CTRL-D, CTRL-U, CTRL-B,
+-	CTRL-F, "G", "H", "M", "L", gg, and to the commands "d", "<<" and ">>"
+-	with a linewise operator, with "%" with a count and to buffer changing
+-	commands (CTRL-^, :bnext, :bNext, etc.).  Also for an Ex command that
+-	only has a line number, e.g., ":25" or ":+".
++	(if possible).  This applies to the commands:
++	- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", "gg"
++	- "d", "<<" and ">>" with a linewise operator
++	- "%" with a count
++	- buffer changing commands (CTRL-^, :bnext, :bNext, etc.)
++	- Ex commands that only has a line number, e.g., ":25" or ":+".
+ 	In case of buffer changing commands the cursor is placed at the column
+ 	where it was the last time the buffer was edited.
+ 	NOTE: This option is set when 'compatible' is set.
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index f24243024..a7238a9ea 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -1,4 +1,4 @@
+-*pi_netrw.txt*  For Vim version 9.0.  Last change: 2022 Apr 06
++*pi_netrw.txt*  For Vim version 9.0.  Last change: 2023 Apr 22
+ 
+ 	    ------------------------------------------------
+ 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
+@@ -968,7 +968,7 @@ itself:
+      fun! NetReadFixup(method, line1, line2)
+        if method == 3   " ftp (no <.netrc>)
+         let fourblanklines= line2 - 3
+-        silent fourblanklines .. "," .. line2 .. "g/^\s*/d"
++        silent fourblanklines.",".line2."g/^\s*/d"
+        endif
+      endfunction
+     endif
+@@ -1198,7 +1198,7 @@ If there are marked files and/or directories, mb will add them to the bookmark
+ list.
+ 
+ 								*netrw-:NetrwMB*
+-Additionally, one may use :NetrwMB to bookmark files or directories. >
++Addtionally, one may use :NetrwMB to bookmark files or directories. >
+ 
+ 	:NetrwMB[!] [files/directories]
+ 
+@@ -1625,10 +1625,8 @@ A further approach is to delete files which match a pattern.
+       This will cause the matching files to be marked.  Then,
+       press "D".
+ 
+-If your vim has 7.4 with patch#1107, then |g:netrw_localrmdir| no longer
+-is used to remove directories; instead, vim's |delete()| is used with
+-the "d" option.  Please note that only empty directories may be deleted
+-with the "D" mapping.  Regular files are deleted with |delete()|, too.
++Please note that only empty directories may be deleted with the "D" mapping.
++Regular files are deleted with |delete()|, too.
+ 
+ The |g:netrw_rm_cmd|, |g:netrw_rmf_cmd|, and |g:netrw_rmdir_cmd| variables are
+ used to control the attempts to remove remote files and directories.  The
+@@ -1647,8 +1645,7 @@ to remove it again using the g:netrw_rmf_cmd variable.  Its default value is:
+ 	|g:netrw_rmf_cmd|: ssh HOSTNAME rm -f
+ 
+ Related topics: |netrw-d|
+-Associated setting variable: |g:netrw_localrmdir| |g:netrw_rm_cmd|
+-                             |g:netrw_rmdir_cmd|   |g:netrw_ssh_cmd|
++Associated setting variable: |g:netrw_rm_cmd| |g:netrw_ssh_cmd|
+ 
+ 
+ *netrw-explore*  *netrw-hexplore* *netrw-nexplore* *netrw-pexplore*
+@@ -1691,7 +1688,11 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
+ 	  to 2; edits will thus preferentially be made in window#2.
+ 
+ 	  The [N] specifies a |g:netrw_winsize| just for the new :Lexplore
+-	  window.
++	  window. That means that
++	    if [N] < 0 : use |N| columns for the Lexplore window
++	    if [N] = 0 : a normal split is made
++	    if [N] > 0 : use N% of the current window will be used for the
++	                 new window
+ 
+ 	  Those who like this method often also like tree style displays;
+ 	  see |g:netrw_liststyle|.
+@@ -1975,7 +1976,7 @@ To use this function, simply assign its output to |g:netrw_list_hide| option.  >
+ 	Example: let g:netrw_list_hide= netrw_gitignore#Hide('my_gitignore_file')
+ 		Function can take additional files with git-ignore patterns.
+ 
+-	Example: let g:netrw_list_hide= netrw_gitignore#Hide() .. '.*\.swp$'
++	Example: g:netrw_list_hide= netrw_gitignore#Hide() . '.*\.swp$'
+ 		Combining 'netrw_gitignore#Hide' with custom patterns.
+ <
+ 
+@@ -2815,7 +2816,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				= 2: wide listing (multiple files in columns)
+ 				= 3: tree style listing
+ 
+-  *g:netrw_list_hide*		comma-separated pattern list for hiding files
++  *g:netrw_list_hide*		comma separated pattern list for hiding files
+ 				Patterns are regular expressions (see |regexp|)
+ 				There's some special support for git-ignore
+ 				files: you may add the output from the helper
+@@ -2825,7 +2826,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 
+ 				Examples:
+ 				 let g:netrw_list_hide= '.*\.swp$'
+-				 let g:netrw_list_hide= netrw_gitignore#Hide() .. '.*\.swp$'
++				 let g:netrw_list_hide= netrw_gitignore#Hide().'.*\.swp$'
+ 				default: ""
+ 
+   *g:netrw_localcopycmd*	="cp"           Linux/Unix/MacOS/Cygwin
+@@ -2863,18 +2864,6 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				=" /c move"                     Windows
+ 				Options for |g:netrw_localmovecmd|
+ 
+-  *g:netrw_localrmdir*		="rmdir"        Linux/Unix/MacOS/Cygwin
+-				=expand("$COMSPEC")             Windows
+-				Remove directory command (rmdir)
+-				This variable is only used if your vim is
+-				earlier than 7.4 or if your vim doesn't
+-				have patch#1107.  Otherwise, |delete()|
+-				is used with the "d" option.
+-
+-  *g:netrw_localrmdiropt*	=""             Linux/Unix/MacOS/Cygwin
+-				=" /c rmdir"                    Windows
+-				Options for |g:netrw_localrmdir|
+-
+   *g:netrw_maxfilenamelen*	=32 by default, selected so as to make long
+ 				    listings fit on 80 column displays.
+ 				If your screen is wider, and you have file
+@@ -3785,7 +3774,7 @@ Example: Clear netrw's marked file list via a mapping on gu >
+ 	     Netrw uses several system level commands to do things (see
+ 
+ 		 |g:netrw_localcopycmd|, |g:netrw_localmovecmd|,
+-		 |g:netrw_localrmdir|, |g:netrw_mkdir_cmd|).
++		 |g:netrw_mkdir_cmd|).
+ 
+ 	    You may need to adjust the default commands for one or more of
+ 	    these commands by setting them properly in your .vimrc.  Another
+@@ -3911,6 +3900,13 @@ netrw:
+ ==============================================================================
+ 12. History						*netrw-history* {{{1
+ 
++	v172:	Sep 02, 2021	* (Bram Moolenaar) Changed "l:go" to "go"
++				* (Bram Moolenaar) no need for "b" in
++				  netrw-safe guioptions
++		Nov 15, 2021	* removed netrw_localrm and netrw_localrmdir
++				  references
++		Aug 18, 2022	* (Miguel Barro) improving compatability with
++				  powershell
+ 	v171:	Oct 09, 2020	* included code in s:NetrwOptionsSafe()
+ 				  to allow |'bh'| to be set to delete when
+ 				  rather than hide when g:netrw_fastbrowse
+@@ -3996,7 +3992,7 @@ netrw:
+ 				  mostly for Windows.  Introduced new netrw
+ 				  settings: |g:netrw_localcopycmdopt|
+ 				  |g:netrw_localcopydircmdopt| |g:netrw_localmkdiropt|
+-				  |g:netrw_localmovecmdopt| |g:netrw_localrmdiropt|
++				  |g:netrw_localmovecmdopt| g:netrw_localrmdiropt
+ 		Nov 21, 2016	* (mattn) provided a patch for preview; swapped
+ 				  winwidth() with winheight()
+ 		Nov 22, 2016	* (glacambre) reported that files containing
+@@ -4056,7 +4052,7 @@ netrw:
+ 				  refreshes.  However, inside a |:map-<expr>|,
+ 				  tab and window changes are disallowed.  Fixed.
+ 				  (affects netrw's s:LocalBrowseRefresh())
+-				* |g:netrw_localrmdir| not used any more, but
++				* g:netrw_localrmdir not used any more, but
+ 				  the relevant patch that causes |delete()| to
+ 				  take over was #1107 (not #1109).
+ 				* |expand()| is now used on |g:netrw_home|;
+diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
+index a5b056f17..8673324e1 100644
+--- a/runtime/doc/pi_zip.txt
++++ b/runtime/doc/pi_zip.txt
+@@ -1,4 +1,4 @@
+-*pi_zip.txt*	For Vim version 9.0.  Last change: 2022 Oct 17
++*pi_zip.txt*	For Vim version 9.0.  Last change: 2023 Mar 12
+ 
+ 				+====================+
+ 				| Zip File Interface |
+@@ -102,6 +102,7 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
+ 
+ ==============================================================================
+ 4. History							*zip-history* {{{1
++   v33 Dec 07, 2021 * *.xlam mentioned twice in zipPlugin
+    v32 Oct 22, 2021 * to avoid an issue with a vim 8.2 patch, zipfile: has
+ 		      been changed to zipfile:// . This often shows up
+ 		      as zipfile:/// with zipped files that are root-based.
+diff --git a/runtime/doc/recover.txt b/runtime/doc/recover.txt
+index db58241a3..bfc59d31e 100644
+--- a/runtime/doc/recover.txt
++++ b/runtime/doc/recover.txt
+@@ -1,4 +1,4 @@
+-*recover.txt*   For Vim version 9.0.  Last change: 2020 Aug 15
++*recover.txt*   For Vim version 9.0.  Last change: 2023 Apr 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -176,7 +176,7 @@ the recover command:
+ :rec[over]! [file]	Like ":recover", but any changes in the current
+ 			buffer are lost.
+ 
+-							*E312* *E309* *E310*
++						*E312* *E309* *E310* *E1364*
+ Vim has some intelligence about what to do if the swap file is corrupt in
+ some way.  If Vim has doubt about what it found, it will give an error
+ message and insert lines with "???" in the text.  If you see an error message
 diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index c8a0f5d3d..054b8705c 100644
+index 054b8705c..8c458fb29 100644
 --- a/runtime/doc/repeat.txt
 +++ b/runtime/doc/repeat.txt
-@@ -1148,9 +1148,10 @@ long you take to respond to the input() prompt is irrelevant.
- Profiling should give a good indication of where time is spent, but keep in
- mind there are various things that may clobber the results:
+@@ -1,4 +1,4 @@
+-*repeat.txt*    For Vim version 9.0.  Last change: 2023 Feb 25
++*repeat.txt*    For Vim version 9.0.  Last change: 2023 Apr 02
  
--- The accuracy of the time measured depends on the gettimeofday() system
--  function.  It may only be as accurate as 1/100 second, even though the times
--  are displayed in micro seconds.
-+- The accuracy of the time measured depends on the gettimeofday(), or
-+  clock_gettime if available, system function. The accuracy ranges from 1/100
-+  second to nano seconds. With clock_gettime the times are displayed in nano
-+  seconds, otherwise micro seconds.  You can use `has("prof_nsec")`.
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1150,8 +1150,8 @@ mind there are various things that may clobber the results:
+ 
+ - The accuracy of the time measured depends on the gettimeofday(), or
+   clock_gettime if available, system function. The accuracy ranges from 1/100
+-  second to nano seconds. With clock_gettime the times are displayed in nano
+-  seconds, otherwise micro seconds.  You can use `has("prof_nsec")`.
++  second to nanoseconds. With clock_gettime the times are displayed in
++  nanoseconds, otherwise microseconds.  You can use `has("prof_nsec")`.
  
  - Real elapsed time is measured, if other processes are busy they may cause
    delays at unpredictable moments.  You may want to run the profiling several
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index b5d152a36..513ca8ff9 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
+@@ -1,4 +1,4 @@
+-*spell.txt*	For Vim version 9.0.  Last change: 2020 Aug 15
++*spell.txt*	For Vim version 9.0.  Last change: 2023 Apr 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -216,7 +216,8 @@ line may be postponed.  Use |CTRL-L| when needed.  Also see |set-spc-auto| for
+ how it can be set automatically when 'spelllang' is set.
+ 
+ The 'spelloptions' option has a few more flags that influence the way spell
+-checking works.
++checking works.  For example, "camel" splits CamelCased words so that each
++part of the word is spell-checked separately.
+ 
+ Vim counts the number of times a good word is encountered.  This is used to
+ sort the suggestions: words that have been seen before get a small bonus,
+diff --git a/runtime/doc/sponsor.txt b/runtime/doc/sponsor.txt
+index 51d6c1602..548cde8cb 100644
+--- a/runtime/doc/sponsor.txt
++++ b/runtime/doc/sponsor.txt
+@@ -1,4 +1,4 @@
+-*sponsor.txt*   For Vim version 9.0.  Last change: 2022 May 26
++*sponsor.txt*   For Vim version 9.0.  Last change: 2023 Mar 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -58,7 +58,7 @@ But only if you enable this on your account page.
+ HOW TO SEND MONEY						*send-money*
+ 
+ Credit card	Through PayPal, see the PayPal site for information:
+-			https://www.paypal.com/en_US/mrb/pal=XAC62PML3GF8Q
++			https://www.paypal.com/
+ 		The e-mail address for sending sponsorship money is:
+ 			donate@vim.org
+ 		The e-mail address for Vim registration is:
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 93c56a2c6..10b6901d1 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Feb 26
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Apr 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2803,8 +2803,8 @@ unsetting all the other ones.
+ 
+ If you use Python 2 or straddling code (Python 2 and 3 compatible),
+ you can enforce the use of an older syntax file with support for
+-Python 2 and up to Python 3.5.
+-	: let python_use_python2_syntax = 1
++Python 2 and up to Python 3.5. >
++	:let python_use_python2_syntax = 1
+ This option will exclude all modern Python 3.6 or higher features.
+ 
+ Note: Only existence of these options matters, not their value.
+@@ -3748,11 +3748,12 @@ The syntax script for zsh allows for syntax-based folding: >
+ Vim understands three types of syntax items:
+ 
+ 1. Keyword
+-   It can only contain keyword characters, according to the 'iskeyword'
+-   option.  It cannot contain other syntax items.  It will only match with a
+-   complete word (there are no keyword characters before or after the match).
+-   The keyword "if" would match in "if(a=b)", but not in "ifdef x", because
+-   "(" is not a keyword character and "d" is.
++   It can only contain keyword characters, according to the characters
++   specified with |:syn-iskeyword| or the 'iskeyword' option.  It cannot
++   contain other syntax items.  It will only match with a complete word (there
++   are no keyword characters before or after the match).  The keyword "if"
++   would match in "if(a=b)", but not in "ifdef x", because "(" is not a
++   keyword character and "d" is.
+ 
+ 2. Match
+    This is a match with a single regexp pattern.
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 6792ac583..178abbd25 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2023 Feb 26
++*todo.txt*      For Vim version 9.0.  Last change: 2023 Apr 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,17 +38,35 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
++Delete ci/load-snd-dummy.sh?
++Update Filelist
++
++When using ":set no<CTRL-A>" add options starting with "no", not all boolean
++options.
++
+ Crash when splitting window: #11961.  Set RedrawingDisabled in
+ win_split_ins().
+ 
+-CI: include #12008 end of February.
+-
+ In runtime/autoload/dist/script.vim change "set ft=" to "setlocal ft=" ?
+ 
+ CTRL-J mapping is not used if halfway another mapping. #12002
+ Is simplified mapping not used but escape code has been simplified?
+ 
+-Include #11952 after a runtime files update.
++Windows scroll when using the autocmd window.  #12085
++in restore_snapshot_rec() restore more values from the snapshot, instead of
++calling frame_new_height() and frame_new_width(), especially w_topline and
++w_skipcol.
++
++'smoothscroll' problem: #12199
++Problems related to 'smoothscroll': #12218 and #12211
++
++include #12140: positional arguments in printf(), fixes #10577
++
++Include #11818: attach custom data to quickfix items.
++
++When a help item can't be found, then open 'helpfile'.  Search for the tag in
++that file and gtive E149 only when not found.  Helps for a tiny Vim installed
++without all the help files.
+ 
+ Errors when running tests with valgrind:
+ - test_codestyle.vim:  e.g.:
+@@ -61,12 +79,19 @@ Upcoming larger works:
+ - Make spell checking work with recent .dic/.aff files, e.g. French.  #4916
+     Make Vim understand the format somehow?   Search for "spell" below.
+     Make sure suggestions are speedy, also with composed words (German).
+-- Discuss alternatives for using other grammars (treesitter, TextMate).
++- Make syntax highlighting faster and better.  Discuss alternatives for using
++  other grammars (treesitter, TextMate).
+    - Possibly conversion to Vim syntax rules.
+    - Other mechanism than group and cluster to nest syntax items, to be used
+      for grammars.
+    - Possibly keeping the parsed syntax tree and incremental updates.
+    - tree-sitter doesn't handle incorrect syntax (while typing) properly.
++   - NeoVim uses treesitter, what can we learn from that?
++   - Vscode is asked to switch to treesitter:
++      https://github.com/microsoft/vscode/issues/50140
++   - Vscode uses TextMate.  #9087 - Other people don't like it.
++      https://github.com/icedman/vim-textmate
++   - sublime grammar?  Hugo mentions it's a moving target  #9087
+    - Make clear how it relates to LSP.
+    - example plugin: https://github.com/uga-rosa/dps-vsctm.vim
+ 
+@@ -77,11 +102,17 @@ Further Vim9 improvements, possibly after launch:
+ 	Check for error: can't have same name twice (ignoring "_" prefix).
+   - Make ":defcompile ClassName" compile all functions and methods in the
+     class.
++  - Forward declaration of a class?  E.g. for Clone() function.
++	email lifepillar 2023 Mar 26
++  - Getting member of variable with "any" type should be handled at runtime.
++    Remove temporary solution from #12096 / patch 9.0.1375.
+   - Private methods?
+ 	either: private def Func()
+ 	    or: def _Func()
+     Perhaps use "private" keyword instead of "_" prefix?
+   - "final" object members - can only be set in the constructor.
++  - "obj.Method()" does not always work in a compiled function, assumes "obj"
++    is a dictionary.  #12196
+   - accept line breaks in member initialization.  #11957
+   - object empty(), len() - can class define a method to be used for them?
+   - add to help: when using a default new() method then reordering object
+@@ -97,7 +128,7 @@ Further Vim9 improvements, possibly after launch:
+   - a variant of type() that returns a different type for each class?
+       list<number> and list<string> should also differ.
+   - Issue #11822: any.Func() can be a dict or an object call, need to handle
+-    this at runtime.
++    this at runtime.  Also see #12198 for an example.
+ - implement :type
+ - implement :enum
+ - Promise class, could be used to wait on a popup close callback?
+@@ -113,7 +144,9 @@ Information missing in terminfo:
+     8 is actually "super".
+ - t_RV	request terminal version string; xterm:	"\033[>c"
+     change in terminfo for "RV" uses the wrong escape sequence 7 - 14 Jan only
+-Codes used for focus gained and lost (currently using use_xterm_like_mouse())
++- Codes for <PasteStart> t_PS and <PasteEnd> t_PE; with bracketed paste:
++    t_BE and t_BD.
++- Codes used for focus gained and lost (currently using use_xterm_like_mouse())
+   termcodes are hard-coded in set_termname(), not named.
+     Use the XF flag?  enables recognizing the focus in/out events.
+     Check if t_fe is not empty.
+@@ -275,6 +308,8 @@ Terminal emulator window:
+ 
+ Patch adds showcmd() function  #11708
+ 
++Cursor is after the end of the line:  #12137.
++
+ Crash when a variable is removed while listing variables (Issue #11435)
+ 
+ Autoconf: must use autoconf 2.69, later version generates lots of warnings
+@@ -283,11 +318,29 @@ Autoconf: must use autoconf 2.69, later version generates lots of warnings
+ Problem with Visual highlight when 'linebreak' and 'showbreak' are set.
+ #11272
+ 
++Selected index returned by complete_info() does not match the index in the
++list of items.  #12230
++
++Support dark mode for MS-Windows: #12282
++
++Remote command escapes single quote with backslash, should be doubling the
++single quote in vim_strsave_escaped_ext()  #12202.
++
++PR to add custom and customlist completion types.  #12228
++
+ Can deref_func_name() and deref_function_name() be merged?
+ 
++Using :global with a pattern containing \zs doesn't use the line where \zs
++matches but the start of the pattern.  #3695  If there is a useful application
++for this, it can be made to work by changing the call to ml_setmarked():
++		ml_setmarked(lnum + regmatch.startpos[0].lnum);
++
+ After patch 8.2.4915 w_botline is computed much more often. Can this be
+ reduced?
+ 
++When 'delcombine' is set a put after "x" includes the base character and all
++combining characters. (Ron Aaron, 2023 Apr 10)
++
+ Add BufDeletePost.  #11041
+ 
+ Add winid arg to col() and charcol()  #11466 (request #11461)
+@@ -310,6 +363,8 @@ https://github.com/vim/vim/pull/5566
+ 
+ PR #11579 to add visualtext(), return Visually selected text.
+ 
++PR #12032: Support Python 3 stable ABI.
++
+ Stray characters in the shell #11719, caused by requesting a response for:
+ - XT key sequences
+ - Whether modifyOtherKeys is active
+@@ -319,7 +374,7 @@ Can we not request XT key sequences, or reduce them drastically?
+ Issue #10512: Dynamic loading broken with Perl 5.36
+ Damien has a patch (2022 Dec 4)
+ 
+-Request #11965: Allow severaql "%=" items in 'statusline', makes it possible
++Request #11965: Allow several "%=" items in 'statusline', makes it possible
+ to have text in the center.
+ 
+ Add some kind of ":whathappend" command and functions to make visible what the
+@@ -443,6 +498,12 @@ New English spell files also have very slow suggestions.
+ When 'spelloptions' is "camel" then zG doesn't work on some words.
+ (Gary Johnson, 17 Oct 2022)
+ 
++'cdpath' problems:
++- Adding "~" to 'cdpath' doesn't work for completion?  (Davido, 2013 Aug 19)
++- Problem with 'cdpath' on MS-Windows when a directory is equal to $HOME.
++  (2006 Jul 26, Gary Johnson)
++- Completion of ":cd" doesn't use 'cdpath'. #374.
++
+ Make "g>" and "g<" in Visual mode move the text right or left.
+ Also for a block selection.  #8558
+ 
+@@ -478,6 +539,8 @@ won't work.  At least give an error.  Is there a way to make it work?
+ Completion for ":runtime" should show valid values, not what's in the current
+ directory. (#11447)
+ 
++Add a "description" property to mappings.  #12205
++
+ Add an option to start_timer() to return from the input loop with K_IGNORE.
+ This is useful e.g. when a popup was created that disables mappings, we need
+ to return from vgetc() to make this happen.  #7011
+@@ -1364,7 +1427,7 @@ No test, needs some work to include.
+ Patch to improve indenting for C++ constructor with initializer list.
+ (Hirohito Higashi, 2016 Mar 31)
+ 
+-Zero-out krypt key information when no longer in use. (Ben Fritz, 2017 May 15)
++Zero-out crypt key information when no longer in use. (Ben Fritz, 2017 May 15)
+ 
+ Add stronger encryption.  Could use libsodium (NaCl).
+ https://github.com/jedisct1/libsodium/
+@@ -1521,6 +1584,8 @@ Doesn't work completely (Dominique Orban)
+ Patch to add a "literal" argument to bufnr().  (Olaf Dabrunz, 2015 Aug 4)
+ 
+ Extended file attributes lost on write (backupcopy=no).  Issue 306.
++Would require reading attributes from the original file with listxattr() and
++getxattr() and adding them to the new file.
+ 
+ Patch to add :lockjumps. (Carlo Baldassi, 2015 May 25)
+ OK to not block marks?
+@@ -1538,8 +1603,6 @@ Result of systemlist() does not show whether text ended in line break.
+ When in 'comments' "n:x" follows after three-part comment directly it repeats
+ any one-character from the previous line. (Kartik Agaram, 2014 Sep 19)
+ 
+-Adding "~" to 'cdpath' doesn't work for completion?  (Davido, 2013 Aug 19)
+-
+ Patch: Let rare word highlighting overrule good word highlighting.
+ (Jakson A. Aquino, 2010 Jul 30, again 2011 Jul 2)
+ 
+@@ -2614,9 +2677,6 @@ the cursor line.  It works OK after some other commands.
+ 
+ Win32: Is it possible to have both postscript and Win32 printing?
+ 
+-Problem with 'cdpath' on MS-Windows when a directory is equal to $HOME. (2006
+-Jul 26, Gary Johnson)
+-
+ Using UTF-8 character with ":command" does not work properly. (Matt Wozniski,
+ 2008 Sep 29)
+ 
+@@ -3906,14 +3966,6 @@ Printing:
+ 
+ 
+ Syntax highlighting:
+-    Long term goal: faster, better, etc.  Options:
+-    - use treesitter, NeoVim uses it - Many people don't like it.
+-	After changes requires rebuilding the library.
+-    - use TextMate, vscode uses it.  #9087 - Other people don't like it.
+-	    https://github.com/icedman/vim-textmate
+-      Vscode is asked to switch to treesitter:
+-      https://github.com/microsoft/vscode/issues/50140
+-    - sublime grammar?
+ 8   Make ":syn off" use 'runtimepath' instead of $VIMRUNTIME. (Gary Johnson)
+     Should do the same for ":syn on" and ":syn manual".
+ 8   Support "containedin" argument for ":syn include", so that the defined
+@@ -5406,8 +5458,10 @@ Undo:
+     Also see #1635.
+ -   When using ":diffput" through a mapping, undo in the target buffer isn't
+     synced.  (Ryan Carney, 2016 Sep 14)
+--   The undo file name can get too long. (Issue 346)
++-   The undo file name can get too long. (Issue #346)
+     For the path use a hash instead of dir%dir%dir%name  hash%name.
++    Check both for some time for backwards compatibility.
++    Alternatively: create the directory structure under 'undodir'.
+ -   Patch to add ":undorecover", get as much text out of the undo file as
+     possible. (Christian Brabandt, 2014 Mar 12, update Aug 22)
+ -   Patch to support :undo absolute jump to file save number. (Christian
+diff --git a/runtime/doc/usr_03.txt b/runtime/doc/usr_03.txt
+index baae7f843..b2abc430d 100644
+--- a/runtime/doc/usr_03.txt
++++ b/runtime/doc/usr_03.txt
+@@ -1,4 +1,4 @@
+-*usr_03.txt*	For Vim version 9.0.  Last change: 2022 Oct 30
++*usr_03.txt*	For Vim version 9.0.  Last change: 2023 Mar 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -173,6 +173,8 @@ one.  Thus if the cursor is at the start of the line of the previous example,
+ 		---+---------------->
+ 			   %
+ 
++Other ways to move around code can be found in |usr_29.txt|.
++
+ ==============================================================================
+ *03.5*	Moving to a specific line
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index ef8f927d7..03b732b5e 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -29816,7 +29816,7 @@ Files:      src/testdir/test_vim9_script.vim
+ Patch 8.2.4863
+ Problem:    Accessing freed memory in test without the +channel feature.
+             (Dominique Pellé)
+-Solution:   Do not generted PUSHCHANNEL or PUSHJOB if they are not
++Solution:   Do not generate PUSHCHANNEL or PUSHJOB if they are not
+             implemented. (closes #10350)
+ Files:      src/vim9instr.c, src/errors.h, src/vim9compile.c,
+             src/testdir/test_vim9_script.vim
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 51f1f16f9..6f9737543 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2023 Feb 21
++*vim9.txt*	For Vim version 9.0.  Last change: 2023 Mar 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -914,7 +914,7 @@ Thus "=~" works like "=~#".
+ "is" and "isnot" (|expr-is| and |expr-isnot|) when used on strings now return
+ false.  In legacy script they just compare the strings, in |Vim9| script they
+ check identity, and strings are copied when used, thus two strings are never
+-the same (this might change some day if strings are not copied but reference
++the same (this might change someday if strings are not copied but reference
+ counted).
+ 
+ 
+@@ -1461,8 +1461,8 @@ have the "void" type.  Trying to use a void (e.g. a function without a
+ return value) results in error *E1031*  *E1186* .
+ 
+ There is no array type, use list<{type}> instead.  For a list constant an
+-efficient implementation is used that avoids allocating lot of small pieces of
+-memory.
++efficient implementation is used that avoids allocating a lot of small pieces
++of memory.
+ 							*E1005* *E1007*
+ A partial and function can be declared in more or less specific ways:
+ func				any kind of function reference, no type
+@@ -1552,6 +1552,8 @@ string to a number.
+ 
+ If a type is given where it is not expected you can get *E1272* .
+ 
++If a type is incomplete you get *E1363*, e.g. when you have an object for
++which the class is not known (usually that is a null object).
+ 
+ Type inference ~
+ 							*type-inference*
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 3c7722c88..6acbca543 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Feb 26
++*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Mar 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -205,7 +205,7 @@ new() call is assigned to that object member.  This mechanism comes from the
+ Dart language.
+ 
+ Putting together this way of using new() and making the members public results
+-in a much shorter class definition as what we started with: >
++in a much shorter class definition than what we started with: >
+ 
+ 	class TextPosition
+ 	   public this.lnum: number
+@@ -526,7 +526,7 @@ When a variable is declared to have the type of an object, but it is not
+ initialized, the value is null.  When trying to use this null object Vim often
+ does not know what class was supposed to be used.  Vim then cannot check if
+ a member name is correct and you will get an "Using a null object" error,
+-even when the member name is invalid. *E1360* *E1362*
++even when the member name is invalid. *E1360* *E1362* *E1363*
+ 
+ 
+ Default constructor ~
+@@ -872,8 +872,8 @@ Especially when refactoring or other changes to the class model.
+ 
+ The Vim scripts are expected to be used in a plugin, with just one person or a
+ small team working on it.  Complex rules then only make it more complicated,
+-the extra safety provide by the rules isn't really needed.  Let's just keep it
+-simple and not specify access details.
++the extra safety provided by the rules isn't really needed.  Let's just keep
++it simple and not specify access details.
+ 
+ 
+ ==============================================================================
