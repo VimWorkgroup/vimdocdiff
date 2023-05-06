@@ -1,16 +1,77 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 91d468ee1..dd680069f 100644
+index dd680069f..beb7ac718 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -7312,8 +7312,9 @@ remote_send({server}, {string} [, {idvar}])
- <
- 					*remote_startserver()* *E941* *E942*
- remote_startserver({name})
--		Become the server {name}.  This fails if already running as a
--		server, when |v:servername| is not empty.
-+		Become the server {name}.  {name} must be a non-empty string.
-+		This fails if already running as a server, when |v:servername|
-+		is not empty.
+@@ -484,7 +484,8 @@ rename({from}, {to})		Number	rename (move) file from {from} to {to}
+ repeat({expr}, {count})		List/Blob/String
+ 					repeat {expr} {count} times
+ resolve({filename})		String	get filename a shortcut points to
+-reverse({list})			List	reverse {list} in-place
++reverse({obj})			List/Blob/String
++					reverse {obj}
+ round({expr})			Float	round off {expr}
+ rubyeval({expr})		any	evaluate |Ruby| expression
+ screenattr({row}, {col})	Number	attribute at screen position
+@@ -7404,11 +7405,13 @@ resolve({filename})					*resolve()* *E655*
+ 			GetName()->resolve()
  
- 		Can also be used as a |method|: >
- 			ServerName()->remote_startserver()
+ reverse({object})					*reverse()*
+-		Reverse the order of items in {object} in-place.
+-		{object} can be a |List| or a |Blob|.
+-		Returns {object}.
+-		Returns zero if {object} is not a List or a Blob.
+-		If you want an object to remain unmodified make a copy first: >
++		Reverse the order of items in {object}.  {object} can be a
++		|List|, a |Blob| or a |String|.  For a List and a Blob the
++		items are reversed in-place and {object} is returned.
++		For a String a new String is returned.
++		Returns zero if {object} is not a List, Blob or a String.
++		If you want a List or Blob to remain unmodified make a copy
++		first: >
+ 			:let revlist = reverse(copy(mylist))
+ <		Can also be used as a |method|: >
+ 			mylist->reverse()
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index fb92ea34c..8f2fe7573 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -408,10 +408,6 @@ Note:
+ by <CR> in the {rhs} of the mapping definition.  |Command-line| mode is never
+ entered.
+ 
+-							*E1137*
+-<Cmd> and <ScriptCmd> commands can have only normal characters and cannot
+-contain special characters like function keys.
+-
+ 
+ 1.3 MAPPING AND MODES					*:map-modes*
+ 			*mapmode-nvo* *mapmode-n* *mapmode-v* *mapmode-o*
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index bc6d8b412..4e194d33d 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -759,6 +759,7 @@ String manipulation:					*string-functions*
+ 	strdisplaywidth()	size of string when displayed, deals with tabs
+ 	setcellwidths()		set character cell width overrides
+ 	getcellwidths()		get character cell width overrides
++	reverse()		reverse the order of characters in a string
+ 	substitute()		substitute a pattern match with a string
+ 	submatch()		get a specific match in ":s" and substitute()
+ 	strpart()		get part of a string using byte index
+@@ -797,7 +798,7 @@ List manipulation:					*list-functions*
+ 	reduce()		reduce a List to a value
+ 	slice()			take a slice of a List
+ 	sort()			sort a List
+-	reverse()		reverse the order of a List or Blob
++	reverse()		reverse the order of items in a List
+ 	uniq()			remove copies of repeated adjacent items
+ 	split()			split a String into a List
+ 	join()			join List items into a String
+@@ -864,6 +865,7 @@ Floating point computation:				*float-functions*
+ Blob manipulation:					*blob-functions*
+ 	blob2list()		get a list of numbers from a blob
+ 	list2blob()		get a blob from a list of numbers
++	reverse()		reverse the order of numbers in a blob
+ 
+ Other computation:					*bitwise-function*
+ 	and()			bitwise AND
