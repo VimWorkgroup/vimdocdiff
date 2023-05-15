@@ -1,32 +1,737 @@
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index beb7ac718..0cbfe2143 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2023 Apr 19
++*builtin.txt*	For Vim version 9.0.  Last change: 2023 May 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2260,7 +2260,7 @@ execute({command} [, {silent}])					*execute()*
+ 		string.
+ 		{command} can be a string or a List.  In case of a List the
+ 		lines are executed one by one.
+-		This is equivalent to: >
++		This is more or less equivalent to: >
+ 			redir => var
+ 			{command}
+ 			redir END
+@@ -2276,7 +2276,7 @@ execute({command} [, {silent}])					*execute()*
+ 							*E930*
+ 		It is not possible to use `:redir` anywhere in {command}.
+ 
+-		To get a list of lines use |split()| on the result: >
++		To get a list of lines use `split()` on the result: >
+ 			execute('args')->split("\n")
+ 
+ <		To execute a command in another window than the current one
+@@ -6767,17 +6767,20 @@ prompt_setcallback({buf}, {expr})			*prompt_setcallback()*
+ 		that was entered at the prompt.  This can be an empty string
+ 		if the user only typed Enter.
+ 		Example: >
+-		   call prompt_setcallback(bufnr(), function('s:TextEntered'))
+ 		   func s:TextEntered(text)
+ 		     if a:text == 'exit' || a:text == 'quit'
+ 		       stopinsert
++		       " Reset 'modified' to allow the buffer to be closed.
++		       " We assume there is nothing useful to be saved.
++		       set nomodified
+ 		       close
+ 		     else
++		       " Do something useful with "a:text".  In this example
++		       " we just repeat it.
+ 		       call append(line('$') - 1, 'Entered: "' .. a:text .. '"')
+-		       " Reset 'modified' to allow the buffer to be closed.
+-		       set nomodified
+ 		     endif
+ 		   endfunc
++		   call prompt_setcallback(bufnr(), function('s:TextEntered'))
+ 
+ <		Can also be used as a |method|: >
+ 			GetBuffer()->prompt_setcallback(callback)
+@@ -10259,7 +10262,7 @@ win_execute({id}, {command} [, {silent}])		*win_execute()*
+ 		The window will temporarily be made the current window,
+ 		without triggering autocommands or changing directory.  When
+ 		executing {command} autocommands will be triggered, this may
+-		have unexpected side effects.  Use |:noautocmd| if needed.
++		have unexpected side effects.  Use `:noautocmd` if needed.
+ 		Example: >
+ 			call win_execute(winid, 'set syntax=python')
+ <		Doing the same with `setwinvar()` would not trigger
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index a08befecb..da9aeb7fe 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.0.  Last change: 2022 Nov 02
++*editing.txt*   For Vim version 9.0.  Last change: 2023 Apr 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index b863f42e6..de09c7b47 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2023 Apr 15
++*eval.txt*	For Vim version 9.0.  Last change: 2023 Apr 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 477ea7b25..ae8e6584a 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*  For Vim version 9.0.  Last change: 2023 Feb 15
++*filetype.txt*  For Vim version 9.0.  Last change: 2023 Apr 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -660,8 +660,8 @@ page in a Vim window: >
+ 
+ MANPAGER				      *manpager.vim*
+ 
+-The |:Man| command allows you to turn Vim into a manpager (that syntax highlights
+-manpages and follows linked manpages on hitting CTRL-]).
++The |:Man| command allows you to turn Vim into a manpager (that syntax
++highlights manpages and follows linked manpages on hitting CTRL-]).
+ 
+ For bash,zsh,ksh or dash, add to the config file (.bashrc,.zshrc, ...)
+ 
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 7c22c1c09..0fcceddb6 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
+@@ -1,4 +1,4 @@
+-*gui.txt*       For Vim version 9.0.  Last change: 2023 Mar 01
++*gui.txt*       For Vim version 9.0.  Last change: 2023 Apr 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1226,10 +1226,9 @@ This section describes other features which are related to the GUI.
+   like this to set options specifically for each type of GUI: >
+ 
+ 	if has("gui_running")
+-	    if has("gui_gtk2")
++	    if has("gui_gtk")
+ 		:set guifont=Luxi\ Mono\ 12
+ 	    elseif has("x11")
+-		" Also for GTK 1
+ 		:set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
+ 	    elseif has("gui_win32")
+ 		:set guifont=Luxi_Mono:h12:cANSI
+diff --git a/runtime/doc/if_perl.txt b/runtime/doc/if_perl.txt
+index 281185bb3..7949e9173 100644
+--- a/runtime/doc/if_perl.txt
++++ b/runtime/doc/if_perl.txt
+@@ -1,4 +1,4 @@
+-*if_perl.txt*   For Vim version 9.0.  Last change: 2022 Mar 13
++*if_perl.txt*   For Vim version 9.0.  Last change: 2023 May 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Sven Verdoolaege
+@@ -254,23 +254,14 @@ $main::curbuf
+ 
+ 							*script-here*
+ When using a script language in-line, you might want to skip this when the
+-language isn't supported.  But this mechanism doesn't work: >
++language isn't supported.  >
+    if has('perl')
+      perl << EOF
+-       this will NOT work!
++       print 'perl works'
+    EOF
+    endif
+-Instead, put the Perl/Python/Ruby/etc. command in a function and call that
+-function: >
+-    if has('perl')
+-      function DefPerl()
+-	perl << EOF
+-	  this works
+-    EOF
+-      endfunction
+-      call DefPerl()
+-    endif
+-Note that "EOF" must be at the start of the line.
++Note that "EOF" must be at the start of the line without preceding white
++space.
+ 
+ ==============================================================================
+ 4. Dynamic loading					*perl-dynamic*
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 8f2fe7573..aa0502910 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2023 Mar 09
++*map.txt*       For Vim version 9.0.  Last change: 2023 May 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1873,8 +1873,14 @@ remains unmodified.  Also see |f-args-example| below.  Overview:
+ 	XX a\\\ b	   'a\ b'
+ 	XX a\\\\b	   'a\\b'
+ 	XX a\\\\ b	   'a\\', 'b'
++	XX		   [nothing]
+ 
+ 
++Note that if the "no arguments" situation is to be handled, you have to make
++sure that the function can be called without arguments.  For a compiled
++function you might want to use variable arguments, see
++|vim9-variable-arguments|.
++
+ Examples for user commands: >
+ 
+    " Delete everything after here to the end
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 2a2c7ed5c..c487f1769 100644
+index c487f1769..05113373f 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -7928,16 +7928,18 @@ A jump table for the options with a short description can be found at |Q_op|.
- 'switchbuf' 'swb'	string	(default "")
- 			global
- 	This option controls the behavior when switching between buffers.
--	Mostly for |quickfix| commands some values are also used for other
--	commands, as mentioned below.
-+	This option is checked, when
-+	- jumping to errors with the |quickfix| commands (|:cc|, |:cn|, |:cp|,
-+	  etc.)
-+	- jumping to a tag using the |:stag| command.
-+	- opening a file using the |CTRL-W_f| or |CTRL-W_F| command.
-+	- jumping to a buffer using a buffer split command (e.g.  |:sbuffer|,
-+	  |:sbnext|, or |:sbrewind|).
- 	Possible values (comma-separated list):
--	   useopen	If included, jump to the first open window that
--			contains the specified buffer (if there is one).
--			Otherwise: Do not examine other windows.
--			This setting is checked with |quickfix| commands, when
--			jumping to errors (":cc", ":cn", "cp", etc.).  It is
--			also used in all buffer related split commands, for
--			example ":sbuffer", ":sbnext", or ":sbrewind".
-+	   useopen	If included, jump to the first open window in the
-+			current tab page that contains the specified buffer
-+			(if there is one).  Otherwise: Do not examine other
-+			windows.
- 	   usetab	Like "useopen", but also consider windows in other tab
- 			pages.
- 	   split	If included, split the current window before loading
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Apr 12
++*options.txt*	For Vim version 9.0.  Last change: 2023 May 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -925,6 +925,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	'autowriteall' for that.
+ 	Some buffers will not be written, specifically when 'buftype' is
+ 	"nowrite", "nofile", "terminal" or "prompt".
++	USE WITH CARE: If you make temporary changes to a buffer that you
++	don't want to be saved this option may cause it to be saved anyway.
++	Renaming the buffer with ":file {name}" may help avoid this.
+ 
+ 			 *'autowriteall'* *'awa'* *'noautowriteall'* *'noawa'*
+ 'autowriteall' 'awa'	boolean	(default off)
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index a7238a9ea..30c164660 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -1,4 +1,4 @@
+-*pi_netrw.txt*  For Vim version 9.0.  Last change: 2023 Apr 22
++*pi_netrw.txt*  For Vim version 9.0.  Last change: 2023 May 14
+ 
+ 	    ------------------------------------------------
+ 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
+@@ -208,7 +208,7 @@ EXTERNAL APPLICATIONS AND PROTOCOLS			*netrw-externapp* {{{2
+ 	  http:   g:netrw_http_cmd     = "links"      elseif links is available
+ 	  http:   g:netrw_http_cmd     = "curl"       elseif curl  is available
+ 	  http:   g:netrw_http_cmd     = "wget"       elseif wget  is available
+-          http:   g:netrw_http_cmd     = "fetch"      elseif fetch is available
++	  http:   g:netrw_http_cmd     = "fetch"      elseif fetch is available
+ 	  http:   *g:netrw_http_put_cmd* = "curl -T"
+ 	   rcp:   *g:netrw_rcp_cmd*      = "rcp"
+ 	 rsync:   *g:netrw_rsync_cmd*    = "rsync"     (see |g:netrw_rsync_sep|)
+@@ -968,7 +968,7 @@ itself:
+      fun! NetReadFixup(method, line1, line2)
+        if method == 3   " ftp (no <.netrc>)
+         let fourblanklines= line2 - 3
+-        silent fourblanklines.",".line2."g/^\s*/d"
++        silent fourblanklines .. "," .. line2 .. "g/^\s*/d"
+        endif
+      endfunction
+     endif
+@@ -1198,7 +1198,7 @@ If there are marked files and/or directories, mb will add them to the bookmark
+ list.
+ 
+ 								*netrw-:NetrwMB*
+-Addtionally, one may use :NetrwMB to bookmark files or directories. >
++Additionally, one may use :NetrwMB to bookmark files or directories. >
+ 
+ 	:NetrwMB[!] [files/directories]
+ 
+@@ -1625,8 +1625,10 @@ A further approach is to delete files which match a pattern.
+       This will cause the matching files to be marked.  Then,
+       press "D".
+ 
+-Please note that only empty directories may be deleted with the "D" mapping.
+-Regular files are deleted with |delete()|, too.
++If your vim has 7.4 with patch#1107, then |g:netrw_localrmdir| no longer
++is used to remove directories; instead, vim's |delete()| is used with
++the "d" option.  Please note that only empty directories may be deleted
++with the "D" mapping.  Regular files are deleted with |delete()|, too.
+ 
+ The |g:netrw_rm_cmd|, |g:netrw_rmf_cmd|, and |g:netrw_rmdir_cmd| variables are
+ used to control the attempts to remove remote files and directories.  The
+@@ -1645,7 +1647,8 @@ to remove it again using the g:netrw_rmf_cmd variable.  Its default value is:
+ 	|g:netrw_rmf_cmd|: ssh HOSTNAME rm -f
+ 
+ Related topics: |netrw-d|
+-Associated setting variable: |g:netrw_rm_cmd| |g:netrw_ssh_cmd|
++Associated setting variable: |g:netrw_localrmdir| |g:netrw_rm_cmd|
++                             |g:netrw_rmdir_cmd|   |g:netrw_ssh_cmd|
+ 
+ 
+ *netrw-explore*  *netrw-hexplore* *netrw-nexplore* *netrw-pexplore*
+@@ -1688,11 +1691,7 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
+ 	  to 2; edits will thus preferentially be made in window#2.
+ 
+ 	  The [N] specifies a |g:netrw_winsize| just for the new :Lexplore
+-	  window. That means that
+-	    if [N] < 0 : use |N| columns for the Lexplore window
+-	    if [N] = 0 : a normal split is made
+-	    if [N] > 0 : use N% of the current window will be used for the
+-	                 new window
++	  window.
+ 
+ 	  Those who like this method often also like tree style displays;
+ 	  see |g:netrw_liststyle|.
+@@ -1976,7 +1975,7 @@ To use this function, simply assign its output to |g:netrw_list_hide| option.  >
+ 	Example: let g:netrw_list_hide= netrw_gitignore#Hide('my_gitignore_file')
+ 		Function can take additional files with git-ignore patterns.
+ 
+-	Example: g:netrw_list_hide= netrw_gitignore#Hide() . '.*\.swp$'
++	Example: let g:netrw_list_hide= netrw_gitignore#Hide() .. '.*\.swp$'
+ 		Combining 'netrw_gitignore#Hide' with custom patterns.
+ <
+ 
+@@ -2816,7 +2815,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				= 2: wide listing (multiple files in columns)
+ 				= 3: tree style listing
+ 
+-  *g:netrw_list_hide*		comma separated pattern list for hiding files
++  *g:netrw_list_hide*		comma-separated pattern list for hiding files
+ 				Patterns are regular expressions (see |regexp|)
+ 				There's some special support for git-ignore
+ 				files: you may add the output from the helper
+@@ -2826,7 +2825,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 
+ 				Examples:
+ 				 let g:netrw_list_hide= '.*\.swp$'
+-				 let g:netrw_list_hide= netrw_gitignore#Hide().'.*\.swp$'
++				 let g:netrw_list_hide= netrw_gitignore#Hide() .. '.*\.swp$'
+ 				default: ""
+ 
+   *g:netrw_localcopycmd*	="cp"           Linux/Unix/MacOS/Cygwin
+@@ -2864,6 +2863,14 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				=" /c move"                     Windows
+ 				Options for |g:netrw_localmovecmd|
+ 
++  *g:netrw_localrmdir*		="rmdir"        Linux/Unix/MacOS/Cygwin
++				=expand("$COMSPEC")             Windows
++				Remove directory command (rmdir)
++				This variable is only used if your vim is
++				earlier than 7.4 or if your vim doesn't
++				have patch#1107.  Otherwise, |delete()|
++				is used with the "d" option.
++
+   *g:netrw_maxfilenamelen*	=32 by default, selected so as to make long
+ 				    listings fit on 80 column displays.
+ 				If your screen is wider, and you have file
+@@ -3774,7 +3781,7 @@ Example: Clear netrw's marked file list via a mapping on gu >
+ 	     Netrw uses several system level commands to do things (see
+ 
+ 		 |g:netrw_localcopycmd|, |g:netrw_localmovecmd|,
+-		 |g:netrw_mkdir_cmd|).
++		 |g:netrw_localrmdir|, |g:netrw_mkdir_cmd|).
+ 
+ 	    You may need to adjust the default commands for one or more of
+ 	    these commands by setting them properly in your .vimrc.  Another
+@@ -3900,13 +3907,8 @@ netrw:
+ ==============================================================================
+ 12. History						*netrw-history* {{{1
+ 
+-	v172:	Sep 02, 2021	* (Bram Moolenaar) Changed "l:go" to "go"
+-				* (Bram Moolenaar) no need for "b" in
+-				  netrw-safe guioptions
+-		Nov 15, 2021	* removed netrw_localrm and netrw_localrmdir
+-				  references
+-		Aug 18, 2022	* (Miguel Barro) improving compatability with
+-				  powershell
++	v172:	Apr 22, 2023	* removed g:netrw_localrmdiropt
++				  removed g:netrw_localrmdir
+ 	v171:	Oct 09, 2020	* included code in s:NetrwOptionsSafe()
+ 				  to allow |'bh'| to be set to delete when
+ 				  rather than hide when g:netrw_fastbrowse
+@@ -3991,8 +3993,10 @@ netrw:
+ 		Nov 09, 2016	* Broke apart the command from the options,
+ 				  mostly for Windows.  Introduced new netrw
+ 				  settings: |g:netrw_localcopycmdopt|
+-				  |g:netrw_localcopydircmdopt| |g:netrw_localmkdiropt|
+-				  |g:netrw_localmovecmdopt| g:netrw_localrmdiropt
++				  |g:netrw_localcopydircmdopt|
++				  |g:netrw_localmkdiropt|
++				  |g:netrw_localmovecmdopt|
++				  g:netrw_localrmdiropt
+ 		Nov 21, 2016	* (mattn) provided a patch for preview; swapped
+ 				  winwidth() with winheight()
+ 		Nov 22, 2016	* (glacambre) reported that files containing
+@@ -4052,7 +4056,7 @@ netrw:
+ 				  refreshes.  However, inside a |:map-<expr>|,
+ 				  tab and window changes are disallowed.  Fixed.
+ 				  (affects netrw's s:LocalBrowseRefresh())
+-				* g:netrw_localrmdir not used any more, but
++				* |g:netrw_localrmdir| not used any more, but
+ 				  the relevant patch that causes |delete()| to
+ 				  take over was #1107 (not #1109).
+ 				* |expand()| is now used on |g:netrw_home|;
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 8c458fb29..307a0a952 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*    For Vim version 9.0.  Last change: 2023 Apr 02
++*repeat.txt*    For Vim version 9.0.  Last change: 2023 May 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -65,7 +65,7 @@ Using the underscore after `:d` avoids clobbering registers or the clipboard.
+ This also makes it faster.
+ 
+ Instead of the '/' which surrounds the {pattern}, you can use any other
+-single byte character, but not an alphabetic character, '\', '"' or '|'.
++single byte character, but not an alphabetic character, '\', '"', '|' or '!'.
+ This is useful if you want to include a '/' in the search pattern or
+ replacement string.
+ 
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 10b6901d1..8a5e5f4c9 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Apr 05
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Apr 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4929,7 +4929,7 @@ is mostly used, because it looks better.
+ ==============================================================================
+ 13. Colorschemes				*color-schemes*
+ 
+-In the next section you can find information about indivisual highlight groups
++In the next section you can find information about individual highlight groups
+ and how to specify colors for them.  Most likely you want to just select a set
+ of colors by using the `:colorscheme` command, for example: >
+ 
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 2f6387d02..97faea046 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -1,4 +1,4 @@
+-*testing.txt*	For Vim version 9.0.  Last change: 2022 Dec 30
++*testing.txt*	For Vim version 9.0.  Last change: 2023 May 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -369,6 +369,7 @@ test_override({name}, {val})				*test_override()*
+ 			     string is detected
+ 		ui_delay     time in msec to use in ui_delay(); overrules a
+ 			     wait time of up to 3 seconds for messages
++		unreachable  no error for code after `:throw` and `:return`
+ 		uptime	     overrules sysinfo.uptime
+ 		vterm_title  setting the window title by a job running in a
+ 			     terminal window
+@@ -378,13 +379,18 @@ test_override({name}, {val})				*test_override()*
+ 		"starting" is to be used when a test should behave like
+ 		startup was done.  Since the tests are run by sourcing a
+ 		script the "starting" variable is non-zero. This is usually a
+-		good thing (tests run faster), but sometimes changes behavior
+-		in a way that the test doesn't work properly.
++		good thing (tests run faster), but sometimes this changes
++		behavior in a way that the test doesn't work properly.
+ 		When using: >
+ 			call test_override('starting', 1)
+ <		The value of "starting" is saved.  It is restored by: >
+ 			call test_override('starting', 0)
+ 
++<		To make sure the flag is reset later using `:defer` can be
++		useful: >
++			call test_override('unreachable', 1)
++			defer call test_override('unreachable', 0)
++
+ <		Can also be used as a |method|: >
+ 			GetOverrideVal()-> test_override('starting')
+ 
+@@ -448,13 +454,14 @@ assert_beeps({cmd})					*assert_beeps()*
+ assert_equal({expected}, {actual} [, {msg}])
+ 		When {expected} and {actual} are not equal an error message is
+ 		added to |v:errors| and 1 is returned.  Otherwise zero is
+-		returned |assert-return|.
++		returned. |assert-return|
++		The error is in the form "Expected {expected} but got
++		{actual}".  When {msg} is present it is prefixed to that.
++
+ 		There is no automatic conversion, the String "4" is different
+ 		from the Number 4.  And the number 4 is different from the
+ 		Float 4.0.  The value of 'ignorecase' is not used here, case
+ 		always matters.
+-		When {msg} is omitted an error in the form "Expected
+-		{expected} but got {actual}" is produced.
+ 		Example: >
+ 	assert_equal('foo', 'bar')
+ <		Will result in a string to be added to |v:errors|:
+@@ -533,11 +540,12 @@ assert_fails({cmd} [, {error} [, {msg} [, {lnum} [, {context}]]]])
+ assert_false({actual} [, {msg}])			*assert_false()*
+ 		When {actual} is not false an error message is added to
+ 		|v:errors|, like with |assert_equal()|.
++		The error is in the form "Expected False but got {actual}".
++		When {msg} is present it is prepended to that.
+ 		Also see |assert-return|.
++
+ 		A value is false when it is zero. When {actual} is not a
+ 		number the assert fails.
+-		When {msg} is omitted an error in the form
+-		"Expected False but got {actual}" is produced.
+ 
+ 		Can also be used as a |method|: >
+ 			GetResult()->assert_false()
+@@ -546,14 +554,16 @@ assert_inrange({lower}, {upper}, {actual} [, {msg}])	 *assert_inrange()*
+ 		This asserts number and |Float| values.  When {actual}  is lower
+ 		than {lower} or higher than {upper} an error message is added
+ 		to |v:errors|.  Also see |assert-return|.
+-		When {msg} is omitted an error in the form
+-		"Expected range {lower} - {upper}, but got {actual}" is
+-		produced.
++		The error is in the form "Expected range {lower} - {upper},
++		but got {actual}".  When {msg} is present it is prefixed to
++		that.
+ 
+ 								*assert_match()*
+ assert_match({pattern}, {actual} [, {msg}])
+ 		When {pattern} does not match {actual} an error message is
+ 		added to |v:errors|.  Also see |assert-return|.
++		The error is in the form "Pattern {pattern} does not match
++		{actual}".  When {msg} is present it is prefixed to that.
+ 
+ 		{pattern} is used as with |=~|: The matching is always done
+ 		like 'magic' was set and 'cpoptions' is empty, no matter what
+@@ -563,8 +573,6 @@ assert_match({pattern}, {actual} [, {msg}])
+ 		Use "^" and "$" to match with the start and end of the text.
+ 		Use both to match the whole text.
+ 
+-		When {msg} is omitted an error in the form
+-		"Pattern {pattern} does not match {actual}" is produced.
+ 		Example: >
+ 	assert_match('^f.*o$', 'foobar')
+ <		Will result in a string to be added to |v:errors|:
+@@ -614,8 +622,7 @@ assert_true({actual} [, {msg}])				*assert_true()*
+ 		Also see |assert-return|.
+ 		A value is TRUE when it is a non-zero number.  When {actual}
+ 		is not a number the assert fails.
+-		When {msg} is omitted an error in the form "Expected True but
+-		got {actual}" is produced.
++		When {msg} is given it precedes the default message.
+ 
+ 		Can also be used as a |method|: >
+ 			GetResult()->assert_true()
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 8c9c0c6ca..d69355bb1 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2022 Dec 19
++*textprop.txt*  For Vim version 9.0.  Last change: 2023 Apr 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -165,8 +165,8 @@ prop_add({lnum}, {col}, {props})
+ 		   text_padding_left				*E1296*
+ 				used when "text" is present and {col} is zero;
+ 				padding between the end of the text line
+-				(leftmost column for "below") and the virtual
+-				text, not highlighted
++				(leftmost column for "above" and "below") and
++				the virtual text, not highlighted
+ 		   text_wrap	when "text" is present and {col} is zero,
+ 				specifies what happens if the text doesn't
+ 				fit:
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 178abbd25..5c1d38a10 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2023 Apr 22
++*todo.txt*      For Vim version 9.0.  Last change: 2023 May 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,17 +38,9 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
+-Delete ci/load-snd-dummy.sh?
+-Update Filelist
+-
+-When using ":set no<CTRL-A>" add options starting with "no", not all boolean
+-options.
+-
+ Crash when splitting window: #11961.  Set RedrawingDisabled in
+ win_split_ins().
+ 
+-In runtime/autoload/dist/script.vim change "set ft=" to "setlocal ft=" ?
+-
+ CTRL-J mapping is not used if halfway another mapping. #12002
+ Is simplified mapping not used but escape code has been simplified?
+ 
+@@ -57,16 +49,40 @@ in restore_snapshot_rec() restore more values from the snapshot, instead of
+ calling frame_new_height() and frame_new_width(), especially w_topline and
+ w_skipcol.
+ 
+-'smoothscroll' problem: #12199
+-Problems related to 'smoothscroll': #12218 and #12211
++Check places that source "path/*.vim" to not match other extensions, e.g.
++.vim9, on MS-Windows (short file name match, gets expanded to long file name).
++E.g. for startup files, plugins, packs, etc.
++
++When a help item can't be found, then open 'helpfile'.  Search for the tag in
++that file and gtive E149 only when not found.  Helps for a tiny Vim installed
++without all the help files.
++
++Virtual text problems:
++-  Deleting character before a wrapping virtual text, causes for the following
++   lines to dissapear (Issue #12244)
++-  If 'list' is on, 'below' virtual text which includes 1 or 2 characters are
++   gone (Issue #12028)
++-  Virtual text aligned "above": Wrong indentation when using tabs  (Issue
++   #12232)
++-  Virtual text to the right of the line that fits exactly on screen causes
++   that line and all lines below it not to be displayed (Issue #12213)
++-  Window screen gets wrong when a virtual text is placed on 'above' or
++   'below' on an empty line (Issue #11959)
+ 
+ include #12140: positional arguments in printf(), fixes #10577
+ 
+ Include #11818: attach custom data to quickfix items.
+ 
+-When a help item can't be found, then open 'helpfile'.  Search for the tag in
+-that file and gtive E149 only when not found.  Helps for a tiny Vim installed
+-without all the help files.
++Include #12292: buffer argument for undotree()?
++
++When 'virtualedit' is "all" and 'cursorcolumn' is set, the wrong column may be
++highlighted. (van-de-bugger, 2018 Jan 23, #2576)
++
++Improve profiling by caching matching functions:  PR  #12192
++
++Add filecopy() ?  #12346
++
++Implement foreach()  PR  #12166
+ 
+ Errors when running tests with valgrind:
+ - test_codestyle.vim:  e.g.:
+@@ -100,8 +116,21 @@ Further Vim9 improvements, possibly after launch:
+ - implement :class and :interface: See |vim9-classes
+   - Change access: public by default, private by prefixing "_".
+ 	Check for error: can't have same name twice (ignoring "_" prefix).
++  - Cannot use class type of itself in the method (Issue #12369)
++  - class members initialized during definition (Issue #12041)
++  - cannot call class member of funcref type  (Issue #12324)
++  - nested function unable to directly modify private member (Issue #12076)
++      And: can't use "this" keyword in lambda function (Issue #12336)
++  - "return this" required for early return from constructor (inconsistent)
++    (Issue #12040)
++  - class/method confusion inside ":def" when using "class extends" (Issue
++    #12089)
++  - null_object - constant type 17 not supported (Issue #12043)
++  - problem compiling object method call as function call argument (Issue
++    #12081)
+   - Make ":defcompile ClassName" compile all functions and methods in the
+     class.
++  - object's method in stacktrace missing information (Issue #12078)
+   - Forward declaration of a class?  E.g. for Clone() function.
+ 	email lifepillar 2023 Mar 26
+   - Getting member of variable with "any" type should be handled at runtime.
+@@ -112,12 +141,18 @@ Further Vim9 improvements, possibly after launch:
+     Perhaps use "private" keyword instead of "_" prefix?
+   - "final" object members - can only be set in the constructor.
+   - "obj.Method()" does not always work in a compiled function, assumes "obj"
+-    is a dictionary.  #12196
++    is a dictionary.  #12196  Issue #12024 might be the same problem.
++    Issue #11822: any.Func() can be a dict or an object call, need to handle
++    this at runtime.  Also see #12198 for an example.
++    Possibly issue #11981 can be fixed at the same time (has two examples).
+   - accept line breaks in member initialization.  #11957
+   - object empty(), len() - can class define a method to be used for them?
+   - add to help: when using a default new() method then reordering object
+     members may cause trouble.  Can define new() without arguments to avoid.
+   - TODO items: check types for "implements" - members and methods
++  - When "Meta" is a class, is "const MetaAlias = Meta" allowed?  It should
++    either work or given an error. possibly give an error now and implement it
++    later (using a typedef).  #12006
+   - how about lock/unlock?
+   - When checking "implements" also check types of members and function args.
+   - For chaining, allow using the class name as type for function return
+@@ -127,8 +162,6 @@ Further Vim9 improvements, possibly after launch:
+   - More efficient way for interface member index than iterating over list?
+   - a variant of type() that returns a different type for each class?
+       list<number> and list<string> should also differ.
+-  - Issue #11822: any.Func() can be a dict or an object call, need to handle
+-    this at runtime.  Also see #12198 for an example.
+ - implement :type
+ - implement :enum
+ - Promise class, could be used to wait on a popup close callback?
+@@ -271,6 +304,11 @@ Terminal emulator window:
+ - When in terminal-Normal mode when the job finishes, the cursor jumps to the
+   end but the window is not updated.  This only happens when typing "a".
+       :term bash -c "for V in {0..5}; do echo $V; sleep 1; done"
++- GUI: cursor color is not updated when going to Terminal-Job mode.  #12328
++- GUI: cursor color is not updated when switching between tabs with a key.
++  #12329
++- GUI: cursor color is not updated when switching between tabs with a mouse
++  click.  #12330
+ - When started with ":terminal ++close" and the shell exits but there is a
+   background process, the window remains open, because the channel still
+   exists (and output still shows).  Perhaps close the window when an explicit
+@@ -345,6 +383,11 @@ Add BufDeletePost.  #11041
+ 
+ Add winid arg to col() and charcol()  #11466 (request #11461)
+ 
++When :argument has a non-number argument, use it like :buffer to find the
++argument by name.  #12272
++
++Fold unexpectedly closed when inserting fold marker with CTRL-V (Issue #12320)
++
+ Can we make 'noendofline' and 'endoffile' visible?  Should show by default,
+ since it's an unusual situation.
+ - Show 'noendofline' when it would be used for writing ('fileformat' "dos")
+@@ -763,6 +806,9 @@ Improve fallback for menu translations, to avoid having to create lots of
+ files that source the actual file.  E.g. menu_da_de -> menu_da
+ Include part of #3242?
+ 
++Patch for different behavior of text objects with quotes: #11976
++Is this actually better?
++
+ Patch to have text objects defined by arbitrary single characters. (Daniel
+ Thau, 2013 Nov 20, 2014 Jan 29, 2014 Jan 31)
+ Added tests (James McCoy, 2016 Aug 3, #958).  Still needs more work.
+@@ -1031,9 +1077,6 @@ option_save({list})					*option_save()*
+ directory (Paulo Marcel Coelho Arabic, 2017 Oct 30, #2266)
+ Also see #1689.
+ 
+-When 'virtualedit' is "all" and 'cursorcolumn' is set, the wrong column may be
+-highlighted. (van-de-bugger, 2018 Jan 23, #2576)
+-
+ No profile information for function that executes ":quit". (Daniel Hahler,
+ 2017 Dec 26, #2501)
+ 
+diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
+index 2cb74d47c..e8279fd30 100644
+--- a/runtime/doc/usr_01.txt
++++ b/runtime/doc/usr_01.txt
+@@ -1,4 +1,4 @@
+-*usr_01.txt*	For Vim version 9.0.  Last change: 2019 Nov 21
++*usr_01.txt*	For Vim version 9.0.  Last change: 2023 May 12
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -161,7 +161,7 @@ filename.  For French:
+ ==============================================================================
+ *01.4*	Copyright					*manual-copyright*
+ 
+-The Vim user manual and reference manual are Copyright (c) 1988-2003 by Bram
++The Vim user manual and reference manual are Copyright (c) 1988 by Bram
+ Moolenaar.  This material may be distributed only subject to the terms and
+ conditions set forth in the Open Publication License, v1.0 or later.  The
+ latest version is presently available at:
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 4e194d33d..2d89e46e4 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.0.  Last change: 2023 Jan 17
++*usr_41.txt*	For Vim version 9.0.  Last change: 2023 May 06
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
