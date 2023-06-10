@@ -1,45 +1,626 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 04f019174..a1408edef 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.0.  Last change: 2023 Feb 18
++*autocmd.txt*   For Vim version 9.0.  Last change: 2023 May 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1017,6 +1017,9 @@ OptionSet			After setting an option.  The pattern is
+ 				the option. Similarly |v:option_oldglobal| is
+ 				only set when |:set| or |:setglobal| was used.
+ 
++				This does not set |<abuf>|, you could use
++				|bufnr()|.
++
+ 				Note that when setting a |global-local| string
+ 				option with |:set|, then |v:option_old| is the
+ 				old global value. However, for all other kinds
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0cbfe2143..5fd401c60 100644
+index 5fd401c60..b14851ca8 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -1528,11 +1528,13 @@ charidx({string}, {idx} [, {countcc} [, {utf16}]])
- 		When {utf16} is present and TRUE, {idx} is used as the UTF-16
- 		index in the String {expr} instead of as the byte index.
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.0.  Last change: 2023 May 12
++*builtin.txt*	For Vim version 9.0.  Last change: 2023 Jun 08
  
--		Returns -1 if the arguments are invalid or if {idx} is greater
--		than the index of the last byte in {string}.  An error is
--		given if the first argument is not a string, the second
--		argument is not a number or when the third argument is present
--		and is not zero or one.
-+		Returns -1 if the arguments are invalid or if there are less
-+		than {idx} bytes. If there are exactly {idx} bytes the length
-+		of the string in characters is returned.
-+
-+		An error is given and -1 is returned if the first argument is
-+		not a string, the second argument is not a number or when the
-+		third argument is present and is not zero or one.
  
- 		See |byteidx()| and |byteidxcomp()| for getting the byte index
- 		from the character index and |utf16idx()| for getting the
-@@ -10119,8 +10121,8 @@ uniq({list} [, {func} [, {dict}]])			*uniq()* *E882*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1594,7 +1594,7 @@ clearmatches([{win}])					*clearmatches()*
+ 		Can also be used as a |method|: >
+ 			GetWin()->clearmatches()
  <
- 							*utf16idx()*
- utf16idx({string}, {idx} [, {countcc} [, {charidx}]])
--		Same as |charidx()| but returns the UTF-16 index of the byte
--		at {idx} in {string} (after converting it to UTF-16).
-+		Same as |charidx()| but returns the UTF-16 code unit index of
-+		the byte at {idx} in {string} (after converting it to UTF-16).
+-col({expr} [, {winid})					*col()*
++col({expr} [, {winid}])					*col()*
+ 		The result is a Number, which is the byte index of the column
+ 		position given with {expr}.  The accepted positions are:
+ 		    .	    the cursor position
+@@ -1657,7 +1657,7 @@ complete({startcol}, {matches})			*complete()* *E785*
+ 		Example: >
+ 	inoremap <F5> <C-R>=ListMonths()<CR>
  
- 		When {charidx} is present and TRUE, {idx} is used as the
- 		character index in the String {string} instead of as the byte
-@@ -10128,6 +10130,10 @@ utf16idx({string}, {idx} [, {countcc} [, {charidx}]])
- 		An {idx} in the middle of a UTF-8 sequence is rounded upwards
- 		to the end of that sequence.
+-	func! ListMonths()
++	func ListMonths()
+ 	  call complete(col('.'), ['January', 'February', 'March',
+ 		\ 'April', 'May', 'June', 'July', 'August', 'September',
+ 		\ 'October', 'November', 'December'])
+@@ -1922,7 +1922,7 @@ cursor({list})
+ 		This is like the return value of |getpos()| or |getcurpos()|,
+ 		but without the first item.
  
-+		Returns -1 if the arguments are invalid or if there are less
-+		than {idx} bytes in {string}. If there are exactly {idx} bytes
-+		the length of the string in UTF-16 code units is returned.
+-		To position the cursor using the character count, use
++		To position the cursor using {col} as the character count, use
+ 		|setcursorcharpos()|.
+ 
+ 		Does not change the jumplist.
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 55b1a63a0..d2e476f00 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 9.0.  Last change: 2023 Feb 08
++*cmdline.txt*   For Vim version 9.0.  Last change: 2023 May 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -962,9 +962,10 @@ Note: these are typed literally, they are not special keys!
+ 		   write.  *E495*
+ 							*:<abuf>* *<abuf>*
+ 	<abuf>     When executing autocommands, is replaced with the currently
+-		   effective buffer number (for ":r file" and ":so file" it is
+-		   the current buffer, the file being read/sourced is not in a
+-		   buffer).  *E496*
++		   effective buffer number.  It is not set for all events,
++		   also see |bufnr()|.  For ":r file" and ":so file" it is the
++		   current buffer, the file being read/sourced is not in a
++		   buffer.  *E496*
+ 							*:<amatch>* *<amatch>*
+ 	<amatch>   When executing autocommands, is replaced with the match for
+ 		   which this autocommand was executed.  *E497*
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index de09c7b47..7e26605f8 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2023 Apr 24
++*eval.txt*	For Vim version 9.0.  Last change: 2023 Jun 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3091,7 +3091,7 @@ text...
+ 				let mylist = [1, 2, 3]
+ 				lockvar 0 mylist
+ 				let mylist[0] = 77	" OK
+-				call add(mylist, 4]	" OK
++				call add(mylist, 4)	" OK
+ 				let mylist = [7, 8, 9]  " Error!
+ <								*E743*
+ 			For unlimited depth use [!] and omit [depth].
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index aa0502910..1dcd99bf9 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2023 May 12
++*map.txt*       For Vim version 9.0.  Last change: 2023 May 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -400,7 +400,7 @@ Note:
+ - The command is not echo'ed, no need for <silent>.
+ - The {rhs} is not subject to abbreviations nor to other mappings, even if the
+   mapping is recursive.
+-- In Visual mode  you can use `line('v')` and `col('v')` to get one end of the
++- In Visual mode you can use `line('v')` and `col('v')` to get one end of the
+   Visual area, the cursor is at the other end.
+ 
+ 							*E1255* *E1136*
+diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
+index ba87212ab..240f2c432 100644
+--- a/runtime/doc/message.txt
++++ b/runtime/doc/message.txt
+@@ -1,4 +1,4 @@
+-*message.txt*   For Vim version 9.0.  Last change: 2022 Oct 18
++*message.txt*   For Vim version 9.0.  Last change: 2023 May 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 05113373f..f368de35b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 May 04
++*options.txt*	For Vim version 9.0.  Last change: 2023 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1813,7 +1813,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The screen column can be an absolute number, or a number preceded with
+ 	'+' or '-', which is added to or subtracted from 'textwidth'. >
+ 
+-		:set cc=+1  " highlight column after 'textwidth'
++		:set cc=+1	  " highlight column after 'textwidth'
+ 		:set cc=+1,+2,+3  " highlight three columns after 'textwidth'
+ 		:hi ColorColumn ctermbg=lightgrey guibg=lightgrey
+ <
+@@ -7135,7 +7135,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			local to buffer
+ 	Number of spaces to use for each step of (auto)indent.  Used for
+ 	|'cindent'|, |>>|, |<<|, etc.
+-	When zero the 'ts' value will be used.  Use the |shiftwidth()|
++	When zero the 'tabstop' value will be used.  Use the |shiftwidth()|
+ 	function to get the effective shiftwidth value.
+ 
+ 						*'shortmess'* *'shm'*
+@@ -7434,6 +7434,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	line in the window wraps part of it may not be visible, as if it is
+ 	above the window. "<<<" is displayed at the start of the first line,
+ 	highlighted with |hl-NonText|.
++	You may also want to add "lastline" to the 'display' option to show as
++	much of the last line as possible.
+ 	NOTE: only partly implemented, currently works with CTRL-E, CTRL-Y
+ 	and scrolling with the mouse.
+ 
+@@ -8044,13 +8046,25 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	   (or 3 or whatever you prefer) and use 'noexpandtab'.  Then Vim
+ 	   will use a mix of tabs and spaces, but typing <Tab> and <BS> will
+ 	   behave like a tab appears every 4 (or 3) characters.
+-	2. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use
++	   This is the recommended way, the file will look the same with other
++	   tools and when listing it in a terminal.
++	2. Set 'softtabstop' and 'shiftwidth' to whatever you prefer and use
++	   'expandtab'.  This way you will always insert spaces.  The
++	   formatting will never be messed up when 'tabstop' is changed (leave
++	   it at 8 just in case).  The file will be a bit larger.
++	   You do need to check if no Tabs exist in the file.  You can get rid
++	   of them by first setting 'expandtab' and using `%retab!`, making
++	   sure the value of 'tabstop' is set correctly.
++	3. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use
+ 	   'expandtab'.  This way you will always insert spaces.  The
+ 	   formatting will never be messed up when 'tabstop' is changed.
+-	3. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use a
++	   You do need to check if no Tabs exist in the file, just like in the
++	   item just above.
++	4. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use a
+ 	   |modeline| to set these values when editing the file again.  Only
+-	   works when using Vim to edit the file.
+-	4. Always set 'tabstop' and 'shiftwidth' to the same value, and
++	   works when using Vim to edit the file, other tools assume a tabstop
++	   is worth 8 spaces.
++	5. Always set 'tabstop' and 'shiftwidth' to the same value, and
+ 	   'noexpandtab'.  This should then work (for initial indents only)
+ 	   for any tabstop setting that people use.  It might be nice to have
+ 	   tabs after the first non-blank inserted as spaces if you do this
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 307a0a952..17dffa82f 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*    For Vim version 9.0.  Last change: 2023 May 01
++*repeat.txt*    For Vim version 9.0.  Last change: 2023 May 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -308,8 +308,8 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			'runtimepath'.
+ 
+ 			If the filetype detection was not enabled yet (this
+-			is usually done with a "syntax enable" or "filetype
+-			on" command in your .vimrc file), this will also look
++			is usually done with a `syntax enable` or `filetype on`
++			command in your .vimrc file), this will also look
+ 			for "{name}/ftdetect/*.vim" files.
+ 
+ 			When the optional ! is added no plugin files or
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index 513ca8ff9..941ef9dc8 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
+@@ -1,4 +1,4 @@
+-*spell.txt*	For Vim version 9.0.  Last change: 2023 Apr 21
++*spell.txt*	For Vim version 9.0.  Last change: 2023 May 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -122,7 +122,7 @@ zuG			Undo |zW| and |zG|, remove the word from the internal
+ 			list, like with |zW|.
+ 
+ 							*:spellra* *:spellrare*
+-:[count]spellr[are] {word}
++:[count]spellra[re] {word}
+ 			Add {word} as a rare word to 'spellfile', similar to
+ 			|zw|.  Without count the first name is used, with
+ 			a count of two the second entry, etc.
+@@ -135,7 +135,7 @@ zuG			Undo |zW| and |zG|, remove the word from the internal
+ 		nnoremap z/  :exe ':spellrare! ' .. expand('<cWORD>')<CR>
+ <			|:spellundo|, |zuw|, or |zuW| can be used to undo this.
+ 
+-:spellr[rare]! {word}	Add {word} as a rare word to the internal word
++:spellra[re]! {word}	Add {word} as a rare word to the internal word
+ 			list, similar to |zW|.
+ 
+ :[count]spellu[ndo] {word}				*:spellu* *:spellundo*
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 5993f6557..6bc451347 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 9.0.  Last change: 2022 Nov 30
++*starting.txt*  For Vim version 9.0.  Last change: 2023 May 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -792,9 +792,11 @@ accordingly.  Vim proceeds in this order:
+ 
+ 2. Process the arguments
+ 	The options and file names from the command that start Vim are
+-	inspected.  Buffers are created for all files (but not loaded yet).
++	inspected.
+ 	The |-V| argument can be used to display or log what happens next,
+ 	useful for debugging the initializations.
++	The |--cmd| arguments are executed.
++	Buffers are created for all files (but not loaded yet).
+ 
+ 3. Execute Ex commands, from environment variables and/or files
+ 	An environment variable is read as one Ex command line, where multiple
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 7bd062fef..7a82fcf18 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.0.  Last change: 2022 Nov 10
++*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1452,8 +1452,8 @@ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_map_K = 0
+ <
+ 						*termdebug_disasm_window*
+-If you want the Asm window shown by default, set the flag to 1.
+-the "disasm_window_height" entry can be used to set the window height: >
++If you want the Asm window shown by default, set the "disasm_window" flag to
++1.  The "disasm_window_height" entry can be used to set the window height: >
+ 	let g:termdebug_config['disasm_window'] = 1
+ 	let g:termdebug_config['disasm_window_height'] = 15
+ If there is no g:termdebug_config you can use: >
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 97faea046..362f2b971 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -1,4 +1,4 @@
+-*testing.txt*	For Vim version 9.0.  Last change: 2023 May 04
++*testing.txt*	For Vim version 9.0.  Last change: 2023 May 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -166,15 +166,17 @@ test_gui_event({event}, {args})
+ 		  Set or drag the left, right or horizontal scrollbar.  Only
+ 		  works when the scrollbar actually exists.  The supported
+ 		  items in {args} are:
+-		    which:	scrollbar. The supported values are:
++		    which:	Selects the scrollbar. The supported values
++				are:
+ 				    left  Left scrollbar of the current window
+ 				    right Right scrollbar of the current window
+ 				    hor   Horizontal scrollbar
+-		    value:	amount to scroll.  For the vertical scrollbars
+-				the value can be 1 to the line-count of the
+-				buffer.  For the horizontal scrollbar the
+-				value can be between 1 and the maximum line
+-				length, assuming 'wrap' is not set.
++		    value:	Amount to scroll.  For the vertical scrollbars
++				the value can be between 0 to the line-count
++				of the buffer minus one.  For the horizontal
++				scrollbar the value can be between 1 and the
++				maximum line length, assuming 'wrap' is not
++				set.
+ 		    dragging:	1 to drag the scrollbar and 0 to click in the
+ 				scrollbar.
+ 
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 5c1d38a10..60903f922 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2023 May 13
++*todo.txt*      For Vim version 9.0.  Last change: 2023 Jun 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,11 +38,12 @@ browser use: https://github.com/vim/vim/issues/1234
+ 							*known-bugs*
+ -------------------- Known bugs and current work -----------------------
+ 
+-Crash when splitting window: #11961.  Set RedrawingDisabled in
+-win_split_ins().
++FILETYPE_FILE is defined to the same value in multiple places.
++Only use the one in feature.h.  Others too.
+ 
+-CTRL-J mapping is not used if halfway another mapping. #12002
+-Is simplified mapping not used but escape code has been simplified?
++Mapping with modifier is not recognized after a partial mapping.  Probably
++because the typeahead was simplified when looking for a matching mapping.
++Need to somehow undo the simplification.  #12002
+ 
+ Windows scroll when using the autocmd window.  #12085
+ in restore_snapshot_rec() restore more values from the snapshot, instead of
+@@ -57,6 +58,8 @@ When a help item can't be found, then open 'helpfile'.  Search for the tag in
+ that file and gtive E149 only when not found.  Helps for a tiny Vim installed
+ without all the help files.
+ 
++SpellCap highlight not updated - PR #12428
 +
- 		See |byteidx()| and |byteidxcomp()| for getting the byte index
- 		from the UTF-16 index and |charidx()| for getting the
- 		character index from the UTF-16 index.
+ Virtual text problems:
+ -  Deleting character before a wrapping virtual text, causes for the following
+    lines to dissapear (Issue #12244)
+@@ -64,10 +67,15 @@ Virtual text problems:
+    gone (Issue #12028)
+ -  Virtual text aligned "above": Wrong indentation when using tabs  (Issue
+    #12232)
++-  Virtual text to the right of the line that isn't visible doesn't cause the
++   'extends' character to show in 'list' mode.  #12478
+ -  Virtual text to the right of the line that fits exactly on screen causes
+    that line and all lines below it not to be displayed (Issue #12213)
+ -  Window screen gets wrong when a virtual text is placed on 'above' or
+    'below' on an empty line (Issue #11959)
++-  truncated Virtual text below an empty line causes display error #12493
++
++include #12403: window for Termdebug showing local variables
+ 
+ include #12140: positional arguments in printf(), fixes #10577
+ 
+@@ -80,6 +88,10 @@ highlighted. (van-de-bugger, 2018 Jan 23, #2576)
+ 
+ Improve profiling by caching matching functions:  PR  #12192
+ 
++With 'smoothscroll' set and "lastline" in 'display', moving the cursor to a
++wrapping line that makes the display scroll up may scroll much more than
++needed, thus jump-scrolling. (part of issue 12411)
++
+ Add filecopy() ?  #12346
+ 
+ Implement foreach()  PR  #12166
+@@ -91,12 +103,18 @@ Errors when running tests with valgrind:
+ - test_gui.vim:
+     Found errors in Test_gui_mouse_event():
+ 
++When every block in if/elseif ends in "throw" or "return" code following after
++"endif" should give an "unreachable code" error.
++
+ Upcoming larger works:
+ - Make spell checking work with recent .dic/.aff files, e.g. French.  #4916
+     Make Vim understand the format somehow?   Search for "spell" below.
+     Make sure suggestions are speedy, also with composed words (German).
+-- Make syntax highlighting faster and better.  Discuss alternatives for using
+-  other grammars (treesitter, TextMate).
++- Make syntax highlighting faster and better.
++  Add a generic mechanism to test a syntax plugin: An input file for the
++  filetype and a screendump of expected result.  With a way to specify the
++  setup (global variables) and another dump file from that.
++  Discuss alternatives for using other grammars (treesitter, TextMate).
+    - Possibly conversion to Vim syntax rules.
+    - Other mechanism than group and cluster to nest syntax items, to be used
+      for grammars.
+@@ -116,11 +134,20 @@ Further Vim9 improvements, possibly after launch:
+ - implement :class and :interface: See |vim9-classes
+   - Change access: public by default, private by prefixing "_".
+ 	Check for error: can't have same name twice (ignoring "_" prefix).
++  - Private methods?
++	either: private def Func()
++	    or: def _Func()
++    Perhaps use "private" keyword instead of "_" prefix?
++  - "final" object members - can only be set in the constructor.
+   - Cannot use class type of itself in the method (Issue #12369)
++  - Cannot use an object method in a lambda  #12417
++	Define all methods before compiling them?
+   - class members initialized during definition (Issue #12041)
+-  - cannot call class member of funcref type  (Issue #12324)
+-  - nested function unable to directly modify private member (Issue #12076)
+-      And: can't use "this" keyword in lambda function (Issue #12336)
++  - Cannot call class member of funcref type  (Issue #12324)
++	Also #12081 first case.
++  - Using list of functions does not work #12081 (repro in later message).
++  - Weird `class X not found on interface X` error (Issue #12023)
++  - First argument of call() cannot be "obj.Func". (#11865)
+   - "return this" required for early return from constructor (inconsistent)
+     (Issue #12040)
+   - class/method confusion inside ":def" when using "class extends" (Issue
+@@ -135,11 +162,6 @@ Further Vim9 improvements, possibly after launch:
+ 	email lifepillar 2023 Mar 26
+   - Getting member of variable with "any" type should be handled at runtime.
+     Remove temporary solution from #12096 / patch 9.0.1375.
+-  - Private methods?
+-	either: private def Func()
+-	    or: def _Func()
+-    Perhaps use "private" keyword instead of "_" prefix?
+-  - "final" object members - can only be set in the constructor.
+   - "obj.Method()" does not always work in a compiled function, assumes "obj"
+     is a dictionary.  #12196  Issue #12024 might be the same problem.
+     Issue #11822: any.Func() can be a dict or an object call, need to handle
+@@ -173,20 +195,16 @@ Further Vim9 improvements, possibly after launch:
+ - Implement as part of an expression: ++expr, --expr, expr++, expr--.
+ 
+ Information missing in terminfo:
++- Codes used for focus gained and lost termcodes are hard-coded in
++  set_termname(), not named.
++- t_fe	enable focus-event tracking
++- t_fd	disable focus-event tracking
+ - Accept "hyper" and "meta" modifiers (16 and 32) from Kitty like Meta?
+     8 is actually "super".
+ - t_RV	request terminal version string; xterm:	"\033[>c"
+     change in terminfo for "RV" uses the wrong escape sequence 7 - 14 Jan only
+ - Codes for <PasteStart> t_PS and <PasteEnd> t_PE; with bracketed paste:
+     t_BE and t_BD.
+-- Codes used for focus gained and lost (currently using use_xterm_like_mouse())
+-  termcodes are hard-coded in set_termname(), not named.
+-    Use the XF flag?  enables recognizing the focus in/out events.
+-    Check if t_fe is not empty.
+-    Check for "1004" in t_XM. (disadvantage: only focus events when mouse is
+-    used)
+-- t_fe	enable focus-event tracking
+-- t_fd	disable focus-event tracking
+ Modifiers for various keys
+ - flag to indicate "xterm compatible modifiers" ?
+ Underline and similar:
+@@ -356,6 +374,12 @@ Autoconf: must use autoconf 2.69, later version generates lots of warnings
+ Problem with Visual highlight when 'linebreak' and 'showbreak' are set.
+ #11272
+ 
++'cindent': compound literal indented wrong.  Check for " = " before "{"?
++#12491
++
++GUI Scroll test fails on FreeBSD when using Motif.  See FIXME in
++Test_scrollbars in src/test_gui.vim
++
+ Selected index returned by complete_info() does not match the index in the
+ list of items.  #12230
+ 
+@@ -383,6 +407,9 @@ Add BufDeletePost.  #11041
+ 
+ Add winid arg to col() and charcol()  #11466 (request #11461)
+ 
++'switchbuf' set to "newtab" does not work for ":cfirst" when in the quickfix
++window.  #12436
++
+ When :argument has a non-number argument, use it like :buffer to find the
+ argument by name.  #12272
+ 
+@@ -408,6 +435,10 @@ PR #11579 to add visualtext(), return Visually selected text.
+ 
+ PR #12032: Support Python 3 stable ABI.
+ 
++PR #11860: Add more info to 'colorcolumn': display a character and highlight
++for each separate entry.  Disadvantage: option value gets very complicated
++with multiple entries, e.g. every 8 columns.
++
+ Stray characters in the shell #11719, caused by requesting a response for:
+ - XT key sequences
+ - Whether modifyOtherKeys is active
+@@ -472,6 +503,10 @@ To avoid flicker: add an option that when a screen clear is requested, instead
+ of clearing it draws everything and uses "clear to end of line" for every line.
+ Resetting 't_ut' already causes this?
+ 
++Instead of prefixing "INTERNAL" to internal messages, add a message in iemsg()
++and siemsg() and translate it.  Messages only given to them don't need
++translation.
++
+ When scheme can't be found by configure there is no clear "not found" message:
+     configure:5769: checking MzScheme install prefix
+     configure:5781: result:
+@@ -489,7 +524,10 @@ Idea: when typing ":e /some/dir/" and "dir" does not exist, highlight in red.
+ initialization to figure out the default value from 'shell'.  Add a test for
+ this.
+ 
+-Support translations for plugins: #11637
++Add a diff() function to use the built-in diff support in a script.
++#12321   Is the returned value in the right form now?
++
++Support translations for plugins: #11637  PR: #12447
+ - Need a tool like xgettext for Vim script, generates a .pot file.
+   Need the equivalent of _() and N_(), perhaps TR() and TRN().
+ - Instructions for how to create .po files and translate.
+@@ -541,6 +579,8 @@ New English spell files also have very slow suggestions.
+ When 'spelloptions' is "camel" then zG doesn't work on some words.
+ (Gary Johnson, 17 Oct 2022)
+ 
++SpellCap doesn't show below a closed fold. #12420
++
+ 'cdpath' problems:
+ - Adding "~" to 'cdpath' doesn't work for completion?  (Davido, 2013 Aug 19)
+ - Problem with 'cdpath' on MS-Windows when a directory is equal to $HOME.
+@@ -558,6 +598,11 @@ to tell which value from getvvcol() should be used. (#7964)
+ Value returned by virtcol() changes depending on how lines wrap.  This is
+ inconsistent with the documentation.
+ 
++When 'wildignore' has an entry ending in "/*" this means nothing matching the
++path before it will be added.  When encountering a directory check this and if
++there is a match do not scan the directory (possibly speeds up :find a lot).
++#12482
++
+ globpath() does not use 'wildignorecase' at all? (related to #8350)
+ 
+ mksession uses :buffer instead of :edit in one place but not another. #10629
+@@ -2270,10 +2315,6 @@ Diff mode out of sync. (Gary Johnson, 2010 Aug 4)
+ Win32: completion of file name ":e c:\!test" results in ":e c:\\!test", which
+ does not work. (Nieko Maatjes, 2009 Jan 8, Ingo Karkat, 2009 Jan 22)
+ 
+-opening/closing window causes other window with 'winfixheight' to change
+-height.  Also happens when there is another window in the frame, if it's not
+-very high. (Yegappan Lakshmanan, 2010 Jul 22, Michael Peeters, 2010 Jul 22)
+-
+ Using ~ works OK on 'a' with composing char, but not on 0x0418  with composing
+ char 0x0301. (Tony Mechelynck, 2009 Mar 4)
+ 
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 210c2c544..138f27ee8 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.0.  Last change: 2023 Feb 02
++*userfunc.txt*	For Vim version 9.0.  Last change: 2023 May 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -51,6 +51,13 @@ define a global function.
+ 			{name} can also be a |Dictionary| entry that is a
+ 			|Funcref|: >
+ 				:function dict.init
++<			Note that {name} is not an expression, you cannot use
++			a variable that is a function reference.  You can use
++			this dirty trick to list the function referred to with
++			variable "Funcref": >
++				let g:MyFuncref = Funcref
++				func g:MyFuncref
++				unlet g:MyFuncref
+ 
+ :fu[nction] /{pattern}	List functions with a name matching {pattern}.
+ 			Example that lists all functions ending with "File": >
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 6f9737543..4b0cdbb67 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2023 Mar 07
++*vim9.txt*	For Vim version 9.0.  Last change: 2023 Jun 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -117,6 +117,9 @@ script and `:def` functions; details are below:
+ - Unless mentioned specifically, the highest |scriptversion| is used.
+ - When defining an expression mapping, the expression will be evaluated in the
+   context of the script where it was defined.
++- When indexing a string the index is counted in characters, not bytes:
++  |vim9-string-index|
++- Some possibly unexpected differences: |vim9-gotchas|.
+ 
+ 
+ Comments starting with # ~
+@@ -190,8 +193,8 @@ created yet.  In this case you can call `execute()` to invoke it at runtime. >
+ used for the command or the error was caught a `:try` block), does not get a
+ range passed, cannot be a "dict" function, and can always be a closure.
+ 						*vim9-no-dict-function*
+-Later classes will be added, which replaces the "dict function" mechanism.
+-For now you will need to pass the dictionary explicitly: >
++You can use a Vim9 Class (|Vim9-class|) instead of a "dict function".
++You can also pass the dictionary explicitly: >
+ 	def DictFunc(self: dict<any>, arg: string)
+ 	   echo self[arg]
+ 	enddef
+@@ -1056,11 +1059,11 @@ It is possible to compare `null`  with any value, this will not give a type
+ error.  However, comparing `null` with a number, float or bool will always
+ result in `false`.  This is different from legacy script, where comparing
+ `null` with zero or `false` would return `true`.
+-
++							*vim9-false-true*
+ When converting a boolean to a string `false` and `true` are used, not
+ `v:false` and `v:true` like in legacy script.  `v:none` has no `none`
+ replacement, it has no equivalent in other languages.
+-
++							*vim9-string-index*
+ Indexing a string with [idx] or taking a slice with [idx : idx] uses character
+ indexes instead of byte indexes.  Composing characters are included.
+ Example: >
