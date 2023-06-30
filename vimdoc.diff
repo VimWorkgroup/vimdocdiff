@@ -1,21 +1,31 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f368de35b..9292b05a4 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -8912,11 +8912,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	displayed when 'verbosefile' is set.
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 7a82fcf18..f03570497 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 09
++*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 28
  
- 						*'viewdir'* *'vdir'*
--'viewdir' 'vdir'	string	(default for Amiga and Win32:
--							 "$VIM/vimfiles/view",
--				 for Unix: "~/.vim/view",
--				 for macOS: "$VIM:vimfiles:view"
--				 for VMS: "sys$login:vimfiles/view")
-+'viewdir' 'vdir'	string	(default for Amiga "home:vimfiles/view",
-+					 for Win32: "$HOME/vimfiles/view",
-+					 for Unix: "$HOME/.vim/view",
-+					 for macOS: "$VIM/vimfiles/view"
-+					 for VMS: "sys$login:vimfiles/view")
- 			global
- 			{not available when compiled without the |+mksession|
- 			feature}
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1541,6 +1541,20 @@ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_popup = 0
+ 
+ 
++Change default signs ~
++							*termdebug_signs*
++Termdebug uses the last two characters of the breakpoint ID in the
++signcolumn to represent breakpoints. For example, breakpoint ID 133
++will be displayed as `33`.
++
++If you want to customize the breakpoint signs: >
++	let g:termdebug_config['sign'] = '>>'
++If there is no g:terminal_config yet you can use: >
++	let g:termdebug_config = {'sign': '>>'}
++
++After this, breakpoints will be displayed as `>>` in the signcolumn.
++
++
+ Window toolbar ~
+ 							*termdebug_winbar*
+ By default the Termdebug plugin creates a window toolbar if the mouse is
