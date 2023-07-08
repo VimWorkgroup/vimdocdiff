@@ -1,31 +1,40 @@
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 7a82fcf18..f03570497 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 09
-+*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 28
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 1b7c6dcc6..e7a0392cc 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -156,6 +156,7 @@ digraph_setlist({digraphlist})	Boolean	register multiple |digraph|s
+ echoraw({expr})			none	output {expr} as-is
+ empty({expr})			Number	|TRUE| if {expr} is empty
+ environ()			Dict	return environment variables
++err_teapot()			Number	produce error 418
+ escape({string}, {chars})	String	escape {chars} in {string} with '\'
+ eval({string})			any	evaluate {string} into its value
+ eventhandler()			Number	|TRUE| if inside an event handler
+@@ -2201,6 +2202,15 @@ environ()						*environ()*
+ 		use this: >
+ 			:echo index(keys(environ()), 'HOME', 0, 1) != -1
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1541,6 +1541,20 @@ If there is no g:termdebug_config you can use: >
- 	let g:termdebug_popup = 0
- 
- 
-+Change default signs ~
-+							*termdebug_signs*
-+Termdebug uses the last two characters of the breakpoint ID in the
-+signcolumn to represent breakpoints. For example, breakpoint ID 133
-+will be displayed as `33`.
 +
-+If you want to customize the breakpoint signs: >
-+	let g:termdebug_config['sign'] = '>>'
-+If there is no g:terminal_config yet you can use: >
-+	let g:termdebug_config = {'sign': '>>'}
-+
-+After this, breakpoints will be displayed as `>>` in the signcolumn.
++err_teapot([{expr}])					*err_teapot()*
++		Produce an error with number 418, needed for implementation of
++		RFC 2325.
++		If {expr} is present and it is TRUE error 503 is given,
++		indicating that coffee is temporarily not available.
++		If {expr} is present it must be a String.
 +
 +
- Window toolbar ~
- 							*termdebug_winbar*
- By default the Termdebug plugin creates a window toolbar if the mouse is
+ escape({string}, {chars})				*escape()*
+ 		Escape the characters in {chars} that occur in {string} with a
+ 		backslash.  Example: >
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 2d89e46e4..2d6792af4 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1232,6 +1232,7 @@ Inter-process communication:		    *channel-functions*
+ 	json_decode()		decode a JSON string to Vim types
+ 	js_encode()		encode an expression to a JSON string
+ 	js_decode()		decode a JSON string to Vim types
++	err_teapot()		give error 418 or 503
+ 
+ Jobs:						*job-functions*
+ 	job_start()		start a job
