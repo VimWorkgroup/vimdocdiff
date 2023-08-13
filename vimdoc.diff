@@ -1,84 +1,363 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 34f76d6f4..979f46f2d 100644
+index 979f46f2d..96db898b0 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -707,7 +707,7 @@ trunc({expr})			Float	truncate Float {expr}
- type({expr})			Number	type of value {expr}
- typename({expr})		String	representation of the type of {expr}
- undofile({name})		String	undo file name for {name}
--undotree()			List	undo file tree
-+undotree([{buf}])		List	undo file tree for buffer {buf}
- uniq({list} [, {func} [, {dict}]])
- 				List	remove adjacent duplicates from a list
- utf16idx({string}, {idx} [, {countcc} [, {charidx}]])
-@@ -4002,6 +4002,9 @@ getqflist([{what}])					*getqflist()*
- 			text	description of the error
- 			type	type of the error, 'E', '1', etc.
- 			valid	|TRUE|: recognized error message
-+		        user_data
-+			        custom data associated with the item, can be
-+				any type.
+@@ -6590,7 +6590,11 @@ printf({fmt}, {expr1} ...)				*printf()*
+ 		The "%" starts a conversion specification.  The following
+ 		arguments appear in sequence:
  
- 		When there is no error list or it's empty, an empty list is
- 		returned. Quickfix list entries with a non-existing buffer
-@@ -8298,6 +8301,8 @@ setqflist({list} [, {action} [, {what}]])		*setqflist()*
- 		    text	description of the error
- 		    type	single-character error type, 'E', 'W', etc.
- 		    valid	recognized error message
-+		    user_data   custom data associated with the item, can be
-+				any type.
+-			%  [flags]  [field-width]  [.precision]  type
++			% [pos-argument] [flags] [field-width] [.precision] type
++
++		pos-argument
++			At most one positional argument specifier. These
++			take the form {n$}, where n is >= 1.
  
- 		The "col", "vcol", "nr", "type" and "text" entries are
- 		optional.  Either "lnum" or "pattern" entry can be used to
-@@ -10073,9 +10078,10 @@ undofile({name})					*undofile()*
- 		Can also be used as a |method|: >
- 			GetFilename()->undofile()
+ 		flags
+ 			Zero or more of the following flags:
+@@ -6662,6 +6666,13 @@ printf({fmt}, {expr1} ...)				*printf()*
+ <		This limits the length of the text used from "line" to
+ 		"width" bytes.
  
--undotree()						*undotree()*
--		Return the current state of the undo tree in a dictionary with
--		the following items:
-+undotree([{buf}])					*undotree()*
-+		Return the current state of the undo tree for the current
-+		buffer, or for a specific buffer if {buf} is given.  The
-+		result is a dictionary with the following items:
- 		  "seq_last"	The highest undo sequence number used.
- 		  "seq_cur"	The sequence number of the current position in
- 				the undo tree.  This differs from "seq_last"
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 60903f922..93c19b514 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -5535,7 +5535,6 @@ Undo:
- -   Undo history wrong when ":next file" re-uses a buffer. (#5426) ex_next()
-     should pass flag to do_argfile(), then to do_ecmd().  Is there a test for
-     this?
---   Add buffer argument to undotree(). (#4001)
- -   Undo problem: "g-" doesn't go back, gets stuck. (Björn Linse, 2016 Jul 18)
- -   Undo message is not always properly displayed.  Patch by Ken Takata, 2013
-     oct 3.  Doesn't work properly according to Yukihiro Nakadaira.
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 2d6792af4..2112fbb1b 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1373,7 +1373,7 @@ Various:					*various-functions*
- 	libcallnr()		idem, returning a number
++		If the argument to be formatted is specified using a posional
++		argument specifier, and a '*' is used to indicate that a
++		number argument is to be used to specify the width or
++		precision, the argument(s) to be used must also be specified
++		using a {n$} positional argument specifier. See |printf-$|.
++
++
+ 		The conversion specifiers and their meanings are:
  
- 	undofile()		get the name of the undo file
--	undotree()		return the state of the undo tree
-+	undotree()		return the state of the undo tree for a buffer
+ 				*printf-d* *printf-b* *printf-B* *printf-o*
+@@ -6751,6 +6762,103 @@ printf({fmt}, {expr1} ...)				*printf()*
+ 		of "%" items.  If there are not sufficient or too many
+ 		arguments an error is given.  Up to 18 arguments can be used.
  
- 	shiftwidth()		effective value of 'shiftwidth'
++							*printf-$*
++		In certain languages, error and informative messages are
++		more readable when the order of words is different from the
++		corresponding message in English. To accomodate translations
++		having a different word order, positional arguments may be
++		used to indicate this. For instance: >
++
++			#, c-format
++			msgid "%s returning %s"
++			msgstr "waarde %2$s komt terug van %1$s"
++<
++		In this example, the sentence has its 2 string arguments reversed
++		in the output. >
++
++			echo printf(
++				"In The Netherlands, vim's creator's name is: %1$s %2$s",
++				"Bram", "Moolenaar")
++<			In The Netherlands, vim's creator's name is: Bram Moolenaar >
++
++			echo printf(
++				"In Belgium, vim's creator's name is: %2$s %1$s",
++				"Bram", "Moolenaar")
++<			In Belgium, vim's creator's name is: Moolenaar Bram
++
++		Width (and precision) can be specified using the '*' specifier.
++		In this case, you must specify the field width position in the
++		argument list. >
++
++			echo printf("%1$*2$.*3$d", 1, 2, 3)
++<			001 >
++			echo printf("%2$*3$.*1$d", 1, 2, 3)
++<			  2 >
++			echo printf("%3$*1$.*2$d", 1, 2, 3)
++<			03 >
++			echo printf("%1$*2$.*3$g", 1.4142, 2, 3)
++<			1.414
++
++		You can mix specifying the width and/or precision directly
++		and via positional arguments: >
++
++			echo printf("%1$4.*2$f", 1.4142135, 6)
++<			1.414214 >
++			echo printf("%1$*2$.4f", 1.4142135, 6)
++<			1.4142 >
++			echo printf("%1$*2$.*3$f", 1.4142135, 6, 2)
++<			  1.41
++
++							*E1400*
++		You cannot mix positional and non-positional arguments: >
++			echo printf("%s%1$s", "One", "Two")
++<			E1400: Cannot mix positional and non-positional
++			arguments: %s%1$s
++
++							*E1401*
++		You cannot skip a positional argument in a format string: >
++			echo printf("%3$s%1$s", "One", "Two", "Three")
++<			E1401: format argument 2 unused in $-style
++			format: %3$s%1$s
++
++							*E1402*
++		You can re-use a [field-width] (or [precision]) argument: >
++			echo printf("%1$d at width %2$d is: %01$*2$d", 1, 2)
++<			1 at width 2 is: 01
++
++		However, you can't use it as a different type: >
++			echo printf("%1$d at width %2$ld is: %01$*2$d", 1, 2)
++<			E1402: Positional argument 2 used as field
++			width reused as different type: long int/int
++
++							*E1403*
++		When a positional argument is used, but not the correct number
++		or arguments is given, an error is raised: >
++			echo printf("%1$d at width %2$d is: %01$*2$.*3$d", 1, 2)
++<			E1403: Positional argument 3 out of bounds:
++			%1$d at width %2$d is: %01$*2$.*3$d
++
++		Only the first error is reported: >
++			echo printf("%01$*2$.*3$d %4$d", 1, 2)
++<			E1403: Positional argument 3 out of bounds:
++			%01$*2$.*3$d %4$d
++
++							*E1404*
++		A positional argument can be used more than once: >
++			echo printf("%1$s %2$s %1$s", "One", "Two")
++<			One Two One
++
++		However, you can't use a different type the second time: >
++			echo printf("%1$s %2$s %1$d", "One", "Two")
++<			E1404: Positional argument 1 type used
++			inconsistently: int/string
++
++							*E1405*
++		Various other errors that lead to a format string being
++		wrongly formatted lead to: >
++			echo printf("%1$d at width %2$d is: %01$*2$.3$d", 1, 2)
++<			E1405: Invalid format specifier:
++			%1$d at width %2$d is: %01$*2$.3$d
  
-diff --git a/runtime/doc/version7.txt b/runtime/doc/version7.txt
-index c7248c2d2..7ca46c59a 100644
---- a/runtime/doc/version7.txt
-+++ b/runtime/doc/version7.txt
-@@ -4627,7 +4627,7 @@ using an #ifdef. (Sergey Khorev)
- Mzscheme interface didn't link, missing function.  Changed order of libraries
- in the configure script.
+ prompt_getprompt({buf})					*prompt_getprompt()*
+ 		Returns the effective prompt text for buffer {buf}.  {buf} can
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 04d5f5cb8..7b66303d3 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
+@@ -1,4 +1,4 @@
+-*intro.txt*     For Vim version 9.0.  Last change: 2022 Nov 20
++*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 09
  
--Ruby interface didn't compile on Mac.  Changed #ifdef. (Kevin Ballard)
-+Ruby interface didn't compile on Mac.  Changed #ifdef. (Lily Ballard)
  
- Patch 7.1b.001 (extra)
- Problem:    Random text in a source file.  No idea how it got there.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -129,8 +129,9 @@ There are three ways to report bugs:
+ 3. Send bug reports to: Vim Developers <vim-dev@vim.org>
+    This is a maillist, you need to become a member first and many people will
+    see the message.  If you don't want that, e.g. because it is a security
+-   issue, send it to <bugs@vim.org>, this only goes to the Vim maintainer
+-   (that's Bram).
++   issue, please contact any of the current Vim maintainers
++   https://github.com/orgs/vim/people (but not Bram or the vim-dev ML).
++   In the future, a proper process for handling security issues will be setup.
+ 
+ Please be brief; all the time that is spent on answering mail is subtracted
+ from the time that is spent on improving Vim!  Always give a reproducible
+@@ -181,9 +182,9 @@ The user may create scripts for Vim that use external commands.  These might
+ introduce Y2K problems, but those are not really part of Vim itself.
+ 
+ ==============================================================================
+-3. Credits				*credits* *author* *Bram* *Moolenaar*
++3. Credits						*credits* *author*
+ 
+-Most of Vim was created by Bram Moolenaar <Bram@vim.org>.
++Most of Vim was created by Bram Moolenaar <Bram@vim.org> |Bram-Moolenaar|
+ 
+ Parts of the documentation come from several Vi manuals, written by:
+ 	W.N. Joy
+@@ -216,7 +217,7 @@ Vim would never have become what it is now, without the help of these people!
+ 	Bill Foster		Athena GUI port (later removed)
+ 	Google			Lets me work on Vim one day a week
+ 	Loic Grenie		xvim (ideas for multi windows version)
+-	Sven Guckes		Vim promoter and previous WWW page maintainer
++	Sven Guckes		Vim promoter and previous WWW page maintainer |Sven-Guckes|
+ 	Darren Hiebert		Exuberant ctags
+ 	Jason Hildebrand	GTK+ 2 port
+ 	Bruce Hunsaker		improvements for VMS port
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 9292b05a4..ec2b8756b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -252,6 +252,8 @@ opt+=val" the expansion is done before the adding or removing.
+ 
+ Handling of local options			*local-options*
+ 
++Note: The following also applies to |global-local| options.
++
+ Some of the options only apply to a window or buffer.  Each window or buffer
+ has its own copy of this option, thus each can have its own value.  This
+ allows you to set 'list' in one window but not in another.  And set
+@@ -301,6 +303,30 @@ The options local to a window are remembered for each buffer.  This also
+ happens when the buffer is not loaded, but they are lost when the buffer is
+ wiped out |:bwipe|.
+ 
++Special local window options			*special-local-window-option*
++
++The following local window options won't be copied over when new windows are
++created, thus they behave slightly differently:
++
++	Option		Reason	~
++	'previewwindow'	there can only be a single one
++	'scroll'	specific to existing window
++	'winfixheight'	specific to existing window
++	'winfixwidth'	specific to existing window
++
++Special local buffer options			*special-local-buffer-option*
++
++The following local buffer options won't be copied over when new buffers are
++created, thus they behave slightly differently:
++
++	Option		Reason	~
++	'filetype'	explicitly set by autocommands
++	'syntax'	explicitly set by autocommands
++	'bufhidden'	denote |special-buffers|
++	'buftype'	denote |special-buffers|
++	'readonly'	will be detected automatically
++	'modified'	will be detected automatically
++
+ 							*:setl* *:setlocal*
+ :setl[ocal][!] ...	Like ":set" but set only the value local to the
+ 			current buffer or window.  Not all options have a
+@@ -374,7 +400,6 @@ used.  Thus it does the same as: >
+ Note: In the future more global options can be made |global-local|.  Using
+ ":setlocal" on a global option might work differently then.
+ 
+-
+ 						*option-value-function*
+ Some options ('completefunc', 'imactivatefunc', 'imstatusfunc', 'omnifunc',
+ 'operatorfunc', 'quickfixtextfunc', 'tagfunc' and 'thesaurusfunc') are set to
+@@ -1449,7 +1474,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'bufhidden'* *'bh'*
+ 'bufhidden' 'bh'	string (default: "")
+-			local to buffer
++			local to buffer  |special-local-buffer-option|
+ 	This option specifies what happens when a buffer is no longer
+ 	displayed in a window:
+ 	  <empty>	follow the global 'hidden' option
+@@ -1481,7 +1506,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'buftype'* *'bt'* *E382*
+ 'buftype' 'bt'		string (default: "")
+-			local to buffer
++			local to buffer  |special-local-buffer-option|
+ 	The value of this option specifies the type of a buffer:
+ 	  <empty>	normal buffer
+ 	  nofile	buffer which is not related to a file and will not be
+@@ -3408,7 +3433,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 					*'filetype'* *'ft'*
+ 'filetype' 'ft'		string (default: "")
+-			local to buffer
++			local to buffer  |special-local-buffer-option|
+ 	When this option is set, the FileType autocommand event is triggered.
+ 	All autocommands that match with the value of this option will be
+ 	executed.  Thus the value of 'filetype' is used in place of the file
+@@ -5565,7 +5590,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 				*'modified'* *'mod'* *'nomodified'* *'nomod'*
+ 'modified' 'mod'	boolean	(default off)
+-			local to buffer
++			local to buffer  |special-local-buffer-option|
+ 	When on, the buffer is considered to be modified.  This option is set
+ 	when:
+ 	1. A change was made to the text since it was last written.  Using the
+@@ -6136,7 +6161,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 					*'previewwindow'* *'nopreviewwindow'*
+ 					*'pvw'* *'nopvw'* *E590*
+ 'previewwindow' 'pvw'	boolean (default off)
+-			local to window
++			local to window  |special-local-window-option|
+ 			{not available when compiled without the |+quickfix|
+ 			feature}
+ 	Identifies the preview window.  Only one window can have this option
+@@ -6331,7 +6356,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 				   *'readonly'* *'ro'* *'noreadonly'* *'noro'*
+ 'readonly' 'ro'		boolean	(default off)
+-			local to buffer
++			local to buffer  |special-local-buffer-option|
+ 	If on, writes fail unless you use a '!'.  Protects you from
+ 	accidentally overwriting a file.  Default on when Vim is started
+ 	in read-only mode ("vim -R") or when the executable is called "view".
+@@ -6710,7 +6735,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'scroll'* *'scr'*
+ 'scroll' 'scr'		number	(default: half the window height)
+-			local to window
++			local to window  |special-local-window-option|
+ 	Number of lines to scroll with CTRL-U and CTRL-D commands.  Will be
+ 	set to half the number of lines in the window when the window size
+ 	changes.  This may happen when enabling the |status-line| or
+@@ -7972,7 +7997,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'syntax'* *'syn'*
+ 'syntax' 'syn'		string	(default empty)
+-			local to buffer
++			local to buffer  |special-local-buffer-option|
+ 			{not available when compiled without the |+syntax|
+ 			feature}
+ 	When this option is set, the syntax with this name is loaded, unless
+@@ -9420,7 +9445,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 			*'winfixheight'* *'wfh'* *'nowinfixheight'* *'nowfh'*
+ 'winfixheight' 'wfh'	boolean	(default off)
+-			local to window
++			local to window  |special-local-window-option|
+ 	Keep the window height when windows are opened or closed and
+ 	'equalalways' is set.  Also for |CTRL-W_=|.  Set by default for the
+ 	|preview-window| and |quickfix-window|.
+@@ -9428,7 +9453,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 			*'winfixwidth'* *'wfw'* *'nowinfixwidth'* *'nowfw'*
+ 'winfixwidth' 'wfw'	boolean	(default off)
+-			local to window
++			local to window  |special-local-window-option|
+ 	Keep the window width when windows are opened or closed and
+ 	'equalalways' is set.  Also for |CTRL-W_=|.
+ 	The width may be changed anyway when running out of room.
+diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
+index 093da3015..3a2474793 100644
+--- a/runtime/doc/uganda.txt
++++ b/runtime/doc/uganda.txt
+@@ -46,8 +46,8 @@ II) It is allowed to distribute a modified (or extended) version of Vim,
+ 	  maintainer will do with your changes and under what license they
+ 	  will be distributed is negotiable.  If there has been no negotiation
+ 	  then this license, or a later version, also applies to your changes.
+-	  The current maintainer is Bram Moolenaar <Bram@vim.org>.  If this
+-	  changes it will be announced in appropriate places (most likely
++	  The current maintainers are listed here: https://github.com/orgs/vim/people.
++	  If this changes it will be announced in appropriate places (most likely
+ 	  vim.sf.net, www.vim.org and/or comp.editors).  When it is completely
+ 	  impossible to contact the maintainer, the obligation to send him
+ 	  your changes ceases.  Once the maintainer has confirmed that he has
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 03b732b5e..e9549285f 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.0.  Last change: 2022 Nov 23
++*version9.txt*  For Vim version 9.0.  Last change: 2023 Aug 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -43,6 +43,17 @@ when the release was being prepared.  Sven was a long time supporter of Vim.
+ He registered the vim.org domain and created the first Vim website.  We will
+ remember him!
+ 
++						 *Bram* *Moolenaar* *Bram-Moolenaar*
++Vim version 9.1 is dedicated to Bram Moolenaar, who passed away on August 3rd 2023
++while still working full-time on Vim.  The Vim project would not exist without
++his ongoing passion to lead and develop Vim and the community for more than 30
++years.  Bram was also passionate about his |ICCF| foundation to help children
++in Uganda.  If you enjoy using Vim, please consider donating!
++We will miss his guidance, passion and leadership.
++
++Obituary Articles: https://github.com/vim/vim/discussions/12742
++Say Farewell: https://github.com/vim/vim/discussions/12737
++
+ ==============================================================================
+ NEW FEATURES						*new-9*
+ 
