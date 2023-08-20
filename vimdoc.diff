@@ -1,25 +1,226 @@
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 661876b24..99bc9e2be 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -3551,6 +3551,8 @@ getcompletion({pat}, {type} [, {filtered}])		*getcompletion()*
+ 		cmdline		|cmdline-completion| result
+ 		compiler	compilers
+ 		cscope		|:cscope| suboptions
++		custom,{func}	custom completion, defined via {func}
++		customlist,{func} custom completion, defined via {func}
+ 		diff_buffer     |:diffget| and |:diffput| completion
+ 		dir		directory names
+ 		environment	environment variable names
+@@ -10984,6 +10986,7 @@ python_dynamic		Python 2.x interface is dynamically loaded. |has-python|
+ python3			Python 3.x interface available. |has-python|
+ python3_compiled	Compiled with Python 3.x interface. |has-python|
+ python3_dynamic		Python 3.x interface is dynamically loaded. |has-python|
++python3_stable		Python 3.x interface is using Python Stable ABI. |has-python|
+ pythonx			Python 2.x and/or 3.x interface available. |python_x|
+ qnx			QNX version of Vim.
+ quickfix		Compiled with |quickfix| support.
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 7e26605f8..4f9a3c99f 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -2424,6 +2424,25 @@ v:progpath	Contains the command with which Vim was invoked, in a form
+ 		".exe" is not added to v:progpath.
+ 		Read-only.
+ 
++				    *v:python3_version* *python3-version-variable*
++v:python3_version
++		Version of Python 3 that Vim was built against.  When
++		Python is loaded dynamically (|python-dynamic|), this version
++		should exactly match the Python library up to the minor
++		version (e.g.  3.10.2 and 3.10.3 are compatible as the minor
++		version is "10", whereas 3.9.4 and 3.10.3 are not compatible).
++		When |python-stable-abi| is used, this will be the minimum Python
++		version that you can use instead. (e.g. if v:python3_version
++		indicates 3.9, you can use 3.9, 3.10, or anything above).
++
++		This number is encoded as a hex number following Python ABI
++		versioning conventions.  Do the following to have a
++		human-readable full version in hex: >
++			echo printf("%08X", v:python3_version)
++<		You can obtain only the minor version by doing: >
++			echo and(v:python3_version>>16,0xff)
++<		Read-only.
++
+ 					*v:register* *register-variable*
+ v:register	The name of the register in effect for the current normal mode
+ 		command (regardless of whether that command actually used a
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 05574eba2..05047224f 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -146,6 +146,7 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.cls		g:filetype_cls
+ 	*.csh		g:filetype_csh	|ft-csh-syntax|
+ 	*.dat		g:filetype_dat
++	*.f		g:filetype_f	|ft-forth-syntax|
+ 	*.frm		g:filetype_frm	|ft-form-syntax|
+ 	*.fs		g:filetype_fs	|ft-forth-syntax|
+ 	*.i		g:filetype_i	|ft-progress-syntax|
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index c2a0094b6..3d3b92a66 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
+@@ -769,7 +769,19 @@ Unix ~
+ The 'pythondll' or 'pythonthreedll' option can be used to specify the Python
+ shared library file instead of DYNAMIC_PYTHON_DLL or DYNAMIC_PYTHON3_DLL file
+ what were specified at compile time.  The version of the shared library must
+-match the Python 2.x or Python 3 version Vim was compiled with.
++match the Python 2.x or Python 3 version (|v:python3_version|) Vim was
++compiled with unless using |python3-stable-abi|.
++
++
++Stable ABI and mixing Python versions ~
++			*python-stable* *python-stable-abi* *python3-stable-abi*
++If Vim was not compiled with Stable ABI (only available for Python 3), the
++version of the Python shared library must match the version that Vim was
++compiled with.  Otherwise, mixing versions could result in unexpected crashes
++and failures.  With Stable ABI, this restriction is relaxed, and any Python 3
++library with version of at least |v:python3_version| will work.  See
++|has-python| for how to check if Stable ABI is supported, or see if version
++output includes |+python3/dyn-stable|.
+ 
+ ==============================================================================
+ 10. Python 3						*python3*
+@@ -881,6 +893,18 @@ python support: >
+ 	  endif
+ 	endif
+ 
++When loading the library dynamically, Vim can be compiled to support Python 3
++Stable ABI (|python3-stable-abi|) which allows you to load a different version
++of Python 3 library than the one Vim was compiled with.  To check it: >
++	if has('python3_dynamic')
++	  if has('python3_stable')
++	    echo 'support Python 3 Stable ABI.'
++	  else
++	    echo 'does not support Python 3 Stable ABI.'
++	    echo 'only use Python 3 version ' .. v:python3_version
++	  endif
++	endif
++
+ This also tells you whether Python is dynamically loaded, which will fail if
+ the runtime library cannot be found.
+ 
 diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 263c4f3ac..46f968045 100644
+index 46f968045..2ddd1b9ce 100644
 --- a/runtime/doc/motion.txt
 +++ b/runtime/doc/motion.txt
-@@ -242,8 +242,8 @@ gM			Like "g0", but to halfway the text of the line.
- 			Thus "10gM" is near the start of the text and "90gM"
- 			is near the end of the text.
- 
--							*g$* *g<End>*
--g$ or g<End>		When lines wrap ('wrap' on): To the last character of
-+							*g$*
-+g$			When lines wrap ('wrap' on): To the last character of
- 			the screen line and [count - 1] screen lines downward
- 			|inclusive|.  Differs from "$" when a line is wider
- 			than the screen.
-@@ -255,6 +255,9 @@ g$ or g<End>		When lines wrap ('wrap' on): To the last character of
+@@ -255,7 +255,8 @@ g$			When lines wrap ('wrap' on): To the last character of
  			instead of going to the end of the line.
  			When 'virtualedit' is enabled moves to the end of the
  			screen line.
-+							*g<End>*
-+g<End>			Like |g$| but to the last non-blank character
-+			instead of the last character.
+-							*g<End>*
++
++							*g<End>* *g<kEnd>*
+ g<End>			Like |g$| but to the last non-blank character
+ 			instead of the last character.
  
- 							*bar*
- |			To screen column [count] in the current line.
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 8a5e5f4c9..29a12396d 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -214,10 +214,10 @@ A syntax group name is to be used for syntax items that match the same kind of
+ thing.  These are then linked to a highlight group that specifies the color.
+ A syntax group name doesn't specify any color or attributes itself.
+ 
+-The name for a highlight or syntax group must consist of ASCII letters, digits
+-and the underscore.  As a regexp: "[a-zA-Z0-9_]*".  However, Vim does not give
+-an error when using other characters.  The maximum length of a group name is
+-about 200 bytes.  *E1249*
++The name for a highlight or syntax group must consist of ASCII letters,
++digits, underscores, dots, or hyphens.  As a regexp: "[a-zA-Z0-9_.-]*".
++However, Vim does not give an error when using other characters.  The maximum
++length of a group name is about 200 bytes.  *E1249*
+ 
+ To be able to allow each user to pick their favorite set of colors, there must
+ be preferred names for highlight groups that are common for many languages.
+@@ -1579,9 +1579,10 @@ example, FORM files, use this in your startup vimrc: >
+ 
+ FORTH						*forth.vim* *ft-forth-syntax*
+ 
+-Files matching "*.fs" could be F# or Forth.  If the automatic detection
+-doesn't work for you, or you don't edit F# at all, use this in your
+-startup vimrc: >
++Files matching "*.f" could be Fortran or Forth and those matching "*.fs" could
++be F# or Forth.  If the automatic detection doesn't work for you, or you don't
++edit F# or Fortran at all, use this in your startup vimrc: >
++   :let filetype_f  = "forth"
+    :let filetype_fs = "forth"
+ 
+ 
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index f03570497..5e4ad1fcf 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1384,6 +1384,9 @@ Other commands ~
+ 	     isn't one
+  *:Asm*	     jump to the window with the disassembly, create it if there
+ 	     isn't one
++ *:Var*	     jump to the window with the local and argument variables,
++             create it if there isn't one. This window updates whenever the
++             program is stopped
+ 
+ Events ~
+ 							*termdebug-events*
+@@ -1460,6 +1463,15 @@ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_disasm_window = 15
+ Any value greater than 1 will set the Asm window height to that value.
+ 
++						*termdebug_variables_window*
++If you want the Var window shown by default, set the flag to 1.
++the "variables_window_height" entry can be used to set the window height: >
++	let g:termdebug_config['variables_window'] = 1
++	let g:termdebug_config['variables_window_height'] = 15
++If there is no g:termdebug_config you can use: >
++	let g:termdebug_variables_window = 15
++Any value greater than 1 will set the Var window height to that value.
++
+ Communication ~
+ 						*termdebug-communication*
+ There is another, hidden, buffer, which is used for Vim to communicate with
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index d69355bb1..0d830f664 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -335,6 +335,10 @@ prop_list({lnum} [, {props}])				*prop_list()*
+ 		   length	length in bytes, one more if line break is
+ 				included
+ 		   id		property ID
++		   text		text to be displayed before {col}.  Only
++				present for |virtual-text| properties.
++		   text_align	alignment property of |virtual-text|.
++		   text_wrap	specifies whether |virtual-text| is wrapped.
+ 		   type		name of the property type, omitted if
+ 				the type was deleted
+ 		   type_bufnr	buffer number for which this type was defined;
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index a11e166c3..e478c8266 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -450,6 +450,8 @@ m  *+python*		Python 2 interface |python|
+ m  *+python/dyn*	Python 2 interface |python-dynamic| |/dyn|
+ m  *+python3*		Python 3 interface |python|
+ m  *+python3/dyn*	Python 3 interface |python-dynamic| |/dyn|
++m  *+python3/dyn-stable*
++			Python 3 interface |python-dynamic| |python-stable| |/dyn|
+ N  *+quickfix*		|:make| and |quickfix| commands
+ N  *+reltime*		|reltime()| function, 'hlsearch'/'incsearch' timeout,
+ 			'redrawtime' option
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 6acbca543..a68b97c87 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -232,6 +232,9 @@ If the class extends a parent class, the same thing happens.  In the second
+ step the members of the parent class are done first.  There is no need to call
+ "super()" or "new()" on the parent.
+ 
++When defining the new() method the return type should not be specified.  It
++always returns an object of the class.
++
+ ==============================================================================
+ 
+ 3.  class members and functions			*Vim9-class-member*
