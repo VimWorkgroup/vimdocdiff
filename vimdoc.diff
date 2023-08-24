@@ -1,111 +1,86 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 99bc9e2be..236454793 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -310,6 +310,7 @@ inputrestore()			Number	restore typeahead
- inputsave()			Number	save and clear typeahead
- inputsecret({prompt} [, {text}]) String	like input() but hiding the text
- insert({object}, {item} [, {idx}]) List	insert {item} in {object} [before {idx}]
-+instanceof({object}, {class})	Number	|TRUE| if {object} is an instance of {class}
- interrupt()			none	interrupt script execution
- invert({expr})			Number	bitwise invert
- isabsolutepath({path})		Number	|TRUE| if {path} is an absolute path
-@@ -5052,6 +5053,17 @@ insert({object}, {item} [, {idx}])			*insert()*
- 		Can also be used as a |method|: >
- 			mylist->insert(item)
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 93c19b514..8479e15d3 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -61,8 +61,6 @@ without all the help files.
+ SpellCap highlight not updated - PR #12428
  
-+instanceof({object}, {class})				*instanceof()*
-+		The result is a Number, which is |TRUE| when the {object} argument is a
-+		direct or indirect instance of a |Class| specified by {class}.
-+		When {class} is a |List| the function returns |TRUE| when {object} is an
-+		instance of any of the specified classes.
-+		Example: >
-+			instanceof(animal, [Dog, Cat])
-+
-+<		Can also be used as a |method|: >
-+			myobj->instanceof(mytype)
-+
- interrupt()						*interrupt()*
- 		Interrupt script execution.  It works more or less like the
- 		user typing CTRL-C, most commands won't execute and control
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 632431c5f..c02a885c2 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 28
-+*terminal.txt*	For Vim version 9.0.  Last change: 2023 Aug 23
+ Virtual text problems:
+--  Deleting character before a wrapping virtual text, causes for the following
+-   lines to dissapear (Issue #12244)
+ -  If 'list' is on, 'below' virtual text which includes 1 or 2 characters are
+    gone (Issue #12028)
+ -  Virtual text aligned "above": Wrong indentation when using tabs  (Issue
+@@ -75,14 +73,6 @@ Virtual text problems:
+    'below' on an empty line (Issue #11959)
+ -  truncated Virtual text below an empty line causes display error #12493
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,6 +38,7 @@ If the result is "1" you have it.
-       Example session				|termdebug-example|
-       Stepping through code			|termdebug-stepping|
-       Inspecting variables			|termdebug-variables|
-+      Navigating stack frames			|termdebug-frames|
-       Other commands				|termdebug-commands|
-       Events					|termdebug-events|
-       Prompt mode				|termdebug-prompt|
-@@ -1376,19 +1377,16 @@ This is similar to using "print" in the gdb window.
- You can usually shorten `:Evaluate` to `:Ev`.
- 
- 
--Navigation in the Stack ~
--					*termdebug-variables* *:Frame*
-- `:Frame`	Select the given frame, using  either the frame's
--                stack number, address, or function name.
-- `:Up`	        Select the frame that called the current one with an
--                optional argument to say how many frames to go up.
-- `+`		same (see |termdebug_map_plus| to disable)
-- `:Down`	        Select the frame called by the current one with
--                an optional argument to say how many frames to go down.
-- `-`		same (see |termdebug_map_minus| to disable)
+-include #12403: window for Termdebug showing local variables
 -
--This is similar to using "print" in the gdb window.
--You can usually shorten `:Evaluate` to `:Ev`.
-+Navigating stack frames ~
-+				*termdebug-frames* *:Frame* *:Up* *:Down*
-+ `:Frame` [frame]	select frame [frame], which is a frame number,
-+			address, or function name (default: current frame)
-+ `:Up` [count]		go up [count] frames (default: 1; the frame that
-+			called the current)
-+ `+`			same (see |termdebug_map_plus| to disable)
-+ `:Down` [count]	go down [count] frames (default: 1; the frame called
-+			by the current)
-+ `-`			same (see |termdebug_map_minus| to disable)
+-include #12140: positional arguments in printf(), fixes #10577
+-
+-Include #11818: attach custom data to quickfix items.
+-
+-Include #12292: buffer argument for undotree()?
+-
+ When 'virtualedit' is "all" and 'cursorcolumn' is set, the wrong column may be
+ highlighted. (van-de-bugger, 2018 Jan 23, #2576)
+ 
+@@ -131,7 +121,7 @@ Upcoming larger works:
  
  
- Other commands ~
-@@ -1464,17 +1462,17 @@ If there is no g:termdebug_config you can use: >
- 	let g:termdebug_use_prompt = 1
- <
- 						*termdebug_map_K*
--The K key is normally mapped to :Evaluate. If you do not want this use: >
-+The K key is normally mapped to |:Evaluate|. If you do not want this use: >
- 	let g:termdebug_config['map_K'] = 0
- If there is no g:termdebug_config you can use: >
- 	let g:termdebug_map_K = 0
- <
- 						*termdebug_map_minus*
--The - key is normally mapped to :Down. If you do not want this use: >
-+The - key is normally mapped to |:Down|. If you do not want this use: >
- 	let g:termdebug_config['map_minus'] = 0
- <
- 						*termdebug_map_plus*
--The + key is normally mapped to :Up. If you do not want this use: >
-+The + key is normally mapped to |:Up|. If you do not want this use: >
- 	let g:termdebug_config['map_plus'] = 0
- <
- 						*termdebug_disasm_window*
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 2112fbb1b..d5aa79e31 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -877,6 +877,7 @@ Other computation:					*bitwise-function*
- 	srand()			initialize seed used by rand()
- 
- Variables:						*var-functions*
-+	instanceof()		check if a variable is an instance of a given class
- 	type()			type of a variable as a number
- 	typename()		type of a variable as text
- 	islocked()		check if a variable is locked
+ Further Vim9 improvements, possibly after launch:
+-- implement :class and :interface: See |vim9-classes
++- Classes and Interfaces. See |vim9-classes|
+   - Change access: public by default, private by prefixing "_".
+ 	Check for error: can't have same name twice (ignoring "_" prefix).
+   - Private methods?
+@@ -142,22 +132,15 @@ Further Vim9 improvements, possibly after launch:
+   - Cannot use class type of itself in the method (Issue #12369)
+   - Cannot use an object method in a lambda  #12417
+ 	Define all methods before compiling them?
+-  - class members initialized during definition (Issue #12041)
+   - Cannot call class member of funcref type  (Issue #12324)
+ 	Also #12081 first case.
+   - Using list of functions does not work #12081 (repro in later message).
+-  - Weird `class X not found on interface X` error (Issue #12023)
+   - First argument of call() cannot be "obj.Func". (#11865)
+-  - "return this" required for early return from constructor (inconsistent)
+-    (Issue #12040)
+-  - class/method confusion inside ":def" when using "class extends" (Issue
+-    #12089)
+   - null_object - constant type 17 not supported (Issue #12043)
+   - problem compiling object method call as function call argument (Issue
+     #12081)
+   - Make ":defcompile ClassName" compile all functions and methods in the
+     class.
+-  - object's method in stacktrace missing information (Issue #12078)
+   - Forward declaration of a class?  E.g. for Clone() function.
+ 	email lifepillar 2023 Mar 26
+   - Getting member of variable with "any" type should be handled at runtime.
+@@ -180,7 +163,7 @@ Further Vim9 improvements, possibly after launch:
+   - For chaining, allow using the class name as type for function return
+     value.
+   - Implement generics
+-  - Add "instanceof" (exact class name).  And "assignable" (class or child)?
++  - Add "assignable" (class or child)?
+   - More efficient way for interface member index than iterating over list?
+   - a variant of type() that returns a different type for each class?
+       list<number> and list<string> should also differ.
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 4b0cdbb67..1431a134e 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1033,10 +1033,12 @@ In Vim9 script one can use the following predefined values: >
+ 	null
+ 	null_blob
+ 	null_channel
++	null_class
+ 	null_dict
+ 	null_function
+ 	null_job
+ 	null_list
++	null_object
+ 	null_partial
+ 	null_string
+ `true` is the same as `v:true`, `false` the same as `v:false`, `null` the same
