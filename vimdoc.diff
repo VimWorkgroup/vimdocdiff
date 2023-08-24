@@ -1,71 +1,111 @@
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 99bc9e2be..236454793 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -310,6 +310,7 @@ inputrestore()			Number	restore typeahead
+ inputsave()			Number	save and clear typeahead
+ inputsecret({prompt} [, {text}]) String	like input() but hiding the text
+ insert({object}, {item} [, {idx}]) List	insert {item} in {object} [before {idx}]
++instanceof({object}, {class})	Number	|TRUE| if {object} is an instance of {class}
+ interrupt()			none	interrupt script execution
+ invert({expr})			Number	bitwise invert
+ isabsolutepath({path})		Number	|TRUE| if {path} is an absolute path
+@@ -5052,6 +5053,17 @@ insert({object}, {item} [, {idx}])			*insert()*
+ 		Can also be used as a |method|: >
+ 			mylist->insert(item)
+ 
++instanceof({object}, {class})				*instanceof()*
++		The result is a Number, which is |TRUE| when the {object} argument is a
++		direct or indirect instance of a |Class| specified by {class}.
++		When {class} is a |List| the function returns |TRUE| when {object} is an
++		instance of any of the specified classes.
++		Example: >
++			instanceof(animal, [Dog, Cat])
++
++<		Can also be used as a |method|: >
++			myobj->instanceof(mytype)
++
+ interrupt()						*interrupt()*
+ 		Interrupt script execution.  It works more or less like the
+ 		user typing CTRL-C, most commands won't execute and control
 diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 5e4ad1fcf..632431c5f 100644
+index 632431c5f..c02a885c2 100644
 --- a/runtime/doc/terminal.txt
 +++ b/runtime/doc/terminal.txt
-@@ -1376,6 +1376,21 @@ This is similar to using "print" in the gdb window.
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.0.  Last change: 2023 Jun 28
++*terminal.txt*	For Vim version 9.0.  Last change: 2023 Aug 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -38,6 +38,7 @@ If the result is "1" you have it.
+       Example session				|termdebug-example|
+       Stepping through code			|termdebug-stepping|
+       Inspecting variables			|termdebug-variables|
++      Navigating stack frames			|termdebug-frames|
+       Other commands				|termdebug-commands|
+       Events					|termdebug-events|
+       Prompt mode				|termdebug-prompt|
+@@ -1376,19 +1377,16 @@ This is similar to using "print" in the gdb window.
  You can usually shorten `:Evaluate` to `:Ev`.
  
  
-+Navigation in the Stack ~
-+					*termdebug-variables* *:Frame*
-+ `:Frame`	Select the given frame, using  either the frame's
-+                stack number, address, or function name.
-+ `:Up`	        Select the frame that called the current one with an
-+                optional argument to say how many frames to go up.
-+ `+`		same (see |termdebug_map_plus| to disable)
-+ `:Down`	        Select the frame called by the current one with
-+                an optional argument to say how many frames to go down.
-+ `-`		same (see |termdebug_map_minus| to disable)
-+
-+This is similar to using "print" in the gdb window.
-+You can usually shorten `:Evaluate` to `:Ev`.
-+
-+
+-Navigation in the Stack ~
+-					*termdebug-variables* *:Frame*
+- `:Frame`	Select the given frame, using  either the frame's
+-                stack number, address, or function name.
+- `:Up`	        Select the frame that called the current one with an
+-                optional argument to say how many frames to go up.
+- `+`		same (see |termdebug_map_plus| to disable)
+- `:Down`	        Select the frame called by the current one with
+-                an optional argument to say how many frames to go down.
+- `-`		same (see |termdebug_map_minus| to disable)
+-
+-This is similar to using "print" in the gdb window.
+-You can usually shorten `:Evaluate` to `:Ev`.
++Navigating stack frames ~
++				*termdebug-frames* *:Frame* *:Up* *:Down*
++ `:Frame` [frame]	select frame [frame], which is a frame number,
++			address, or function name (default: current frame)
++ `:Up` [count]		go up [count] frames (default: 1; the frame that
++			called the current)
++ `+`			same (see |termdebug_map_plus| to disable)
++ `:Down` [count]	go down [count] frames (default: 1; the frame called
++			by the current)
++ `-`			same (see |termdebug_map_minus| to disable)
+ 
+ 
  Other commands ~
- 							*termdebug-commands*
-  *:Gdb*	     jump to the gdb window
-@@ -1453,6 +1468,14 @@ The K key is normally mapped to :Evaluate. If you do not want this use: >
+@@ -1464,17 +1462,17 @@ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_use_prompt = 1
+ <
+ 						*termdebug_map_K*
+-The K key is normally mapped to :Evaluate. If you do not want this use: >
++The K key is normally mapped to |:Evaluate|. If you do not want this use: >
  	let g:termdebug_config['map_K'] = 0
  If there is no g:termdebug_config you can use: >
  	let g:termdebug_map_K = 0
-+<
-+						*termdebug_map_minus*
-+The - key is normally mapped to :Down. If you do not want this use: >
-+	let g:termdebug_config['map_minus'] = 0
-+<
-+						*termdebug_map_plus*
-+The + key is normally mapped to :Up. If you do not want this use: >
-+	let g:termdebug_config['map_plus'] = 0
+ <
+ 						*termdebug_map_minus*
+-The - key is normally mapped to :Down. If you do not want this use: >
++The - key is normally mapped to |:Down|. If you do not want this use: >
+ 	let g:termdebug_config['map_minus'] = 0
+ <
+ 						*termdebug_map_plus*
+-The + key is normally mapped to :Up. If you do not want this use: >
++The + key is normally mapped to |:Up|. If you do not want this use: >
+ 	let g:termdebug_config['map_plus'] = 0
  <
  						*termdebug_disasm_window*
- If you want the Asm window shown by default, set the "disasm_window" flag to
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 0d830f664..14fe2977a 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -338,6 +338,8 @@ prop_list({lnum} [, {props}])				*prop_list()*
- 		   text		text to be displayed before {col}.  Only
- 				present for |virtual-text| properties.
- 		   text_align	alignment property of |virtual-text|.
-+		   text_padding_left
-+				left padding used for virtual text.
- 		   text_wrap	specifies whether |virtual-text| is wrapped.
- 		   type		name of the property type, omitted if
- 				the type was deleted
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index a68b97c87..c68288a0c 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -423,6 +423,12 @@ Each member and function name can be used only once.  It is not possible to
- define a function with the same name and different type of arguments.
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 2112fbb1b..d5aa79e31 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -877,6 +877,7 @@ Other computation:					*bitwise-function*
+ 	srand()			initialize seed used by rand()
  
- 
-+Member Initialization ~
-+If the type of a member is not explicitly specified in a class, then it is set
-+to "any" during class definition.  When an object is instantiated from the
-+class, then the type of the member is set.
-+
-+
- Extending a class ~
- 							*extends*
- A class can extend one other class. *E1352* *E1353* *E1354*
+ Variables:						*var-functions*
++	instanceof()		check if a variable is an instance of a given class
+ 	type()			type of a variable as a number
+ 	typename()		type of a variable as text
+ 	islocked()		check if a variable is locked
