@@ -1,62 +1,13 @@
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 8479e15d3..6b45aabde 100644
+index 6b45aabde..db1d771fd 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
-@@ -129,6 +129,7 @@ Further Vim9 improvements, possibly after launch:
- 	    or: def _Func()
-     Perhaps use "private" keyword instead of "_" prefix?
-   - "final" object members - can only be set in the constructor.
-+  - Support export/import of classes and interfaces.
-   - Cannot use class type of itself in the method (Issue #12369)
-   - Cannot use an object method in a lambda  #12417
- 	Define all methods before compiling them?
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index c68288a0c..926638bad 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -178,6 +178,26 @@ number to the total number of lines: >
- 	enddef
- 
- 
-+Private methods ~
-+If you want object methods to be accessible only from other methods of the
-+same class and not used from outside the class, then you can make them
-+private.  This is done by prefixing the method name with an underscore: >
-+
-+    class SomeClass
-+	def _Foo(): number
-+	  return 10
-+	enddef
-+	def Bar(): number
-+	  return this._Foo()
-+	enddef
-+    endclass
-+<
-+Accessing a private method outside the class will result in an error (using
-+the above class): >
-+
-+    var a = SomeClass.new()
-+    a._Foo()
-+<
- Simplifying the new() method ~
- 
- Many constructors take values for the object members.  Thus you very often see
-@@ -284,6 +304,18 @@ object members, they cannot use the "this" keyword. >
- Inside the class the function can be called by name directly, outside the
- class the class name must be prefixed: `OtherThing.ClearTotalSize()`.
- 
-+Just like object methods the access can be made private by using an underscore
-+as the first character in the method name: >
-+
-+    class OtherThing
-+	static def _Foo()
-+	    echo "Foo"
-+	enddef
-+	def Bar()
-+	    OtherThing._Foo()
-+	enddef
-+    endclass
-+
- ==============================================================================
- 
- 4.  Using an abstract class			*Vim9-abstract-class*
+@@ -3536,8 +3536,6 @@ Macintosh:
+ 8   Dragging the status line doesn't scroll but redraw.
+ 8   When performing incremental search, should abort searching as soon as a
+     character is typed.
+-8   When the value of $MAKE contains a path, configure can't handle this.
+-    It's an autoconf bug.  Remove the path from $MAKE to work around it.
+ 8   How to set VIMRC_FILE to \"something\" for configure?  Why does this not
+     work: CFLAGS='-DVIMRC_FILE=\"/mydir/myfile\"' ./configure
+ 8   The temporary file is sometimes not writable.  Check for this, and use an
