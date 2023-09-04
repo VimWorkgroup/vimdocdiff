@@ -1,13 +1,28 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 6b45aabde..db1d771fd 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -3536,8 +3536,6 @@ Macintosh:
- 8   Dragging the status line doesn't scroll but redraw.
- 8   When performing incremental search, should abort searching as soon as a
-     character is typed.
--8   When the value of $MAKE contains a path, configure can't handle this.
--    It's an autoconf bug.  Remove the path from $MAKE to work around it.
- 8   How to set VIMRC_FILE to \"something\" for configure?  Why does this not
-     work: CFLAGS='-DVIMRC_FILE=\"/mydir/myfile\"' ./configure
- 8   The temporary file is sometimes not writable.  Check for this, and use an
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 236454793..ef99ca60a 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -6408,6 +6408,7 @@ mode([expr])	Return a string that indicates the current mode.
+ 		   Rvc	    Virtual Replace mode completion |compl-generic|
+ 		   Rvx	    Virtual Replace mode |i_CTRL-X| completion
+ 		   c	    Command-line editing
++		   ct	    Command-line editing via Terminal-Job mode
+ 		   cv	    Vim Ex mode |gQ|
+ 		   ce	    Normal Ex mode |Q|
+ 		   r	    Hit-enter prompt
+@@ -6706,8 +6707,13 @@ printf({fmt}, {expr1} ...)				*printf()*
+ 			a conversion is wider than the field width, the field
+ 			is expanded to contain the conversion result.
+ 			The 'h' modifier indicates the argument is 16 bits.
+-			The 'l' modifier indicates the argument is 32 bits.
+-			The 'L' modifier indicates the argument is 64 bits.
++			The 'l' modifier indicates the argument is a long
++			integer.  The size will be 32 bits or 64 bits
++			depending on your platform.
++			The "ll" modifier indicates the argument is 64 bits.
++			The b and B conversion specifiers never take a width
++			modifier and always assume their argument is a 64 bit
++			integer.
+ 			Generally, these modifiers are not useful. They are
+ 			ignored when type is known from the argument.
+ 
