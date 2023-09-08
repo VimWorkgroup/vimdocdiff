@@ -1,28 +1,36 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 236454793..ef99ca60a 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -6408,6 +6408,7 @@ mode([expr])	Return a string that indicates the current mode.
- 		   Rvc	    Virtual Replace mode completion |compl-generic|
- 		   Rvx	    Virtual Replace mode |i_CTRL-X| completion
- 		   c	    Command-line editing
-+		   ct	    Command-line editing via Terminal-Job mode
- 		   cv	    Vim Ex mode |gQ|
- 		   ce	    Normal Ex mode |Q|
- 		   r	    Hit-enter prompt
-@@ -6706,8 +6707,13 @@ printf({fmt}, {expr1} ...)				*printf()*
- 			a conversion is wider than the field width, the field
- 			is expanded to contain the conversion result.
- 			The 'h' modifier indicates the argument is 16 bits.
--			The 'l' modifier indicates the argument is 32 bits.
--			The 'L' modifier indicates the argument is 64 bits.
-+			The 'l' modifier indicates the argument is a long
-+			integer.  The size will be 32 bits or 64 bits
-+			depending on your platform.
-+			The "ll" modifier indicates the argument is 64 bits.
-+			The b and B conversion specifiers never take a width
-+			modifier and always assume their argument is a 64 bit
-+			integer.
- 			Generally, these modifiers are not useful. They are
- 			ignored when type is known from the argument.
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 05047224f..9c092673f 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*  For Vim version 9.0.  Last change: 2023 Apr 29
++*filetype.txt*  For Vim version 9.0.  Last change: 2023 Sep 06
  
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -419,11 +419,24 @@ ways to change this:
+ 3.  Docs for the default filetype plugins.		*ftplugin-docs*
+ 
+ 
++					*plugin_exec* *g:plugin_exec*
++Enable executing of external commands.  This was done historically for e.g.
++the perl filetype plugin (and a few others) to set the search path.
++Disabled by default for security reasons: >
++	:let g:plugin_exec = 1
++It is also possible to enable this only for certain filetypes: >
++	:let g:<filetype>_exec = 1
++So to enable this only for ruby, set the following variable: >
++	:let g:ruby_exec = 1
++
++If both, the global `plugin_exec` and the `<filetype>_exec` specific variable
++are set, the filetpe specific variable should have precedent.
++
+ AWK							*ft-awk-plugin*
+ 
+ Support for features specific to GNU Awk, like @include, can be enabled by
+ setting: >
+-	let g:awk_is_gawk = 1
++	:let g:awk_is_gawk = 1
+ 
+ 
+ CHANGELOG						*ft-changelog-plugin*
