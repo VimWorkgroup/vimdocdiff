@@ -1,34 +1,48 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 29a12396d..6a20734a6 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -596,7 +596,7 @@ The method used to prevent copying in the generated page depends on the value
- of |g:html_use_input_for_pc|.
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index ef99ca60a..a52a3df0b 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -2207,7 +2207,7 @@ environ()						*environ()*
  
- 						    *g:html_use_input_for_pc*
--Default: "fallback"
-+Default: "none"
- If |g:html_prevent_copy| is non-empty, then:
+ err_teapot([{expr}])					*err_teapot()*
+ 		Produce an error with number 418, needed for implementation of
+-		RFC 2325.
++		RFC 2324.
+ 		If {expr} is present and it is TRUE error 503 is given,
+ 		indicating that coffee is temporarily not available.
+ 		If {expr} is present it must be a String.
+@@ -6786,7 +6786,7 @@ printf({fmt}, {expr1} ...)				*printf()*
+ 							*printf-$*
+ 		In certain languages, error and informative messages are
+ 		more readable when the order of words is different from the
+-		corresponding message in English. To accomodate translations
++		corresponding message in English. To accommodate translations
+ 		having a different word order, positional arguments may be
+ 		used to indicate this. For instance: >
  
- When "all", read-only <input> elements are used in place of normal text for
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 8a9e37e81..20ad4bbab 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -358,6 +358,16 @@ class, for which objects can be created.  Example: >
- An abstract class is defined the same way as a normal class, except that it
- does not have any new() method. *E1359*
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 6248f742f..8696e912f 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -127,7 +127,7 @@ CTRL-R {register}				*i_CTRL-R*
+ 			'/'	the last search pattern
+ 			':'	the last command-line
+ 			'.'	the last inserted text
+-                                                       *i_CTRL-R_-*
++							*i_CTRL-R_-*
+ 			'-'	the last small (less than a line) delete
+ 				register. This is repeatable using |.| since
+ 				it remembers the register to put instead of
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 924a93250..74cec4230 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -189,7 +189,7 @@ CTRL-W v						*CTRL-W_v*
+ 		it doesn't!
  
-+						*abstract-method*
-+An abstract method can be defined in an abstract class by using the "abstract"
-+prefix when defining the function: >
-+
-+	abstract class Shape
-+	   abstract def Draw()
-+	endclass
-+
-+A class extending the abstract class must implement all the abstract methods.
-+Class methods in an abstract class can also be abstract methods.
- 
- ==============================================================================
- 
+ CTRL-W n						*CTRL-W_n*
+-CTRL-W CTRL_N						*CTRL-W_CTRL-N*
++CTRL-W CTRL-N						*CTRL-W_CTRL-N*
+ :[N]new [++opt] [+cmd]					*:new*
+ 		Create a new window and start editing an empty file in it.
+ 		Make new window N high (default is to use half the existing
