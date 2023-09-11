@@ -1,48 +1,291 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index ef99ca60a..a52a3df0b 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -2207,7 +2207,7 @@ environ()						*environ()*
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 535c17546..a8cb196e1 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1,4 +1,4 @@
+-*channel.txt*      For Vim version 9.0.  Last change: 2022 Dec 01
++*channel.txt*      For Vim version 9.0.  Last change: 2023 Aug 15
  
- err_teapot([{expr}])					*err_teapot()*
- 		Produce an error with number 418, needed for implementation of
--		RFC 2325.
-+		RFC 2324.
- 		If {expr} is present and it is TRUE error 503 is given,
- 		indicating that coffee is temporarily not available.
- 		If {expr} is present it must be a String.
-@@ -6786,7 +6786,7 @@ printf({fmt}, {expr1} ...)				*printf()*
- 							*printf-$*
- 		In certain languages, error and informative messages are
- 		more readable when the order of words is different from the
--		corresponding message in English. To accomodate translations
-+		corresponding message in English. To accommodate translations
- 		having a different word order, positional arguments may be
- 		used to indicate this. For instance: >
  
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 6248f742f..8696e912f 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -127,7 +127,7 @@ CTRL-R {register}				*i_CTRL-R*
- 			'/'	the last search pattern
- 			':'	the last command-line
- 			'.'	the last inserted text
--                                                       *i_CTRL-R_-*
-+							*i_CTRL-R_-*
- 			'-'	the last small (less than a line) delete
- 				register. This is repeatable using |.| since
- 				it remembers the register to put instead of
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 924a93250..74cec4230 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
-@@ -189,7 +189,7 @@ CTRL-W v						*CTRL-W_v*
- 		it doesn't!
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -956,7 +956,7 @@ job_start({command} [, {options}])			*job_start()*
+ 		to String.  This works best on Unix.
  
- CTRL-W n						*CTRL-W_n*
--CTRL-W CTRL_N						*CTRL-W_CTRL-N*
-+CTRL-W CTRL-N						*CTRL-W_CTRL-N*
- :[N]new [++opt] [+cmd]					*:new*
- 		Create a new window and start editing an empty file in it.
- 		Make new window N high (default is to use half the existing
+ 		On MS-Windows, job_start() makes a GUI application hidden. If
+-		want to show it, Use |:!start| instead.
++		you want to show it, use |:!start| instead.
+ 
+ 		The command is executed directly, not through a shell, the
+ 		'shell' option is not used.  To use the shell: >
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 9c092673f..987b0d89e 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*  For Vim version 9.0.  Last change: 2023 Sep 06
++*filetype.txt*  For Vim version 9.0.  Last change: 2023 Sep 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -138,35 +138,38 @@ what kind of file it is.  This doesn't always work.  A number of global
+ variables can be used to overrule the filetype used for certain extensions:
+ 
+ 	file name	variable ~
+-	*.asa		g:filetype_asa	|ft-aspvbs-syntax| |ft-aspperl-syntax|
+-	*.asm		g:asmsyntax	|ft-asm-syntax|
+-	*.asp		g:filetype_asp	|ft-aspvbs-syntax| |ft-aspperl-syntax|
+-	*.bas		g:filetype_bas	|ft-basic-syntax|
++	*.asa		g:filetype_asa		|ft-aspperl-syntax|
++						|ft-aspvbs-syntax|
++	*.asm		g:asmsyntax		|ft-asm-syntax|
++	*.asp		g:filetype_asp		|ft-aspperl-syntax|
++						|ft-aspvbs-syntax|
++	*.bas		g:filetype_bas		|ft-basic-syntax|
+ 	*.cfg		g:filetype_cfg
+ 	*.cls		g:filetype_cls
+-	*.csh		g:filetype_csh	|ft-csh-syntax|
++	*.csh		g:filetype_csh		|ft-csh-syntax|
+ 	*.dat		g:filetype_dat
+-	*.f		g:filetype_f	|ft-forth-syntax|
+-	*.frm		g:filetype_frm	|ft-form-syntax|
+-	*.fs		g:filetype_fs	|ft-forth-syntax|
+-	*.i		g:filetype_i	|ft-progress-syntax|
++	*.f		g:filetype_f		|ft-forth-syntax|
++	*.frm		g:filetype_frm		|ft-form-syntax|
++	*.fs		g:filetype_fs		|ft-forth-syntax|
++	*.h		g:c_syntax_for_h	|ft-c-syntax|
++	*.i		g:filetype_i		|ft-progress-syntax|
+ 	*.inc		g:filetype_inc
+ 	*.lsl		g:filetype_lsl
+-	*.m		g:filetype_m	|ft-mathematica-syntax|
++	*.m		g:filetype_m		|ft-mathematica-syntax|
+ 	*.mod		g:filetype_mod
+-	*.p		g:filetype_p	|ft-pascal-syntax|
++	*.p		g:filetype_p		|ft-pascal-syntax|
+ 	*.pl		g:filetype_pl
+-	*.pp		g:filetype_pp	|ft-pascal-syntax|
++	*.pp		g:filetype_pp		|ft-pascal-syntax|
+ 	*.prg		g:filetype_prg
+ 	*.r		g:filetype_r
+ 	*.sig		g:filetype_sig
+-	*.sql		g:filetype_sql	|ft-sql-syntax|
++	*.sql		g:filetype_sql		|ft-sql-syntax|
+ 	*.src		g:filetype_src
+ 	*.sys		g:filetype_sys
+-	*.sh		g:bash_is_sh	|ft-sh-syntax|
+-	*.tex		g:tex_flavor	|ft-tex-plugin|
++	*.sh		g:bash_is_sh		|ft-sh-syntax|
++	*.tex		g:tex_flavor		|ft-tex-plugin|
+ 	*.typ		g:filetype_typ
+-	*.w		g:filetype_w	|ft-cweb-syntax|
++	*.w		g:filetype_w		|ft-cweb-syntax|
+ 
+ For a few filetypes the global variable is used only when the filetype could
+ not be detected:
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 7b66303d3..b19c3067c 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
+@@ -1,4 +1,4 @@
+-*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 09
++*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -215,7 +215,7 @@ Vim would never have become what it is now, without the help of these people!
+ 	Eric Fischer		Mac port, 'cindent', and other improvements
+ 	Benji Fisher		Answering lots of user questions
+ 	Bill Foster		Athena GUI port (later removed)
+-	Google			Lets me work on Vim one day a week
++	Google			Let Bram work on Vim one day a week
+ 	Loic Grenie		xvim (ideas for multi windows version)
+ 	Sven Guckes		Vim promoter and previous WWW page maintainer |Sven-Guckes|
+ 	Darren Hiebert		Exuberant ctags
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index ec2b8756b..6c82fa495 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Jun 02
++*options.txt*	For Vim version 9.0.  Last change: 2023 Aug 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -303,7 +303,7 @@ The options local to a window are remembered for each buffer.  This also
+ happens when the buffer is not loaded, but they are lost when the buffer is
+ wiped out |:bwipe|.
+ 
+-Special local window options			*special-local-window-option*
++Special local window options			*local-noglobal*
+ 
+ The following local window options won't be copied over when new windows are
+ created, thus they behave slightly differently:
+@@ -314,7 +314,7 @@ created, thus they behave slightly differently:
+ 	'winfixheight'	specific to existing window
+ 	'winfixwidth'	specific to existing window
+ 
+-Special local buffer options			*special-local-buffer-option*
++Special local buffer options
+ 
+ The following local buffer options won't be copied over when new buffers are
+ created, thus they behave slightly differently:
+@@ -1474,7 +1474,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'bufhidden'* *'bh'*
+ 'bufhidden' 'bh'	string (default: "")
+-			local to buffer  |special-local-buffer-option|
++			local to buffer  |local-noglobal|
+ 	This option specifies what happens when a buffer is no longer
+ 	displayed in a window:
+ 	  <empty>	follow the global 'hidden' option
+@@ -1506,7 +1506,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'buftype'* *'bt'* *E382*
+ 'buftype' 'bt'		string (default: "")
+-			local to buffer  |special-local-buffer-option|
++			local to buffer  |local-noglobal|
+ 	The value of this option specifies the type of a buffer:
+ 	  <empty>	normal buffer
+ 	  nofile	buffer which is not related to a file and will not be
+@@ -3433,7 +3433,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 					*'filetype'* *'ft'*
+ 'filetype' 'ft'		string (default: "")
+-			local to buffer  |special-local-buffer-option|
++			local to buffer  |local-noglobal|
+ 	When this option is set, the FileType autocommand event is triggered.
+ 	All autocommands that match with the value of this option will be
+ 	executed.  Thus the value of 'filetype' is used in place of the file
+@@ -5590,7 +5590,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 				*'modified'* *'mod'* *'nomodified'* *'nomod'*
+ 'modified' 'mod'	boolean	(default off)
+-			local to buffer  |special-local-buffer-option|
++			local to buffer  |local-noglobal|
+ 	When on, the buffer is considered to be modified.  This option is set
+ 	when:
+ 	1. A change was made to the text since it was last written.  Using the
+@@ -6161,7 +6161,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 					*'previewwindow'* *'nopreviewwindow'*
+ 					*'pvw'* *'nopvw'* *E590*
+ 'previewwindow' 'pvw'	boolean (default off)
+-			local to window  |special-local-window-option|
++			local to window  |local-noglobal|
+ 			{not available when compiled without the |+quickfix|
+ 			feature}
+ 	Identifies the preview window.  Only one window can have this option
+@@ -6356,7 +6356,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 				   *'readonly'* *'ro'* *'noreadonly'* *'noro'*
+ 'readonly' 'ro'		boolean	(default off)
+-			local to buffer  |special-local-buffer-option|
++			local to buffer  |local-noglobal|
+ 	If on, writes fail unless you use a '!'.  Protects you from
+ 	accidentally overwriting a file.  Default on when Vim is started
+ 	in read-only mode ("vim -R") or when the executable is called "view".
+@@ -6735,7 +6735,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'scroll'* *'scr'*
+ 'scroll' 'scr'		number	(default: half the window height)
+-			local to window  |special-local-window-option|
++			local to window  |local-noglobal|
+ 	Number of lines to scroll with CTRL-U and CTRL-D commands.  Will be
+ 	set to half the number of lines in the window when the window size
+ 	changes.  This may happen when enabling the |status-line| or
+@@ -7997,7 +7997,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 						*'syntax'* *'syn'*
+ 'syntax' 'syn'		string	(default empty)
+-			local to buffer  |special-local-buffer-option|
++			local to buffer  |local-noglobal|
+ 			{not available when compiled without the |+syntax|
+ 			feature}
+ 	When this option is set, the syntax with this name is loaded, unless
+@@ -9445,7 +9445,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 			*'winfixheight'* *'wfh'* *'nowinfixheight'* *'nowfh'*
+ 'winfixheight' 'wfh'	boolean	(default off)
+-			local to window  |special-local-window-option|
++			local to window  |local-noglobal|
+ 	Keep the window height when windows are opened or closed and
+ 	'equalalways' is set.  Also for |CTRL-W_=|.  Set by default for the
+ 	|preview-window| and |quickfix-window|.
+@@ -9453,7 +9453,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 			*'winfixwidth'* *'wfw'* *'nowinfixwidth'* *'nowfw'*
+ 'winfixwidth' 'wfw'	boolean	(default off)
+-			local to window  |special-local-window-option|
++			local to window  |local-noglobal|
+ 	Keep the window width when windows are opened or closed and
+ 	'equalalways' is set.  Also for |CTRL-W_=|.
+ 	The width may be changed anyway when running out of room.
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 6a20734a6..fe560d380 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -2160,11 +2160,11 @@ should set a variable in your .vimrc file: >
+ 	:let lpc_syntax_for_c = 1
+ 
+ If it doesn't work properly for some particular C or LPC files, use a
+-modeline.  For a LPC file:
++modeline.  For a LPC file: >
+ 
+ 	// vim:set ft=lpc:
+ 
+-For a C file that is recognized as LPC:
++For a C file that is recognized as LPC: >
+ 
+ 	// vim:set ft=c:
+ 
+@@ -2196,7 +2196,7 @@ LUA						*lua.vim* *ft-lua-syntax*
+ The Lua syntax file can be used for versions 4.0, 5.0, 5.1 and 5.2 (5.2 is
+ the default). You can select one of these versions using the global variables
+ lua_version and lua_subversion. For example, to activate Lua
+-5.1 syntax highlighting, set the variables like this:
++5.1 syntax highlighting, set the variables like this: >
+ 
+ 	:let lua_version = 5
+ 	:let lua_subversion = 1
+diff --git a/runtime/doc/tips.txt b/runtime/doc/tips.txt
+index 79b1574e2..0dfddb255 100644
+--- a/runtime/doc/tips.txt
++++ b/runtime/doc/tips.txt
+@@ -1,4 +1,4 @@
+-*tips.txt*      For Vim version 9.0.  Last change: 2021 Nov 06
++*tips.txt*      For Vim version 9.0.  Last change: 2023 Aug 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
+index f43b23956..0ab030199 100644
+--- a/runtime/doc/usr_05.txt
++++ b/runtime/doc/usr_05.txt
+@@ -1,4 +1,4 @@
+-*usr_05.txt*	For Vim version 9.0.  Last change: 2019 May 23
++*usr_05.txt*	For Vim version 9.0.  Last change: 2023 Aug 10
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index e9549285f..95b766d6c 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -44,12 +44,12 @@ He registered the vim.org domain and created the first Vim website.  We will
+ remember him!
+ 
+ 						 *Bram* *Moolenaar* *Bram-Moolenaar*
+-Vim version 9.1 is dedicated to Bram Moolenaar, who passed away on August 3rd 2023
+-while still working full-time on Vim.  The Vim project would not exist without
+-his ongoing passion to lead and develop Vim and the community for more than 30
+-years.  Bram was also passionate about his |ICCF| foundation to help children
+-in Uganda.  If you enjoy using Vim, please consider donating!
+-We will miss his guidance, passion and leadership.
++Vim version 9.1 is dedicated to Bram Moolenaar, who passed away on August 3rd
++2023 while still working full-time on Vim.  The Vim project would not exist
++without his ongoing passion to lead and develop Vim and the community for more
++than 30 years.  Bram was also passionate about his |ICCF| foundation to help
++children in Uganda.  If you enjoy using Vim, please consider donating! We will
++miss his guidance, passion and leadership.
+ 
+ Obituary Articles: https://github.com/vim/vim/discussions/12742
+ Say Farewell: https://github.com/vim/vim/discussions/12737
