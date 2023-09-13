@@ -1,291 +1,579 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index 535c17546..a8cb196e1 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -1,4 +1,4 @@
--*channel.txt*      For Vim version 9.0.  Last change: 2022 Dec 01
-+*channel.txt*      For Vim version 9.0.  Last change: 2023 Aug 15
+diff --git a/runtime/doc/ft_rust.txt b/runtime/doc/ft_rust.txt
+index 7fe7b7c4a..9d5eb8cce 100644
+--- a/runtime/doc/ft_rust.txt
++++ b/runtime/doc/ft_rust.txt
+@@ -1,70 +1,72 @@
+-*ft_rust.txt*	For Vim version 9.0.  Last change: 2022 Oct 17
+-
+-This is documentation for the Rust filetype plugin.
++*ft_rust.txt*      Filetype plugin for Rust
  
+ ==============================================================================
+-CONTENTS						      *rust*
++CONTENTS                                                      *rust*
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -956,7 +956,7 @@ job_start({command} [, {options}])			*job_start()*
- 		to String.  This works best on Unix.
+-1. Introduction							  |rust-intro|
+-2. Settings						       |rust-settings|
+-3. Commands						       |rust-commands|
+-4. Mappings						       |rust-mappings|
++1. Introduction                                                   |rust-intro|
++2. Settings                                                    |rust-settings|
++3. Commands                                                    |rust-commands|
++4. Mappings                                                    |rust-mappings|
  
- 		On MS-Windows, job_start() makes a GUI application hidden. If
--		want to show it, Use |:!start| instead.
-+		you want to show it, use |:!start| instead.
+ ==============================================================================
+-INTRODUCTION							  *rust-intro*
++INTRODUCTION                                                      *rust-intro*
  
- 		The command is executed directly, not through a shell, the
- 		'shell' option is not used.  To use the shell: >
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 9c092673f..987b0d89e 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -1,4 +1,4 @@
--*filetype.txt*  For Vim version 9.0.  Last change: 2023 Sep 06
-+*filetype.txt*  For Vim version 9.0.  Last change: 2023 Sep 11
+ This plugin provides syntax and supporting functionality for the Rust
+-filetype.
++filetype. It requires Vim 8 or higher for full functionality. Some commands
++will not work on earlier versions.
  
+ ==============================================================================
+-SETTINGS						       *rust-settings*
++SETTINGS                                                       *rust-settings*
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -138,35 +138,38 @@ what kind of file it is.  This doesn't always work.  A number of global
- variables can be used to overrule the filetype used for certain extensions:
+ This plugin has a few variables you can define in your vimrc that change the
+ behavior of the plugin.
  
- 	file name	variable ~
--	*.asa		g:filetype_asa	|ft-aspvbs-syntax| |ft-aspperl-syntax|
--	*.asm		g:asmsyntax	|ft-asm-syntax|
--	*.asp		g:filetype_asp	|ft-aspvbs-syntax| |ft-aspperl-syntax|
--	*.bas		g:filetype_bas	|ft-basic-syntax|
-+	*.asa		g:filetype_asa		|ft-aspperl-syntax|
-+						|ft-aspvbs-syntax|
-+	*.asm		g:asmsyntax		|ft-asm-syntax|
-+	*.asp		g:filetype_asp		|ft-aspperl-syntax|
-+						|ft-aspvbs-syntax|
-+	*.bas		g:filetype_bas		|ft-basic-syntax|
- 	*.cfg		g:filetype_cfg
- 	*.cls		g:filetype_cls
--	*.csh		g:filetype_csh	|ft-csh-syntax|
-+	*.csh		g:filetype_csh		|ft-csh-syntax|
- 	*.dat		g:filetype_dat
--	*.f		g:filetype_f	|ft-forth-syntax|
--	*.frm		g:filetype_frm	|ft-form-syntax|
--	*.fs		g:filetype_fs	|ft-forth-syntax|
--	*.i		g:filetype_i	|ft-progress-syntax|
-+	*.f		g:filetype_f		|ft-forth-syntax|
-+	*.frm		g:filetype_frm		|ft-form-syntax|
-+	*.fs		g:filetype_fs		|ft-forth-syntax|
-+	*.h		g:c_syntax_for_h	|ft-c-syntax|
-+	*.i		g:filetype_i		|ft-progress-syntax|
- 	*.inc		g:filetype_inc
- 	*.lsl		g:filetype_lsl
--	*.m		g:filetype_m	|ft-mathematica-syntax|
-+	*.m		g:filetype_m		|ft-mathematica-syntax|
- 	*.mod		g:filetype_mod
--	*.p		g:filetype_p	|ft-pascal-syntax|
-+	*.p		g:filetype_p		|ft-pascal-syntax|
- 	*.pl		g:filetype_pl
--	*.pp		g:filetype_pp	|ft-pascal-syntax|
-+	*.pp		g:filetype_pp		|ft-pascal-syntax|
- 	*.prg		g:filetype_prg
- 	*.r		g:filetype_r
- 	*.sig		g:filetype_sig
--	*.sql		g:filetype_sql	|ft-sql-syntax|
-+	*.sql		g:filetype_sql		|ft-sql-syntax|
- 	*.src		g:filetype_src
- 	*.sys		g:filetype_sys
--	*.sh		g:bash_is_sh	|ft-sh-syntax|
--	*.tex		g:tex_flavor	|ft-tex-plugin|
-+	*.sh		g:bash_is_sh		|ft-sh-syntax|
-+	*.tex		g:tex_flavor		|ft-tex-plugin|
- 	*.typ		g:filetype_typ
--	*.w		g:filetype_w	|ft-cweb-syntax|
-+	*.w		g:filetype_w		|ft-cweb-syntax|
+-								*g:rustc_path*
++Some variables can be set buffer local (`:b` prefix), and the buffer local
++will take precedence over the global `g:` counterpart.
++
++                                                                *g:rustc_path*
+ g:rustc_path~
+ 	Set this option to the path to rustc for use in the |:RustRun| and
+ 	|:RustExpand| commands. If unset, "rustc" will be located in $PATH: >
+-	    let g:rustc_path = $HOME .. "/bin/rustc"
++	    let g:rustc_path = $HOME."/bin/rustc"
+ <
  
- For a few filetypes the global variable is used only when the filetype could
- not be detected:
-diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
-index 7b66303d3..b19c3067c 100644
---- a/runtime/doc/intro.txt
-+++ b/runtime/doc/intro.txt
-@@ -1,4 +1,4 @@
--*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 09
-+*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 15
+-						  *g:rustc_makeprg_no_percent*
++                                                  *g:rustc_makeprg_no_percent*
+ g:rustc_makeprg_no_percent~
+ 	Set this option to 1 to have 'makeprg' default to "rustc" instead of
+ 	"rustc %": >
+ 	    let g:rustc_makeprg_no_percent = 1
+ <
  
+-							      *g:rust_conceal*
++                                                              *g:rust_conceal*
+ g:rust_conceal~
+ 	Set this option to turn on the basic |conceal| support: >
+ 	    let g:rust_conceal = 1
+ <
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -215,7 +215,7 @@ Vim would never have become what it is now, without the help of these people!
- 	Eric Fischer		Mac port, 'cindent', and other improvements
- 	Benji Fisher		Answering lots of user questions
- 	Bill Foster		Athena GUI port (later removed)
--	Google			Lets me work on Vim one day a week
-+	Google			Let Bram work on Vim one day a week
- 	Loic Grenie		xvim (ideas for multi windows version)
- 	Sven Guckes		Vim promoter and previous WWW page maintainer |Sven-Guckes|
- 	Darren Hiebert		Exuberant ctags
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index ec2b8756b..6c82fa495 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.0.  Last change: 2023 Jun 02
-+*options.txt*	For Vim version 9.0.  Last change: 2023 Aug 15
+-						     *g:rust_conceal_mod_path*
++                                                     *g:rust_conceal_mod_path*
+ g:rust_conceal_mod_path~
+ 	Set this option to turn on |conceal| for the path connecting token
+ 	"::": >
+ 	    let g:rust_conceal_mod_path = 1
+ <
  
+-							  *g:rust_conceal_pub*
++                                                          *g:rust_conceal_pub*
+ g:rust_conceal_pub~
+ 	Set this option to turn on |conceal| for the "pub" token: >
+ 	    let g:rust_conceal_pub = 1
+ <
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -303,7 +303,7 @@ The options local to a window are remembered for each buffer.  This also
- happens when the buffer is not loaded, but they are lost when the buffer is
- wiped out |:bwipe|.
+-						     *g:rust_recommended_style*
++                                                     *g:rust_recommended_style*
+ g:rust_recommended_style~
+-	Set this option to enable vim indentation and textwidth settings to
+-	conform to style conventions of the rust standard library (i.e. use 4
+-	spaces for indents and sets 'textwidth' to 99). This option is enabled
++        Set this option to enable vim indentation and textwidth settings to
++        conform to style conventions of the rust standard library (i.e. use 4
++        spaces for indents and sets 'textwidth' to 99). This option is enabled
+ 	by default. To disable it: >
+ 	    let g:rust_recommended_style = 0
+ <
  
--Special local window options			*special-local-window-option*
-+Special local window options			*local-noglobal*
+-								 *g:rust_fold*
++                                                                 *g:rust_fold*
+ g:rust_fold~
+ 	Set this option to turn on |folding|: >
+ 	    let g:rust_fold = 1
+@@ -76,63 +78,303 @@ g:rust_fold~
+ 	2		Braced blocks are folded. 'foldlevel' is left at the
+ 			global value (all folds are closed by default).
  
- The following local window options won't be copied over when new windows are
- created, thus they behave slightly differently:
-@@ -314,7 +314,7 @@ created, thus they behave slightly differently:
- 	'winfixheight'	specific to existing window
- 	'winfixwidth'	specific to existing window
+-						  *g:rust_bang_comment_leader*
++                                                  *g:rust_bang_comment_leader*
+ g:rust_bang_comment_leader~
+ 	Set this option to 1 to preserve the leader on multi-line doc comments
+ 	using the /*! syntax: >
+ 	    let g:rust_bang_comment_leader = 1
+ <
  
--Special local buffer options			*special-local-buffer-option*
-+Special local buffer options
+-						 *g:ftplugin_rust_source_path*
++                                                *g:rust_use_custom_ctags_defs*
++g:rust_use_custom_ctags_defs~
++	Set this option to 1 if you have customized ctags definitions for Rust
++	and do not wish for those included with rust.vim to be used: >
++	    let g:rust_use_custom_ctags_defs = 1
++<
++
++	NOTE: rust.vim's built-in definitions are only used for the Tagbar Vim
++	plugin, if you have it installed, AND if Universal Ctags is not
++	detected. This is because Universal Ctags already has built-in
++	support for Rust when used with Tagbar.
++
++	Also, note that when using ctags other than Universal Ctags, it is not
++	automatically used when generating |tags| files that Vim can use to
++	navigate to definitions across different source files. Feel free to
++	copy `rust.vim/ctags/rust.ctags` into your own `~/.ctags` if you wish
++	to generate |tags| files.
++
++
++                                                 *g:ftplugin_rust_source_path*
+ g:ftplugin_rust_source_path~
+ 	Set this option to a path that should be prepended to 'path' for Rust
+ 	source files: >
+-	    let g:ftplugin_rust_source_path = $HOME .. '/dev/rust'
++	    let g:ftplugin_rust_source_path = $HOME.'/dev/rust'
+ <
  
- The following local buffer options won't be copied over when new buffers are
- created, thus they behave slightly differently:
-@@ -1474,7 +1474,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-						       *g:rustfmt_command*
++                                                       *g:rustfmt_command*
+ g:rustfmt_command~
+ 	Set this option to the name of the 'rustfmt' executable in your $PATH. If
+ 	not specified it defaults to 'rustfmt' : >
+ 	    let g:rustfmt_command = 'rustfmt'
+ <
+-						       *g:rustfmt_autosave*
++                                                       *g:rustfmt_autosave*
+ g:rustfmt_autosave~
+ 	Set this option to 1 to run |:RustFmt| automatically when saving a
+ 	buffer. If not specified it defaults to 0 : >
+ 	    let g:rustfmt_autosave = 0
+ <
+-						       *g:rustfmt_fail_silently*
++	There is also a buffer-local b:rustfmt_autosave that can be set for
++	the same purpose, and can override the global setting.
++
++                                        *g:rustfmt_autosave_if_config_present*
++g:rustfmt_autosave_if_config_present~
++	Set this option to 1 to have *b:rustfmt_autosave* be set automatically
++	if a `rustfmt.toml` file is present in any parent directly leading to
++	the file being edited. If not set, default to 0: >
++	    let g:rustfmt_autosave_if_config_present = 0
++<
++	This is useful to have `rustfmt` only execute on save, on projects
++	that have `rustfmt.toml` configuration.
++
++	There is also a buffer-local b:rustfmt_autosave_if_config_present
++	that can be set for the same purpose, which can overrides the global
++	setting.
++                                                       *g:rustfmt_fail_silently*
+ g:rustfmt_fail_silently~
+ 	Set this option to 1 to prevent 'rustfmt' from populating the
+ 	|location-list| with errors. If not specified it defaults to 0: >
+ 	    let g:rustfmt_fail_silently = 0
+ <
+-						       *g:rustfmt_options*
++                                                       *g:rustfmt_options*
+ g:rustfmt_options~
+ 	Set this option to a string of options to pass to 'rustfmt'. The
+ 	write-mode is already set to 'overwrite'. If not specified it
+ 	defaults to '' : >
+ 	    let g:rustfmt_options = ''
+ <
++                                                       *g:rustfmt_emit_files*
++g:rustfmt_emit_files~
++	If not specified rust.vim tries to detect the right parameter to
++	pass to rustfmt based on its reported version. Otherwise, it
++	determines whether to run rustfmt with '--emit=files' (when 1 is
++	provided) instead of '--write-mode=overwrite'. >
++	    let g:rustfmt_emit_files = 0
  
- 						*'bufhidden'* *'bh'*
- 'bufhidden' 'bh'	string (default: "")
--			local to buffer  |special-local-buffer-option|
-+			local to buffer  |local-noglobal|
- 	This option specifies what happens when a buffer is no longer
- 	displayed in a window:
- 	  <empty>	follow the global 'hidden' option
-@@ -1506,7 +1506,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-							  *g:rust_playpen_url*
++
++                                                          *g:rust_playpen_url*
+ g:rust_playpen_url~
+-	Set this option to override the URL for the playpen to use: >
++	Set this option to override the url for the playpen to use: >
+ 	    let g:rust_playpen_url = 'https://play.rust-lang.org/'
+ <
  
- 						*'buftype'* *'bt'* *E382*
- 'buftype' 'bt'		string (default: "")
--			local to buffer  |special-local-buffer-option|
-+			local to buffer  |local-noglobal|
- 	The value of this option specifies the type of a buffer:
- 	  <empty>	normal buffer
- 	  nofile	buffer which is not related to a file and will not be
-@@ -3433,7 +3433,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-							*g:rust_shortener_url*
++                                                        *g:rust_shortener_url*
+ g:rust_shortener_url~
+-	Set this option to override the URL for the URL shortener: >
++	Set this option to override the url for the url shortener: >
+ 	    let g:rust_shortener_url = 'https://is.gd/'
+ <
  
- 					*'filetype'* *'ft'*
- 'filetype' 'ft'		string (default: "")
--			local to buffer  |special-local-buffer-option|
-+			local to buffer  |local-noglobal|
- 	When this option is set, the FileType autocommand event is triggered.
- 	All autocommands that match with the value of this option will be
- 	executed.  Thus the value of 'filetype' is used in place of the file
-@@ -5590,7 +5590,7 @@ A jump table for the options with a short description can be found at |Q_op|.
++                                                        *g:rust_clip_command*
++g:rust_clip_command~
++	Set this option to the command used in your OS to copy the Rust Play
++	url to the clipboard: >
++	    let g:rust_clip_command = 'xclip -selection clipboard'
++<
++
++                                                       *g:cargo_makeprg_params*
++g:cargo_makeprg_params~
++	Set this option to the string of parameters to pass to cargo. If not
++	specified it defaults to '$*' : >
++	    let g:cargo_makeprg_params = 'build'
++<
++
++                                                  *g:cargo_shell_command_runner*
++g:cargo_shell_command_runner~
++	Set this option to change how to run shell commands for cargo commands
++	|:Cargo|, |:Cbuild|, |:Crun|, ...
++	By default, |:terminal| is used to run shell command in terminal window
++	asynchronously. But if you prefer |:!| for running the commands, it can
++	be specified: >
++	    let g:cargo_shell_command_runner = '!'
++<
++
++
++Integration with Syntastic                                    *rust-syntastic*
++--------------------------
++
++This plugin automatically integrates with the Syntastic checker. There are two
++checkers provided: 'rustc', and 'cargo'. The latter invokes 'Cargo' in order to
++build code, and the former delivers a single edited '.rs' file as a compilation
++target directly to the Rust compiler, `rustc`.
++
++Because Cargo is almost exclusively being used for building Rust code these
++days, 'cargo' is the default checker. >
++
++    let g:syntastic_rust_checkers = ['cargo']
++<
++If you would like to change it, you can set `g:syntastic_rust_checkers` to a
++different value.
++                                          *g:rust_cargo_avoid_whole_workspace*
++                                          *b:rust_cargo_avoid_whole_workspace*
++g:rust_cargo_avoid_whole_workspace~
++	When editing a crate that is part of a Cargo workspace, and this
++	option is set to 1 (the default), then 'cargo' will be executed
++	directly in that crate directory instead of in the workspace
++	directory. Setting 0 prevents this behavior - however be aware that if
++	you are working in large workspace, Cargo commands may take more time,
++	plus the Syntastic error list may include all the crates in the
++	workspace. >
++            let g:rust_cargo_avoid_whole_workspace = 0
++<
++                                              *g:rust_cargo_check_all_targets*
++                                              *b:rust_cargo_check_all_targets*
++g:rust_cargo_check_all_targets~
++	When set to 1, the `--all-targets` option will be passed to cargo when
++	Syntastic executes it, allowing the linting of all targets under the
++	package.
++	The default is 0.
++
++                                              *g:rust_cargo_check_all_features*
++                                              *b:rust_cargo_check_all_features*
++g:rust_cargo_check_all_features~
++	When set to 1, the `--all-features` option will be passed to cargo when
++	Syntastic executes it, allowing the linting of all features of the
++	package.
++	The default is 0.
++
++                                                 *g:rust_cargo_check_examples*
++                                                 *b:rust_cargo_check_examples*
++g:rust_cargo_check_examples~
++	When set to 1, the `--examples` option will be passed to cargo when
++	Syntastic executes it, to prevent the exclusion of examples from
++	linting. The examples are normally under the `examples/` directory of
++	the crate.
++	The default is 0.
++
++                                                    *g:rust_cargo_check_tests*
++                                                    *b:rust_cargo_check_tests*
++g:rust_cargo_check_tests~
++	When set to 1, the `--tests` option will be passed to cargo when
++	Syntastic executes it, to prevent the exclusion of tests from linting.
++	The tests are normally under the `tests/` directory of the crate.
++	The default is 0.
++
++                                                  *g:rust_cargo_check_benches*
++                                                  *b:rust_cargo_check_benches*
++g:rust_cargo_check_benches~
++	When set to 1, the `--benches` option will be passed to cargo when
++	Syntastic executes it.  The benches are normally under the `benches/`
++	directory of the crate.
++	The default is 0.
++
++Integration with auto-pairs                                    *rust-auto-pairs*
++---------------------------
++
++This plugin automatically configures the auto-pairs plugin not to duplicate
++single quotes, which are used more often for lifetime annotations than for
++single character literals.
++
++                                                  *g:rust_keep_autopairs_default*
++g:rust_keep_autopairs_default~
++
++	Don't override auto-pairs default for the Rust filetype. The default
++	is 0.
  
- 				*'modified'* *'mod'* *'nomodified'* *'nomod'*
- 'modified' 'mod'	boolean	(default off)
--			local to buffer  |special-local-buffer-option|
-+			local to buffer  |local-noglobal|
- 	When on, the buffer is considered to be modified.  This option is set
- 	when:
- 	1. A change was made to the text since it was last written.  Using the
-@@ -6161,7 +6161,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 					*'previewwindow'* *'nopreviewwindow'*
- 					*'pvw'* *'nopvw'* *E590*
- 'previewwindow' 'pvw'	boolean (default off)
--			local to window  |special-local-window-option|
-+			local to window  |local-noglobal|
- 			{not available when compiled without the |+quickfix|
- 			feature}
- 	Identifies the preview window.  Only one window can have this option
-@@ -6356,7 +6356,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ ==============================================================================
+-COMMANDS						       *rust-commands*
++COMMANDS                                                       *rust-commands*
++
++Invoking Cargo
++--------------
++
++This plug defines very simple shortcuts for invoking Cargo from with Vim.
++
++:Cargo <args>                                                       *:Cargo*
++                Runs 'cargo' with the provided arguments.
++
++:Cbuild <args>                                                     *:Cbuild*
++                Shortcut for 'cargo build`.
++
++:Cclean <args>                                                     *:Cclean*
++                Shortcut for 'cargo clean`.
++
++:Cdoc <args>                                                         *:Cdoc*
++                Shortcut for 'cargo doc`.
++
++:Cinit <args>                                                       *:Cinit*
++                Shortcut for 'cargo init`.
++
++:Crun <args>                                                         *:Crun*
++                Shortcut for 'cargo run`.
++
++:Ctest <args>                                                       *:Ctest*
++                Shortcut for 'cargo test`.
++
++:Cupdate <args>                                                   *:Cupdate*
++                Shortcut for 'cargo update`.
++
++:Cbench <args>                                                     *:Cbench*
++                Shortcut for 'cargo bench`.
++
++:Csearch <args>                                                   *:Csearch*
++                Shortcut for 'cargo search`.
++
++:Cpublish <args>                                                 *:Cpublish*
++                Shortcut for 'cargo publish`.
++
++:Cinstall <args>                                                 *:Cinstall*
++                Shortcut for 'cargo install`.
++
++:Cruntarget <args>                                                 *:Cruntarget*
++                Shortcut for 'cargo run --bin' or 'cargo run --example',
++                depending on the currently open buffer.
++
++Formatting
++----------
++
++:RustFmt                                                       *:RustFmt*
++		Runs |g:rustfmt_command| on the current buffer. If
++		|g:rustfmt_options| is set then those will be passed to the
++		executable.
++
++		If |g:rustfmt_fail_silently| is 0 (the default) then it
++		will populate the |location-list| with the errors from
++		|g:rustfmt_command|. If |g:rustfmt_fail_silently| is set to 1
++		then it will not populate the |location-list|.
++
++:RustFmtRange                                                  *:RustFmtRange*
++		Runs |g:rustfmt_command| with selected range. See
++		|:RustFmt| for any other information.
++
++
++Playpen integration
++-------------------
++
++:RustPlay                                                          *:RustPlay*
++		This command will only work if you have web-api.vim installed
++		(available at https://github.com/mattn/webapi-vim).  It sends the
++		current selection, or if nothing is selected, the entirety of the
++		current buffer to the Rust playpen, and emits a message with the
++		shortened URL to the playpen.
  
- 				   *'readonly'* *'ro'* *'noreadonly'* *'noro'*
- 'readonly' 'ro'		boolean	(default off)
--			local to buffer  |special-local-buffer-option|
-+			local to buffer  |local-noglobal|
- 	If on, writes fail unless you use a '!'.  Protects you from
- 	accidentally overwriting a file.  Default on when Vim is started
- 	in read-only mode ("vim -R") or when the executable is called "view".
-@@ -6735,7 +6735,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-:RustRun  [args]						    *:RustRun*
++		|g:rust_playpen_url| is the base URL to the playpen, by default
++		"https://play.rust-lang.org/".
++
++		|g:rust_shortener_url| is the base url for the shorterner, by
++		default "https://is.gd/"
++
++		|g:rust_clip_command| is the command to run to copy the
++		playpen url to the clipboard of your system.
++
++
++Evaluation of a single Rust file
++--------------------------------
++
++NOTE: These commands are useful only when working with standalone Rust files,
++which is usually not the case for common Rust development. If you wish to
++building Rust crates from with Vim can should use Vim's make, Syntastic, or
++functionality from other plugins.
++
++
++:RustRun  [args]                                                    *:RustRun*
+ :RustRun! [rustc-args] [--] [args]
+ 		Compiles and runs the current file. If it has unsaved changes,
+ 		it will be saved first using |:update|. If the current file is
+@@ -150,7 +392,7 @@ COMMANDS						       *rust-commands*
+ 		If |g:rustc_path| is defined, it is used as the path to rustc.
+ 		Otherwise it is assumed rustc can be found in $PATH.
  
- 						*'scroll'* *'scr'*
- 'scroll' 'scr'		number	(default: half the window height)
--			local to window  |special-local-window-option|
-+			local to window  |local-noglobal|
- 	Number of lines to scroll with CTRL-U and CTRL-D commands.  Will be
- 	set to half the number of lines in the window when the window size
- 	changes.  This may happen when enabling the |status-line| or
-@@ -7997,7 +7997,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-:RustExpand  [args]						 *:RustExpand*
++:RustExpand  [args]                                              *:RustExpand*
+ :RustExpand! [TYPE] [args]
+ 		Expands the current file using --pretty and displays the
+ 		results in a new split. If the current file has unsaved
+@@ -169,7 +411,7 @@ COMMANDS						       *rust-commands*
+ 		If |g:rustc_path| is defined, it is used as the path to rustc.
+ 		Otherwise it is assumed rustc can be found in $PATH.
  
- 						*'syntax'* *'syn'*
- 'syntax' 'syn'		string	(default empty)
--			local to buffer  |special-local-buffer-option|
-+			local to buffer  |local-noglobal|
- 			{not available when compiled without the |+syntax|
- 			feature}
- 	When this option is set, the syntax with this name is loaded, unless
-@@ -9445,7 +9445,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-:RustEmitIr [args]						 *:RustEmitIr*
++:RustEmitIr [args]                                               *:RustEmitIr*
+ 		Compiles the current file to LLVM IR and displays the results
+ 		in a new split. If the current file has unsaved changes, it
+ 		will be saved first using |:update|. If the current file is an
+@@ -180,7 +422,7 @@ COMMANDS						       *rust-commands*
+ 		If |g:rustc_path| is defined, it is used as the path to rustc.
+ 		Otherwise it is assumed rustc can be found in $PATH.
  
- 			*'winfixheight'* *'wfh'* *'nowinfixheight'* *'nowfh'*
- 'winfixheight' 'wfh'	boolean	(default off)
--			local to window  |special-local-window-option|
-+			local to window  |local-noglobal|
- 	Keep the window height when windows are opened or closed and
- 	'equalalways' is set.  Also for |CTRL-W_=|.  Set by default for the
- 	|preview-window| and |quickfix-window|.
-@@ -9453,7 +9453,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+-:RustEmitAsm [args]						*:RustEmitAsm*
++:RustEmitAsm [args]                                             *:RustEmitAsm*
+ 		Compiles the current file to assembly and displays the results
+ 		in a new split. If the current file has unsaved changes, it
+ 		will be saved first using |:update|. If the current file is an
+@@ -191,49 +433,54 @@ COMMANDS						       *rust-commands*
+ 		If |g:rustc_path| is defined, it is used as the path to rustc.
+ 		Otherwise it is assumed rustc can be found in $PATH.
  
- 			*'winfixwidth'* *'wfw'* *'nowinfixwidth'* *'nowfw'*
- 'winfixwidth' 'wfw'	boolean	(default off)
--			local to window  |special-local-window-option|
-+			local to window  |local-noglobal|
- 	Keep the window width when windows are opened or closed and
- 	'equalalways' is set.  Also for |CTRL-W_=|.
- 	The width may be changed anyway when running out of room.
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 6a20734a6..fe560d380 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -2160,11 +2160,11 @@ should set a variable in your .vimrc file: >
- 	:let lpc_syntax_for_c = 1
+-:RustPlay							   *:RustPlay*
+-		This command will only work if you have web-api.vim installed
+-		(available at https://github.com/mattn/webapi-vim).  It sends the
+-		current selection, or if nothing is selected, the entirety of the
+-		current buffer to the Rust playpen, and emits a message with the
+-		shortened URL to the playpen.
  
- If it doesn't work properly for some particular C or LPC files, use a
--modeline.  For a LPC file:
-+modeline.  For a LPC file: >
+-		|g:rust_playpen_url| is the base URL to the playpen, by default
+-		"https://play.rust-lang.org/".
++Running test(s)
++---------------
  
- 	// vim:set ft=lpc:
+-		|g:rust_shortener_url| is the base URL for the shortener, by
+-		default "https://is.gd/"
++:[N]RustTest[!] [options]                                       *:RustTest*
++		Runs a test under the cursor when the current buffer is in a
++		cargo project with "cargo test" command. If the command did
++		not find any test function under the cursor, it stops with an
++		error message.
  
--For a C file that is recognized as LPC:
-+For a C file that is recognized as LPC: >
+-:RustFmt						       *:RustFmt*
+-		Runs |g:rustfmt_command| on the current buffer. If
+-		|g:rustfmt_options| is set then those will be passed to the
+-		executable.
++		When N is given, adjust the size of the new window to N lines
++		or columns.
  
- 	// vim:set ft=c:
+-		If |g:rustfmt_fail_silently| is 0 (the default) then it
+-		will populate the |location-list| with the errors from
+-		|g:rustfmt_command|. If |g:rustfmt_fail_silently| is set to 1
+-		then it will not populate the |location-list|.
++		When ! is given, runs all tests regardless of current cursor
++		position.
  
-@@ -2196,7 +2196,7 @@ LUA						*lua.vim* *ft-lua-syntax*
- The Lua syntax file can be used for versions 4.0, 5.0, 5.1 and 5.2 (5.2 is
- the default). You can select one of these versions using the global variables
- lua_version and lua_subversion. For example, to activate Lua
--5.1 syntax highlighting, set the variables like this:
-+5.1 syntax highlighting, set the variables like this: >
+-:RustFmtRange						       *:RustFmtRange*
+-		Runs |g:rustfmt_command| with selected range. See
+-		|:RustFmt| for any other information.
++		When [options] is given, it is passed to "cargo" command
++		arguments.
  
- 	:let lua_version = 5
- 	:let lua_subversion = 1
-diff --git a/runtime/doc/tips.txt b/runtime/doc/tips.txt
-index 79b1574e2..0dfddb255 100644
---- a/runtime/doc/tips.txt
-+++ b/runtime/doc/tips.txt
-@@ -1,4 +1,4 @@
--*tips.txt*      For Vim version 9.0.  Last change: 2021 Nov 06
-+*tips.txt*      For Vim version 9.0.  Last change: 2023 Aug 10
+-==============================================================================
+-MAPPINGS						       *rust-mappings*
++		When the current buffer is outside cargo project, the command
++		runs "rustc --test" command instead of "cargo test" as
++		fallback. All tests are run regardless of adding ! since there
++		is no way to run specific test function with rustc. [options]
++		is passed to "rustc" command arguments in the case.
  
+-This plugin defines mappings for |[[| and |]]| to support hanging indents.
++		Takes optional modifiers (see |<mods>|):  >
++		    :tab RustTest
++		    :belowright 16RustTest
++		    :leftabove vert 80RustTest
++<
++rust.vim Debugging
++------------------
++
++:RustInfo                                                          *:RustInfo*
++		Emits debugging info of the Vim Rust plugin.
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+-It also has a few other mappings:
++:RustInfoToClipboard                                      *:RustInfoClipboard*
++		Saves debugging info of the Vim Rust plugin to the default
++		register.
+ 
+-							*rust_<D-r>*
+-<D-r>			Executes |:RustRun| with no arguments.
+-			Note: This binding is only available in MacVim.
++:RustInfoToFile [filename]                                   *:RustInfoToFile*
++		Saves debugging info of the Vim Rust plugin to the the given
++		file, overwritting it.
+ 
+-							*rust_<D-R>*
+-<D-R>			Populates the command line with |:RustRun|! using the
+-			arguments given to the last invocation, but does not
+-			execute it.
+-			Note: This binding is only available in MacVim.
++==============================================================================
++MAPPINGS                                                       *rust-mappings*
++
++This plugin defines mappings for |[[| and |]]| to support hanging indents.
+ 
+ ==============================================================================
+- vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
++ vim:tw=78:sw=4:noet:ts=8:ft=help:norl:
 diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index f43b23956..0ab030199 100644
+index 0ab030199..275599973 100644
 --- a/runtime/doc/usr_05.txt
 +++ b/runtime/doc/usr_05.txt
 @@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.0.  Last change: 2019 May 23
-+*usr_05.txt*	For Vim version 9.0.  Last change: 2023 Aug 10
+-*usr_05.txt*	For Vim version 9.0.  Last change: 2023 Aug 10
++*usr_05.txt*	For Vim version 9.0.  Last change: 2023 Sep 12
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index e9549285f..95b766d6c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -44,12 +44,12 @@ He registered the vim.org domain and created the first Vim website.  We will
- remember him!
+@@ -427,6 +427,15 @@ an archive or as a repository.  For an archive you can follow these steps:
+ 	   Here "fancytext" is the name of the package, it can be anything
+ 	   else.
  
- 						 *Bram* *Moolenaar* *Bram-Moolenaar*
--Vim version 9.1 is dedicated to Bram Moolenaar, who passed away on August 3rd 2023
--while still working full-time on Vim.  The Vim project would not exist without
--his ongoing passion to lead and develop Vim and the community for more than 30
--years.  Bram was also passionate about his |ICCF| foundation to help children
--in Uganda.  If you enjoy using Vim, please consider donating!
--We will miss his guidance, passion and leadership.
-+Vim version 9.1 is dedicated to Bram Moolenaar, who passed away on August 3rd
-+2023 while still working full-time on Vim.  The Vim project would not exist
-+without his ongoing passion to lead and develop Vim and the community for more
-+than 30 years.  Bram was also passionate about his |ICCF| foundation to help
-+children in Uganda.  If you enjoy using Vim, please consider donating! We will
-+miss his guidance, passion and leadership.
++Adding the editorconfig package				*editorconfig-install*
++
++Similar to the matchit package, to load the distributed editorconfig plugin
++when Vim starts, add the following line to your vimrc file: >
++	packadd! editorconfig
++
++After restarting your Vim, the plugin is active and you can read about it at: >
++	:h editorconfig.txt
++
+ More information about packages can be found here: |packages|.
  
- Obituary Articles: https://github.com/vim/vim/discussions/12742
- Say Farewell: https://github.com/vim/vim/discussions/12737
+ ==============================================================================
+@@ -446,13 +455,18 @@ The global plugins will be discussed first, then the filetype ones
+ |add-filetype-plugin|.
+ 
+ 
+-GLOBAL PLUGINS						*standard-plugin*
++GLOBAL PLUGINS				*standard-plugin* *distributed-plugins*
+ 
+ When you start Vim, it will automatically load a number of global plugins.
+ You don't have to do anything for this.  They add functionality that most
+ people will want to use, but which was implemented as a Vim script instead of
+ being compiled into Vim.  You can find them listed in the help index
+-|standard-plugin-list|.  Also see |load-plugins|.
++|standard-plugin-list|.
++
++For locally installed plugins and packages (which come with a separated help
++file) a similar list can be found in the help section |local-additions|.
++
++Also see |load-plugins|.
+ 
+ 							*add-global-plugin*
+ You can add a global plugin to add functionality that will always be present
