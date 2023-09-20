@@ -1,37 +1,84 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index a00049bef..65da9a7c6 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
-@@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.0.  Last change: 2023 Mar 07
-+*change.txt*    For Vim version 9.0.  Last change: 2023 Sep 19
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index c89eead63..9bdbfb493 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1135,7 +1135,46 @@ When you split a window, the jumplist will be copied to the new window.
+ If you have included the ' item in the 'viminfo' option the jumplist will be
+ stored in the viminfo file and restored when starting Vim.
  
++							*jumplist-stack*
++When 'jumpoptions' option includes "stack", the jumplist behaves like the tag
++stack.  When jumping to a new location from the middle of the jumplist, the
++locations after the current position will be discarded. With this option set
++you can move through a tree of jump locations. When going back up a branch and
++then down another branch, CTRL-O still takes you further up the tree.
++
++Given a jumplist like the following in which CTRL-O has been used to move back
++three times to location X: >
++
++     jump line  col file/text
++       2  1260    8 mark.c		<-- location X-2
++       1   685    0 eval.c		<-- location X-1
++    >  0   462   36 eval.c		<-- location X
++       1   479   39 eval.c
++       2   213    2 mark.c
++       3   181    0 mark.c
++<
++jumping to (new) location Y results in the locations after the current
++locations being removed: >
++
++     jump line  col file/text
++       3  1260    8 mark.c		<-- location X-2
++       2   685    0 eval.c		<-- location X-1
++       1   462   36 eval.c		<-- location X
++    >
++<
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -210,6 +210,7 @@ gR			Enter Virtual Replace mode: Each character you type
++Then, when yet another location Z is jumped to, the new location Y appears
++directly after location X in the jumplist and location X remains in the same
++position relative to the locations (X-1, X-2, etc., ...) that had been before
++it prior to the original jump from X to Y: >
++
++     jump line  col file/text
++       4  1260    8 mark.c		<-- location X-2
++       3   685    0 eval.c		<-- location X-1
++       2   462   36 eval.c		<-- location X
++       1   100    0 buffer.c	<-- location Y
++    >
++<
+ CHANGE LIST JUMPS			*changelist* *change-list-jumps* *E664*
  
- 							*v_r*
- {Visual}r{char}		Replace all selected characters by {char}.
-+			CTRL-C will be inserted literally.
+ When making a change the cursor position is remembered.  One position is
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 6c82fa495..c5123289a 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -4899,6 +4899,16 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Otherwise only one space is inserted.
+ 	NOTE: This option is set when 'compatible' is set.
  
- 							*v_C*
- {Visual}["x]C		Delete the highlighted lines [into register x] and
-diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
-index 540d5c574..a91969e41 100644
---- a/runtime/doc/visual.txt
-+++ b/runtime/doc/visual.txt
-@@ -1,4 +1,4 @@
--*visual.txt*    For Vim version 9.0.  Last change: 2022 Dec 04
-+*visual.txt*    For Vim version 9.0.  Last change: 2023 Sep 19
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -183,6 +183,8 @@ If you want to highlight exactly the same area as the last time, you can use
- CTRL-C			In Visual mode: Stop Visual mode.  When insert mode is
- 			pending (the mode message shows
- 			"-- (insert) VISUAL --"), it is also stopped.
-+			On MS-Windows, you may need to press CTRL-Break
-+			|dos-CTRL-Break|.
- 
- ==============================================================================
- 3. Changing the Visual area				*visual-change*
++						*'jumpoptions'* *'jop'*
++'jumpoptions' 'jop'	string	(default "")
++			global
++	List of words that change the behavior of the |jumplist|.
++	  stack         Make the jumplist behave like the tagstack.
++			Relative location of entries in the jumplist is
++			preserved at the cost of discarding subsequent entries
++			when navigating backwards in the jumplist and then
++			jumping to a location.  |jumplist-stack|
++
+ 							*'key'*
+ 'key'			string	(default "")
+ 			local to buffer
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index ffdfd108a..65a560a30 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -772,6 +772,7 @@ Short explanation of each option:		*option-list*
+ 'iskeyword'	  'isk'     characters included in keywords
+ 'isprint'	  'isp'     printable characters
+ 'joinspaces'	  'js'	    two spaces after a period with a join command
++'jumpoptions'	  'jop'     specifies how jumping is done
+ 'key'			    encryption key
+ 'keymap'	  'kmp'     name of a keyboard mapping
+ 'keymodel'	  'km'	    enable starting/stopping selection with keys
