@@ -1,90 +1,705 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 9bdbfb493..73fc9a817 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
-@@ -1071,14 +1071,14 @@ can go to cursor positions before older jumps, and back again.  Thus you can
- move up and down the list.  There is a separate jump list for each window.
- The maximum number of entries is fixed at 100.
- 
--For example, after three jump commands you have this jump list:
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index a52a3df0b..74e024d97 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -9443,7 +9443,7 @@ strutf16len({string} [, {countcc}])			*strutf16len()*
+ 		    echo strutf16len('😊')		returns 2
+ 		    echo strutf16len('ą́')		returns 1
+ 		    echo strutf16len('ą́', v:true)	returns 3
 -
--    jump line  col file/text ~
--      3	  1    0 some text ~
--      2	 70    0 another line ~
--      1  1154   23 end. ~
--   > ~
-+For example, after three jump commands you have this jump list: >
- 
-+    jump line  col file/text
-+      3     1    0 some text
-+      2    70    0 another line
-+      1  1154   23 end.
-+   >
 +<
- The "file/text" column shows the file name, or the text at the jump if it is
- in the current file (an indent is removed and a long line is truncated to fit
- in the window).
-@@ -1087,14 +1087,14 @@ The marker ">" indicates the current position in the jumplist.  It may not be
- shown when filtering the |:jumps| command using |:filter|
+ 		Can also be used as a |method|: >
+ 			GetText()->strutf16len()
+ <
+diff --git a/runtime/doc/ft_rust.txt b/runtime/doc/ft_rust.txt
+index 9d5eb8cce..fb8141c14 100644
+--- a/runtime/doc/ft_rust.txt
++++ b/runtime/doc/ft_rust.txt
+@@ -474,8 +474,8 @@ rust.vim Debugging
+ 		register.
  
- You are currently in line 1167.  If you then use the CTRL-O command, the
--cursor is put in line 1154.  This results in:
--
--    jump line  col file/text ~
--      2	  1    0 some text ~
--      1	 70    0 another line ~
--   >  0  1154   23 end. ~
--      1  1167    0 foo bar ~
-+cursor is put in line 1154.  This results in: >
+ :RustInfoToFile [filename]                                   *:RustInfoToFile*
+-		Saves debugging info of the Vim Rust plugin to the the given
+-		file, overwritting it.
++		Saves debugging info of the Vim Rust plugin to the given file,
++		overwriting it.
  
-+    jump line  col file/text
-+      2     1    0 some text
-+      1    70    0 another line
-+   >  0  1154   23 end.
-+      1  1167    0 foo bar
-+<
- The pointer will be set at the last used jump position.  The next CTRL-O
- command will use the entry above it, the next CTRL-I command will use the
- entry below it.  If the pointer is below the last entry, this indicates that
-@@ -1118,15 +1118,15 @@ command.  You can explicitly add a jump by setting the ' mark with "m'".  Note
- that calling setpos() does not do this.
+ ==============================================================================
+ MAPPINGS                                                       *rust-mappings*
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index c02a885c2..62bc6e657 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1532,7 +1532,7 @@ The function will be called with the list of arguments so far, and a second
+ argument that is the name of the pty.
+ 							*gdb-version*
+ Only debuggers fully compatible with gdb will work.  Vim uses the GDB/MI
+-interface.  The "new-ui" command  requires gdb version 7.12 or later.  if you
++interface.  The "new-ui" command requires gdb version 7.12 or later.  If you
+ get this error:
+ 	Undefined command: "new-ui". Try "help".~
+ Then your gdb is too old.
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index db1d771fd..4dc8db44b 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -120,16 +120,9 @@ Upcoming larger works:
+    - example plugin: https://github.com/uga-rosa/dps-vsctm.vim
  
- After the CTRL-O command that got you into line 1154 you could give another
--jump command (e.g., "G").  The jump list would then become:
--
--    jump line  col file/text ~
--      4	  1    0 some text ~
--      3	 70    0 another line ~
--      2  1167    0 foo bar ~
--      1  1154   23 end. ~
--   > ~
--
-+jump command (e.g., "G").  The jump list would then become: >
+ 
+-Further Vim9 improvements, possibly after launch:
++Further Vim9 improvements:
+ - Classes and Interfaces. See |vim9-classes|
+-  - Change access: public by default, private by prefixing "_".
+-	Check for error: can't have same name twice (ignoring "_" prefix).
+-  - Private methods?
+-	either: private def Func()
+-	    or: def _Func()
+-    Perhaps use "private" keyword instead of "_" prefix?
+   - "final" object members - can only be set in the constructor.
+-  - Support export/import of classes and interfaces.
+   - Cannot use class type of itself in the method (Issue #12369)
+   - Cannot use an object method in a lambda  #12417
+ 	Define all methods before compiling them?
+@@ -137,13 +130,6 @@ Further Vim9 improvements, possibly after launch:
+ 	Also #12081 first case.
+   - Using list of functions does not work #12081 (repro in later message).
+   - First argument of call() cannot be "obj.Func". (#11865)
+-  - null_object - constant type 17 not supported (Issue #12043)
+-  - problem compiling object method call as function call argument (Issue
+-    #12081)
+-  - Make ":defcompile ClassName" compile all functions and methods in the
+-    class.
+-  - Forward declaration of a class?  E.g. for Clone() function.
+-	email lifepillar 2023 Mar 26
+   - Getting member of variable with "any" type should be handled at runtime.
+     Remove temporary solution from #12096 / patch 9.0.1375.
+   - "obj.Method()" does not always work in a compiled function, assumes "obj"
+@@ -151,18 +137,21 @@ Further Vim9 improvements, possibly after launch:
+     Issue #11822: any.Func() can be a dict or an object call, need to handle
+     this at runtime.  Also see #12198 for an example.
+     Possibly issue #11981 can be fixed at the same time (has two examples).
+-  - accept line breaks in member initialization.  #11957
++  - Support export/import of classes and interfaces.
++  - Make ":defcompile ClassName" compile all functions and methods in the
++    class.
++  - Forward declaration of a class?  E.g. for Clone() function.
++	Email lifepillar 2023 Mar 26
+   - object empty(), len() - can class define a method to be used for them?
+   - add to help: when using a default new() method then reordering object
+     members may cause trouble.  Can define new() without arguments to avoid.
+-  - TODO items: check types for "implements" - members and methods
+   - When "Meta" is a class, is "const MetaAlias = Meta" allowed?  It should
+-    either work or given an error. possibly give an error now and implement it
++    either work or given an error. Possibly give an error now and implement it
+     later (using a typedef).  #12006
+   - how about lock/unlock?
+-  - When checking "implements" also check types of members and function args.
+   - For chaining, allow using the class name as type for function return
+     value.
++  - Implement "specifies" interface
+   - Implement generics
+   - Add "assignable" (class or child)?
+   - More efficient way for interface member index than iterating over list?
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 95b766d6c..09d6b3b7e 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1198,7 +1198,7 @@ Solution:   Use "curtab" if "tp" is NULL. (closes #5475)
+ Files:      src/evalwindow.c, src/testdir/test_getvar.vim
+ 
+ Patch 8.2.0118
+-Problem:    Crash when cycling to buffers involving popup window .
++Problem:    Crash when cycling to buffers involving popup window.
+ Solution:   Do not decrement buffer reference count.
+ Files:      src/popupwin.c, src/testdir/test_popupwin.vim,
+             src/testdir/dumps/Test_popupwin_infopopup_7.dump
+@@ -31679,4 +31679,85 @@ Solution:   make menu generation script use Vim9 script, fix errors.
+ Files:      runtime/makemenu.vim
+ 
+ 
++==============================================================================
++VERSION 9.1				*version-9.1* *version9.1* *vim-9.1*
 +
-+    jump line  col file/text
-+      4     1    0 some text
-+      3    70    0 another line
-+      2  1167    0 foo bar
-+      1  1154   23 end.
-+   >
-+<
- The line numbers will be adjusted for deleted and inserted lines.  This fails
- if you stop editing a file without writing, like with ":n!".
++This section is about improvements made between version 9.0 and 9.1.
++
++This release has hundreds of bug fixes, there are a few new features and there
++are many minor improvements.
++
++Vim9 classes
++------------
++
++Virtual text
++------------
++
++Smooth Scroll
++-------------
++
++Other improvements				*new-other-9.1*
++------------------
++
++Changed						*changed-9.1*
++-------
++
++Added						*added-9.1*
++-----
++
++Various syntax, indent and other plugins were added.
++
++Functions: ~
++
++|err_teapot()|		produce error 418 or 503
++|getbufoneline()|	get a one line from the specified buffer
++|getcellwidths()|	get character cell width overrides
++|getmouseshape()|	get name of the current mouse shape
++|getscriptinfo()|	get list of sourced vim scripts
++|indexof()|		index in a List or Blob of a true expression
++|instanceof()|		check if a variable is an instance of a given class
++|keytrans()|		translate internal key codes to be usable with |:map|
++|popup_findecho()|	get window ID for popup used for |:echowindow|
++|setcmdline()|		set the current command line
++|strutf16len()|		number of UTF-16 code units in a string
++|swapfilelist()|	list of existing swap files in 'directory'
++|test_mswin_event()|	generate an MS-Windows event for testing
++|utf16idx()|		UTF-16 index of a byte in a string
++
++
++Autocommands: ~
++
++|TextChangedT|		after a change was made to the text in Terminal mode
++|WinResized|		after a window in the current tab page is resized
++
++
++Commands: ~
++
++|:abstract|		define an Vim9 abstract class
++|:class|		start of a class specification
++|:defer|		call function when current function is done
++|:echowindow|		same as :echomsg, but use a popup window
++|:endinterface|		end of an interface specification
++|:endclass|		end of a class specification
++|:horizontal|		following window command work horizontally
++|:interface|		start of an interface specification
++|:public|		prefix for a class or object member
++|:static|		prefix for a class member or function
++|:this|			prefix for an object member
++
++
++Options: ~
++
++'jumpoptions'		specifies how jumping is done
++'keyprotocol'		what keyboard protocol to use for what terminal
++'lispoptions'		changes how Lisp indenting is done
++'showcmdloc'		where to show (partial) command
++'smoothscroll'		scroll by screen lines when 'wrap' is set
++'splitkeep'		determines scroll behavior for split windows
++
++
++Patches						*patches-9.1*
++-------
++
++
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index c106bb60e..a27f7319a 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -37,7 +37,7 @@ The basic item is an object:
+   functions are invoked "on the object", which is what sets it apart from the
+   traditional separation of data and code that manipulates the data.
+ - An object has a well defined interface, with typed member variables and
+-  member functions.
++  methods.
+ - Objects are created from a class and all objects have the same interface.
+   This does not change at runtime, it is not dynamic.
  
-@@ -1162,7 +1162,6 @@ locations being removed: >
-        1   462   36 eval.c		<-- location X
-     >
+@@ -103,7 +103,7 @@ You can create an object from this class with the new() method: >
+ 
+ 	var pos = TextPosition.new(1, 1)
+ 
+-The object members "lnum" and "col" can be accessed directly: >
++The object variables "lnum" and "col" can be accessed directly: >
+ 
+ 	echo $'The text position is ({pos.lnum}, {pos.col})'
+ <							*E1317* *E1327*
+@@ -111,28 +111,30 @@ If you have been using other object-oriented languages you will notice that
+ in Vim the object members are consistently referred to with the "this."
+ prefix.  This is different from languages like Java and TypeScript.  The
+ naming convention makes the object members easy to spot.  Also, when a
+-variable does not have the "this." prefix you know it is not an object member.
++variable does not have the "this." prefix you know it is not an object
++variable.
+ 
+ 
+-Member write access ~
++Object variable write access ~
+ 
+-Now try to change an object member directly: >
++Now try to change an object variable directly: >
+ 
+ 	pos.lnum = 9
+ <							*E1335*
+-This will give you an error!  That is because by default object members can be
+-read but not set.  That's why the TextPosition class provides a method for it: >
++This will give you an error!  That is because by default object variables can
++be read but not set.  That's why the TextPosition class provides a method for
++it: >
+ 
+ 	pos.SetLnum(9)
+ 
+-Allowing to read but not set an object member is the most common and safest
++Allowing to read but not set an object variable is the most common and safest
+ way.  Most often there is no problem using a value, while setting a value may
+ have side effects that need to be taken care of.  In this case, the SetLnum()
+ method could check if the line number is valid and either give an error or use
+ the closest valid value.
+ 							*:public* *E1331*
+-If you don't care about side effects and want to allow the object member to be
+-changed at any time, you can make it public: >
++If you don't care about side effects and want to allow the object variable to
++be changed at any time, you can make it public: >
+ 
+ 	public this.lnum: number
+ 	public this.col: number
+@@ -140,23 +142,23 @@ changed at any time, you can make it public: >
+ Now you don't need the SetLnum(), SetCol() and SetPosition() methods, setting
+ "pos.lnum" directly above will no longer give an error.
+ 							*E1326*
+-If you try to set an object member that doesn't exist you get an error: >
++If you try to set an object variable that doesn't exist you get an error: >
+ 	pos.other = 9
+ <	E1326: Member not found on object "TextPosition": other ~
+ 
+ 							*E1376*
+-A object member cannot be accessed using the class name.
++A object variable cannot be accessed using the class name.
+ 
+-Private members ~
++Private variables ~
+ 							*E1332* *E1333*
+-On the other hand, if you do not want the object members to be read directly,
++On the other hand, if you do not want the object variables to be read directly,
+ you can make them private.  This is done by prefixing an underscore to the
+ name: >
+ 
+ 	this._lnum: number
+ 	this._col number
+ 
+-Now you need to provide methods to get the value of the private members.
++Now you need to provide methods to get the value of the private variables.
+ These are commonly called getters.  We recommend using a name that starts with
+ "Get": >
+ 
+@@ -168,7 +170,7 @@ These are commonly called getters.  We recommend using a name that starts with
+ 	   return this._col
+ 	enddef
+ 
+-This example isn't very useful, the members might as well have been public.
++This example isn't very useful, the variables might as well have been public.
+ It does become useful if you check the value.  For example, restrict the line
+ number to the total number of lines: >
+ 
+@@ -202,8 +204,8 @@ the above class): >
  <
--
- Then, when yet another location Z is jumped to, the new location Y appears
- directly after location X in the jumplist and location X remains in the same
- position relative to the locations (X-1, X-2, etc., ...) that had been before
-@@ -1172,7 +1171,7 @@ it prior to the original jump from X to Y: >
-        4  1260    8 mark.c		<-- location X-2
-        3   685    0 eval.c		<-- location X-1
-        2   462   36 eval.c		<-- location X
--       1   100    0 buffer.c	<-- location Y
-+       1   100    0 buffer.c		<-- location Y
-     >
- <
- CHANGE LIST JUMPS			*changelist* *change-list-jumps* *E664*
+ Simplifying the new() method ~
+ 
+-Many constructors take values for the object members.  Thus you very often see
+-this pattern: >
++Many constructors take values for the object variables.  Thus you very often
++see this pattern: >
+ 
+ 	 class SomeClass
+ 	   this.lnum: number
+@@ -215,19 +217,20 @@ this pattern: >
+ 	   enddef
+ 	 endclass
+ 
+-Not only is this text you need to write, it also has the type of each member
+-twice.  Since this is so common a shorter way to write new() is provided: >
++Not only is this text you need to write, it also has the type of each
++variables twice.  Since this is so common a shorter way to write new() is
++provided: >
+ 
+ 	   def new(this.lnum, this.col)
+ 	   enddef
+ 
+-The semantics are easy to understand: Providing the object member name,
++The semantics are easy to understand: Providing the object variable name,
+ including "this.", as the argument to new() means the value provided in the
+-new() call is assigned to that object member.  This mechanism comes from the
++new() call is assigned to that object variable.  This mechanism comes from the
+ Dart language.
+ 
+-Putting together this way of using new() and making the members public results
+-in a much shorter class definition than what we started with: >
++Putting together this way of using new() and making the variables public
++results in a much shorter class definition than what we started with: >
+ 
+ 	class TextPosition
+ 	   public this.lnum: number
+@@ -244,15 +247,15 @@ in a much shorter class definition than what we started with: >
+ 
+ The sequence of constructing a new object is:
+ 1. Memory is allocated and cleared.  All values are zero/false/empty.
+-2. For each declared member that has an initializer, the expression is
+-   evaluated and assigned to the member.  This happens in the sequence the
+-   members are declared in the class.
++2. For each declared object variable that has an initializer, the expression
++   is evaluated and assigned to the variable.  This happens in the sequence
++   the variables are declared in the class.
+ 3. Arguments in the new() method in the "this.name" form are assigned.
+ 4. The body of the new() method is executed.
+ 
+ If the class extends a parent class, the same thing happens.  In the second
+-step the members of the parent class are done first.  There is no need to call
+-"super()" or "new()" on the parent.
++step the object variables of the parent class are initialized first.  There is
++no need to call "super()" or "new()" on the parent.
+ 
+ 						*E1365*
+ When defining the new() method the return type should not be specified.  It
+@@ -275,7 +278,7 @@ prefix in the class where they are defined: >
+ 	   enddef
+ 	endclass
+ <							*E1340* *E1341*
+-Since the name is used as-is, shadowing the name by a function argument name
++Since the name is used as-is, shadowing the name by a method argument name
+ or local variable name is not allowed.
+ 
+ 							*E1374* *E1375*
+@@ -394,7 +397,7 @@ does not have any new() method. *E1359*
+ 
+ 						*abstract-method* *E1371* *E1372*
+ An abstract method can be defined in an abstract class by using the "abstract"
+-prefix when defining the function: >
++prefix when defining the method: >
+ 
+ 	abstract class Shape
+ 	   abstract def Draw()
+@@ -510,17 +513,16 @@ once.  They can appear in any order, although this order is recommended: >
+ 	implements InterfaceName, OtherInterface
+ 	specifies SomeInterface
+ <							*E1355* *E1369*
+-Each member and function name can be used only once.  It is not possible to
+-define a function with the same name and different type of arguments.  It is
+-not possible to use a public and private member variable with the same name.
+-A object variable name used in a super class cannot be reused in a child
+-class.
++Each variable and method name can be used only once.  It is not possible to
++define a method with the same name and different type of arguments.  It is not
++possible to use a public and private member variable with the same name.  A
++object variable name used in a super class cannot be reused in a child class.
+ 
+ 
+-Member Initialization ~
+-If the type of a member is not explicitly specified in a class, then it is set
+-to "any" during class definition.  When an object is instantiated from the
+-class, then the type of the member is set.
++Object Variable Initialization ~
++If the type of a variable is not explicitly specified in a class, then it is
++set to "any" during class definition.  When an object is instantiated from the
++class, then the type of the variable is set.
+ 
+ 
+ Extending a class ~
+@@ -531,7 +533,7 @@ The basic idea is to build on top of an existing class, add properties to it.
+ The extended class is called the "base class" or "super class".  The new class
+ is called the "child class".
+ 
+-Object members from the base class are all taken over by the child class.  It
++Object variables from the base class are all taken over by the child class.  It
+ is not possible to override them (unlike some other languages).
+ 
+ 						*E1356* *E1357* *E1358*
+@@ -545,19 +547,19 @@ the same as the super class.
+ 
+ Other object methods of the base class are taken over by the child class.
+ 
+-Class functions, including functions starting with "new", can be overruled,
+-like with object methods.  The function on the base class can be called by
+-prefixing the name of the class (for class functions) or "super.".
++Class methods, including methods starting with "new", can be overruled, like
++with object methods.  The method on the base class can be called by prefixing
++the name of the class (for class methods) or "super.".
+ 
+ Unlike other languages, the constructor of the base class does not need to be
+ invoked.  In fact, it cannot be invoked.  If some initialization from the base
+ class also needs to be done in a child class, put it in an object method and
+ call that method from every constructor().
+ 
+-If the base class did not specify a new() function then one was automatically
+-created.  This function will not be taken over by the child class.  The child
+-class can define its own new() function, or, if there isn't one, a new()
+-function will be added automatically.
++If the base class did not specify a new() method then one was automatically
++created.  This method will not be taken over by the child class.  The child
++class can define its own new() method, or, if there isn't one, a new() method
++will be added automatically.
+ 
+ 
+ A class implementing an interface ~
+@@ -569,7 +571,7 @@ commas.  Each interface name can appear only once. *E1351*
+ 
+ A class defining an interface ~
+ 							*specifies*
+-A class can declare its interface, the object members and methods, with a
++A class can declare its interface, the object variables and methods, with a
+ named interface.  This avoids the need for separately specifying the
+ interface, which is often done in many languages, especially Java.
+ 
+@@ -577,14 +579,14 @@ interface, which is often done in many languages, especially Java.
+ Items in a class ~
+ 						*E1318* *E1325*
+ Inside a class, in between `:class` and `:endclass`, these items can appear:
+-- An object member declaration: >
+-	this._privateMemberName: memberType
+-	this.readonlyMemberName: memberType
+-	public this.readwriteMemberName: memberType
+-- A class member declaration: >
+-	static this._privateMemberName: memberType
+-	static this.readonlyMemberName: memberType
+-	static public this.readwriteMemberName: memberType
++- An object variable declaration: >
++	this._privateVariableName: memberType
++	this.readonlyVariableName: memberType
++	public this.readwriteVariableName: memberType
++- A class variable declaration: >
++	static _privateClassVariableName: memberType
++	static readonlyClassVariableName: memberType
++	static public readwriteClassVariableName: memberType
+ - A constructor method: >
+ 	def new(arguments)
+ 	def newName(arguments)
+@@ -595,10 +597,11 @@ Inside a class, in between `:class` and `:endclass`, these items can appear:
+ 	def SomeMethod(arguments)
+ 	def _PrivateMethod(arguments)
+ 
+-For the object member the type must be specified.  The best way is to do this
+-explicitly with ": {type}".  For simple types you can also use an initializer,
+-such as "= 123", and Vim will see that the type is a number.  Avoid doing this
+-for more complex types and when the type will be incomplete.  For example: >
++For the object variable the type must be specified.  The best way is to do
++this explicitly with ": {type}".  For simple types you can also use an
++initializer, such as "= 123", and Vim will see that the type is a number.
++Avoid doing this for more complex types and when the type will be incomplete.
++For example: >
+ 	this.nameList = []
+ This specifies a list, but the item type is unknown.  Better use: >
+ 	this.nameList: list<string>
+@@ -618,8 +621,8 @@ prefixed with `:export`: >
+ 	export interface InterfaceName
+ 	endinterface
+ <							*E1344*
+-An interface can declare object members, just like in a class but without any
+-initializer.
++An interface can declare object variables, just like in a class but without
++any initializer.
+ 							*E1345*
+ An interface can declare methods with `:def`, including the arguments and
+ return type, but without the body and without `:enddef`.  Example: >
+@@ -642,15 +645,15 @@ null object ~
+ When a variable is declared to have the type of an object, but it is not
+ initialized, the value is null.  When trying to use this null object Vim often
+ does not know what class was supposed to be used.  Vim then cannot check if
+-a member name is correct and you will get an "Using a null object" error,
+-even when the member name is invalid. *E1360* *E1362* *E1363*
++a variable name is correct and you will get an "Using a null object" error,
++even when the variable name is invalid. *E1360* *E1362* *E1363*
+ 
+ 
+ Default constructor ~
+ 
+ In case you define a class without a new() method, one will be automatically
+ defined.  This default constructor will have arguments for all the object
+-members, in the order they were specified.  Thus if your class looks like: >
++variables, in the order they were specified.  Thus if your class looks like: >
+ 
+ 	class AutoNew
+ 	   this.name: string
+@@ -658,14 +661,14 @@ members, in the order they were specified.  Thus if your class looks like: >
+ 	   this.gender: Gender
+ 	endclass
+ 
+-Then The default constructor will be: >
++Then the default constructor will be: >
+ 
+ 	def new(this.name = v:none, this.age = v:none, this.gender = v:none)
+ 	enddef
+ 
+ The "= v:none" default values make the arguments optional.  Thus you can also
+ call `new()` without any arguments.  No assignment will happen and the default
+-value for the object members will be used.  This is a more useful example,
++value for the object variables will be used.  This is a more useful example,
+ with default values: >
+ 
+ 	class TextPosition
+@@ -681,13 +684,13 @@ the name, you can define the constructor like this: >
+ 	enddef
+ <							*E1328*
+ Note that you cannot use another default value than "v:none" here.  If you
+-want to initialize the object members, do it where they are declared.  This
++want to initialize the object variables, do it where they are declared.  This
+ way you only need to look in one place for the default values.
+ 
+-All object members will be used in the default constructor, also private
++All object variables will be used in the default constructor, also private
+ access ones.
+ 
+-If the class extends another one, the object members of that class will come
++If the class extends another one, the object variables of that class will come
+ first.
+ 
+ 
+@@ -801,7 +804,7 @@ the method being called is obvious.
+ No overloading of the constructor ~
+ 
+ In Vim script, both legacy and |Vim9| script, there is no overloading of
+-functions.  That means it is not possible to use the same function name with
++methods.  That means it is not possible to use the same method name with
+ different types of arguments.  Therefore there also is only one new()
+ constructor.
+ 
+@@ -844,39 +847,40 @@ class implements an interface just because the methods happen to match is
+ brittle and leads to obscure problems, let's not do that.
+ 
+ 
+-Using "this.member" everywhere ~
++Using "this.variable" everywhere ~
+ 
+-The object members in various programming languages can often be accessed in
++The object variables in various programming languages can often be accessed in
+ different ways, depending on the location.  Sometimes "this." has to be
+ prepended to avoid ambiguity.  They are usually declared without "this.".
+ That is quite inconsistent and sometimes confusing.
+ 
+ A very common issue is that in the constructor the arguments use the same name
+-as the object member.  Then for these members "this." needs to be prefixed in
+-the body, while for other members this is not needed and often omitted.  This
+-leads to a mix of members with and without "this.", which is inconsistent.
++as the object variable.  Then for these variables "this." needs to be prefixed
++in the body, while for other variables this is not needed and often omitted.
++This leads to a mix of variables with and without "this.", which is
++inconsistent.
+ 
+ For |Vim9| classes the "this." prefix is always used.  Also for declaring the
+-members.  Simple and consistent.  When looking at the code inside a class it's
+-also directly clear which variable references are object members and which
+-aren't.
++variables.  Simple and consistent.  When looking at the code inside a class
++it's also directly clear which variable references are object variables and
++which aren't.
+ 
+ 
+-Using class members ~
++Using class variables ~
+ 
+-Using "static member" to declare a class member is very common, nothing new
+-here.  In |Vim9| script these can be accessed directly by their name.  Very
+-much like how a script-local variable can be used in a function.  Since object
+-members are always accessed with "this." prepended, it's also quickly clear
+-what kind of member it is.
++Using "static variable" to declare a class variable is very common, nothing
++new here.  In |Vim9| script these can be accessed directly by their name.
++Very much like how a script-local variable can be used in a method.  Since
++object variables are always accessed with "this." prepended, it's also quickly
++clear what kind of variable it is.
+ 
+-TypeScript prepends the class name before the class member, also inside the
+-class.  This has two problems: The class name can be rather long, taking up
+-quite a bit of space, and when the class is renamed all these places need to
+-be changed too.
++TypeScript prepends the class name before the class variable name, also inside
++the class.  This has two problems: The class name can be rather long, taking
++up quite a bit of space, and when the class is renamed all these places need
++to be changed too.
+ 
+ 
+-Declaring object and class members ~
++Declaring object and class variables ~
+ 
+ The main choice is whether to use "var" as with variable declarations.
+ TypeScript does not use it: >
+@@ -885,7 +889,7 @@ TypeScript does not use it: >
+ 	  y = 0;
+ 	}
+ 
+-Following that Vim object members could be declared like this: >
++Following that Vim object variables could be declared like this: >
+ 	class Point
+ 	  this.x: number
+ 	  this.y = 0
+@@ -898,7 +902,7 @@ declaration.  Adding "var" changes that: >
+ 	  var this.y = 0
+ 	endclass
+ 
+-We also need to be able to declare class members using the "static" keyword.
++We also need to be able to declare class variables using the "static" keyword.
+ There we can also choose to leave out "var": >
+ 	class Point
+ 	  var this.x: number
+@@ -938,50 +942,50 @@ while there is no ClassName() method, it's a method by another name in the
+ class called ClassName.  Quite confusing.
+ 
+ 
+-Default read access to object members ~
++Default read access to object variables ~
+ 
+-Some users will remark that the access rules for object members are
++Some users will remark that the access rules for object variables are
+ asymmetric.  Well, that is intentional.  Changing a value is a very different
+ action than reading a value.  The read operation has no side effects, it can
+ be done any number of times without affecting the object.  Changing the value
+ can have many side effects, and even have a ripple effect, affecting other
+ objects.
+ 
+-When adding object members one usually doesn't think much about this, just get
+-the type right.  And normally the values are set in the new() method.
++When adding object variables one usually doesn't think much about this, just
++get the type right.  And normally the values are set in the new() method.
+ Therefore defaulting to read access only "just works" in most cases.  And when
+ directly writing you get an error, which makes you wonder if you actually want
+ to allow that.  This helps writing code with fewer mistakes.
+ 
+ 
+-Making object members private with an underscore ~
++Making object variables private with an underscore ~
+ 
+-When an object member is private, it can only be read and changed inside the
++When an object variable is private, it can only be read and changed inside the
+ class (and in sub-classes), then it cannot be used outside of the class.
+ Prepending an underscore is a simple way to make that visible.  Various
+ programming languages have this as a recommendation.
+ 
+-In case you change your mind and want to make the object member accessible
++In case you change your mind and want to make the object variable accessible
+ outside of the class, you will have to remove the underscore everywhere.
+ Since the name only appears in the class (and sub-classes) they will be easy
+ to find and change.
+ 
+ The other way around is much harder: you can easily prepend an underscore to
+-the object member inside the class to make it private, but any usage elsewhere
+-you will have to track down and change.  You may have to make it a "set"
+-method call.  This reflects the real world problem that taking away access
+-requires work to be done for all places where that access exists.
++the object variable inside the class to make it private, but any usage
++elsewhere you will have to track down and change.  You may have to make it a
++"set" method call.  This reflects the real world problem that taking away
++access requires work to be done for all places where that access exists.
+ 
+ An alternative would have been using the "private" keyword, just like "public"
+ changes the access in the other direction.  Well, that's just to reduce the
+ number of keywords.
+ 
+ 
+-No protected object members ~
++No protected object variables ~
+ 
+-Some languages provide several ways to control access to object members.  The
+-most known is "protected", and the meaning varies from language to language.
+-Others are "shared", "private" and even "friend".
++Some languages provide several ways to control access to object variables.
++The most known is "protected", and the meaning varies from language to
++language.  Others are "shared", "private" and even "friend".
+ 
+ These rules make life more difficult.  That can be justified in projects where
+ many people work on the same, complex code where it is easy to make mistakes.
