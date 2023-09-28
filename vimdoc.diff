@@ -1,114 +1,149 @@
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index da9aeb7fe..46279110a 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -1,4 +1,4 @@
--*editing.txt*   For Vim version 9.0.  Last change: 2023 Apr 23
-+*editing.txt*   For Vim version 9.0.  Last change: 2023 Sep 22
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 74e024d97..8a92ff6ec 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -6830,55 +6830,55 @@ printf({fmt}, {expr1} ...)				*printf()*
+ 			echo printf("%1$*2$.*3$f", 1.4142135, 6, 2)
+ <			  1.41
  
+-							*E1400*
++							*E1500*
+ 		You cannot mix positional and non-positional arguments: >
+ 			echo printf("%s%1$s", "One", "Two")
+-<			E1400: Cannot mix positional and non-positional
++<			E1500: Cannot mix positional and non-positional
+ 			arguments: %s%1$s
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -385,7 +385,9 @@ as a wildcard when "[" is in the 'isfname' option.  A simple way to avoid this
- is to use "path\[[]abc]", this matches the file "path\[abc]".
+-							*E1401*
++							*E1501*
+ 		You cannot skip a positional argument in a format string: >
+ 			echo printf("%3$s%1$s", "One", "Two", "Three")
+-<			E1401: format argument 2 unused in $-style
++<			E1501: format argument 2 unused in $-style
+ 			format: %3$s%1$s
  
- 					*starstar-wildcard*
--Expanding "**" is possible on Unix, Win32, macOS and a few other systems.
-+Expanding "**" is possible on Unix, Win32, macOS and a few other systems (but
-+it may depend on your 'shell' setting. It's known to work correctly for zsh; for
-+bash this requires at least bash version >= 4.X).
- This allows searching a directory tree.  This goes up to 100 directories deep.
- Note there are some commands where this works slightly differently, see
- |file-searching|.
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index c5123289a..f7606397d 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -6757,9 +6757,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			*'scrollbind'* *'scb'* *'noscrollbind'* *'noscb'*
- 'scrollbind' 'scb'	boolean  (default off)
- 			local to window
--	See also |scroll-binding|.  When this option is set, the current
--	window scrolls as other scrollbind windows (windows that also have
--	this option set) scroll.  This option is useful for viewing the
-+	See also |scroll-binding|.  When this option is set, scrolling the
-+	current window also scrolls other scrollbind windows (windows that
-+	also have this option set).  This option is useful for viewing the
- 	differences between two versions of a file, see 'diff'.
- 	See |'scrollopt'| for options that determine how this option should be
- 	interpreted.
-diff --git a/runtime/doc/scroll.txt b/runtime/doc/scroll.txt
-index 8e57be441..91fa22824 100644
---- a/runtime/doc/scroll.txt
-+++ b/runtime/doc/scroll.txt
-@@ -191,16 +191,16 @@ windows can be given this behavior by setting the (window-specific)
- other 'scrollbind' windows are scrolled the same amount, if possible.  The
- behavior of 'scrollbind' can be modified by the 'scrollopt' option.
+-							*E1402*
++							*E1502*
+ 		You can re-use a [field-width] (or [precision]) argument: >
+ 			echo printf("%1$d at width %2$d is: %01$*2$d", 1, 2)
+ <			1 at width 2 is: 01
  
--When using the scrollbars, the binding only happens when scrolling the window
--with focus (where the cursor is).  You can use this to avoid scroll-binding
--for a moment without resetting options.
-+When using the scrollbars or the mouse wheel, the binding only happens when
-+scrolling the window with focus (where the cursor is).  You can use this to
-+avoid scroll-binding for a moment without resetting options.
+ 		However, you can't use it as a different type: >
+ 			echo printf("%1$d at width %2$ld is: %01$*2$d", 1, 2)
+-<			E1402: Positional argument 2 used as field
++<			E1502: Positional argument 2 used as field
+ 			width reused as different type: long int/int
  
- When a window also has the 'diff' option set, the scroll-binding uses the
- differences between the two buffers to synchronize the position precisely.
- Otherwise the following method is used.
+-							*E1403*
++							*E1503*
+ 		When a positional argument is used, but not the correct number
+ 		or arguments is given, an error is raised: >
+ 			echo printf("%1$d at width %2$d is: %01$*2$.*3$d", 1, 2)
+-<			E1403: Positional argument 3 out of bounds:
++<			E1503: Positional argument 3 out of bounds:
+ 			%1$d at width %2$d is: %01$*2$.*3$d
  
- 							*scrollbind-relative*
--Each 'scrollbind' window keeps track of its "relative offset," which can be
-+Each 'scrollbind' window keeps track of its "relative offset", which can be
- thought of as the difference between the current window's vertical scroll
- position and the other window's vertical scroll position.  When one of the
- 'scrollbind' windows is asked to vertically scroll past the beginning or end
-@@ -224,9 +224,10 @@ option.
+ 		Only the first error is reported: >
+ 			echo printf("%01$*2$.*3$d %4$d", 1, 2)
+-<			E1403: Positional argument 3 out of bounds:
++<			E1503: Positional argument 3 out of bounds:
+ 			%01$*2$.*3$d %4$d
  
- 							*scrollbind-quickadj*
- The 'scrollbind' flag is meaningful when using keyboard commands to vertically
--scroll a window, and also meaningful when using the vertical scrollbar of the
--window which has the cursor focus.  However, when using the vertical scrollbar
--of a window which doesn't have the cursor focus, 'scrollbind' is ignored.
-+scroll a window, and is also meaningful when using the vertical scrollbar or
-+the mouse wheel in the window which has the cursor focus.  However, when using
-+the vertical scrollbar or the mouse wheel in a window which doesn't have the
-+cursor focus, 'scrollbind' is ignored.
- This allows quick adjustment of the relative offset of 'scrollbind' windows.
+-							*E1404*
++							*E1504*
+ 		A positional argument can be used more than once: >
+ 			echo printf("%1$s %2$s %1$s", "One", "Two")
+ <			One Two One
  
- ==============================================================================
+ 		However, you can't use a different type the second time: >
+ 			echo printf("%1$s %2$s %1$d", "One", "Two")
+-<			E1404: Positional argument 1 type used
++<			E1504: Positional argument 1 type used
+ 			inconsistently: int/string
+ 
+-							*E1405*
++							*E1505*
+ 		Various other errors that lead to a format string being
+ 		wrongly formatted lead to: >
+ 			echo printf("%1$d at width %2$d is: %01$*2$.3$d", 1, 2)
+-<			E1405: Invalid format specifier:
++<			E1505: Invalid format specifier:
+ 			%1$d at width %2$d is: %01$*2$.3$d
+ 
+ prompt_getprompt({buf})					*prompt_getprompt()*
 diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index a27f7319a..b230cb800 100644
+index b230cb800..6b51e86b6 100644
 --- a/runtime/doc/vim9class.txt
 +++ b/runtime/doc/vim9class.txt
-@@ -464,10 +464,10 @@ The interface name can be used as a type: >
- 	   echo $'the surface is {shape.Surface()}'
- 	endfor
+@@ -150,7 +150,7 @@ If you try to set an object variable that doesn't exist you get an error: >
+ A object variable cannot be accessed using the class name.
+ 
+ Private variables ~
+-							*E1332* *E1333*
++					*private-variable* *E1332* *E1333*
+ On the other hand, if you do not want the object variables to be read directly,
+ you can make them private.  This is done by prefixing an underscore to the
+ name: >
+@@ -182,7 +182,7 @@ number to the total number of lines: >
+ 	enddef
  <
--						*E1378* *E1379* *E1380*
--An interface can have only instance variables (read-only and read-write
--access) and methods.  An interface cannot contain private variables, private
--methods, class variables and class methods.
-+					*E1378* *E1379* *E1380* *E1387*
-+An interface can contain only object methods and read-only object variables.
-+An interface cannot contain read-write and private object variables, private
-+object methods, class variables and class methods.
+ Private methods ~
+-							*E1366*
++						*private-method* *E1366*
+ If you want object methods to be accessible only from other methods of the
+ same class and not used from outside the class, then you can make them
+ private.  This is done by prefixing the method name with an underscore: >
+@@ -203,7 +203,7 @@ the above class): >
+     a._Foo()
+ <
+ Simplifying the new() method ~
+-
++						*new()* *constructor*
+ Many constructors take values for the object variables.  Thus you very often
+ see this pattern: >
  
- An interface can extend another interface using "extends".  The sub-interface
- inherits all the instance variables and methods from the super interface.
-@@ -563,7 +563,7 @@ will be added automatically.
+@@ -216,7 +216,8 @@ see this pattern: >
+ 	      this.col = col
+ 	   enddef
+ 	 endclass
+-
++<
++							*E1390*
+ Not only is this text you need to write, it also has the type of each
+ variables twice.  Since this is so common a shorter way to write new() is
+ provided: >
+@@ -257,10 +258,15 @@ If the class extends a parent class, the same thing happens.  In the second
+ step the object variables of the parent class are initialized first.  There is
+ no need to call "super()" or "new()" on the parent.
+ 
+-						*E1365*
++							*E1365*
+ When defining the new() method the return type should not be specified.  It
+ always returns an object of the class.
+ 
++							*E1386*
++When invoking an object method, the method name should be preceded by the
++object variable name.  A object method cannot be invoked using the class
++name.
++
+ ==============================================================================
+ 
+ 3.  Class Variables and Methods			*Vim9-class-member*
+@@ -281,7 +287,7 @@ prefix in the class where they are defined: >
+ Since the name is used as-is, shadowing the name by a method argument name
+ or local variable name is not allowed.
+ 
+-							*E1374* *E1375*
++					    *E1374* *E1375* *E1384* *E1385*
+ To access a class member outside of the class where it is defined, the class
+ name prefix must be used.  A class member cannot be accessed using an object.
+ 
+@@ -650,7 +656,7 @@ even when the variable name is invalid. *E1360* *E1362* *E1363*
  
  
- A class implementing an interface ~
--						*implements* *E1346* *E1347*
-+					*implements* *E1346* *E1347* *E1389*
- A class can implement one or more interfaces.  The "implements" keyword can
- only appear once *E1350* .  Multiple interfaces can be specified, separated by
- commas.  Each interface name can appear only once. *E1351*
-@@ -577,7 +577,7 @@ interface, which is often done in many languages, especially Java.
- 
- 
- Items in a class ~
--						*E1318* *E1325*
-+						*E1318* *E1325* *E1388*
- Inside a class, in between `:class` and `:endclass`, these items can appear:
- - An object variable declaration: >
- 	this._privateVariableName: memberType
+ Default constructor ~
+-
++							*default-constructor*
+ In case you define a class without a new() method, one will be automatically
+ defined.  This default constructor will have arguments for all the object
+ variables, in the order they were specified.  Thus if your class looks like: >
