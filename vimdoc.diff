@@ -1,149 +1,184 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 74e024d97..8a92ff6ec 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -6830,55 +6830,55 @@ printf({fmt}, {expr1} ...)				*printf()*
- 			echo printf("%1$*2$.*3$f", 1.4142135, 6, 2)
- <			  1.41
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index d2e476f00..3d63b1964 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -517,16 +517,26 @@ example, to match only files that end in ".c": >
+ 	:e *.c$
+ This will not match a file ending in ".cpp".  Without the "$" it does match.
  
--							*E1400*
-+							*E1500*
- 		You cannot mix positional and non-positional arguments: >
- 			echo printf("%s%1$s", "One", "Two")
--<			E1400: Cannot mix positional and non-positional
-+<			E1500: Cannot mix positional and non-positional
- 			arguments: %s%1$s
+-The old value of an option can be obtained by hitting 'wildchar' just after
+-the '='.  For example, typing 'wildchar' after ":set dir=" will insert the
+-current value of 'dir'.  This overrules file name completion for the options
+-that take a file name.
+-
+ If you would like using <S-Tab> for CTRL-P in an xterm, put this command in
+ your .cshrc: >
+ 	xmodmap -e "keysym Tab = Tab Find"
+ And this in your .vimrc: >
+ 	:cmap <Esc>[1~ <C-P>
++<						*complete-set-option*
++When setting an option using |:set=|, the old value of an option can be
++obtained by hitting 'wildchar' just after the '='.  For example, typing
++'wildchar' after ":set dir=" will insert the current value of 'dir'.  This
++overrules file name completion for the options that take a file name.
++
++When using |:set=|, |:set+=|, or |:set^=|, string options that have
++pre-defined names or syntax (e.g. 'diffopt', 'listchars') or are a list of
++single-character flags (e.g. 'shortmess') will also present a list of possible
++values for completion when using 'wildchar'.
++
++When using |:set-=|, comma-separated options like 'diffopt' or 'backupdir'
++will show each item separately.  Flag list options like 'shortmess' will show
++both the entire old value and the individual flags.  Otherwise completion will
++just fill in with the entire old value.
  
--							*E1401*
-+							*E1501*
- 		You cannot skip a positional argument in a format string: >
- 			echo printf("%3$s%1$s", "One", "Two", "Three")
--<			E1401: format argument 2 unused in $-style
-+<			E1501: format argument 2 unused in $-style
- 			format: %3$s%1$s
+ ==============================================================================
+ 3. Ex command-lines					*cmdline-lines*
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 73fc9a817..403ef4f30 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1,4 +1,4 @@
+-*motion.txt*    For Vim version 9.0.  Last change: 2023 Sep 18
++*motion.txt*    For Vim version 9.0.  Last change: 2023 Sep 28
  
--							*E1402*
-+							*E1502*
- 		You can re-use a [field-width] (or [precision]) argument: >
- 			echo printf("%1$d at width %2$d is: %01$*2$d", 1, 2)
- <			1 at width 2 is: 01
  
- 		However, you can't use it as a different type: >
- 			echo printf("%1$d at width %2$ld is: %01$*2$d", 1, 2)
--<			E1402: Positional argument 2 used as field
-+<			E1502: Positional argument 2 used as field
- 			width reused as different type: long int/int
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -592,14 +592,16 @@ a]						*v_a]* *v_a[* *a]* *a[*
+ a[			"a [] block", select [count] '[' ']' blocks.  This
+ 			goes backwards to the [count] unclosed '[', and finds
+ 			the matching ']'.  The enclosed text is selected,
+-			including the '[' and ']'.
++			including the '[' and ']'.  The |cpo-M| option flag
++			is used to handle escaped brackets.
+ 			When used in Visual mode it is made characterwise.
  
--							*E1403*
-+							*E1503*
- 		When a positional argument is used, but not the correct number
- 		or arguments is given, an error is raised: >
- 			echo printf("%1$d at width %2$d is: %01$*2$.*3$d", 1, 2)
--<			E1403: Positional argument 3 out of bounds:
-+<			E1503: Positional argument 3 out of bounds:
- 			%1$d at width %2$d is: %01$*2$.*3$d
+ i]						*v_i]* *v_i[* *i]* *i[*
+ i[			"inner [] block", select [count] '[' ']' blocks.  This
+ 			goes backwards to the [count] unclosed '[', and finds
+ 			the matching ']'.  The enclosed text is selected,
+-			excluding the '[' and ']'.
++			excluding the '[' and ']'.  The |cpo-M| option flag
++			is used to handle escaped brackets.
+ 			When used in Visual mode it is made characterwise.
  
- 		Only the first error is reported: >
- 			echo printf("%01$*2$.*3$d %4$d", 1, 2)
--<			E1403: Positional argument 3 out of bounds:
-+<			E1503: Positional argument 3 out of bounds:
- 			%01$*2$.*3$d %4$d
+ a)							*v_a)* *a)* *a(*
+@@ -607,7 +609,8 @@ a(							*vab* *v_ab* *v_a(* *ab*
+ ab			"a block", select [count] blocks, from "[count] [(" to
+ 			the matching ')', including the '(' and ')' (see
+ 			|[(|).  Does not include white space outside of the
+-			parenthesis.
++			parenthesis.  The |cpo-M| option flag is used to
++			handle escaped parenthesis.
+ 			When used in Visual mode it is made characterwise.
  
--							*E1404*
-+							*E1504*
- 		A positional argument can be used more than once: >
- 			echo printf("%1$s %2$s %1$s", "One", "Two")
- <			One Two One
+ i)							*v_i)* *i)* *i(*
+@@ -615,19 +618,22 @@ i(							*vib* *v_ib* *v_i(* *ib*
+ ib			"inner block", select [count] blocks, from "[count] [("
+ 			to the matching ')', excluding the '(' and ')' (see
+ 			|[(|).  If the cursor is not inside a () block, then
+-			find the next "(".
++			find the next "(".  The |cpo-M| option flag
++			is used to handle escaped parenthesis.
+ 			When used in Visual mode it is made characterwise.
  
- 		However, you can't use a different type the second time: >
- 			echo printf("%1$s %2$s %1$d", "One", "Two")
--<			E1404: Positional argument 1 type used
-+<			E1504: Positional argument 1 type used
- 			inconsistently: int/string
+ a>						*v_a>* *v_a<* *a>* *a<*
+ a<			"a <> block", select [count] <> blocks, from the
+ 			[count]'th unmatched '<' backwards to the matching
+-			'>', including the '<' and '>'.
++			'>', including the '<' and '>'.  The |cpo-M| option flag
++			is used to handle escaped '<' and '>'.
+ 			When used in Visual mode it is made characterwise.
  
--							*E1405*
-+							*E1505*
- 		Various other errors that lead to a format string being
- 		wrongly formatted lead to: >
- 			echo printf("%1$d at width %2$d is: %01$*2$.3$d", 1, 2)
--<			E1405: Invalid format specifier:
-+<			E1505: Invalid format specifier:
- 			%1$d at width %2$d is: %01$*2$.3$d
+ i>						*v_i>* *v_i<* *i>* *i<*
+ i<			"inner <> block", select [count] <> blocks, from
+ 			the [count]'th unmatched '<' backwards to the matching
+-			'>', excluding the '<' and '>'.
++			'>', excluding the '<' and '>'.  The |cpo-M| option flag
++			is used to handle escaped '<' and '>'.
+ 			When used in Visual mode it is made characterwise.
  
- prompt_getprompt({buf})					*prompt_getprompt()*
+ 						*v_at* *at*
+@@ -649,14 +655,16 @@ a}							*v_a}* *a}* *a{*
+ a{							*v_aB* *v_a{* *aB*
+ aB			"a Block", select [count] Blocks, from "[count] [{" to
+ 			the matching '}', including the '{' and '}' (see
+-			|[{|).
++			|[{|).  The |cpo-M| option flag is used to handle
++			escaped braces.
+ 			When used in Visual mode it is made characterwise.
+ 
+ i}							*v_i}* *i}* *i{*
+ i{							*v_iB* *v_i{* *iB*
+ iB			"inner Block", select [count] Blocks, from "[count] [{"
+ 			to the matching '}', excluding the '{' and '}' (see
+-			|[{|).
++			|[{|).  The |cpo-M| option flag is used to handle
++			escaped braces.
+ 			When used in Visual mode it is made characterwise.
+ 
+ a"							*v_aquote* *aquote*
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index f7606397d..090399af0 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -71,7 +71,7 @@ achieve special effects.  These options come in three forms:
+ 			  'ttytype'
+ 			Warning: This may have a lot of side effects.
+ 
+-						*:set-args* *E487* *E521*
++						*:set-args* *:set=* *E487* *E521*
+ :se[t] {option}={value}		or
+ :se[t] {option}:{value}
+ 			Set string or number option to {value}.
+@@ -79,7 +79,9 @@ achieve special effects.  These options come in three forms:
+ 			hex (preceded with 0x) or octal (preceded with '0').
+ 			The old value can be inserted by typing 'wildchar' (by
+ 			default this is a <Tab> or CTRL-E if 'compatible' is
+-			set).  See |cmdline-completion|.
++			set). Many string options with fixed syntax and names
++			also support completing known values.  See
++			|cmdline-completion| and |complete-set-option|.
+ 			White space between {option} and '=' is allowed and
+ 			will be ignored.  White space between '=' and {value}
+ 			is not allowed.
+@@ -113,6 +115,9 @@ achieve special effects.  These options come in three forms:
+ 			When the option is a list of flags, {value} must be
+ 			exactly as they appear in the option.  Remove flags
+ 			one by one to avoid problems.
++			The individual values from a comma separated list or
++			list of flags can be inserted by typing 'wildchar'.
++			See |complete-set-option|.
+ 			Also see |:set-args| above.
+ 
+ The {option} arguments to ":set" may be repeated.  For example: >
 diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index b230cb800..6b51e86b6 100644
+index 6b51e86b6..066025469 100644
 --- a/runtime/doc/vim9class.txt
 +++ b/runtime/doc/vim9class.txt
-@@ -150,7 +150,7 @@ If you try to set an object variable that doesn't exist you get an error: >
- A object variable cannot be accessed using the class name.
+@@ -530,6 +530,10 @@ If the type of a variable is not explicitly specified in a class, then it is
+ set to "any" during class definition.  When an object is instantiated from the
+ class, then the type of the variable is set.
  
- Private variables ~
--							*E1332* *E1333*
-+					*private-variable* *E1332* *E1333*
- On the other hand, if you do not want the object variables to be read directly,
- you can make them private.  This is done by prefixing an underscore to the
- name: >
-@@ -182,7 +182,7 @@ number to the total number of lines: >
- 	enddef
- <
- Private methods ~
--							*E1366*
-+						*private-method* *E1366*
- If you want object methods to be accessible only from other methods of the
- same class and not used from outside the class, then you can make them
- private.  This is done by prefixing the method name with an underscore: >
-@@ -203,7 +203,7 @@ the above class): >
-     a._Foo()
- <
- Simplifying the new() method ~
--
-+						*new()* *constructor*
- Many constructors take values for the object variables.  Thus you very often
- see this pattern: >
++The following reserved keyword names cannot be used as an object or class
++variable name: "super", "this", "true", "false", "null", "null_blob",
++"null_dict", "null_function", "null_list", "null_partial", "null_string",
++"null_channel" and "null_job".
  
-@@ -216,7 +216,8 @@ see this pattern: >
- 	      this.col = col
- 	   enddef
- 	 endclass
--
-+<
-+							*E1390*
- Not only is this text you need to write, it also has the type of each
- variables twice.  Since this is so common a shorter way to write new() is
- provided: >
-@@ -257,10 +258,15 @@ If the class extends a parent class, the same thing happens.  In the second
- step the object variables of the parent class are initialized first.  There is
- no need to call "super()" or "new()" on the parent.
+ Extending a class ~
+ 							*extends*
+@@ -543,9 +547,11 @@ Object variables from the base class are all taken over by the child class.  It
+ is not possible to override them (unlike some other languages).
  
--						*E1365*
-+							*E1365*
- When defining the new() method the return type should not be specified.  It
- always returns an object of the class.
+ 						*E1356* *E1357* *E1358*
+-Object methods of the base class can be overruled.  The signature (arguments,
+-argument types and return type) must be exactly the same.  The method of the
+-base class can be called by prefixing "super.".
++Object methods of the base class can be overruled.  The number of arguments
++must be exactly the same.  The method argument type can be a contra-variant
++type of the base class method argument type.  The method return value type can
++be a covariant type of the base class method return value type.  The method of
++the base class can be called by prefixing "super.".
  
-+							*E1386*
-+When invoking an object method, the method name should be preceded by the
-+object variable name.  A object method cannot be invoked using the class
-+name.
-+
- ==============================================================================
- 
- 3.  Class Variables and Methods			*Vim9-class-member*
-@@ -281,7 +287,7 @@ prefix in the class where they are defined: >
- Since the name is used as-is, shadowing the name by a method argument name
- or local variable name is not allowed.
- 
--							*E1374* *E1375*
-+					    *E1374* *E1375* *E1384* *E1385*
- To access a class member outside of the class where it is defined, the class
- name prefix must be used.  A class member cannot be accessed using an object.
- 
-@@ -650,7 +656,7 @@ even when the variable name is invalid. *E1360* *E1362* *E1363*
- 
- 
- Default constructor ~
--
-+							*default-constructor*
- In case you define a class without a new() method, one will be automatically
- defined.  This default constructor will have arguments for all the object
- variables, in the order they were specified.  Thus if your class looks like: >
+ 						*E1377*
+ The access level of a method (public or private) in a child class should be
