@@ -1,184 +1,61 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index d2e476f00..3d63b1964 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -517,16 +517,26 @@ example, to match only files that end in ".c": >
- 	:e *.c$
- This will not match a file ending in ".cpp".  Without the "$" it does match.
- 
--The old value of an option can be obtained by hitting 'wildchar' just after
--the '='.  For example, typing 'wildchar' after ":set dir=" will insert the
--current value of 'dir'.  This overrules file name completion for the options
--that take a file name.
--
- If you would like using <S-Tab> for CTRL-P in an xterm, put this command in
- your .cshrc: >
- 	xmodmap -e "keysym Tab = Tab Find"
- And this in your .vimrc: >
- 	:cmap <Esc>[1~ <C-P>
-+<						*complete-set-option*
-+When setting an option using |:set=|, the old value of an option can be
-+obtained by hitting 'wildchar' just after the '='.  For example, typing
-+'wildchar' after ":set dir=" will insert the current value of 'dir'.  This
-+overrules file name completion for the options that take a file name.
-+
-+When using |:set=|, |:set+=|, or |:set^=|, string options that have
-+pre-defined names or syntax (e.g. 'diffopt', 'listchars') or are a list of
-+single-character flags (e.g. 'shortmess') will also present a list of possible
-+values for completion when using 'wildchar'.
-+
-+When using |:set-=|, comma-separated options like 'diffopt' or 'backupdir'
-+will show each item separately.  Flag list options like 'shortmess' will show
-+both the entire old value and the individual flags.  Otherwise completion will
-+just fill in with the entire old value.
- 
- ==============================================================================
- 3. Ex command-lines					*cmdline-lines*
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 73fc9a817..403ef4f30 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 8a92ff6ec..b4ea216f3 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*motion.txt*    For Vim version 9.0.  Last change: 2023 Sep 18
-+*motion.txt*    For Vim version 9.0.  Last change: 2023 Sep 28
+-*builtin.txt*	For Vim version 9.0.  Last change: 2023 Aug 09
++*builtin.txt*	For Vim version 9.0.  Last change: 2023 Sep 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -11082,6 +11082,8 @@ winaltkeys		Compiled with 'winaltkeys' option.
+ windows			Compiled with support for more than one window.
+ 			(always true)
+ writebackup		Compiled with 'writebackup' default on.
++xattr			Compiled with extended attributes support |xattr|
++			(currently only supported on Linux).
+ xfontset		Compiled with X fontset support |xfontset|.
+ xim			Compiled with X input method support |xim|.
+ xpm			Compiled with pixmap support.
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 46279110a..a015c8462 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.0.  Last change: 2023 Sep 22
++*editing.txt*   For Vim version 9.0.  Last change: 2023 Sep 27
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -592,14 +592,16 @@ a]						*v_a]* *v_a[* *a]* *a[*
- a[			"a [] block", select [count] '[' ']' blocks.  This
- 			goes backwards to the [count] unclosed '[', and finds
- 			the matching ']'.  The enclosed text is selected,
--			including the '[' and ']'.
-+			including the '[' and ']'.  The |cpo-M| option flag
-+			is used to handle escaped brackets.
- 			When used in Visual mode it is made characterwise.
+@@ -1097,6 +1097,13 @@ will get the ACL info of the original file.
+    The ACL info is also used to check if a file is read-only (when opening the
+ file).
  
- i]						*v_i]* *v_i[* *i]* *i[*
- i[			"inner [] block", select [count] '[' ']' blocks.  This
- 			goes backwards to the [count] unclosed '[', and finds
- 			the matching ']'.  The enclosed text is selected,
--			excluding the '[' and ']'.
-+			excluding the '[' and ']'.  The |cpo-M| option flag
-+			is used to handle escaped brackets.
- 			When used in Visual mode it is made characterwise.
++				*xattr* *E1506* *E1507* *E1508* *E1509*
++xattr stands for Extended Attributes  It is an advanced way to save metadata
++alongside the file in the filesystem.  It depends on the actual filesystem
++being used and Vim supports it only on a Linux system.
++   Vim attempts to preserve the extended attribute info when writing a file.
++The backup file will get the extended attribute of the original file.
++
+ 						*read-only-share*
+ When MS-Windows shares a drive on the network it can be marked as read-only.
+ This means that even if the file read-only attribute is absent, and the ACL
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index e478c8266..b2b790393 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2022 Dec 13
++*various.txt*   For Vim version 9.0.  Last change: 2023 Sep 27
  
- a)							*v_a)* *a)* *a(*
-@@ -607,7 +609,8 @@ a(							*vab* *v_ab* *v_a(* *ab*
- ab			"a block", select [count] blocks, from "[count] [(" to
- 			the matching ')', including the '(' and ')' (see
- 			|[(|).  Does not include white space outside of the
--			parenthesis.
-+			parenthesis.  The |cpo-M| option flag is used to
-+			handle escaped parenthesis.
- 			When used in Visual mode it is made characterwise.
  
- i)							*v_i)* *i)* *i(*
-@@ -615,19 +618,22 @@ i(							*vib* *v_ib* *v_i(* *ib*
- ib			"inner block", select [count] blocks, from "[count] [("
- 			to the matching ')', excluding the '(' and ')' (see
- 			|[(|).  If the cursor is not inside a () block, then
--			find the next "(".
-+			find the next "(".  The |cpo-M| option flag
-+			is used to handle escaped parenthesis.
- 			When used in Visual mode it is made characterwise.
- 
- a>						*v_a>* *v_a<* *a>* *a<*
- a<			"a <> block", select [count] <> blocks, from the
- 			[count]'th unmatched '<' backwards to the matching
--			'>', including the '<' and '>'.
-+			'>', including the '<' and '>'.  The |cpo-M| option flag
-+			is used to handle escaped '<' and '>'.
- 			When used in Visual mode it is made characterwise.
- 
- i>						*v_i>* *v_i<* *i>* *i<*
- i<			"inner <> block", select [count] <> blocks, from
- 			the [count]'th unmatched '<' backwards to the matching
--			'>', excluding the '<' and '>'.
-+			'>', excluding the '<' and '>'.  The |cpo-M| option flag
-+			is used to handle escaped '<' and '>'.
- 			When used in Visual mode it is made characterwise.
- 
- 						*v_at* *at*
-@@ -649,14 +655,16 @@ a}							*v_a}* *a}* *a{*
- a{							*v_aB* *v_a{* *aB*
- aB			"a Block", select [count] Blocks, from "[count] [{" to
- 			the matching '}', including the '{' and '}' (see
--			|[{|).
-+			|[{|).  The |cpo-M| option flag is used to handle
-+			escaped braces.
- 			When used in Visual mode it is made characterwise.
- 
- i}							*v_i}* *i}* *i{*
- i{							*v_iB* *v_i{* *iB*
- iB			"inner Block", select [count] Blocks, from "[count] [{"
- 			to the matching '}', excluding the '{' and '}' (see
--			|[{|).
-+			|[{|).  The |cpo-M| option flag is used to handle
-+			escaped braces.
- 			When used in Visual mode it is made characterwise.
- 
- a"							*v_aquote* *aquote*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f7606397d..090399af0 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -71,7 +71,7 @@ achieve special effects.  These options come in three forms:
- 			  'ttytype'
- 			Warning: This may have a lot of side effects.
- 
--						*:set-args* *E487* *E521*
-+						*:set-args* *:set=* *E487* *E521*
- :se[t] {option}={value}		or
- :se[t] {option}:{value}
- 			Set string or number option to {value}.
-@@ -79,7 +79,9 @@ achieve special effects.  These options come in three forms:
- 			hex (preceded with 0x) or octal (preceded with '0').
- 			The old value can be inserted by typing 'wildchar' (by
- 			default this is a <Tab> or CTRL-E if 'compatible' is
--			set).  See |cmdline-completion|.
-+			set). Many string options with fixed syntax and names
-+			also support completing known values.  See
-+			|cmdline-completion| and |complete-set-option|.
- 			White space between {option} and '=' is allowed and
- 			will be ignored.  White space between '=' and {value}
- 			is not allowed.
-@@ -113,6 +115,9 @@ achieve special effects.  These options come in three forms:
- 			When the option is a list of flags, {value} must be
- 			exactly as they appear in the option.  Remove flags
- 			one by one to avoid problems.
-+			The individual values from a comma separated list or
-+			list of flags can be inserted by typing 'wildchar'.
-+			See |complete-set-option|.
- 			Also see |:set-args| above.
- 
- The {option} arguments to ":set" may be repeated.  For example: >
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 6b51e86b6..066025469 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -530,6 +530,10 @@ If the type of a variable is not explicitly specified in a class, then it is
- set to "any" during class definition.  When an object is instantiated from the
- class, then the type of the variable is set.
- 
-+The following reserved keyword names cannot be used as an object or class
-+variable name: "super", "this", "true", "false", "null", "null_blob",
-+"null_dict", "null_function", "null_list", "null_partial", "null_string",
-+"null_channel" and "null_job".
- 
- Extending a class ~
- 							*extends*
-@@ -543,9 +547,11 @@ Object variables from the base class are all taken over by the child class.  It
- is not possible to override them (unlike some other languages).
- 
- 						*E1356* *E1357* *E1358*
--Object methods of the base class can be overruled.  The signature (arguments,
--argument types and return type) must be exactly the same.  The method of the
--base class can be called by prefixing "super.".
-+Object methods of the base class can be overruled.  The number of arguments
-+must be exactly the same.  The method argument type can be a contra-variant
-+type of the base class method argument type.  The method return value type can
-+be a covariant type of the base class method return value type.  The method of
-+the base class can be called by prefixing "super.".
- 
- 						*E1377*
- The access level of a method (public or private) in a child class should be
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -503,6 +503,7 @@ T  *+windows*		more than one window; Always enabled since 8.0.1118.
+ m  *+writebackup*	|'writebackup'| is default on
+ m  *+xim*		X input method |xim|
+    *+xfontset*		X fontset support |xfontset|
++N  *+xattr*		compiled with extended attribute support (Linux only)
+    *+xpm*		pixmap support
+ m  *+xpm_w32*		Win32 GUI only: pixmap support |w32-xpm-support|
+    *+xsmp*		XSMP (X session management) support
