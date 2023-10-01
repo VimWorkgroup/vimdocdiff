@@ -1,61 +1,13 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 8a92ff6ec..b4ea216f3 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.0.  Last change: 2023 Aug 09
-+*builtin.txt*	For Vim version 9.0.  Last change: 2023 Sep 27
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 090399af0..a24dd0490 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -4928,6 +4928,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	"echo &key".  This is to avoid showing it to someone who shouldn't
+ 	know.  It also means you cannot see it yourself once you have set it,
+ 	be careful not to make a typing error!
++	You also cannot use |:set-=|, |:set+=|, |:set^=| on this option to
++	prevent an attacker from guessing substrings in your key.
+ 	You can use "&key" in an expression to detect whether encryption is
+ 	enabled.  When 'key' is set it returns "*****" (five stars).
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -11082,6 +11082,8 @@ winaltkeys		Compiled with 'winaltkeys' option.
- windows			Compiled with support for more than one window.
- 			(always true)
- writebackup		Compiled with 'writebackup' default on.
-+xattr			Compiled with extended attributes support |xattr|
-+			(currently only supported on Linux).
- xfontset		Compiled with X fontset support |xfontset|.
- xim			Compiled with X input method support |xim|.
- xpm			Compiled with pixmap support.
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index 46279110a..a015c8462 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -1,4 +1,4 @@
--*editing.txt*   For Vim version 9.0.  Last change: 2023 Sep 22
-+*editing.txt*   For Vim version 9.0.  Last change: 2023 Sep 27
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1097,6 +1097,13 @@ will get the ACL info of the original file.
-    The ACL info is also used to check if a file is read-only (when opening the
- file).
- 
-+				*xattr* *E1506* *E1507* *E1508* *E1509*
-+xattr stands for Extended Attributes  It is an advanced way to save metadata
-+alongside the file in the filesystem.  It depends on the actual filesystem
-+being used and Vim supports it only on a Linux system.
-+   Vim attempts to preserve the extended attribute info when writing a file.
-+The backup file will get the extended attribute of the original file.
-+
- 						*read-only-share*
- When MS-Windows shares a drive on the network it can be marked as read-only.
- This means that even if the file read-only attribute is absent, and the ACL
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index e478c8266..b2b790393 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.0.  Last change: 2022 Dec 13
-+*various.txt*   For Vim version 9.0.  Last change: 2023 Sep 27
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -503,6 +503,7 @@ T  *+windows*		more than one window; Always enabled since 8.0.1118.
- m  *+writebackup*	|'writebackup'| is default on
- m  *+xim*		X input method |xim|
-    *+xfontset*		X fontset support |xfontset|
-+N  *+xattr*		compiled with extended attribute support (Linux only)
-    *+xpm*		pixmap support
- m  *+xpm_w32*		Win32 GUI only: pixmap support |w32-xpm-support|
-    *+xsmp*		XSMP (X session management) support
