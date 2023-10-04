@@ -1,221 +1,41 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index b4ea216f3..6eecd7afe 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1855,7 +1855,7 @@ cosh({expr})						*cosh()*
- 			Compute()->cosh()
- 
- 
--count({comp}, {expr} [, {ic} [, {start}]])			*count()*
-+count({comp}, {expr} [, {ic} [, {start}]])		*count()* *E706*
- 		Return the number of times an item with value {expr} appears
- 		in |String|, |List| or |Dictionary| {comp}.
- 
-@@ -5052,12 +5052,14 @@ insert({object}, {item} [, {idx}])			*insert()*
- 
- 		Can also be used as a |method|: >
- 			mylist->insert(item)
--
--instanceof({object}, {class})				*instanceof()*
--		The result is a Number, which is |TRUE| when the {object} argument is a
--		direct or indirect instance of a |Class| specified by {class}.
--		When {class} is a |List| the function returns |TRUE| when {object} is an
--		instance of any of the specified classes.
-+<
-+					*instanceof()* *E614* *E616* *E693*
-+instanceof({object}, {class})
-+		The result is a Number, which is |TRUE| when the {object}
-+		argument is a direct or indirect instance of a |Class|
-+		specified by {class}.
-+		When {class} is a |List| the function returns |TRUE| when
-+		{object} is an instance of any of the specified classes.
- 		Example: >
- 			instanceof(animal, [Dog, Cat])
- 
-@@ -6689,6 +6691,7 @@ printf({fmt}, {expr1} ...)				*printf()*
- 		using a {n$} positional argument specifier. See |printf-$|.
- 
- 
-+							*E1520*
- 		The conversion specifiers and their meanings are:
- 
- 				*printf-d* *printf-b* *printf-B* *printf-o*
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 3d63b1964..9493658ed 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -788,7 +788,7 @@ An example for subtracting (which isn't very useful): >
- On this text:
- 	1 one ~
- 	2 two ~
--	3 three FOLDED~
-+	3 three FOLDED ~
- 	4 four FOLDED ~
- 	5 five FOLDED ~
- 	6 six FOLDED ~
 diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index a015c8462..a9c81f4de 100644
+index a9c81f4de..7ebb41e82 100644
 --- a/runtime/doc/editing.txt
 +++ b/runtime/doc/editing.txt
-@@ -386,8 +386,8 @@ is to use "path\[[]abc]", this matches the file "path\[abc]".
+@@ -1097,8 +1097,8 @@ will get the ACL info of the original file.
+    The ACL info is also used to check if a file is read-only (when opening the
+ file).
  
- 					*starstar-wildcard*
- Expanding "**" is possible on Unix, Win32, macOS and a few other systems (but
--it may depend on your 'shell' setting. It's known to work correctly for zsh; for
--bash this requires at least bash version >= 4.X).
-+it may depend on your 'shell' setting on Unix and macOS. It's known to work
-+correctly for zsh; for bash this requires at least bash version >= 4.X).
- This allows searching a directory tree.  This goes up to 100 directories deep.
- Note there are some commands where this works slightly differently, see
- |file-searching|.
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 4f9a3c99f..e7152bb67 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -2424,7 +2424,7 @@ v:progpath	Contains the command with which Vim was invoked, in a form
- 		".exe" is not added to v:progpath.
- 		Read-only.
- 
--				    *v:python3_version* *python3-version-variable*
-+				*v:python3_version* *python3-version-variable*
- v:python3_version
- 		Version of Python 3 that Vim was built against.  When
- 		Python is loaded dynamically (|python-dynamic|), this version
-@@ -3128,6 +3128,10 @@ text...
- <			You may want to make a copy of a list to avoid this.
- 			See |deepcopy()|.
- 
-+							*E1391* *E1392*
-+			Locking and unlocking object and class variables is
-+			currently NOT supported.
-+
- 
- :unlo[ckvar][!] [depth] {name} ...		*:unlockvar* *:unlo* *E1246*
- 			Unlock the internal variable {name}.  Does the
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 987b0d89e..901711edf 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -433,7 +433,7 @@ So to enable this only for ruby, set the following variable: >
- 	:let g:ruby_exec = 1
- 
- If both, the global `plugin_exec` and the `<filetype>_exec` specific variable
--are set, the filetpe specific variable should have precedent.
-+are set, the filetype specific variable should have precedent.
- 
- AWK							*ft-awk-plugin*
- 
+-				*xattr* *E1506* *E1507* *E1508* *E1509*
+-xattr stands for Extended Attributes  It is an advanced way to save metadata
++					*xattr* *E1506* *E1508* *E1509*
++xattr stands for Extended Attributes.  It is an advanced way to save metadata
+ alongside the file in the filesystem.  It depends on the actual filesystem
+ being used and Vim supports it only on a Linux system.
+    Vim attempts to preserve the extended attribute info when writing a file.
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a24dd0490..493fa879e 100644
+index 493fa879e..c51866390 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -2839,7 +2839,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 				When omitted a context of six lines is used.
- 				When using zero the context is actually one,
- 				since folds require a line in between, also
--				for a deleted line.
-+				for a deleted line. Set it to a very large
-+				value (999999) to disable folding completely.
- 				See |fold-diff|.
+@@ -435,7 +435,7 @@ Set using a variable with lambda expression: >
+ 	let &tagfunc = L
  
- 		iblank		Ignore changes where lines are all blank.  Adds
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 9e048ff64..4fa26e043 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -1080,7 +1080,7 @@ match ASCII characters, as indicated by the range.
+ In Vim9 script, in a compiled function, you can use a lambda, but a
+-closured does not work, because the function will be called without the
++closure does not work, because the function will be called without the
+ context of where it was defined.
  
- \(\)	A pattern enclosed by escaped parentheses.	*/\(* */\(\)* */\)*
- 	E.g., "\(^a\)" matches 'a' at the start of a line.
--	There can only be ten of these.  You can use "\%(" to add more, but
-+	There can only be nine of these.  You can use "\%(" to add more, but
- 	not counting it as a sub-expression.
- 	*E51* *E54* *E55* *E872* *E873*
  
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index 17dffa82f..247dd0992 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
-@@ -1149,8 +1149,8 @@ Profiling should give a good indication of where time is spent, but keep in
- mind there are various things that may clobber the results:
- 
- - The accuracy of the time measured depends on the gettimeofday(), or
--  clock_gettime if available, system function. The accuracy ranges from 1/100
--  second to nanoseconds. With clock_gettime the times are displayed in
-+  clock_gettime() if available, system function. The accuracy ranges from
-+  1/100 second to nanoseconds. With clock_gettime() the times are displayed in
-   nanoseconds, otherwise microseconds.  You can use `has("prof_nsec")`.
- 
- - Real elapsed time is measured, if other processes are busy they may cause
 diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 1431a134e..ddcd25503 100644
+index ddcd25503..6cabb870d 100644
 --- a/runtime/doc/vim9.txt
 +++ b/runtime/doc/vim9.txt
-@@ -1557,7 +1557,7 @@ string to a number.
- 
- If a type is given where it is not expected you can get *E1272* .
- 
--If a type is incomplete you get *E1363*, e.g. when you have an object for
-+If a type is incomplete you get *E1363* , e.g. when you have an object for
- which the class is not known (usually that is a null object).
- 
- Type inference ~
-@@ -1756,7 +1756,7 @@ Exporting an item can be written as: >
- 	export interface MyClass ...
- <							*E1043* *E1044*
- As this suggests, only constants, variables, `:def` functions and classes can
--be exported. {not implemented yet: class, interface}
-+be exported.
- 
- 							*E1042*
- `:export` can only be used in Vim9 script, at the script level.
-@@ -1862,9 +1862,9 @@ However, the namespace cannot be resolved on its own: >
- <
- This also affects the use of |<SID>| in the legacy mapping context.  Since
- |<SID>| is only a valid prefix for a function and NOT for a namespace, you
--cannot use it
--to scope a function in a script local namespace. Instead of prefixing the
--function with |<SID>| you should use|<ScriptCmd>|. For example: >
-+cannot use it to scope a function in a script local namespace. Instead of
-+prefixing the function with |<SID>| you should use|<ScriptCmd>|. For example:
-+>
- 	noremap ,a <ScriptCmd>:call s:that.OtherFunc()<CR>
- <
- 							*:import-cycle*
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 066025469..3e5493f20 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -304,7 +304,7 @@ as the first character in the name, and it can be made public by prefixing
- 							*class-method*
- Class methods are also declared with "static".  They can use the class
- variables but they have no access to the object variables, they cannot use the
--"this" keyword.
-+"this" keyword:
- >
- 	class OtherThing
- 	   this.size: number
-@@ -547,11 +547,9 @@ Object variables from the base class are all taken over by the child class.  It
- is not possible to override them (unlike some other languages).
- 
- 						*E1356* *E1357* *E1358*
--Object methods of the base class can be overruled.  The number of arguments
--must be exactly the same.  The method argument type can be a contra-variant
--type of the base class method argument type.  The method return value type can
--be a covariant type of the base class method return value type.  The method of
--the base class can be called by prefixing "super.".
-+Object methods of the base class can be overruled.  The signature (arguments,
-+argument types and return type) must be exactly the same.  The method of the
-+base class can be called by prefixing "super.".
- 
- 						*E1377*
- The access level of a method (public or private) in a child class should be
-@@ -658,7 +656,7 @@ When a variable is declared to have the type of an object, but it is not
- initialized, the value is null.  When trying to use this null object Vim often
- does not know what class was supposed to be used.  Vim then cannot check if
- a variable name is correct and you will get an "Using a null object" error,
--even when the variable name is invalid. *E1360* *E1362* *E1363*
-+even when the variable name is invalid. *E1360* *E1362*
- 
- 
- Default constructor ~
+@@ -1789,7 +1789,7 @@ filename.  For example: >
+ Then you can use "that.item", etc.  You are free to choose the name "that".
+ Use something that will be recognized as referring to the imported script.
+ Avoid command names, command modifiers and builtin function names, because the
+-name will shadow them.  Better not start the name starts with a capital
++name will shadow them.  It's better not to start the name with a capital
+ letter, since it can then also shadow global user commands and functions.
+ Also, you cannot use the name for something else in the script, such as a
+ function or variable name.
