@@ -1,41 +1,81 @@
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index a9c81f4de..7ebb41e82 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -1097,8 +1097,8 @@ will get the ACL info of the original file.
-    The ACL info is also used to check if a file is read-only (when opening the
- file).
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 6eecd7afe..a4eb95e44 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -6884,6 +6884,14 @@ printf({fmt}, {expr1} ...)				*printf()*
+ <			E1505: Invalid format specifier:
+ 			%1$d at width %2$d is: %01$*2$.3$d
  
--				*xattr* *E1506* *E1507* *E1508* *E1509*
--xattr stands for Extended Attributes  It is an advanced way to save metadata
-+					*xattr* *E1506* *E1508* *E1509*
-+xattr stands for Extended Attributes.  It is an advanced way to save metadata
- alongside the file in the filesystem.  It depends on the actual filesystem
- being used and Vim supports it only on a Linux system.
-    Vim attempts to preserve the extended attribute info when writing a file.
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 493fa879e..c51866390 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -435,7 +435,7 @@ Set using a variable with lambda expression: >
- 	let &tagfunc = L
++							*E1507*
++		This internal error indicates that the logic to
++		parse a positional format error ran into a problem
++		that couldn't be otherwise reported. Please file a
++		bug against vim if you run into this, copying the
++		exact format string and parameters that were used.
++
++
+ prompt_getprompt({buf})					*prompt_getprompt()*
+ 		Returns the effective prompt text for buffer {buf}.  {buf} can
+ 		be a buffer name or number.  See |prompt-buffer|.
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 6bc451347..58b8edcd3 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1704,6 +1704,6 @@ most of the information will be restored).
+ 			If you get the |press-enter| prompt you can press "q"
+ 			and still get the prompt to enter a file number.
+ 			Use ! to abandon a modified buffer. |abandon|
+-			{not when compiled with tiny or small features}
++			{not when compiled with tiny features}
  
- In Vim9 script, in a compiled function, you can use a lambda, but a
--closured does not work, because the function will be called without the
-+closure does not work, because the function will be called without the
- context of where it was defined.
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 362f2b971..2d78c0ec1 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -21,7 +21,7 @@ Vim can be tested after building it, usually with "make test".
+ The tests are located in the directory "src/testdir".
  
+ There are two types of tests added over time:
+-	test20.in		oldest, only for tiny and small builds
++	test20.in		oldest, only for tiny builds
+ 	test_something.vim	new style tests
  
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index ddcd25503..6cabb870d 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1789,7 +1789,7 @@ filename.  For example: >
- Then you can use "that.item", etc.  You are free to choose the name "that".
- Use something that will be recognized as referring to the imported script.
- Avoid command names, command modifiers and builtin function names, because the
--name will shadow them.  Better not start the name starts with a capital
-+name will shadow them.  It's better not to start the name with a capital
- letter, since it can then also shadow global user commands and functions.
- Also, you cannot use the name for something else in the script, such as a
- function or variable name.
+ 						*new-style-testing*
+diff --git a/runtime/doc/usr_90.txt b/runtime/doc/usr_90.txt
+index 060e0d58d..781a0ffdf 100644
+--- a/runtime/doc/usr_90.txt
++++ b/runtime/doc/usr_90.txt
+@@ -173,9 +173,8 @@ enabled from the Makefile.
+ 
+ 	--prefix={directory}		Top directory where to install Vim.
+ 
+-	--with-features=tiny		Compile with many features disabled.
+-	--with-features=small		Compile with some features disabled.
+-	--with-features=big		Compile with more features enabled.
++	--with-features=tiny		Compile with some features disabled.
++	--with-features=normal		Compile with more features enabled.
+ 	--with-features=huge		Compile with most features enabled.
+ 					See |+feature-list| for which feature
+ 					is enabled in which case.
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index b2b790393..4ee889003 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -320,15 +320,13 @@ g8			Print the hex values of the bytes used in the
+ 			The first column shows the smallest version in which
+ 			they are included:
+ 			   T	tiny (always)
+-			   S	small
+ 			   N	normal
+-			   B	big
+ 			   H	huge
+ 			   m	manually enabled or depends on other features
+ 			   -    never, feature was removed
+ 			 (none) system dependent
+ 			Thus if a feature is marked with "N", it is included
+-			in the normal, big and huge versions of Vim.
++			in the normal and huge versions of Vim.
+ 
+ 							*+feature-list*
+    *+acl*		|ACL| support included
