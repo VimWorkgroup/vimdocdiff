@@ -1,81 +1,89 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 6eecd7afe..a4eb95e44 100644
+index a4eb95e44..029c08bbd 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -6884,6 +6884,14 @@ printf({fmt}, {expr1} ...)				*printf()*
- <			E1505: Invalid format specifier:
+@@ -6690,8 +6690,6 @@ printf({fmt}, {expr1} ...)				*printf()*
+ 		precision, the argument(s) to be used must also be specified
+ 		using a {n$} positional argument specifier. See |printf-$|.
+ 
+-
+-							*E1520*
+ 		The conversion specifiers and their meanings are:
+ 
+ 				*printf-d* *printf-b* *printf-B* *printf-o*
+@@ -6885,11 +6883,11 @@ printf({fmt}, {expr1} ...)				*printf()*
  			%1$d at width %2$d is: %01$*2$.3$d
  
-+							*E1507*
-+		This internal error indicates that the logic to
-+		parse a positional format error ran into a problem
-+		that couldn't be otherwise reported. Please file a
-+		bug against vim if you run into this, copying the
-+		exact format string and parameters that were used.
-+
-+
+ 							*E1507*
+-		This internal error indicates that the logic to
+-		parse a positional format error ran into a problem
+-		that couldn't be otherwise reported. Please file a
+-		bug against vim if you run into this, copying the
+-		exact format string and parameters that were used.
++		This internal error indicates that the logic to parse a
++		positional format argument ran into a problem that couldn't be
++		otherwise reported.  Please file a bug against Vim if you run
++		into this, copying the exact format string and parameters that
++		were used.
+ 
+ 
  prompt_getprompt({buf})					*prompt_getprompt()*
- 		Returns the effective prompt text for buffer {buf}.  {buf} can
- 		be a buffer name or number.  See |prompt-buffer|.
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 6bc451347..58b8edcd3 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1704,6 +1704,6 @@ most of the information will be restored).
- 			If you get the |press-enter| prompt you can press "q"
- 			and still get the prompt to enter a file number.
- 			Use ! to abandon a modified buffer. |abandon|
--			{not when compiled with tiny or small features}
-+			{not when compiled with tiny features}
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 3e5493f20..00bdf369e 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -413,7 +413,9 @@ prefix when defining the method: >
+ 						*E1373*
+ A class extending the abstract class must implement all the abstract methods.
+ The signature (arguments, argument types and return type) must be exactly the
+-same.  Class methods in an abstract class can also be abstract methods.
++same.  If the return type of a method is a class, then that class or one of
++its subclasses can be used in the extended method.  Class methods in an
++abstract class can also be abstract methods.
  
-  vim:tw=78:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 362f2b971..2d78c0ec1 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
-@@ -21,7 +21,7 @@ Vim can be tested after building it, usually with "make test".
- The tests are located in the directory "src/testdir".
+ ==============================================================================
  
- There are two types of tests added over time:
--	test20.in		oldest, only for tiny and small builds
-+	test20.in		oldest, only for tiny builds
- 	test_something.vim	new style tests
+@@ -548,8 +550,10 @@ is not possible to override them (unlike some other languages).
  
- 						*new-style-testing*
-diff --git a/runtime/doc/usr_90.txt b/runtime/doc/usr_90.txt
-index 060e0d58d..781a0ffdf 100644
---- a/runtime/doc/usr_90.txt
-+++ b/runtime/doc/usr_90.txt
-@@ -173,9 +173,8 @@ enabled from the Makefile.
+ 						*E1356* *E1357* *E1358*
+ Object methods of the base class can be overruled.  The signature (arguments,
+-argument types and return type) must be exactly the same.  The method of the
+-base class can be called by prefixing "super.".
++argument types and return type) must be exactly the same.  If the return type
++of a method is a class, then that class or one of its subclasses can be used
++in the extended method.  The method of the base class can be called by
++prefixing "super.".
  
- 	--prefix={directory}		Top directory where to install Vim.
+ 						*E1377*
+ The access level of a method (public or private) in a child class should be
+@@ -738,17 +742,19 @@ constructor methods.
  
--	--with-features=tiny		Compile with many features disabled.
--	--with-features=small		Compile with some features disabled.
--	--with-features=big		Compile with more features enabled.
-+	--with-features=tiny		Compile with some features disabled.
-+	--with-features=normal		Compile with more features enabled.
- 	--with-features=huge		Compile with most features enabled.
- 					See |+feature-list| for which feature
- 					is enabled in which case.
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index b2b790393..4ee889003 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -320,15 +320,13 @@ g8			Print the hex values of the bytes used in the
- 			The first column shows the smallest version in which
- 			they are included:
- 			   T	tiny (always)
--			   S	small
- 			   N	normal
--			   B	big
- 			   H	huge
- 			   m	manually enabled or depends on other features
- 			   -    never, feature was removed
- 			 (none) system dependent
- 			Thus if a feature is marked with "N", it is included
--			in the normal, big and huge versions of Vim.
-+			in the normal and huge versions of Vim.
+ 7.  Type definition					*Vim9-type* *:type*
  
- 							*+feature-list*
-    *+acl*		|ACL| support included
++{not implemented yet}
++
+ A type definition is giving a name to a type specification.  For Example: >
+ 
+ 	:type ListOfStrings list<string>
+ 
+-TODO: more explanation
+-
+ 
+ ==============================================================================
+ 
+ 8.  Enum					*Vim9-enum* *:enum* *:endenum*
+ 
++{not implemented yet}
++
+ An enum is a type that can have one of a list of values.  Example: >
+ 
+ 	:enum Color
+@@ -759,8 +765,6 @@ An enum is a type that can have one of a list of values.  Example: >
+ 		Black
+ 	:endenum
+ 
+-TODO: more explanation
+-
+ 
+ ==============================================================================
+ 
