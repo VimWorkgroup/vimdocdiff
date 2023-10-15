@@ -1,218 +1,45 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 029c08bbd..f621fc051 100644
+index f621fc051..a9bba86d8 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -10376,6 +10376,8 @@ virtcol2col({winid}, {lnum}, {col})			*virtcol2col()*
- 		character in window {winid} at buffer line {lnum} and virtual
- 		column {col}.
+@@ -3928,6 +3928,8 @@ getmousepos()						*getmousepos()*
+ 			wincol		column inside "winid"
+ 			line		text line inside "winid"
+ 			column		text column inside "winid"
++			coladd		offset (in screen columns) from the
++					start of the clicked char
+ 		All numbers are 1-based.
  
-+		If buffer line {lnum} is an empty line, 0 is returned.
-+
- 		If {col} is greater than the last virtual column in line
- 		{lnum}, then the byte index of the character at the last
- 		virtual column is returned.
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 9493658ed..c5d0096dd 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -90,9 +90,11 @@ CTRL-SHIFT-Q	Works just like CTRL-V, unless |modifyOtherKeys| is active,
- 		In the GUI the |key-notation| is inserted without simplifying.
- 
- 							*c_<Left>* *c_Left*
--<Left>		cursor left
-+<Left>		cursor left.  See 'wildmenu' for behavior during wildmenu
-+		completion mode.
- 							*c_<Right>* *c_Right*
--<Right>		cursor right
-+<Right>		cursor right.  See 'wildmenu' for behavior during wildmenu
-+		completion mode.
- 							*c_<S-Left>*
- <S-Left> or <C-Left>					*c_<C-Left>*
- 		cursor one WORD left
-@@ -102,7 +104,8 @@ CTRL-SHIFT-Q	Works just like CTRL-V, unless |modifyOtherKeys| is active,
- CTRL-B or <Home>				*c_CTRL-B* *c_<Home>* *c_Home*
- 		cursor to beginning of command-line
- CTRL-E or <End>					*c_CTRL-E* *c_<End>* *c_End*
--		cursor to end of command-line
-+		cursor to end of command-line.  See 'wildmenu' for behavior
-+		during wildmenu completion mode.
- 
- 							*c_<LeftMouse>*
- <LeftMouse>	Move the cursor to the position of the mouse click.
-@@ -237,6 +240,7 @@ CTRL-\ e {expr}						*c_CTRL-\_e*
- CTRL-Y		When there is a modeless selection, copy the selection into
- 		the clipboard. |modeless-selection|
- 		If there is no selection CTRL-Y is inserted as a character.
-+		See 'wildmenu' for behavior during wildmenu completion mode.
- 
- CTRL-M or CTRL-J		*c_CTRL-M* *c_CTRL-J* *c_<NL>* *c_<CR>* *c_CR*
- <CR> or <NL>	start entered command
-@@ -252,12 +256,14 @@ CTRL-C		quit command-line without executing
- 
- 							*c_<Up>* *c_Up*
- <Up>		recall older command-line from history, whose beginning
--		matches the current command-line (see below).
-+		matches the current command-line (see below).  See 'wildmenu'
-+		for behavior during wildmenu completion mode.
- 		{not available when compiled without the |+cmdline_hist|
- 		feature}
- 							*c_<Down>* *c_Down*
- <Down>		recall more recent command-line from history, whose beginning
--		matches the current command-line (see below).
-+		matches the current command-line (see below).  See 'wildmenu'
-+		for behavior during wildmenu completion mode.
- 		{not available when compiled without the |+cmdline_hist|
- 		feature}
- 
-@@ -381,6 +387,7 @@ When editing the command-line, a few commands can be used to complete the
- word before the cursor.  This is available for:
- 
- - Command names: At the start of the command-line.
-+- |++opt| values.
- - Tags: Only after the ":tag" command.
- - File names: Only after a command that accepts a file name or a setting for
-   an option that can be set to a file name.  This is called file name
-@@ -463,11 +470,16 @@ When repeating 'wildchar' or CTRL-N you cycle through the matches, eventually
- ending up back to what was typed.  If the first match is not what you wanted,
- you can use <S-Tab> or CTRL-P to go straight back to what you typed.
- 
--The 'wildignorecase' option can be set to ignore case in filenames.
--
- The 'wildmenu' option can be set to show the matches just above the command
- line.
- 
-+The 'wildoptions' option provides additional configuration to use a popup menu
-+for 'wildmenu', and to use fuzzy matching.
-+
-+The 'wildignorecase' option can be set to ignore case in filenames.  For
-+completing other texts (e.g. command names), the 'ignorecase' option is used
-+instead (fuzzy matching always ignores case, however).
-+
- If you like tcsh's autolist completion, you can use this mapping:
- 	:cnoremap X <C-L><C-D>
- (Where X is the command key to use, <C-L> is CTRL-L and <C-D> is CTRL-D)
-diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
-index 3d3b92a66..c0b968e07 100644
---- a/runtime/doc/if_pyth.txt
-+++ b/runtime/doc/if_pyth.txt
-@@ -754,8 +754,10 @@ you can use Vim without this file.
- MS-Windows ~
- 
- To use the Python interface the Python DLL must be in your search path.  In a
--console window type "path" to see what directories are used.  The 'pythondll'
--or 'pythonthreedll' option can be also used to specify the Python DLL.
-+console window type "path" to see what directories are used.  If the DLL is
-+not found in your search path, Vim will check the registry to find the path
-+where Python is installed.  The 'pythondll' or 'pythonthreedll' option can be
-+also used to specify the Python DLL.
- 
- The name of the DLL should match the Python version Vim was compiled with.
- Currently the name for Python 2 is "python27.dll", that is for Python 2.7.
-@@ -782,6 +784,8 @@ and failures.  With Stable ABI, this restriction is relaxed, and any Python 3
- library with version of at least |v:python3_version| will work.  See
- |has-python| for how to check if Stable ABI is supported, or see if version
- output includes |+python3/dyn-stable|.
-+On MS-Windows, 'pythonthreedll' will be set to "python3.dll".  When searching
-+the DLL from the registry, Vim will search the latest version of Python.
- 
- ==============================================================================
- 10. Python 3						*python3*
+ 		If not over a window, e.g. when in the command line, then only
 diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index a302c59fe..e7e99e2ec 100644
+index e7e99e2ec..a9a8eec25 100644
 --- a/runtime/doc/index.txt
 +++ b/runtime/doc/index.txt
-@@ -1112,6 +1112,22 @@ tag		command		action in Command-line editing mode	~
- |c_<Insert>|	<Insert>	toggle insert/overstrike mode
- |c_<LeftMouse>|	<LeftMouse>	cursor at mouse click
- 
-+commands in wildmenu mode (see 'wildmenu')
-+
-+		<Up>		move up to parent / select the previous match
-+		<Down>		move down to submenu / select the next match
-+		<Left>		select the previous match / move up to parent
-+		<Down>		select the next match / move down to submenu
-+		<CR>		move into submenu when doing menu completion
-+		other		stop completion and insert the typed character
-+
-+commands in wildmenu mode with 'wildoptions' set to "pum"
-+
-+		CTRL-E		stop completion and go back to original text
-+		CTRL-Y		accept selected match and stop completion
-+		<PageUp>	select a match several entries back
-+		<PageDown>	select a match several entries forward
-+
- ==============================================================================
- 5. Terminal-Job mode				*terminal-job-index*
+@@ -1117,7 +1117,7 @@ commands in wildmenu mode (see 'wildmenu')
+ 		<Up>		move up to parent / select the previous match
+ 		<Down>		move down to submenu / select the next match
+ 		<Left>		select the previous match / move up to parent
+-		<Down>		select the next match / move down to submenu
++		<Right>		select the next match / move down to submenu
+ 		<CR>		move into submenu when doing menu completion
+ 		other		stop completion and insert the typed character
  
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index cfef59de6..492c7da1e 100644
+index 492c7da1e..6f38bc02b 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.0.  Last change: 2023 Aug 15
-+*options.txt*	For Vim version 9.0.  Last change: 2023 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4440,8 +4440,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			*'ignorecase'* *'ic'* *'noignorecase'* *'noic'*
- 'ignorecase' 'ic'	boolean	(default off)
- 			global
--	Ignore case in search patterns.  Also used when searching in the tags
--	file.
-+	Ignore case in search patterns, |cmdline-completion|, when
-+	searching in the tags file, and non-|Vim9| |expr-==|.
- 	Also see 'smartcase' and 'tagcase'.
- 	Can be overruled by using "\c" or "\C" in the pattern, see
- 	|/ignorecase|.
-@@ -5485,6 +5485,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Increasing this limit above 200 also changes the maximum for Ex
- 	command recursion, see |E169|.
- 	See also |:function|.
-+	Also used for maximum depth of callback functions.
- 
- 						*'maxmapdepth'* *'mmd'* *E223*
- 'maxmapdepth' 'mmd'	number	(default 1000)
-@@ -9314,29 +9315,32 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	as needed.
- 	The "wildmenu" mode is abandoned when a key is hit that is not used
- 	for selecting a completion.
--	While the "wildmenu" is active, not using the popup menu, the
--	following keys have special meanings:
--
--	<Left> <Right>	- select previous/next match (like CTRL-P/CTRL-N)
--	<Down>		- in filename/menu name completion: move into a
--			  subdirectory or submenu.
-+	While the "wildmenu" is active, the following keys have special
-+	meanings:
-+	CTRL-P		- go to the previous entry
-+	CTRL-N		- go to the next entry
- 	<CR>		- in menu completion, when the cursor is just after a
- 			  dot: move into a submenu.
-+
-+	When not using the popup menu for command line completion, the
-+	following keys have special meanings:
-+	<Left> <Right>	- select previous/next match (like CTRL-P/CTRL-N)
- 	<Up>		- in filename/menu name completion: move up into
- 			  parent directory or parent menu.
-+	<Down>		- in filename/menu name completion: move into a
-+			  subdirectory or submenu.
- 
+@@ -9333,12 +9333,12 @@ A jump table for the options with a short description can be found at |Q_op|.
  	When using the popup menu for command line completion, the following
  	keys have special meanings:
--	<Down>		- select next match (like CTRL-N)
-+	<Up> <Down>	- select previous/next match (like CTRL-P/CTRL-N)
+ 	<Up> <Down>	- select previous/next match (like CTRL-P/CTRL-N)
++	<PageUp>	- select a match several entries back
++	<PageDown>	- select a match several entries further
  	<Left>		- in filename/menu name completion: move up into
  			  parent directory or parent menu.
  	<Right>		- in filename/menu name completion: move into a
  			  subdirectory or submenu.
--	<Up>		- select previous match (like CTRL-P)
-+	<PageUp>	- Select a match several entries back, but don't insert it.
-+	<PageDown>	- Select a match several entries further, but don't insert it.
+-	<PageUp>	- Select a match several entries back, but don't insert it.
+-	<PageDown>	- Select a match several entries further, but don't insert it.
  	CTRL-E		- end completion, go back to what was there before
  			  selecting a match.
--	CTRL-N		- go to the next entry
--	CTRL-P		- go to the previous entry
  	CTRL-Y		- accept the currently selected match and stop
- 			  completion.
- 
