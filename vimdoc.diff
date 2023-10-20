@@ -1,90 +1,32 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index a9bba86d8..5f57fdb59 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -10119,9 +10119,9 @@ trim({text} [, {mask} [, {dir}]])				*trim()*
- 		Return {text} as a String where any character in {mask} is
- 		removed from the beginning and/or end of {text}.
- 
--		If {mask} is not given, {mask} is all characters up to 0x20,
--		which includes Tab, space, NL and CR, plus the non-breaking
--		space character 0xa0.
-+		If {mask} is not given, or is an empty string, {mask} is all
-+		characters up to 0x20, which includes Tab, space, NL and CR,
-+		plus the non-breaking space character 0xa0.
- 
- 		The optional {dir} argument specifies where to remove the
- 		characters:
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index a9a8eec25..6f4b5d74d 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
-@@ -1119,12 +1119,12 @@ commands in wildmenu mode (see 'wildmenu')
- 		<Left>		select the previous match / move up to parent
- 		<Right>		select the next match / move down to submenu
- 		<CR>		move into submenu when doing menu completion
-+		CTRL-E		stop completion and go back to original text
-+		CTRL-Y		accept selected match and stop completion
- 		other		stop completion and insert the typed character
- 
- commands in wildmenu mode with 'wildoptions' set to "pum"
- 
--		CTRL-E		stop completion and go back to original text
--		CTRL-Y		accept selected match and stop completion
- 		<PageUp>	select a match several entries back
- 		<PageDown>	select a match several entries forward
- 
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 6f38bc02b..cdb4992a7 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -9253,6 +9253,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	The character is not recognized when used inside a macro.  See
- 	'wildcharm' for that.
- 	Some keys will not work, such as CTRL-C, <CR> and Enter.
-+	<Esc> can be used, but hitting it twice in a row will still exit
-+	command-line as a failsafe measure.
- 	Although 'wc' is a number option, you can set it to a special key: >
- 		:set wc=<Tab>
- <	NOTE: This option is set to the Vi default value when 'compatible' is
-@@ -9321,6 +9323,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	CTRL-N		- go to the next entry
- 	<CR>		- in menu completion, when the cursor is just after a
- 			  dot: move into a submenu.
-+	CTRL-E		- end completion, go back to what was there before
-+			  selecting a match.
-+	CTRL-Y		- accept the currently selected match and stop
-+			  completion.
- 
- 	When not using the popup menu for command line completion, the
- 	following keys have special meanings:
-@@ -9339,10 +9345,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			  parent directory or parent menu.
- 	<Right>		- in filename/menu name completion: move into a
- 			  subdirectory or submenu.
--	CTRL-E		- end completion, go back to what was there before
--			  selecting a match.
--	CTRL-Y		- accept the currently selected match and stop
--			  completion.
- 
- 	This makes the menus accessible from the console |console-menus|.
- 
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 58b8edcd3..f7e98c7be 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/digraph.txt b/runtime/doc/digraph.txt
+index e9bdeb5dd..624aa27fa 100644
+--- a/runtime/doc/digraph.txt
++++ b/runtime/doc/digraph.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.0.  Last change: 2023 May 30
-+*starting.txt*  For Vim version 9.0.  Last change: 2023 Oct 17
+-*digraph.txt*   For Vim version 9.0.  Last change: 2023 Mar 21
++*digraph.txt*   For Vim version 9.0.  Last change: 2023 Oct 20
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -348,7 +348,7 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 		Start logging and write entries to {filename}.
- 		This works like calling `ch_logfile({filename}, 'ao')` very
- 		early during startup.
--		{only available with the |+eval| feature}
-+		{only available with the |+eval| and |+channel| feature}
+@@ -174,6 +174,13 @@ ROUBLE
+ The rouble sign was added in 2014 as 0x20bd.  Vim supports the digraphs =R and
+ =P for this.  Note that R= and P= are other characters.
  
- 							*-D*
- -D		Debugging.  Go to debugging mode when executing the first
++QUADRUPLE PRIME
++
++The quadruple prime using the digraph 4' was added in 2023.  Although it is
++not part of RFC 1345, it supplements the existing digraph implementation as
++there already exist digraphs for PRIME, DOUBLE PRIME and TRIPLE PRIME using
++the 1', 2' and 3' digraphs.
++
+ 							*digraph-table*
+ char  digraph	hex	dec	official name ~
+ ^@	NU	0x00	  0	NULL (NUL)
+@@ -931,6 +938,7 @@ char  digraph	hex	dec	official name ~
+ ′	1'	2032	8242	PRIME
+ ″	2'	2033	8243	DOUBLE PRIME
+ ‴	3'	2034	8244	TRIPLE PRIME
++⁗	4'	2057	8279	QUADRUPLE PRIME
+ ‵	1"	2035	8245	REVERSED PRIME
+ ‶	2"	2036	8246	REVERSED DOUBLE PRIME
+ ‷	3"	2037	8247	REVERSED TRIPLE PRIME
