@@ -1,32 +1,94 @@
-diff --git a/runtime/doc/digraph.txt b/runtime/doc/digraph.txt
-index e9bdeb5dd..624aa27fa 100644
---- a/runtime/doc/digraph.txt
-+++ b/runtime/doc/digraph.txt
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index 4fa26e043..983d99535 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
 @@ -1,4 +1,4 @@
--*digraph.txt*   For Vim version 9.0.  Last change: 2023 Mar 21
-+*digraph.txt*   For Vim version 9.0.  Last change: 2023 Oct 20
+-*pattern.txt*   For Vim version 9.0.  Last change: 2023 Feb 04
++*pattern.txt*   For Vim version 9.0.  Last change: 2023 Oct 20
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -174,6 +174,13 @@ ROUBLE
- The rouble sign was added in 2014 as 0x20bd.  Vim supports the digraphs =R and
- =P for this.  Note that R= and P= are other characters.
+@@ -1461,10 +1461,11 @@ Finally, these constructs are unique to Perl:
+ 		Just like |:match| above, but set a separate match.  Thus
+ 		there can be three matches active at the same time.  The match
+ 		with the lowest number has priority if several match at the
+-		same position.
+-		The ":3match" command is used by the |matchparen| plugin.  You
+-		are suggested to use ":match" for manual matching and
+-		":2match" for another plugin.
++		same position.  It uses the match id 3.
++		The ":3match" command is used by (older Vims) |matchparen|
++		plugin. You are suggested to use ":match" for manual matching
++		and ":2match" for another plugin or even better make use of
++		the more flexible |matchadd()| (and similar) functions instead.
  
-+QUADRUPLE PRIME
+ ==============================================================================
+ 11. Fuzzy matching					*fuzzy-matching*
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 138f27ee8..1fe780076 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -443,7 +443,8 @@ Any return value of the deferred function is discarded.  The function cannot
+ be followed by anything, such as "->func" or ".member".  Currently `:defer
+ GetArg()->TheFunc()` does not work, it may work in a later version.
+ 
+-Errors are reported but do not cause aborting execution of deferred functions.
++Errors are reported but do not cause aborting execution of deferred functions
++or altering execution outside of deferred functions.
+ 
+ No range is accepted.  The function can be a partial with extra arguments, but
+ not with a dictionary. *E1300*
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 6cabb870d..58d9ed614 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1468,7 +1468,7 @@ return value) results in error *E1031*  *E1186* .
+ There is no array type, use list<{type}> instead.  For a list constant an
+ efficient implementation is used that avoids allocating a lot of small pieces
+ of memory.
+-							*E1005* *E1007*
++				    *vim9-func-declaration* *E1005* *E1007*
+ A partial and function can be declared in more or less specific ways:
+ func				any kind of function reference, no type
+ 				checking for arguments or return value
+@@ -1669,6 +1669,26 @@ Same for |extend()|, use |extendnew()| instead, and for |flatten()|, use
+ |flattennew()| instead.  Since |flatten()| is intended to always change the
+ type, it can not be used in Vim9 script.
+ 
++Assigning to a funcref with specified arguments (see |vim9-func-declaration|)
++does strict type checking of the arguments. For variable number of arguments
++the type must match: >
++	var FuncRef: func(string, number, bool): number
++	FuncRef = (v1: string, v2: number, v3: bool) => 777	# OK
++	FuncRef = (v1: string, v2: number, v3: number) => 777	# Error!
++	# variable number of arguments must have same type
++	var FuncVA: func(...list<string>): number
++	FuncVA = (...v: list<number>): number => v  # Error!
++	FuncVA = (...v: list<any>): number => v	    # OK, `any` runtime check
++	FuncVA = (v1: string, v: string2): number => 333     # Error!
++	FuncVA = (v: list<string>): number => 3	    # Error!
 +
-+The quadruple prime using the digraph 4' was added in 2023.  Although it is
-+not part of RFC 1345, it supplements the existing digraph implementation as
-+there already exist digraphs for PRIME, DOUBLE PRIME and TRIPLE PRIME using
-+the 1', 2' and 3' digraphs.
++If the destinataion funcref has no specified arguments, then there is no
++argument type checking: >
++	var FuncUnknownArgs: func: number
++	FuncUnknownArgs = (v): number => v			# OK
++	FuncUnknownArgs = (v1: string, v2: string): number => 3	# OK
++<	FuncUnknownArgs = (...v1: list<string>): number => 333	# OK
 +
- 							*digraph-table*
- char  digraph	hex	dec	official name ~
- ^@	NU	0x00	  0	NULL (NUL)
-@@ -931,6 +938,7 @@ char  digraph	hex	dec	official name ~
- ′	1'	2032	8242	PRIME
- ″	2'	2033	8243	DOUBLE PRIME
- ‴	3'	2034	8244	TRIPLE PRIME
-+⁗	4'	2057	8279	QUADRUPLE PRIME
- ‵	1"	2035	8245	REVERSED PRIME
- ‶	2"	2036	8246	REVERSED DOUBLE PRIME
- ‷	3"	2037	8247	REVERSED TRIPLE PRIME
+ 			 *E1211* *E1217* *E1218* *E1219* *E1220* *E1221*
+ 			 *E1222* *E1223* *E1224* *E1225* *E1226* *E1227*
+ 			 *E1228* *E1238* *E1250* *E1251* *E1252* *E1256*
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 00bdf369e..27184c808 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -28,7 +28,8 @@ Vim9 classes, objects, interfaces, types and enums.
+ The fancy term is "object-oriented programming".  You can find lots of study
+ material on this subject.  Here we document what |Vim9| script provides,
+ assuming you know the basics already.  Added are helpful hints about how to
+-use this functionality effectively.
++use this functionality effectively.  Vim9 classes and objects cannot be used
++in legacy Vim scripts and legacy functions.
+ 
+ The basic item is an object:
+ - An object stores state.  It contains one or more variables that can each
