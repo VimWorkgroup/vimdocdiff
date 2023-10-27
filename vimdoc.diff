@@ -1,24 +1,22 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index f7e98c7be..1e7daa6b5 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.0.  Last change: 2023 Oct 17
-+*starting.txt*  For Vim version 9.0.  Last change: 2023 Oct 20
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 27184c808..53b72fc06 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -743,12 +743,13 @@ constructor methods.
  
+ 7.  Type definition					*Vim9-type* *:type*
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -249,10 +249,10 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 					*-Z* *restricted-mode* *E145* *E981*
- -Z		Restricted mode.  All commands that make use of an external
- 		shell are disabled.  This includes suspending with CTRL-Z,
--		":sh", filtering, the system() function, backtick expansion
-+		":sh", filtering, the |system()| function, backtick expansion
- 		and libcall().
--		Also disallowed are delete(), rename(), mkdir(), job_start(),
--		etc.
-+		Also disallowed are |delete()|, |rename()|, |mkdir()|,
-+		|job_start()|, |setenv()| etc.
- 		Interfaces, such as Python, Ruby and Lua, are also disabled,
- 		since they could be used to execute shell commands.  Perl uses
- 		the Safe module.
+-{not implemented yet}
+-
+-A type definition is giving a name to a type specification.  For Example: >
++A type definition is giving a name to a type specification.  This also known
++type alias.  For Example: >
+ 
+-	:type ListOfStrings list<string>
++	:type ListOfStrings = list<string>
+ 
++The type alias can be used wherever a built-in type can be used.  The type
++alias name must start with an upper case character.
+ 
+ ==============================================================================
+ 
