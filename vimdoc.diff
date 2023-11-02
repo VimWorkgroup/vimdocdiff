@@ -1,22 +1,13 @@
 diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 27184c808..53b72fc06 100644
+index 91d9e5ec9..505cbe62f 100644
 --- a/runtime/doc/vim9class.txt
 +++ b/runtime/doc/vim9class.txt
-@@ -743,12 +743,13 @@ constructor methods.
- 
- 7.  Type definition					*Vim9-type* *:type*
- 
--{not implemented yet}
--
--A type definition is giving a name to a type specification.  For Example: >
-+A type definition is giving a name to a type specification.  This also known
-+type alias.  For Example: >
- 
--	:type ListOfStrings list<string>
-+	:type ListOfStrings = list<string>
- 
-+The type alias can be used wherever a built-in type can be used.  The type
-+alias name must start with an upper case character.
- 
- ==============================================================================
- 
+@@ -411,6 +411,8 @@ prefix when defining the method: >
+ 	   abstract static def SetColor()
+ 	endclass
+ <
++A static method in an abstract class cannot be an abstract method.
++
+ 						*E1373*
+ A class extending the abstract class must implement all the abstract methods.
+ The signature (arguments, argument types and return type) must be exactly the
