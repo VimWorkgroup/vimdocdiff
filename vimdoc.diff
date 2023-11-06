@@ -1,29 +1,109 @@
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index 72af6d3df..9526f2b80 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index e7152bb67..c91145ce7 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.0.  Last change: 2023 Oct 25
-+*term.txt*      For Vim version 9.0.  Last change: 2023 Nov 04
+-*eval.txt*	For Vim version 9.0.  Last change: 2023 Jun 01
++*eval.txt*	For Vim version 9.0.  Last change: 2023 Nov 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -36,6 +36,7 @@ a remark is given.
+ 11. No +eval feature		|no-eval-feature|
+ 12. The sandbox			|eval-sandbox|
+ 13. Textlock			|textlock|
++14. Vim script library		|vim-script-library|
+ 
+ Testing support is documented in |testing.txt|.
+ Profiling is documented at |profiling|.
+@@ -4801,5 +4802,37 @@ This is not allowed when the textlock is active:
+ 	- closing a window or quitting Vim
+ 	- etc.
+ 
++==============================================================================
++14. Vim script library					*vim-script-library*
++
++Vim comes bundled with a Vim script library, that can be used by runtime,
++script authors.  Currently, it only includes very few functions, but it may
++grow over time.
++
++The functions are available as |Vim9-script| as well as using legacy vim
++script (to be used for non Vim 9.0 versions and Neovim).
++
++							*dist#vim* *dist#vim9*
++The functions make use of the autoloaded prefix "dist#vim" (for legacy Vim script and
++Neovim) and "dist#vim9" for Vim9 script.
++
++The following functions are available:
++
++dist#vim#IsSafeExecutable(filetype, executable) ~
++dist#vim9#IsSafeExecutable(filetype:string, executable:string): bool ~
++
++This function takes a filetype and an executable and checks whether it is safe
++to execute the given executable.  For security reasons users may not want to
++have Vim execute random executables or may have forbidden to do so for
++specific filetypes by setting the "<filetype>_exec" variable (|plugin_exec|).
++
++It returns |true| or |false| to indicate whether the plugin should run the given
++exectuable.  It takes the following arguments:
++
++	argument	type ~
++
++	filetype	string
++	executable	string
++
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/pi_gzip.txt b/runtime/doc/pi_gzip.txt
+index e5d5ffb25..c5d8ab0d8 100644
+--- a/runtime/doc/pi_gzip.txt
++++ b/runtime/doc/pi_gzip.txt
+@@ -1,4 +1,4 @@
+-*pi_gzip.txt*   For Vim version 9.0.  Last change: 2019 May 05
++*pi_gzip.txt*   For Vim version 9.0.  Last change: 2023 Nov 05
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -332,11 +332,16 @@ using the "xterm" workaround.  These are the relevant entries (so far):
+@@ -12,9 +12,17 @@ The functionality mentioned here is a |standard-plugin|.
+ This plugin is only available if 'compatible' is not set.
+ You can avoid loading this plugin by setting the "loaded_gzip" variable: >
+ 	:let loaded_gzip = 1
++<
++							*g:gzip_exec*
++
++For security reasons, one may prevent that Vim runs executables automatically
++when opening a buffer.  This option (default: "1") can be used to prevent
++executing the executables command when set to "0": >
++	:let g:gzip_exec = 0
++<
  
- 	XM	"\033[?1006;1004;1000%?%p1%{1}%=%th%el%;"
- 				mouse enable / disable |t_XM|
-+	FE	"\033[?1004h"	enable focus event tracking |t_fe|
-+	FD	"\033[?1004l"	disable focus event tracking |t_fd|
+ ==============================================================================
+-1. Autocommands						*gzip-autocmd*
++2. Autocommands						*gzip-autocmd*
  
- The "XM" entry includes "1006" to enable SGR style mouse reporting.  This
- supports columns above 223.  It also includes "1004" which enables focus
--reporting.  The t_fe and t_fd entries can be left empty (they don't have
--entries in terminfo/termcap anyway).
-+reporting.
-+Note: As of 2023, the "1004" is currently not used by Vim itself, instead
-+it is recommended to set focus reporting independently of mouse tracking by
-+the |t_fe| and |t_fd| entries, as ncurses also starts to use with the latest
-+versions (and will then also end up in terminfo/termcap).
+ The plugin installs autocommands to intercept reading and writing of files
+ with these extensions:
+diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
+index 8673324e1..14ae34015 100644
+--- a/runtime/doc/pi_zip.txt
++++ b/runtime/doc/pi_zip.txt
+@@ -1,4 +1,4 @@
+-*pi_zip.txt*	For Vim version 9.0.  Last change: 2023 Mar 12
++*pi_zip.txt*	For Vim version 9.0.  Last change: 2023 Nov 05
  
- 						*xterm-kitty* *kitty-terminal*
- The Kitty terminal is a special case.  Mainly because it works differently
+ 				+====================+
+ 				| Zip File Interface |
+@@ -69,6 +69,13 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
+    This option specifies the program (and any options needed) used to
+    extract a file from a zip archive.  By default, >
+ 	let g:zip_extractcmd= g:zip_unzipcmd
++<
++							*g:zip_exec*
++   For security reasons, one may prevent that Vim runs executables
++   automatically when opening a buffer.  This option (default: "1")
++   can be used to prevent executing the "unzip" command when set to
++   "0": >
++	let g:zip_exec=0
+ <
+    PREVENTING LOADING~
+ 
