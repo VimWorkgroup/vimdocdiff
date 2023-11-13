@@ -1,368 +1,48 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 2f1e3be6e..61bd21848 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
-@@ -394,17 +394,25 @@ highlighting.  So do these:
+diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
+index 240f2c432..f8a9fdfa6 100644
+--- a/runtime/doc/message.txt
++++ b/runtime/doc/message.txt
+@@ -1,4 +1,4 @@
+-*message.txt*   For Vim version 9.0.  Last change: 2023 May 24
++*message.txt*   For Vim version 9.0.  Last change: 2023 Nov 08
  
- You can find the details in $VIMRUNTIME/syntax/help.vim
  
--							*inclusion*
--Vim is for everybody, no matter race, gender or anything.  Some people make a
--big deal about using "he" or "his" when referring to the user, thinking it
--means we assume the user is male.  That is not the case, it's just a habit of
--writing help text, which quite often is many years old.  Also, a lot of the
--text is written by contributors for whom English is not their first language.
--We do not make any assumptions about the gender of the user, no matter how the
--text is phrased.  Some people have suggested using "they", but that is not
--regular English. We do not want to spend much time on this discussion.  The
--goal is that the reader understands how Vim works, the exact wording is
-+
-+GENDER NEUTRAL LANGUAGE
-+
-+						*gender-neutral* *inclusion*
-+Vim is for everybody, no matter race, gender or anything. For new or updated
-+help text, gender neutral language is recommended. Some of the help text is
-+many years old and there is no need to change it. We do not make any
-+assumptions about the gender of the user, no matter how the text is phrased.
-+The goal is that the reader understands how Vim works, the exact wording is
- secondary.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -135,6 +135,8 @@ This happens when an Ex command executes an Ex command that executes an Ex
+ command, etc.  The limit is 200 or the value of 'maxfuncdepth', whatever is
+ larger.  When it's more there probably is an endless loop.  Probably a
+ |:execute| or |:source| command is involved.
++Can also happen with a recursive callback function (|job-callback|).
++A limit of 20 is used here.
  
-+Many online technical style guides include sections about gender neutral
-+language. Here are a few: >
-+
-+	https://developers.google.com/style/pronouns
-+	https://techwhirl.com/gender-neutral-technical-writing/
-+	https://www.skillsyouneed.com/write/gender-neutral-language.html
-+	https://ualr.edu/writingcenter/avoid-sexist-language/
-+<
-+Note: gender neutral language does not require using singular "they".
- 
-  vim:tw=78:ts=8:noet:ft=help:norl:
+ 							*E254*
+   Cannot allocate color {name} ~
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index be59b69a3..76efc5d41 100644
+index 76efc5d41..77efbd63f 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 06
-+*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 11
+@@ -5486,7 +5486,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Increasing this limit above 200 also changes the maximum for Ex
+ 	command recursion, see |E169|.
+ 	See also |:function|.
+-	Also used for maximum depth of callback functions.
  
+ 						*'maxmapdepth'* *'mmd'* *E223*
+ 'maxmapdepth' 'mmd'	number	(default 1000)
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 68528d3a5..3869bcdfb 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1588,9 +1588,9 @@ If there is no g:termdebug_config you can use: >
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3791,9 +3791,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 'formatoptions' 'fo'	string (Vim default: "tcq", Vi default: "vt")
- 			local to buffer
- 	This is a sequence of letters which describes how automatic
--	formatting is to be done.  See |fo-table|.  When the 'paste' option is
--	on, no formatting is done (like 'formatoptions' is empty).  Commas can
--	be inserted for readability.
-+	formatting is to be done.
-+	See |fo-table| for possible values and |gq| for how to format text.
-+	When the 'paste' option is on, no formatting is done (like
-+	'formatoptions' is empty).  Commas can be inserted for readability.
- 	To avoid problems with flags that are added in the future, use the
- 	"+=" and "-=" feature of ":set" |add-option-flags|.
- 	NOTE: This option is set to the Vi default value when 'compatible' is
-diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
-index 2eea6aab8..e83324a66 100644
---- a/runtime/doc/usr_51.txt
-+++ b/runtime/doc/usr_51.txt
-@@ -103,8 +103,8 @@ NOT LOADING
+ Change default signs ~
+ 							*termdebug_signs*
+-Termdebug uses the last two characters of the breakpoint ID in the
+-signcolumn to represent breakpoints. For example, breakpoint ID 133
+-will be displayed as `33`.
++Termdebug uses the hex number of the breakpoint ID in the signcolumn to
++represent breakpoints. if it is greater than "0xFF", then it will be displayed
++as "F+", due to we really only have two screen cells for the sign.
  
- It is possible that a user doesn't always want to load this plugin.  Or the
- system administrator has dropped it in the system-wide plugin directory, but a
--user has his own plugin he wants to use.  Then the user must have a chance to
--disable loading this specific plugin.  These lines will make it possible: >
-+user has their own plugin they want to use.  Then the user must have a chance
-+to disable loading this specific plugin.  These lines will make it possible: >
- 
-   7	if exists("g:loaded_typecorrect")
-   8	  finish
-@@ -136,7 +136,7 @@ item can be used: >
- 
- The "<Plug>TypecorrAdd;" thing will do the work, more about that further on.
- 
--The user can set the "g:mapleader" variable to the key sequence that he wants
-+The user can set the "g:mapleader" variable to the key sequence that they want
- plugin mappings to start with.  Thus if the user has done: >
- 
- 	g:mapleader = "_"
-@@ -147,8 +147,8 @@ will be used, which is a backslash.  Then a map for "\a" will be defined.
- Note that <unique> is used, this will cause an error message if the mapping
- already happened to exist. |:map-<unique>|
- 
--But what if the user wants to define his own key sequence?  We can allow that
--with this mechanism: >
-+But what if the user wants to define their own key sequence?  We can allow
-+that with this mechanism: >
- 
-  19	if !hasmapto('<Plug>TypecorrAdd;')
-  20	  map <unique> <Leader>a  <Plug>TypecorrAdd;
-@@ -156,7 +156,7 @@ with this mechanism: >
- 
- This checks if a mapping to "<Plug>TypecorrAdd;" already exists, and only
- defines the mapping from "<Leader>a" if it doesn't.  The user then has a
--chance of putting this in his vimrc file: >
-+chance of putting this in their vimrc file: >
- 
- 	map ,c  <Plug>TypecorrAdd;
- 
-@@ -262,7 +262,7 @@ Now let's add a user command to add a correction: >
- The user command is defined only if no command with the same name already
- exists.  Otherwise we would get an error here.  Overriding the existing user
- command with ":command!" is not a good idea, this would probably make the user
--wonder why the command he defined himself doesn't work.  |:command|
-+wonder why the command they defined themselves doesn't work.  |:command|
- If it did happen you can find out who to blame with: >
- 
- 	verbose command Correct
-@@ -494,7 +494,7 @@ An example of how to define functionality in a filetype plugin: >
- |hasmapto()| is used to check if the user has already defined a map to
- <Plug>JavaImport;.  If not, then the filetype plugin defines the default
- mapping.  This starts with |<LocalLeader>|, which allows the user to select
--the key(s) he wants filetype plugin mappings to start with.  The default is a
-+the key(s) they want filetype plugin mappings to start with.  The default is a
- backslash.
- "<unique>" is used to give an error message if the mapping already exists or
- overlaps with an existing mapping.
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index bba68ad4a..d10eae9c0 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1025,8 +1025,9 @@ always converted to string: >
- Simple types are Number, Float, Special and Bool.  For other types |string()|
- should be used.
- 			*false* *true* *null* *null_blob* *null_channel*
--			*null_dict* *null_function* *null_job* *null_list*
--			*null_partial* *null_string* *E1034*
-+			*null_class* *null_dict* *null_function* *null_job*
-+			*null_list* *null_object* *null_partial* *null_string*
-+			*E1034*
- In Vim9 script one can use the following predefined values: >
- 	true
- 	false
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 505cbe62f..e2819eddc 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -117,7 +117,7 @@ variable.
- 
- 
- Object variable write access ~
--
-+						    *read-only-variable*
- Now try to change an object variable directly: >
- 
- 	pos.lnum = 9
-@@ -133,7 +133,7 @@ way.  Most often there is no problem using a value, while setting a value may
- have side effects that need to be taken care of.  In this case, the SetLnum()
- method could check if the line number is valid and either give an error or use
- the closest valid value.
--							*:public* *E1331*
-+					*:public* *public-variable* *E1331*
- If you don't care about side effects and want to allow the object variable to
- be changed at any time, you can make it public: >
- 
-@@ -150,16 +150,16 @@ If you try to set an object variable that doesn't exist you get an error: >
- 							*E1376*
- A object variable cannot be accessed using the class name.
- 
--Private variables ~
--					*private-variable* *E1332* *E1333*
--On the other hand, if you do not want the object variables to be read directly,
--you can make them private.  This is done by prefixing an underscore to the
--name: >
-+Protected variables ~
-+					*protected-variable* *E1332* *E1333*
-+On the other hand, if you do not want the object variables to be read directly
-+from outside the class or its sub-classes, you can make them protected.  This
-+is done by prefixing an underscore to the name: >
- 
- 	this._lnum: number
- 	this._col number
- 
--Now you need to provide methods to get the value of the private variables.
-+Now you need to provide methods to get the value of the protected variables.
- These are commonly called getters.  We recommend using a name that starts with
- "Get": >
- 
-@@ -182,11 +182,11 @@ number to the total number of lines: >
- 	   return this._lnum
- 	enddef
- <
--Private methods ~
--						*private-method* *E1366*
-+Protected methods ~
-+						*protected-method* *E1366*
- If you want object methods to be accessible only from other methods of the
- same class and not used from outside the class, then you can make them
--private.  This is done by prefixing the method name with an underscore: >
-+protected.  This is done by prefixing the method name with an underscore: >
- 
-     class SomeClass
- 	def _Foo(): number
-@@ -197,7 +197,7 @@ private.  This is done by prefixing the method name with an underscore: >
- 	enddef
-     endclass
- <
--Accessing a private method outside the class will result in an error (using
-+Accessing a protected method outside the class will result in an error (using
- the above class): >
- 
-     var a = SomeClass.new()
-@@ -292,9 +292,9 @@ or local variable name is not allowed.
- To access a class member outside of the class where it is defined, the class
- name prefix must be used.  A class member cannot be accessed using an object.
- 
--Just like object members the access can be made private by using an underscore
--as the first character in the name, and it can be made public by prefixing
--"public": >
-+Just like object members the access can be made protected by using an
-+underscore as the first character in the name, and it can be made public by
-+prefixing "public": >
- 
-     class OtherThing
- 	static total: number	      # anybody can read, only class can write
-@@ -323,8 +323,8 @@ Inside the class the class method can be called by name directly, outside the
- class the class name must be prefixed: `OtherThing.ClearTotalSize()`.  To use
- a super class method in a child class, the class name must be prefixed.
- 
--Just like object methods the access can be made private by using an underscore
--as the first character in the method name: >
-+Just like object methods the access can be made protected by using an
-+underscore as the first character in the method name: >
- 
-     class OtherThing
- 	static def _Foo()
-@@ -477,8 +477,8 @@ The interface name can be used as a type: >
- <
- 					*E1378* *E1379* *E1380* *E1387*
- An interface can contain only object methods and read-only object variables.
--An interface cannot contain read-write and private object variables, private
--object methods, class variables and class methods.
-+An interface cannot contain read-write or protected object variables,
-+protected object methods, class variables and class methods.
- 
- An interface can extend another interface using "extends".  The sub-interface
- inherits all the instance variables and methods from the super interface.
-@@ -526,11 +526,12 @@ once.  They can appear in any order, although this order is recommended: >
- <							*E1355* *E1369*
- Each variable and method name can be used only once.  It is not possible to
- define a method with the same name and different type of arguments.  It is not
--possible to use a public and private member variable with the same name.  A
-+possible to use a public and protected member variable with the same name.  A
- object variable name used in a super class cannot be reused in a child class.
- 
- 
- Object Variable Initialization ~
-+
- If the type of a variable is not explicitly specified in a class, then it is
- set to "any" during class definition.  When an object is instantiated from the
- class, then the type of the variable is set.
-@@ -559,7 +560,7 @@ in the extended method.  The method of the base class can be called by
- prefixing "super.".
- 
- 						*E1377*
--The access level of a method (public or private) in a child class should be
-+The access level of a method (public or protected) in a child class should be
- the same as the super class.
- 
- Other object methods of the base class are taken over by the child class.
-@@ -597,11 +598,11 @@ Items in a class ~
- 						*E1318* *E1325* *E1388*
- Inside a class, in between `:class` and `:endclass`, these items can appear:
- - An object variable declaration: >
--	this._privateVariableName: memberType
-+	this._protectedVariableName: memberType
- 	this.readonlyVariableName: memberType
- 	public this.readwriteVariableName: memberType
- - A class variable declaration: >
--	static _privateClassVariableName: memberType
-+	static _protectedClassVariableName: memberType
- 	static readonlyClassVariableName: memberType
- 	static public readwriteClassVariableName: memberType
- - A constructor method: >
-@@ -609,10 +610,10 @@ Inside a class, in between `:class` and `:endclass`, these items can appear:
- 	def newName(arguments)
- - A class method: >
- 	static def SomeMethod(arguments)
--	static def _PrivateMethod(arguments)
-+	static def _ProtectedMethod(arguments)
- - An object method: >
- 	def SomeMethod(arguments)
--	def _PrivateMethod(arguments)
-+	def _ProtectedMethod(arguments)
- 
- For the object variable the type must be specified.  The best way is to do
- this explicitly with ": {type}".  For simple types you can also use an
-@@ -704,8 +705,8 @@ Note that you cannot use another default value than "v:none" here.  If you
- want to initialize the object variables, do it where they are declared.  This
- way you only need to look in one place for the default values.
- 
--All object variables will be used in the default constructor, also private
--access ones.
-+All object variables will be used in the default constructor, including
-+protected access ones.
- 
- If the class extends another one, the object variables of that class will come
- first.
-@@ -962,6 +963,18 @@ while there is no ClassName() method, it's a method by another name in the
- class called ClassName.  Quite confusing.
- 
- 
-+Vim9class access modes ~
-+						    *vim9-access-modes*
-+The variable access modes, and their meaning, supported by Vim9class are
-+	|public-variable|	read and write from anywhere
-+	|read-only-variable|	read from anywhere, write from inside the
-+				class and sub-classes
-+	|protected-variable|	read and write from inside the class and
-+				sub-classes
-+
-+The method access modes are similar, but without the read-only mode.
-+
-+
- Default read access to object variables ~
- 
- Some users will remark that the access rules for object variables are
-@@ -978,10 +991,10 @@ directly writing you get an error, which makes you wonder if you actually want
- to allow that.  This helps writing code with fewer mistakes.
- 
- 
--Making object variables private with an underscore ~
-+Making object variables protected with an underscore ~
- 
--When an object variable is private, it can only be read and changed inside the
--class (and in sub-classes), then it cannot be used outside of the class.
-+When an object variable is protected, it can only be read and changed inside
-+the class (and in sub-classes), then it cannot be used outside of the class.
- Prepending an underscore is a simple way to make that visible.  Various
- programming languages have this as a recommendation.
- 
-@@ -991,21 +1004,21 @@ Since the name only appears in the class (and sub-classes) they will be easy
- to find and change.
- 
- The other way around is much harder: you can easily prepend an underscore to
--the object variable inside the class to make it private, but any usage
-+the object variable inside the class to make it protected, but any usage
- elsewhere you will have to track down and change.  You may have to make it a
- "set" method call.  This reflects the real world problem that taking away
- access requires work to be done for all places where that access exists.
- 
--An alternative would have been using the "private" keyword, just like "public"
--changes the access in the other direction.  Well, that's just to reduce the
--number of keywords.
-+An alternative would have been using the "protected" keyword, just like
-+"public" changes the access in the other direction.  Well, that's just to
-+reduce the number of keywords.
- 
- 
--No protected object variables ~
-+No private object variables ~
- 
- Some languages provide several ways to control access to object variables.
- The most known is "protected", and the meaning varies from language to
--language.  Others are "shared", "private" and even "friend".
-+language.  Others are "shared", "private", "package" and even "friend".
- 
- These rules make life more difficult.  That can be justified in projects where
- many people work on the same, complex code where it is easy to make mistakes.
+ If you want to customize the breakpoint signs: >
+ 	let g:termdebug_config['sign'] = '>>'
