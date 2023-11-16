@@ -1,19 +1,41 @@
-diff --git a/runtime/doc/pi_gzip.txt b/runtime/doc/pi_gzip.txt
-index c5d8ab0d8..71e76cc28 100644
---- a/runtime/doc/pi_gzip.txt
-+++ b/runtime/doc/pi_gzip.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 65da9a7c6..dccaa44c8 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*pi_gzip.txt*   For Vim version 9.0.  Last change: 2023 Nov 05
-+*pi_gzip.txt*   For Vim version 9.0.  Last change: 2023 Nov 14
+-*change.txt*    For Vim version 9.0.  Last change: 2023 Sep 19
++*change.txt*    For Vim version 9.0.  Last change: 2023 Nov 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -22,7 +22,7 @@ executing the executables command when set to "0": >
- <
+@@ -644,9 +644,9 @@ For other systems the tmpnam() library function is used.
+ 			current line only.  When [count] is given, replace in
+ 			[count] lines, starting with the last line in [range].
+ 			When [range] is omitted start in the current line.
+-							*E939*
+-			[count] must be a positive number.  Also see
+-			|cmdline-ranges|.
++							*E939* *E1510*
++			[count] must be a positive number (max 2147483647)
++			Also see |cmdline-ranges|.
  
- ==============================================================================
--2. Autocommands						*gzip-autocmd*
-+1. Autocommands						*gzip-autocmd*
+ 			See |:s_flags| for [flags].
+ 			The delimiter doesn't need to be /, see
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index c5d0096dd..cbcf0ad27 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 9.0.  Last change: 2023 May 20
++*cmdline.txt*   For Vim version 9.0.  Last change: 2023 Nov 15
  
- The plugin installs autocommands to intercept reading and writing of files
- with these extensions:
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -362,6 +362,7 @@ terminals)
+ 		A positive number represents the absolute index of an entry
+ 		as it is given in the first column of a :history listing.
+ 		This number remains fixed even if other entries are deleted.
++		(see |E1510|)
+ 
+ 		A negative number means the relative position of an entry,
+ 		counted from the newest entry (which has index -1) backwards.
