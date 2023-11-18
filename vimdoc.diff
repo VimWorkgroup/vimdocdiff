@@ -1,41 +1,36 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 65da9a7c6..dccaa44c8 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index f4ddb0876..567f347f9 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
 @@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.0.  Last change: 2023 Sep 19
-+*change.txt*    For Vim version 9.0.  Last change: 2023 Nov 15
+-*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 15
++*intro.txt*     For Vim version 9.0.  Last change: 2023 Nov 18
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -644,9 +644,9 @@ For other systems the tmpnam() library function is used.
- 			current line only.  When [count] is given, replace in
- 			[count] lines, starting with the last line in [range].
- 			When [range] is omitted start in the current line.
--							*E939*
--			[count] must be a positive number.  Also see
--			|cmdline-ranges|.
-+							*E939* *E1510*
-+			[count] must be a positive number (max 2147483647)
-+			Also see |cmdline-ranges|.
+@@ -43,7 +43,8 @@ document, there is a separate document for each supported system, see
  
- 			See |:s_flags| for [flags].
- 			The delimiter doesn't need to be /, see
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index c5d0096dd..cbcf0ad27 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -1,4 +1,4 @@
--*cmdline.txt*   For Vim version 9.0.  Last change: 2023 May 20
-+*cmdline.txt*   For Vim version 9.0.  Last change: 2023 Nov 15
+ 							*pronounce*
+ Vim is pronounced as one word, like Jim, not vi-ai-em.  It's written with a
+-capital, since it's a name, again like Jim.
++capital, since it's a name, again like Jim.  The GUI version of Vim is written
++"gVim" (or "GVim" when at the beginning of a sentence).
  
+ This manual is a reference for all the Vim commands and options.  This is not
+ an introduction to the use of Vi or Vim, it gets a bit complicated here and
+@@ -97,12 +98,14 @@ There are several mailing lists for Vim:
+ <vim-mac@vim.org>				*vim-mac* *vim_mac*
+ 	For discussions about using and improving the Macintosh version of
+ 	Vim.
++<vim-security@googlegroups.com>			*vim-security*
++	This list is for (privately) discussing security relevant issues of Vim.
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -362,6 +362,7 @@ terminals)
- 		A positive number represents the absolute index of an entry
- 		as it is given in the first column of a :history listing.
- 		This number remains fixed even if other entries are deleted.
-+		(see |E1510|)
+ See http://www.vim.org/maillist.php for the latest information.
  
- 		A negative number means the relative position of an entry,
- 		counted from the newest entry (which has index -1) backwards.
+ NOTE:
+ - Anyone can see the archive, e.g. on Google groups.  Search this if you have
+-  questions.
++  questions, except for the vim-security list.
+ - You can only send messages to these lists if you have subscribed!
+ - The first message is moderated, thus it may take a few hours to show up.
+ - You need to send the messages from the same location as where you subscribed
