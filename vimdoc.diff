@@ -1,36 +1,38 @@
-diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
-index f4ddb0876..567f347f9 100644
---- a/runtime/doc/intro.txt
-+++ b/runtime/doc/intro.txt
+diff --git a/runtime/doc/if_ole.txt b/runtime/doc/if_ole.txt
+index 9f899ddcc..39d70a84f 100644
+--- a/runtime/doc/if_ole.txt
++++ b/runtime/doc/if_ole.txt
 @@ -1,4 +1,4 @@
--*intro.txt*     For Vim version 9.0.  Last change: 2023 Aug 15
-+*intro.txt*     For Vim version 9.0.  Last change: 2023 Nov 18
+-*if_ole.txt*    For Vim version 9.0.  Last change: 2022 Oct 08
++*if_ole.txt*    For Vim version 9.0.  Last change: 2023 Nov 19
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -43,7 +43,8 @@ document, there is a separate document for each supported system, see
+ 		  VIM REFERENCE MANUAL    by Paul Moore
+@@ -59,7 +59,7 @@ Vim exposes four methods for use by clients.
+ SendKeys(keys)		Execute a series of keys.
  
- 							*pronounce*
- Vim is pronounced as one word, like Jim, not vi-ai-em.  It's written with a
--capital, since it's a name, again like Jim.
-+capital, since it's a name, again like Jim.  The GUI version of Vim is written
-+"gVim" (or "GVim" when at the beginning of a sentence).
+ This method takes a single parameter, which is a string of keystrokes.  These
+-keystrokes are executed exactly as if they had been types in at the keyboard.
++keystrokes are executed exactly as if they had been typed in at the keyboard.
+ Special keys can be given using their <..> names, as for the right hand side
+ of a mapping.  Note: Execution of the Ex "normal" command is not supported -
+ see below |ole-normal|.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 77efbd63f..34290ae1e 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 11
++*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 19
  
- This manual is a reference for all the Vim commands and options.  This is not
- an introduction to the use of Vi or Vim, it gets a bit complicated here and
-@@ -97,12 +98,14 @@ There are several mailing lists for Vim:
- <vim-mac@vim.org>				*vim-mac* *vim_mac*
- 	For discussions about using and improving the Macintosh version of
- 	Vim.
-+<vim-security@googlegroups.com>			*vim-security*
-+	This list is for (privately) discussing security relevant issues of Vim.
  
- See http://www.vim.org/maillist.php for the latest information.
- 
- NOTE:
- - Anyone can see the archive, e.g. on Google groups.  Search this if you have
--  questions.
-+  questions, except for the vim-security list.
- - You can only send messages to these lists if you have subscribed!
- - The first message is moderated, thus it may take a few hours to show up.
- - You need to send the messages from the same location as where you subscribed
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1424,7 +1424,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Some applications use the BOM to recognize the encoding of the file.
+ 	Often used for UCS-2 files on MS-Windows.  For other applications it
+ 	causes trouble, for example: "cat file1 file2" makes the BOM of file2
+-	appear halfway the resulting file.  Gcc doesn't accept a BOM.
++	appear halfway through the resulting file.  Gcc doesn't accept a BOM.
+ 	When Vim reads a file and 'fileencodings' starts with "ucs-bom", a
+ 	check for the presence of the BOM is done and 'bomb' set accordingly.
+ 	Unless 'binary' is set, it is removed from the first line, so that you
