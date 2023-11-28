@@ -1,267 +1,33 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 996f0fbba..96d7a0dd3 100644
+index 96d7a0dd3..f7cc8f88a 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
+@@ -6413,7 +6413,9 @@ mode([expr])	Return a string that indicates the current mode.
+ 		   Rvx	    Virtual Replace mode |i_CTRL-X| completion
+ 		   c	    Command-line editing
+ 		   ct	    Command-line editing via Terminal-Job mode
++		   cr	    Command-line while in overstrike mode |c_<Insert>|
+ 		   cv	    Vim Ex mode |gQ|
++		   cvr	    Vim Ex while in overstrike mode |c_<Insert>|
+ 		   ce	    Normal Ex mode |Q|
+ 		   r	    Hit-enter prompt
+ 		   rm	    The -- more -- prompt
+diff --git a/runtime/doc/netbeans.txt b/runtime/doc/netbeans.txt
+index 241fdb70b..905c79791 100644
+--- a/runtime/doc/netbeans.txt
++++ b/runtime/doc/netbeans.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.0.  Last change: 2023 Sep 27
-+*builtin.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
+-*netbeans.txt*  For Vim version 9.0.  Last change: 2022 Apr 03
++*netbeans.txt*  For Vim version 9.0.  Last change: 2023 Nov 26
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4008,8 +4008,8 @@ getqflist([{what}])					*getqflist()*
- 			text	description of the error
- 			type	type of the error, 'E', '1', etc.
- 			valid	|TRUE|: recognized error message
--		        user_data
--			        custom data associated with the item, can be
-+			user_data
-+				custom data associated with the item, can be
- 				any type.
- 
- 		When there is no error list or it's empty, an empty list is
-@@ -6793,96 +6793,96 @@ printf({fmt}, {expr1} ...)				*printf()*
- 		having a different word order, positional arguments may be
- 		used to indicate this. For instance: >
- 
--			#, c-format
--			msgid "%s returning %s"
--			msgstr "waarde %2$s komt terug van %1$s"
-+		    #, c-format
-+		    msgid "%s returning %s"
-+		    msgstr "waarde %2$s komt terug van %1$s"
- <
--		In this example, the sentence has its 2 string arguments reversed
--		in the output. >
-+		In this example, the sentence has its 2 string arguments
-+		reversed in the output. >
- 
--			echo printf(
--				"In The Netherlands, vim's creator's name is: %1$s %2$s",
--				"Bram", "Moolenaar")
--<			In The Netherlands, vim's creator's name is: Bram Moolenaar >
-+		    echo printf(
-+			"In The Netherlands, vim's creator's name is: %1$s %2$s",
-+			"Bram", "Moolenaar")
-+<		    In The Netherlands, vim's creator's name is: Bram Moolenaar >
- 
--			echo printf(
--				"In Belgium, vim's creator's name is: %2$s %1$s",
--				"Bram", "Moolenaar")
--<			In Belgium, vim's creator's name is: Moolenaar Bram
-+		    echo printf(
-+			"In Belgium, vim's creator's name is: %2$s %1$s",
-+			"Bram", "Moolenaar")
-+<		    In Belgium, vim's creator's name is: Moolenaar Bram
- 
- 		Width (and precision) can be specified using the '*' specifier.
- 		In this case, you must specify the field width position in the
- 		argument list. >
- 
--			echo printf("%1$*2$.*3$d", 1, 2, 3)
--<			001 >
--			echo printf("%2$*3$.*1$d", 1, 2, 3)
--<			  2 >
--			echo printf("%3$*1$.*2$d", 1, 2, 3)
--<			03 >
--			echo printf("%1$*2$.*3$g", 1.4142, 2, 3)
--<			1.414
-+		    echo printf("%1$*2$.*3$d", 1, 2, 3)
-+<		    001 >
-+		    echo printf("%2$*3$.*1$d", 1, 2, 3)
-+<		      2 >
-+		    echo printf("%3$*1$.*2$d", 1, 2, 3)
-+<		    03 >
-+		    echo printf("%1$*2$.*3$g", 1.4142, 2, 3)
-+<		    1.414
- 
- 		You can mix specifying the width and/or precision directly
- 		and via positional arguments: >
- 
--			echo printf("%1$4.*2$f", 1.4142135, 6)
--<			1.414214 >
--			echo printf("%1$*2$.4f", 1.4142135, 6)
--<			1.4142 >
--			echo printf("%1$*2$.*3$f", 1.4142135, 6, 2)
--<			  1.41
-+		    echo printf("%1$4.*2$f", 1.4142135, 6)
-+<		    1.414214 >
-+		    echo printf("%1$*2$.4f", 1.4142135, 6)
-+<		    1.4142 >
-+		    echo printf("%1$*2$.*3$f", 1.4142135, 6, 2)
-+<		      1.41
- 
- 							*E1500*
- 		You cannot mix positional and non-positional arguments: >
--			echo printf("%s%1$s", "One", "Two")
--<			E1500: Cannot mix positional and non-positional
--			arguments: %s%1$s
-+		    echo printf("%s%1$s", "One", "Two")
-+<		    E1500: Cannot mix positional and non-positional arguments:
-+		    %s%1$s
- 
- 							*E1501*
- 		You cannot skip a positional argument in a format string: >
--			echo printf("%3$s%1$s", "One", "Two", "Three")
--<			E1501: format argument 2 unused in $-style
--			format: %3$s%1$s
-+		    echo printf("%3$s%1$s", "One", "Two", "Three")
-+<		    E1501: format argument 2 unused in $-style format:
-+		    %3$s%1$s
- 
- 							*E1502*
- 		You can re-use a [field-width] (or [precision]) argument: >
--			echo printf("%1$d at width %2$d is: %01$*2$d", 1, 2)
--<			1 at width 2 is: 01
-+		    echo printf("%1$d at width %2$d is: %01$*2$d", 1, 2)
-+<		    1 at width 2 is: 01
- 
- 		However, you can't use it as a different type: >
--			echo printf("%1$d at width %2$ld is: %01$*2$d", 1, 2)
--<			E1502: Positional argument 2 used as field
--			width reused as different type: long int/int
-+		    echo printf("%1$d at width %2$ld is: %01$*2$d", 1, 2)
-+<		    E1502: Positional argument 2 used as field width reused as
-+		    different type: long int/int
- 
- 							*E1503*
- 		When a positional argument is used, but not the correct number
- 		or arguments is given, an error is raised: >
--			echo printf("%1$d at width %2$d is: %01$*2$.*3$d", 1, 2)
--<			E1503: Positional argument 3 out of bounds:
--			%1$d at width %2$d is: %01$*2$.*3$d
-+		    echo printf("%1$d at width %2$d is: %01$*2$.*3$d", 1, 2)
-+<		    E1503: Positional argument 3 out of bounds: %1$d at width
-+		    %2$d is: %01$*2$.*3$d
- 
- 		Only the first error is reported: >
--			echo printf("%01$*2$.*3$d %4$d", 1, 2)
--<			E1503: Positional argument 3 out of bounds:
--			%01$*2$.*3$d %4$d
-+		    echo printf("%01$*2$.*3$d %4$d", 1, 2)
-+<		    E1503: Positional argument 3 out of bounds: %01$*2$.*3$d
-+		    %4$d
- 
- 							*E1504*
- 		A positional argument can be used more than once: >
--			echo printf("%1$s %2$s %1$s", "One", "Two")
--<			One Two One
-+		    echo printf("%1$s %2$s %1$s", "One", "Two")
-+<		    One Two One
- 
- 		However, you can't use a different type the second time: >
--			echo printf("%1$s %2$s %1$d", "One", "Two")
--<			E1504: Positional argument 1 type used
--			inconsistently: int/string
-+		    echo printf("%1$s %2$s %1$d", "One", "Two")
-+<		    E1504: Positional argument 1 type used inconsistently:
-+		    int/string
- 
- 							*E1505*
- 		Various other errors that lead to a format string being
- 		wrongly formatted lead to: >
--			echo printf("%1$d at width %2$d is: %01$*2$.3$d", 1, 2)
--<			E1505: Invalid format specifier:
--			%1$d at width %2$d is: %01$*2$.3$d
-+		    echo printf("%1$d at width %2$d is: %01$*2$.3$d", 1, 2)
-+<		    E1505: Invalid format specifier: %1$d at width %2$d is:
-+		    %01$*2$.3$d
- 
- 							*E1507*
- 		This internal error indicates that the logic to parse a
-@@ -10177,8 +10177,8 @@ type({expr})	The result is a Number representing the type of {expr}.
- 			Job:	    8  |v:t_job|
- 			Channel:    9  |v:t_channel|
- 			Blob:	   10  |v:t_blob|
--			Class	   12  |v:t_class|
--			Object	   13  |v:t_object|
-+			Class:	   12  |v:t_class|
-+			Object:	   13  |v:t_object|
- 		For backward compatibility, this method can be used: >
- 			:if type(myvar) == type(0)
- 			:if type(myvar) == type("")
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index c91145ce7..8cb353ff3 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.0.  Last change: 2023 Nov 05
-+*eval.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur et al.
+@@ -846,7 +846,7 @@ REJECT		Not used.
+ These errors occur when a message violates the protocol:
+ *E627* *E628* *E629* *E632* *E633* *E634* *E635* *E636*
+ *E637* *E638* *E639* *E640* *E641* *E642* *E643* *E644* *E645* *E646*
+-*E647* *E648* *E649* *E650* *E651* *E652*
++*E647* *E648* *E650* *E651* *E652*
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4809,12 +4809,12 @@ Vim comes bundled with a Vim script library, that can be used by runtime,
- script authors.  Currently, it only includes very few functions, but it may
- grow over time.
- 
--The functions are available as |Vim9-script| as well as using legacy vim
-+The functions are available as |Vim9-script| as well as using legacy Vim
- script (to be used for non Vim 9.0 versions and Neovim).
- 
- 							*dist#vim* *dist#vim9*
--The functions make use of the autoloaded prefix "dist#vim" (for legacy Vim script and
--Neovim) and "dist#vim9" for Vim9 script.
-+The functions make use of the autoloaded prefix "dist#vim" (for legacy Vim
-+script and Neovim) and "dist#vim9" for Vim9 script.
- 
- The following functions are available:
- 
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 34290ae1e..3c0ba4c68 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 19
-+*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9299,7 +9299,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	uses another default.
- 
- 
--			*'wildignorecase'* *'wic'* *'nowildignorecase'* *'nowic'*
-+		    *'wildignorecase'* *'wic'* *'nowildignorecase'* *'nowic'*
- 'wildignorecase' 'wic'	boolean	(default off)
- 			global
- 	When set case is ignored when completing file names and directories.
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index 9526f2b80..95d1cffa9 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.0.  Last change: 2023 Nov 04
-+*term.txt*      For Vim version 9.0.  Last change: 2023 Nov 20
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -757,8 +757,9 @@ For Windows Terminal you can use something like this: >
- 	let &t_SI = "\e[5 q"    " blink bar
- 	let &t_SR = "\e[3 q"    " blink underline
- 	let &t_EI = "\e[1 q"    " blink block
--	let &t_ti ..= "\e[1 q"   " blink block
--	let &t_te ..= "\e[0 q"   " default (depends on terminal, normally blink block)
-+	let &t_ti ..= "\e[1 q"  " blink block
-+	let &t_te ..= "\e[0 q"  " default (depends on terminal, normally blink
-+				" block)
-     endif
- 
- {not available when compiled without the |+cursorshape| feature}
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index e2819eddc..e81ccc575 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Sep 18
-+*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -402,7 +402,7 @@ class, for which objects can be created.  Example: >
- An abstract class is defined the same way as a normal class, except that it
- does not have any new() method. *E1359*
- 
--						*abstract-method* *E1371* *E1372*
-+					    *abstract-method* *E1371* *E1372*
- An abstract method can be defined in an abstract class by using the "abstract"
- prefix when defining the method: >
- 
+ ==============================================================================
