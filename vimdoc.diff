@@ -1,29 +1,928 @@
-diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
-index e72ecc880..1156dd538 100644
---- a/runtime/doc/os_win32.txt
-+++ b/runtime/doc/os_win32.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index dccaa44c8..7741312fc 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -516,7 +516,7 @@ SHIFTING LINES LEFT OR RIGHT				*shift-left-right*
+ 			lines to [indent] (default 0).
+ 
+ 							*:>*
+-:[range]> [flags]	Shift {count} [range] lines one 'shiftwidth' right.
++:[range]> [flags]	Shift [range] lines one 'shiftwidth' right.
+ 			Repeat '>' for shifting multiple 'shiftwidth's.
+ 			See |ex-flags| for [flags].
+ 
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 901711edf..e35ffb83b 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*os_win32.txt*  For Vim version 9.0.  Last change: 2022 Sep 18
-+*os_win32.txt*  For Vim version 9.0.  Last change: 2023 Dec 04
+-*filetype.txt*  For Vim version 9.0.  Last change: 2023 Sep 11
++*filetype.txt*  For Vim version 9.0.  Last change: 2023 Dec 05
  
  
- 		  VIM REFERENCE MANUAL    by George Reilly
-@@ -304,7 +304,7 @@ A. When using :! to run an external command, you can run it with "start". For
-    treated as the start of the command.
- 						*windows-asynchronously*
- Q. How do I avoid getting a window for programs that I run asynchronously?
--A. You have two possible solutions depending on what you want:
-+A. You have three possible solutions depending on what you want:
-    1) You may use the /min flag in order to run program in a minimized state
-       with no other changes. It will work equally for console and GUI
-       applications.
-@@ -313,6 +313,9 @@ A. You have two possible solutions depending on what you want:
-       should use this flag only if the application you run doesn't require any
-       input.  Otherwise it will get an EOF error because its input stream
-       (stdin) would be redirected to \\.\NUL (stdout and stderr too).
-+   3) Set the '!' flag in the 'guioptions' option |'go-!'|. This will make Vim
-+      run the "start" command inside Vims terminal window and not open a
-+      console window.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -567,8 +567,9 @@ FORTRAN							*ft-fortran-plugin*
+ Options:
+ 'expandtab'	is switched on to avoid tabs as required by the Fortran
+ 		standards unless the user has set fortran_have_tabs in .vimrc.
+-'textwidth'	is set to 72 for fixed source format as required by the
+-		Fortran standards and to 80 for free source format.
++'textwidth'	is set to 80 for fixed source format whereas it is set to 132
++		for free source format. Setting the fortran_extended_line_length
++		variable increases the width to 132 for fixed source format.
+ 'formatoptions' is set to break code and comment lines and to preserve long
+ 		lines.  You can format comments with |gq|.
+ For further discussion of fortran_have_tabs and the method used for the
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index a16c8aca6..c65a61647 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -1,4 +1,4 @@
+-*indent.txt*    For Vim version 9.0.  Last change: 2022 Oct 10
++*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 05
  
-    Example for a console application, run Exuberant ctags: >
-         :!start /min ctags -R .
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -715,7 +715,7 @@ FORTRAN							*ft-fortran-indent*
+ Block if, select case, where, and forall constructs are indented.  So are
+ type, interface, associate, block, and enum constructs.  The indenting of
+ subroutines, functions, modules, and program blocks is optional.  Comments,
+-labelled statements and continuation lines are indented if the Fortran is in
++labeled statements, and continuation lines are indented if the Fortran is in
+ free source form, whereas they are not indented if the Fortran is in fixed
+ source form because of the left margin requirements.  Hence manual indent
+ corrections will be necessary for labelled statements and continuation lines
+@@ -724,17 +724,16 @@ used for the detection of source format see |ft-fortran-syntax|.
+ 
+ Do loops ~
+ All do loops are left unindented by default.  Do loops can be unstructured in
+-Fortran with (possibly multiple) loops ending on a labelled executable
++Fortran with (possibly multiple) loops ending on a labeled executable
+ statement of almost arbitrary type.  Correct indentation requires
+-compiler-quality parsing.  Old code with do loops ending on labelled statements
+-of arbitrary type can be indented with elaborate programs such as Tidy
+-(http://www.unb.ca/chem/ajit/f_tidy.htm).  Structured do/continue loops are
+-also left unindented because continue statements are also used for purposes
+-other than ending a do loop.  Programs such as Tidy can convert structured
+-do/continue loops to the do/enddo form.  Do loops of the do/enddo variety can
+-be indented.  If you use only structured loops of the do/enddo form, you should
+-declare this by setting the fortran_do_enddo variable in your .vimrc as
+-follows >
++compiler-quality parsing.  Old code with do loops ending on labeled statements
++of arbitrary type can be indented with elaborate programs such as Tidy.
++Structured do/continue loops are also left unindented because continue
++statements are used for purposes other than ending a do loop.  Programs such
++as Tidy can convert structured do/continue loops to the do/enddo form.  Do
++loops of the do/enddo variety can be indented.  If you use only structured
++loops of the do/enddo form, you should declare this by setting the
++fortran_do_enddo variable in your .vimrc as follows >
+ 
+    let fortran_do_enddo=1
+ 
+@@ -748,15 +747,14 @@ to get do loops indented in .f90 files and left alone in Fortran files with
+ other extensions such as .for.
+ 
+ Program units ~
+-The indenting of program units (subroutines, functions, modules, and program
+-blocks) is enabled by default but can be suppressed if a lighter, screen-width
+-preserving indent style is desired.  To suppress the indenting of program
+-units for all fortran files set the global fortran_indent_less variable in
+-your .vimrc as follows >
++Indenting of program units (subroutines, functions, modules, and program
++blocks) can be increased by setting the variable fortran_indent_more and can
++be decreased by setting the variable fortran_indent_less.  These variables
++can be set for all fortran files in your .vimrc as follows >
+ 
+   let fortran_indent_less=1
+ 
+-A finer level of suppression can be achieved by setting the corresponding
++A finer level of control can be achieved by setting the corresponding
+ buffer-local variable as follows >
+ 
+   let b:fortran_indent_less=1
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 3c0ba4c68..7de9c5458 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -840,53 +840,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	to its default (empty string).
+ 	NOTE: This option is reset when 'compatible' is set.
+ 
+-			*'autochdir'* *'acd'* *'noautochdir'* *'noacd'*
+-'autochdir' 'acd'	boolean (default off)
+-			global
+-			{only available when compiled with it, use
+-			exists("+autochdir") to check}
+-	When on, Vim will change the current working directory whenever you
+-	open a file, switch buffers, delete a buffer or open/close a window.
+-	It will change to the directory containing the file which was opened
+-	or selected.  When a buffer has no name it also has no directory, thus
+-	the current directory won't change when navigating to it.
+-	Note: When this option is on some plugins may not work.
+-
+-			*'autoshelldir'* *'asd'* *'noautoshelldir'* *'noasd'*
+-'autoshelldir' 'asd'	boolean (default off)
+-			global
+-	When on, Vim will change the current working directory whenever you
+-	change the directory of the shell running in a terminal window. You
+-	need proper setting-up, so whenever the shell's pwd changes an OSC 7
+-	escape sequence will be emitted.  For example, on Linux, you can
+-	source /etc/profile.d/vte.sh in your shell profile if you use bash or
+-	zsh.  For bash this should work (put it in a bash init file): >
+-		if [[ -n "$VIM_TERMINAL" ]]; then
+-		    PROMPT_COMMAND='_vim_sync_PWD'
+-		    function _vim_sync_PWD() {
+-			printf '\033]7;file://%s\033\\' "$PWD"
+-		    }
+-		fi
+-<
+-	Or, in a zsh init file: >
+-		if [[ -n "$VIM_TERMINAL" ]]; then
+-		    autoload -Uz add-zsh-hook
+-		    add-zsh-hook -Uz chpwd _vim_sync_PWD
+-		    function _vim_sync_PWD() {
+-			printf '\033]7;file://%s\033\\' "$PWD"
+-		    }
+-		fi
+-<
+-	In a fish init file: >
+-		if test -n "$VIM_TERMINAL"
+-		    function _vim_sync_PWD --on-variable=PWD
+-			printf '\033]7;file://%s\033\\' "$PWD"
+-		    end
+-		end
+-<
+-	You can find an alternative method at |terminal-autoshelldir|.
+-	When the parsing of the OSC sequence fails you get *E1179* .
+-
+ 				*'arabic'* *'arab'* *'noarabic'* *'noarab'*
+ 'arabic' 'arab'		boolean (default off)
+ 			local to window
+@@ -929,6 +882,18 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	further details see |arabic.txt|.
+ 	NOTE: This option is set when 'compatible' is set.
+ 
++			*'autochdir'* *'acd'* *'noautochdir'* *'noacd'*
++'autochdir' 'acd'	boolean (default off)
++			global
++			{only available when compiled with it, use
++			exists("+autochdir") to check}
++	When on, Vim will change the current working directory whenever you
++	open a file, switch buffers, delete a buffer or open/close a window.
++	It will change to the directory containing the file which was opened
++	or selected.  When a buffer has no name it also has no directory, thus
++	the current directory won't change when navigating to it.
++	Note: When this option is on some plugins may not work.
++
+ 			*'autoindent'* *'ai'* *'noautoindent'* *'noai'*
+ 'autoindent' 'ai'	boolean	(default off)
+ 			local to buffer
+@@ -958,6 +923,42 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	using the global value: >
+ 		:set autoread<
+ <
++
++			*'autoshelldir'* *'asd'* *'noautoshelldir'* *'noasd'*
++'autoshelldir' 'asd'	boolean (default off)
++			global
++	When on, Vim will change the current working directory whenever you
++	change the directory of the shell running in a terminal window. You
++	need proper setting-up, so whenever the shell's pwd changes an OSC 7
++	escape sequence will be emitted.  For example, on Linux, you can
++	source /etc/profile.d/vte.sh in your shell profile if you use bash or
++	zsh.  For bash this should work (put it in a bash init file): >
++		if [[ -n "$VIM_TERMINAL" ]]; then
++		    PROMPT_COMMAND='_vim_sync_PWD'
++		    function _vim_sync_PWD() {
++			printf '\033]7;file://%s\033\\' "$PWD"
++		    }
++		fi
++<
++	Or, in a zsh init file: >
++		if [[ -n "$VIM_TERMINAL" ]]; then
++		    autoload -Uz add-zsh-hook
++		    add-zsh-hook -Uz chpwd _vim_sync_PWD
++		    function _vim_sync_PWD() {
++			printf '\033]7;file://%s\033\\' "$PWD"
++		    }
++		fi
++<
++	In a fish init file: >
++		if test -n "$VIM_TERMINAL"
++		    function _vim_sync_PWD --on-variable=PWD
++			printf '\033]7;file://%s\033\\' "$PWD"
++		    end
++		end
++<
++	You can find an alternative method at |terminal-autoshelldir|.
++	When the parsing of the OSC sequence fails you get *E1179* .
++
+ 				 *'autowrite'* *'aw'* *'noautowrite'* *'noaw'*
+ 'autowrite' 'aw'	boolean	(default off)
+ 			global
+@@ -1729,7 +1730,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	program.  See |cinoptions-values| for the values of this option, and
+ 	|C-indenting| for info on C indenting in general.
+ 
+-
++						*'cinscopedecls'* *'cinsd'*
++'cinscopedecls' 'cinsd'	string	(default "public,protected,private")
++			local to buffer
++	Keywords that are interpreted as a C++ scope declaration by |cino-g|.
++	Useful e.g. for working with the Qt framework that defines additional
++	scope declarations "signals", "public slots" and "private slots": >
++		set cinscopedecls+=signals,public\ slots,private\ slots
++<
+ 						*'cinwords'* *'cinw'*
+ 'cinwords' 'cinw'	string	(default "if,else,while,do,for,switch")
+ 			local to buffer
+@@ -1740,15 +1748,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	matter, include the keyword both the uppercase and lowercase:
+ 	"if,If,IF".
+ 
+-						*'cinscopedecls'* *'cinsd'*
+-'cinscopedecls' 'cinsd'	string	(default "public,protected,private")
+-			local to buffer
+-	Keywords that are interpreted as a C++ scope declaration by |cino-g|.
+-	Useful e.g. for working with the Qt framework that defines additional
+-	scope declarations "signals", "public slots" and "private slots": >
+-		set cinscopedecls+=signals,public\ slots,private\ slots
+-
+-<						*'clipboard'* *'cb'*
++						*'clipboard'* *'cb'*
+ 'clipboard' 'cb'	string	(default "autoselect,exclude:cons\|linux"
+ 						  for X-windows, "" otherwise)
+ 			global
+@@ -2084,21 +2084,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
+ 
+-						*'completeslash'* *'csl'*
+-'completeslash' 'csl'	string	(default: "")
+-			local to buffer
+-			{only for MS-Windows}
+-	When this option is set it overrules 'shellslash' for completion:
+-	- When this option is set to "slash", a forward slash is used for path
+-	  completion in insert mode. This is useful when editing HTML tag, or
+-	  Makefile with 'noshellslash' on MS-Windows.
+-	- When this option is set to "backslash", backslash is used. This is
+-	  useful when editing a batch file with 'shellslash' set on MS-Windows.
+-	- When this option is empty, same character is used as for
+-	  'shellslash'.
+-	For Insert mode completion the buffer-local value is used.  For
+-	command line completion the global value is used.
+-
+ 						*'completeopt'* *'cot'*
+ 'completeopt' 'cot'	string	(default: "menu,preview")
+ 			global
+@@ -2144,7 +2129,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    select one from the menu. Only works in combination with
+ 		    "menu" or "menuone".
+ 
+-
+ 					*'completepopup'* *'cpp'*
+ 'completepopup' 'cpp'	string (default empty)
+ 			global
+@@ -2157,6 +2141,20 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	You can also use |popup_findinfo()| and then set properties for an
+ 	existing info popup with |popup_setoptions()|.  See |complete-popup|.
+ 
++						*'completeslash'* *'csl'*
++'completeslash' 'csl'	string	(default: "")
++			local to buffer
++			{only for MS-Windows}
++	When this option is set it overrules 'shellslash' for completion:
++	- When this option is set to "slash", a forward slash is used for path
++	  completion in insert mode. This is useful when editing HTML tag, or
++	  Makefile with 'noshellslash' on MS-Windows.
++	- When this option is set to "backslash", backslash is used. This is
++	  useful when editing a batch file with 'shellslash' set on MS-Windows.
++	- When this option is empty, same character is used as for
++	  'shellslash'.
++	For Insert mode completion the buffer-local value is used.  For
++	command line completion the global value is used.
+ 
+ 						*'concealcursor'* *'cocu'*
+ 'concealcursor' 'cocu'	string (default: "")
+@@ -2179,7 +2177,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Keep in mind that the cursor position is not always where it's
+ 	displayed.  E.g., when moving vertically it may change column.
+ 
+-
+ 						*'conceallevel'* *'cole'*
+ 'conceallevel' 'cole'	number (default 0)
+ 			local to window
+@@ -2557,7 +2554,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			variables overrule the terminal size values obtained
+ 			with system specific functions.
+ 
+-
+ 						*'cryptmethod'* *'cm'*
+ 'cryptmethod' 'cm'	string	(default "blowfish2")
+ 			global or local to buffer |global-local|
+@@ -2625,7 +2621,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	the current version does not recognize it, you will get	*E821* .
+ 	You need to edit this file with the later version of Vim.
+ 
+-
+ 						*'cscopepathcomp'* *'cspc'*
+ 'cscopepathcomp' 'cspc'	number	(default 0)
+ 			global
+@@ -2699,7 +2694,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	inserted and deleted lines (though not characters within a line) are
+ 	taken into account.
+ 
+-
+ 			*'cursorcolumn'* *'cuc'* *'nocursorcolumn'* *'nocuc'*
+ 'cursorcolumn' 'cuc'	boolean	(default off)
+ 			local to window
+@@ -2724,7 +2718,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	When Visual mode is active the highlighting isn't used to make it
+ 	easier to see the selected text.
+ 
+-
+ 						*'cursorlineopt'* *'culopt'*
+ 'cursorlineopt' 'culopt' string (default: "number,line")
+ 			local to window
+@@ -2744,7 +2737,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	"line" and "screenline" cannot be used together.
+ 
+-
+ 						*'debug'*
+ 'debug'			string	(default "")
+ 			global
+@@ -4747,7 +4739,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	It is not allowed to change text or jump to another window while
+ 	evaluating 'indentexpr' |textlock|.
+ 
+-
+ 						*'indentkeys'* *'indk'*
+ 'indentkeys' 'indk'	string	(default "0{,0},0),0],:,0#,!^F,o,O,e")
+ 			local to buffer
+@@ -5833,6 +5824,16 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	time in msec between two mouse clicks for the second click to be
+ 	recognized as a multi click.
+ 
++						    *'mzquantum'* *'mzq'*
++'mzquantum' 'mzq'	number	(default 100)
++			global
++			{not available when compiled without the |+mzscheme|
++			feature}
++	The number of milliseconds between polls for MzScheme threads.
++	Negative or zero value means no thread scheduling.
++	NOTE: This option is set to the Vim default value when 'compatible'
++	is reset.
++
+ 						*'mzschemedll'*
+ 'mzschemedll'		string	(default depends on the build)
+ 			global
+@@ -5858,16 +5859,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
+ 
+-						    *'mzquantum'* *'mzq'*
+-'mzquantum' 'mzq'	number	(default 100)
+-			global
+-			{not available when compiled without the |+mzscheme|
+-			feature}
+-	The number of milliseconds between polls for MzScheme threads.
+-	Negative or zero value means no thread scheduling.
+-	NOTE: This option is set to the Vim default value when 'compatible'
+-	is reset.
+-
+ 							*'nrformats'* *'nf'*
+ 'nrformats' 'nf'	string	(default "bin,octal,hex",
+ 					   set to "bin,hex" in |defaults.vim|)
+@@ -5958,7 +5949,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
+ 
+-
+ 			    *'opendevice'* *'odev'* *'noopendevice'* *'noodev'*
+ 'opendevice' 'odev'	boolean	(default off)
+ 			global
+@@ -5969,7 +5959,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Note that on MS-Windows editing "aux.h", "lpt1.txt" and the like also
+ 	result in editing a device.
+ 
+-
+ 						*'operatorfunc'* *'opfunc'*
+ 'operatorfunc' 'opfunc'	string	(default: empty)
+ 			global
+@@ -5981,20 +5970,17 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
+ 
+-
+ 					*'osfiletype'* *'oft'*
+ 'osfiletype' 'oft'	string (default: "")
+ 			local to buffer
+ 	This option was supported on RISC OS, which has been removed.
+ 
+-
+ 				*'packpath'* *'pp'*
+ 'packpath' 'pp'		string	(default: see 'runtimepath')
+ 	Directories used to find packages.  See |packages|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
+ 
+-
+ 						*'paragraphs'* *'para'*
+ 'paragraphs' 'para'	string	(default "IPLPPPQPP TPHPLIPpLpItpplpipbp")
+ 			global
+@@ -7440,7 +7426,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	   "number"	display signs in the 'number' column. If the number
+ 			column is not present, then behaves like "auto".
+ 
+-
+ 			*'smartcase'* *'scs'* *'nosmartcase'* *'noscs'*
+ 'smartcase' 'scs'	boolean	(default off)
+ 			global
+@@ -7708,7 +7693,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
+ 
+-
+ 			*'splitbelow'* *'sb'* *'nosplitbelow'* *'nosb'*
+ 'splitbelow' 'sb'	boolean	(default off)
+ 			global
+@@ -8091,14 +8075,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Keep in mind that only one of the tab pages is the current one, others
+ 	are invisible and you can't jump to their windows.
+ 
+-
+ 						*'tabpagemax'* *'tpm'*
+ 'tabpagemax' 'tpm'	number	(default 10)
+ 			global
+ 	Maximum number of tab pages to be opened by the |-p| command line
+ 	argument or the ":tab all" command. |tabpage|
+ 
+-
+ 						*'tabstop'* *'ts'*
+ 'tabstop' 'ts'		number	(default 8)
+ 			local to buffer
+@@ -8518,6 +8500,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				*'timeout'* *'to'* *'notimeout'* *'noto'*
+ 'timeout' 'to'		boolean (default on)
+ 			global
++
+ 						*'ttimeout'* *'nottimeout'*
+ 'ttimeout'		boolean (default off, set in |defaults.vim|)
+ 			global
+@@ -9298,7 +9281,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	a pattern from the list.  This avoids problems when a future version
+ 	uses another default.
+ 
+-
+ 		    *'wildignorecase'* *'wic'* *'nowildignorecase'* *'nowic'*
+ 'wildignorecase' 'wic'	boolean	(default off)
+ 			global
+@@ -9307,7 +9289,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Does not apply when the shell is used to expand wildcards, which
+ 	happens when there are special characters.
+ 
+-
+ 				*'wildmenu'* *'wmnu'* *'nowildmenu'* *'nowmnu'*
+ 'wildmenu' 'wmnu'	boolean	(default off, set in |defaults.vim|)
+ 			global
+@@ -9475,6 +9456,21 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Note: Do not confuse this with the height of the Vim window, use
+ 	'lines' for that.
+ 
++			*'winfixheight'* *'wfh'* *'nowinfixheight'* *'nowfh'*
++'winfixheight' 'wfh'	boolean	(default off)
++			local to window  |local-noglobal|
++	Keep the window height when windows are opened or closed and
++	'equalalways' is set.  Also for |CTRL-W_=|.  Set by default for the
++	|preview-window| and |quickfix-window|.
++	The height may be changed anyway when running out of room.
++
++			*'winfixwidth'* *'wfw'* *'nowinfixwidth'* *'nowfw'*
++'winfixwidth' 'wfw'	boolean	(default off)
++			local to window  |local-noglobal|
++	Keep the window width when windows are opened or closed and
++	'equalalways' is set.  Also for |CTRL-W_=|.
++	The width may be changed anyway when running out of room.
++
+ 						*'winheight'* *'wh'* *E591*
+ 'winheight' 'wh'	number	(default 1)
+ 			global
+@@ -9495,21 +9491,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	'winheight' applies to the current window.  Use 'winminheight' to set
+ 	the minimal height for other windows.
+ 
+-			*'winfixheight'* *'wfh'* *'nowinfixheight'* *'nowfh'*
+-'winfixheight' 'wfh'	boolean	(default off)
+-			local to window  |local-noglobal|
+-	Keep the window height when windows are opened or closed and
+-	'equalalways' is set.  Also for |CTRL-W_=|.  Set by default for the
+-	|preview-window| and |quickfix-window|.
+-	The height may be changed anyway when running out of room.
+-
+-			*'winfixwidth'* *'wfw'* *'nowinfixwidth'* *'nowfw'*
+-'winfixwidth' 'wfw'	boolean	(default off)
+-			local to window  |local-noglobal|
+-	Keep the window width when windows are opened or closed and
+-	'equalalways' is set.  Also for |CTRL-W_=|.
+-	The width may be changed anyway when running out of room.
+-
+ 						*'winminheight'* *'wmh'*
+ 'winminheight' 'wmh'	number	(default 1)
+ 			global
+diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
+index 54eb63cad..3c5d51707 100644
+--- a/runtime/doc/os_vms.txt
++++ b/runtime/doc/os_vms.txt
+@@ -44,14 +44,16 @@ You can download precompiled executables from:
+ 
+ To use the precompiled binary version, you need one of these archives:
+ 
+-  vim-XX-exe-ia64-gui.zip       IA64 GUI/Motif executables
+-  vim-XX-exe-ia64-gtk.zip       IA64 GUI/GTK executables
+-  vim-XX-exe-ia64-term.zip      IA64 console executables
++  vim-XX-exe-x86-gui.zip	X86_64 GUI/Motif executables
++  vim-XX-exe-x86-term.zip	X86_64 console executables
++  vim-XX-exe-ia64-gui.zip	IA64 GUI/Motif executables
++  vim-XX-exe-ia64-gtk.zip	IA64 GUI/GTK executables
++  vim-XX-exe-ia64-term.zip	IA64 console executables
+   vim-XX-exe-axp-gui.zip	Alpha GUI/Motif executables
+   vim-XX-exe-axp-gtk.zip	Alpha GUI/GTK executables
+-  vim-XX-exe-axp-term.zip       Alpha console executables
++  vim-XX-exe-axp-term.zip	Alpha console executables
+   vim-XX-exe-vax-gui.zip	VAX GUI executables
+-  vim-XX-exe-vax-term.zip       VAX console executables
++  vim-XX-exe-vax-term.zip	VAX console executables
+ 
+ and of course (optional)
+   vim-XX-runtime.zip		runtime files
+@@ -59,7 +61,7 @@ and of course (optional)
+ The binary archives contain: vim.exe, ctags.exe, xxd.exe files.
+ 
+ For GTK executables you will need GTKLIB that is available for
+-Alpha and IA64 platform.
++Alpha and IA64 platforms.
+ 
+ ==============================================================================
+ 
+@@ -71,9 +73,9 @@ See the file [.SRC]INSTALLVMS.TXT.
+ 
+ 4. Problems						*vms-problems*
+ 
+-The code has been tested under Open VMS 6.2 - 8.2 on Alpha, VAX and IA64
+-platforms with the DEC C compiler. It should work without major problems.
+-If your system does not have some include libraries you can tune up in
++The code has been tested under Open VMS 6.2 - 9.2 on Alpha, VAX, IA64 and
++X86_64 platforms with the DEC C compiler. It should work without major problems.
++If your system does not have some include libraries you can tune in the
+ OS_VMS_CONF.H file.
+ 
+ If you decided to build Vim with +perl, +python, etc. options, first you need
+@@ -88,8 +90,7 @@ VAX C compiler is not fully ANSI C compatible in pre-processor directives
+ semantics, therefore you have to use a converter program that will do the lion
+ part of the job.  For detailed instructions read file INSTALLvms.txt
+ 
+-MMS_VIM.EXE is built together with VIM.EXE, but for XXD.EXE you should
+-change to a subdirectory and build it separately.
++To build XXD.EXE, you should change to the subdirectory and build it separately.
+ 
+ CTAGS is not part of the Vim source distribution anymore, however the OpenVMS
+ specific source might contain CTAGS source files as described above.
+@@ -206,6 +207,7 @@ Example LOGIN.COM: >
+ 	$ define/nolog VIM DKA0:[UTIL.VIM81]
+ 	$ vi*m :== mcr VIM:VIM.EXE
+ 	$ gv*im:== spawn/nowait/input=NLA0 mcr VIM:VIM.EXE -g -GEOMETRY 80x40
++	$ set term/inq/ins ! inquire the terminal capabilities
+ 	$ set disp/create/node=192.168.10.202/trans=tcpip
+ 
+ Note: This set-up should be enough, if you are working on a standalone server or
+@@ -443,7 +445,12 @@ Terminal entry not found in termcap
+     builtin_dumb
+ defaulting to 'vt320'
+ ---
+-The solution is to define the default terminal name: >
++
++Try to force to inquire the terminal capabilities with: >
++
++	$ set term/inquire
++
++If the inquire did not help, the solutions is to define the default terminal name: >
+ 
+ 	$ ! unknown terminal name.  Let us use vt320 or ansi instead.
+ 	$ ! Note: it's case sensitive
+@@ -758,7 +765,18 @@ GNU_TOOLS.ZIP package downloadable from http://www.polarhome.com/vim/
+ 
+ 9. VMS related changes					*vms-changes*
+ 
+-Version 8.2
++Version 9.0 (2023 Nov 27)
++- Vim is ported to the X86_64 architecture
++	- IMPORTANT: because of the getline function name used in stucts like in ex_cmds.h
++	on X86_64 the CRTL_VER is kept under 80500000 level. The proper solution would be
++	to rename the getline function to something else in the struct (and in all places
++	it is used) - and avoiding to use POSIX functions in structs, but this change would
++	impact on all other operating systems. (added the the VMS TODO list)
++	Read more about at https://forum.vmssoftware.com/viewtopic.php?f=38&t=8914&p=20049
++- os_vms_conf.h includes have been reviewed for all architectures
++- added support for the MODIFIED_BY define
++
++Version 8.2 (2020 Feb 6)
+ - make all changes needed for clean compile build of v8.2 on VMS on all platforms
+ - fix the call mkdir bug (vicente_polo@yahoo.es)
+ - test on VSI OpenVMS Alpha and Itanium platforms
+@@ -767,17 +785,18 @@ Version 8.2
+ - XPM v3.4.11 libraries for IA64, AXP and VAX are added
+ - start integrating the new test scripts
+ 
+-Version 8.1
++Version 8.1 (2019 Jan 9)
+ - make necessary changes to build v8.1 on VMS
++- GTK1.2.10 on VAX
+ 
+-Version 8.0
++Version 8.0 (2016 Nov 21)
+ - solve the 100% cpu usage issue while waiting for a keystroke
+ - correct the VMS warnings and errors around handling the INFINITY (used in json.c)
+ - minor VMS port related changes
+ - correct the make_vms.mms file for 8.0
+ - fix [.TESTDIR]make_vms.mms for 8.0
+ 
+-Version 7.4
++Version 7.4 (2013 Aug 10)
+ - Undo: VMS can not handle more than one dot in the filenames use "dir/name" -> "dir/_un_name"
+   add _un_ at the beginning to keep the extension
+ - correct swap file name wildcard handling
+@@ -793,7 +812,7 @@ Version 7.4
+ - minor compiler warnings fixed
+ - CTAGS 5.8 +regex included
+ 
+-Version 7.3
++Version 7.3 (2010 Aug 15)
+ - CTAGS 5.8 included
+ - VMS compile warnings fixed - floating-point overflow warning corrected on VAX
+ - filepath completion corrected - too many chars were escaped in filename
+@@ -956,7 +975,7 @@ Version 4.5 (1996 Dec 16)
+ 10. Authors						*vms-authors*
+ 
+ OpenVMS documentation and executables are maintained by:
+-Zoltan Arpadffy <arpadffy@polarhome.com>
++Zoltan Arpadffy <zoltan.arpadffy@gmail.com>
+ OpenVMS Vim page: http://www.polarhome.com/vim/
+ 
+ This document uses parts and remarks from earlier authors and contributors
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 65a560a30..577554329 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.0.  Last change: 2022 Dec 16
++*quickref.txt*  For Vim version 9.0.  Last change: 2023 Dec 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -604,12 +604,12 @@ Short explanation of each option:		*option-list*
+ 'altkeymap'	  'akm'	    obsolete option for Farsi
+ 'ambiwidth'	  'ambw'    what to do with Unicode chars of ambiguous width
+ 'antialias'	  'anti'    Mac OS X: use smooth, antialiased fonts
+-'autochdir'	  'acd'     change directory to the file in the current window
+-'autoshelldir'	  'asd'     change directory to the shell's current directory
+ 'arabic'	  'arab'    for Arabic as a default second language
+ 'arabicshape'	  'arshape' do shaping for Arabic characters
++'autochdir'	  'acd'     change directory to the file in the current window
+ 'autoindent'	  'ai'	    take indent for new line from previous line
+ 'autoread'	  'ar'	    autom. read file when changed outside of Vim
++'autoshelldir'	  'asd'     change directory to the shell's current directory
+ 'autowrite'	  'aw'	    automatically write file if changed
+ 'autowriteall'	  'awa'     as 'autowrite', but works with more commands
+ 'background'	  'bg'	    "dark" or "light", used for highlight colors
+@@ -642,8 +642,8 @@ Short explanation of each option:		*option-list*
+ 'cindent'	  'cin'     do C program indenting
+ 'cinkeys'	  'cink'    keys that trigger indent when 'cindent' is set
+ 'cinoptions'	  'cino'    how to do indenting when 'cindent' is set
+-'cinwords'	  'cinw'    words where 'si' and 'cin' add an indent
+ 'cinscopedecls'	  'cinsd'   words that are recognized by 'cino-g'
++'cinwords'	  'cinw'    words where 'si' and 'cin' add an indent
+ 'clipboard'	  'cb'	    use the clipboard as the unnamed register
+ 'cmdheight'	  'ch'	    number of lines to use for the command-line
+ 'cmdwinheight'	  'cwh'     height of the command-line window
+@@ -1005,9 +1005,9 @@ Short explanation of each option:		*option-list*
+ 'winaltkeys'	  'wak'     when the windows system handles ALT keys
+ 'wincolor'	  'wcr'	    window-local highlighting
+ 'window'	  'wi'	    nr of lines to scroll for CTRL-F and CTRL-B
+-'winheight'	  'wh'	    minimum number of lines for the current window
+ 'winfixheight'	  'wfh'     keep window height when opening/closing windows
+ 'winfixwidth'	  'wfw'     keep window width when opening/closing windows
++'winheight'	  'wh'	    minimum number of lines for the current window
+ 'winminheight'	  'wmh'     minimum number of lines for any window
+ 'winminwidth'	  'wmw'     minimal number of columns for any window
+ 'winptydll'		    name of the winpty dynamic library
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 057d20158..baf3693f2 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Apr 24
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1591,7 +1591,15 @@ FORTRAN					*fortran.vim* *ft-fortran-syntax*
+ Default highlighting and dialect ~
+ Highlighting appropriate for Fortran 2008 is used by default.  This choice
+ should be appropriate for most users most of the time because Fortran 2008 is
+-almost a superset of previous versions (Fortran 2003, 95, 90, and 77).
++almost a superset of previous versions (Fortran 2003, 95, 90, and 77).  A
++small number of features new to Fortran 2018 and Fortran 2023 are supported
++and the complete transition to Fortran 2023 will be completed in the future.
++A few legacy constructs deleted or declared obsolescent in recent Fortran
++standards are highlighted as todo items.
++
++The syntax script no longer supports Fortran dialects.  The variable
++fortran_dialect is now silently ignored.  Since computers are much faster now,
++the variable fortran_more_precise is no longer needed and is silently ignored.
+ 
+ Fortran source code form ~
+ Fortran code can be in either fixed or free source form.  Note that the
+@@ -1618,14 +1626,36 @@ neither of these variables have been set, the syntax script attempts to
+ determine which source form has been used by examining the file extension
+ using conventions common to the ifort, gfortran, Cray, NAG, and PathScale
+ compilers (.f, .for, .f77 for fixed-source, .f90, .f95, .f03, .f08 for
+-free-source). If none of this works, then the script examines the first five
+-columns of the first 500 lines of your file.  If no signs of free source form
+-are detected, then the file is assumed to be in fixed source form.  The
+-algorithm should work in the vast majority of cases.  In some cases, such as a
+-file that begins with 500 or more full-line comments, the script may
+-incorrectly decide that the fortran code is in fixed form.  If that happens,
+-just add a non-comment statement beginning anywhere in the first five columns
+-of the first twenty-five lines, save (:w) and then reload (:e!) the file.
++free-source). No default is used for the .fpp and .ftn file extensions because
++different compilers treat them differently. If none of this works, then the
++script examines the first five columns of the first 500 lines of your file. If
++no signs of free source form are detected, then the file is assumed to be in
++fixed source form.  The algorithm should work in the vast majority of cases.
++In some cases, such as a file that begins with 500 or more full-line comments,
++the script may incorrectly decide that the code is in fixed form.  If that
++happens, just add a non-comment statement beginning anywhere in the first five
++columns of the first twenty-five lines, save (:w), and then reload (:e!) the
++file.
++
++Vendor extensions ~
++Fixed-form Fortran requires a maximum line length of 72 characters but the
++script allows a maximum line length of 80 characters as do all compilers
++created in the last three decades.  An even longer line length of 132
++characters is allowed if you set the variable fortran_extended_line_length
++with a command such as >
++    :let fortran_line_length=1
++placed prior to the :syntax on command.
++
++If you want additional highlighting of the CUDA Fortran extensions, you should
++set the variable fortran_CUDA with a command such as >
++    :let fortran_CUDA=1
++placed prior to the :syntax on command.
++
++To activate recognition of some common, non-standard, vendor-supplied
++intrinsics, you should set the variable fortran_vendor_intrinsics with a
++command such as >
++    :let fortran_vendor_intrinsics=1
++placed prior to the :syntax on command.
+ 
+ Tabs in fortran files ~
+ Tabs are not recognized by the Fortran standards.  Tabs are not a good idea in
+@@ -1647,8 +1677,8 @@ subprograms, block data subprograms, interface blocks, and modules.  If you
+ also set the variable fortran_fold_conditionals with a command such as >
+     :let fortran_fold_conditionals=1
+ then fold regions will also be defined for do loops, if blocks, and select
+-case constructs.  If you also set the variable
+-fortran_fold_multilinecomments with a command such as >
++case constructs.  If you also set the variable fortran_fold_multilinecomments
++with a command such as >
+     :let fortran_fold_multilinecomments=1
+ then fold regions will also be defined for three or more consecutive comment
+ lines.  Note that defining fold regions can be slow for large files.
+@@ -1659,58 +1689,6 @@ you set foldmethod=syntax.  Comments or blank lines placed between two program
+ units are not folded because they are seen as not belonging to any program
+ unit.
+ 
+-More precise fortran syntax ~
+-If you set the variable fortran_more_precise with a command such as >
+-    :let fortran_more_precise=1
+-then the syntax coloring will be more precise but slower.  In particular,
+-statement labels used in do, goto and arithmetic if statements will be
+-recognized, as will construct names at the end of a do, if, select or forall
+-construct.
+-
+-Non-default fortran dialects ~
+-The syntax script supports two Fortran dialects: f08 and F. You will probably
+-find the default highlighting (f08) satisfactory.  A few legacy constructs
+-deleted or declared obsolescent in the 2008 standard are highlighted as todo
+-items.
+-
+-If you use F, the advantage of setting the dialect appropriately is that
+-other legacy features excluded from F will be highlighted as todo items and
+-that free source form will be assumed.
+-
+-The dialect can be selected in various ways.  If all your fortran files use
+-the same dialect, set the global variable fortran_dialect in your .vimrc prior
+-to your syntax on statement.  The case-sensitive, permissible values of
+-fortran_dialect are "f08" or "F".  Invalid values of fortran_dialect are
+-ignored.
+-
+-If the dialect depends upon the file extension, then it is most convenient to
+-set a buffer-local variable in a ftplugin file.  For more information on
+-ftplugin files, see |ftplugin|.  For example, if all your fortran files with
+-an .f90 extension are written in the F subset, your ftplugin file should
+-contain the code >
+-    let s:extfname = expand("%:e")
+-    if s:extfname ==? "f90"
+-	let b:fortran_dialect="F"
+-    else
+-	unlet! b:fortran_dialect
+-    endif
+-Note that this will work only if the "filetype plugin indent on" command
+-precedes the "syntax on" command in your .vimrc file.
+-
+-Finer control is necessary if the file extension does not uniquely identify
+-the dialect.  You can override the default dialect, on a file-by-file basis,
+-by including a comment with the directive "fortran_dialect=xx" (where xx=F or
+-f08) in one of the first three lines in your file.  For example, your older .f
+-files may be legacy code but your newer ones may be F codes, and you would
+-identify the latter by including in the first three lines of those files a
+-Fortran comment of the form >
+-  ! fortran_dialect=F
+-
+-For previous versions of the syntax, you may have set fortran_dialect to the
+-now-obsolete values "f77", "f90", "f95", or "elf". Such settings will be
+-silently handled as "f08". Users of "elf" may wish to experiment with "F"
+-instead.
+-
+ The syntax/fortran.vim script contains embedded comments that tell you how to
+ comment and/or uncomment some lines to (a) activate recognition of some
+ non-standard, vendor-supplied intrinsics and (b) to prevent features deleted
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 3a7b6ef75..5e844a0b0 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -124,12 +124,6 @@ Further Vim9 improvements:
+ - Classes and Interfaces. See |vim9-classes|
+   - "final" object members - can only be set in the constructor.
+   - Cannot use class type of itself in the method (Issue #12369)
+-  - Cannot use an object method in a lambda  #12417
+-	Define all methods before compiling them?
+-  - Cannot call class member of funcref type  (Issue #12324)
+-	Also #12081 first case.
+-  - Using list of functions does not work #12081 (repro in later message).
+-  - First argument of call() cannot be "obj.Func". (#11865)
+   - Getting member of variable with "any" type should be handled at runtime.
+     Remove temporary solution from #12096 / patch 9.0.1375.
+   - "obj.Method()" does not always work in a compiled function, assumes "obj"
+@@ -137,14 +131,11 @@ Further Vim9 improvements:
+     Issue #11822: any.Func() can be a dict or an object call, need to handle
+     this at runtime.  Also see #12198 for an example.
+     Possibly issue #11981 can be fixed at the same time (has two examples).
+-  - Support export/import of classes and interfaces.
+   - Make ":defcompile ClassName" compile all functions and methods in the
+     class.
+   - Forward declaration of a class?  E.g. for Clone() function.
+ 	Email lifepillar 2023 Mar 26
+   - object empty(), len() - can class define a method to be used for them?
+-  - add to help: when using a default new() method then reordering object
+-    members may cause trouble.  Can define new() without arguments to avoid.
+   - When "Meta" is a class, is "const MetaAlias = Meta" allowed?  It should
+     either work or given an error. Possibly give an error now and implement it
+     later (using a typedef).  #12006
+@@ -157,7 +148,6 @@ Further Vim9 improvements:
+   - More efficient way for interface member index than iterating over list?
+   - a variant of type() that returns a different type for each class?
+       list<number> and list<string> should also differ.
+-- implement :type
+ - implement :enum
+ - Promise class, could be used to wait on a popup close callback?
+ - class local to a function
+@@ -166,6 +156,8 @@ Further Vim9 improvements:
+ - When evaluating constants for script variables, some functions could work:
+     has(featureName), len(someString)
+ - Implement as part of an expression: ++expr, --expr, expr++, expr--.
++- The use of the literal value "null" and the type specific "null_xxx"
++  values is confusing (#13458, #11770).
+ 
+ Information missing in terminfo:
+ - Codes used for focus gained and lost termcodes are hard-coded in
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index e81ccc575..f7ce91462 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -700,7 +700,13 @@ the name, you can define the constructor like this: >
+ 
+ 	def new(this.name, this.age = v:none, this.gender = v:none)
+ 	enddef
+-<							*E1328*
++<
++When using the default new() method, if the order of the object variables in
++the class is changed later, then all the callers of the default new() method
++needs to change.  To avoid this, the new() method can be explicitly defined
++without any arguments.
++
++							*E1328*
+ Note that you cannot use another default value than "v:none" here.  If you
+ want to initialize the object variables, do it where they are declared.  This
+ way you only need to look in one place for the default values.
