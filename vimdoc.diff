@@ -1,419 +1,133 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c9b9938dd..6f05055c3 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 7de9c5458..54ee56f0b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
-+*builtin.txt*	For Vim version 9.0.  Last change: 2023 Dec 14
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
++*options.txt*	For Vim version 9.0.  Last change: 2023 Dec 16
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6688,9 +6688,9 @@ printf({fmt}, {expr1} ...)				*printf()*
- <		This limits the length of the text used from "line" to
- 		"width" bytes.
+@@ -3838,9 +3838,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		:s///gg		  subst. all	  subst. one
  
--		If the argument to be formatted is specified using a posional
--		argument specifier, and a '*' is used to indicate that a
--		number argument is to be used to specify the width or
-+		If the argument to be formatted is specified using a
-+		positional argument specifier, and a '*' is used to indicate
-+		that a number argument is to be used to specify the width or
- 		precision, the argument(s) to be used must also be specified
- 		using a {n$} positional argument specifier. See |printf-$|.
+ 	NOTE: This option is reset when 'compatible' is set.
+-	DEPRECATED: Setting this option may break plugins that are not aware
+-	of this option.  Also, many users get confused that adding the /g flag
+-	has the opposite effect of that it normally does.
++	Setting this option may break plugins that rely on the default
++	behavior of the 'g' flag. This will also make the 'g' flag have the
++	opposite effect of that documented in |:s_g|.
+ 	This option is not used in |Vim9| script.
  
-@@ -10181,6 +10181,7 @@ type({expr})	The result is a Number representing the type of {expr}.
- 			Blob:	   10  |v:t_blob|
- 			Class:	   12  |v:t_class|
- 			Object:	   13  |v:t_object|
-+			Typealias: 14  |v:t_typealias|
- 		For backward compatibility, this method can be used: >
- 			:if type(myvar) == type(0)
- 			:if type(myvar) == type("")
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 5d61035f5..2a4bd4c7d 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -2558,6 +2558,8 @@ v:t_blob	Value of |Blob| type.  Read-only.  See: |type()|
- v:t_class	Value of |class| type.  Read-only.  See: |type()|
- 					*v:t_object* *t_object-variable*
- v:t_object	Value of |object| type.  Read-only.  See: |type()|
-+					*v:t_typealias* *t_typealias-variable*
-+v:t_typealias	Value of |typealias| type.  Read-only.  See: |type()|
- 
- 				*v:termresponse* *termresponse-variable*
- v:termresponse	The escape sequence returned by the terminal for the |t_RV|
-diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
-index 175bc7acd..e7fa348af 100644
---- a/runtime/doc/os_vms.txt
-+++ b/runtime/doc/os_vms.txt
+ 						*'grepformat'* *'gfm'*
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 5e844a0b0..afe5aed53 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*os_vms.txt*    For Vim version 9.0.  Last change: 2023 Dec 09
-+*os_vms.txt*    For Vim version 9.0.  Last change: 2023 Dec 14
+-*todo.txt*      For Vim version 9.0.  Last change: 2023 Jun 08
++*todo.txt*      For Vim version 9.0.  Last change: 2023 Dec 14
  
  
- 		  VIM REFERENCE MANUAL
-@@ -771,7 +771,7 @@ Version 9.0 (2023 Nov 27)
- 	on X86_64 the CRTL_VER is kept under 80500000 level. The proper solution would be
- 	to rename the getline function to something else in the struct (and in all places
- 	it is used) - and avoiding to use POSIX functions in structs, but this change would
--	impact on all other operating systems. (added the the VMS TODO list)
-+	impact on all other operating systems. (added to the VMS TODO list)
- 	Read more about at https://forum.vmssoftware.com/viewtopic.php?f=38&t=8914&p=20049
- - os_vms_conf.h includes have been reviewed for all architectures
- - added support for the MODIFIED_BY define
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 3869bcdfb..5647ff49b 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1331,6 +1331,9 @@ gdb:
-  *:Break*	set a breakpoint at the cursor position
-  :Break {position}
- 		set a breakpoint at the specified position
-+ *:Tbreak*	set a temporary breakpoint at the cursor position
-+ :Tbreak {position}
-+		set a temporary breakpoint at the specified position
-  *:Clear*	delete the breakpoint at the cursor position
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -122,7 +122,6 @@ Upcoming larger works:
  
-  *:Step*	execute the gdb "step" command
+ Further Vim9 improvements:
+ - Classes and Interfaces. See |vim9-classes|
+-  - "final" object members - can only be set in the constructor.
+   - Cannot use class type of itself in the method (Issue #12369)
+   - Getting member of variable with "any" type should be handled at runtime.
+     Remove temporary solution from #12096 / patch 9.0.1375.
 diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index f7ce91462..97813f0ee 100644
+index 97813f0ee..4dc67bd87 100644
 --- a/runtime/doc/vim9class.txt
 +++ b/runtime/doc/vim9class.txt
-@@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
-+*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 14
+@@ -364,6 +364,78 @@ super class.  Depending on the class where the member is used the
+ corresponding class member will be used.  The type of the class member in a
+ child class can be different from that in the super class.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -78,8 +78,8 @@ Let's start with a simple example: a class that stores a text position (see
- below for how to do this more efficiently): >
- 
- 	class TextPosition
--	   this.lnum: number
--	   this.col: number
-+	   var lnum: number
-+	   var col: number
- 
- 	   def new(lnum: number, col: number)
- 	      this.lnum = lnum
-@@ -156,8 +156,8 @@ On the other hand, if you do not want the object variables to be read directly
- from outside the class or its sub-classes, you can make them protected.  This
- is done by prefixing an underscore to the name: >
- 
--	this._lnum: number
--	this._col number
-+	var _lnum: number
-+	var _col number
- 
- Now you need to provide methods to get the value of the protected variables.
- These are commonly called getters.  We recommend using a name that starts with
-@@ -209,8 +209,8 @@ Many constructors take values for the object variables.  Thus you very often
- see this pattern: >
- 
- 	 class SomeClass
--	   this.lnum: number
--	   this.col: number
-+	   var lnum: number
-+	   var col: number
- 
- 	   def new(lnum: number, col: number)
- 	      this.lnum = lnum
-@@ -220,7 +220,7 @@ see this pattern: >
- <
- 							*E1390*
- Not only is this text you need to write, it also has the type of each
--variables twice.  Since this is so common a shorter way to write new() is
-+variable twice.  Since this is so common a shorter way to write new() is
- provided: >
- 
- 	   def new(this.lnum, this.col)
-@@ -235,8 +235,8 @@ Putting together this way of using new() and making the variables public
- results in a much shorter class definition than what we started with: >
- 
- 	class TextPosition
--	   public this.lnum: number
--	   public this.col: number
-+	   public var lnum: number
-+	   public var col: number
- 
- 	   def new(this.lnum, this.col)
- 	   enddef
-@@ -265,7 +265,7 @@ always returns an object of the class.
- 
- 							*E1386*
- When invoking an object method, the method name should be preceded by the
--object variable name.  A object method cannot be invoked using the class
-+object variable name.  An object method cannot be invoked using the class
- name.
- 
- ==============================================================================
-@@ -277,8 +277,8 @@ Class members are declared with "static".  They are used by the name without a
- prefix in the class where they are defined: >
- 
- 	class OtherThing
--	   this.size: number
--	   static totalSize: number
-+	   var size: number
-+	   static var totalSize: number
- 
- 	   def new(this.size)
- 	      totalSize += this.size
-@@ -297,9 +297,9 @@ underscore as the first character in the name, and it can be made public by
- prefixing "public": >
- 
-     class OtherThing
--	static total: number	      # anybody can read, only class can write
--	static _sum: number	      # only class can read and write
--	public static result: number  # anybody can read and write
-+	static var total: number	  # anybody can read, only class can write
-+	static var _sum: number	          # only class can read and write
-+	public static var result: number  # anybody can read and write
-     endclass
- <
- 							*class-method*
-@@ -308,8 +308,8 @@ variables but they have no access to the object variables, they cannot use the
- "this" keyword:
- >
- 	class OtherThing
--	   this.size: number
--	   static totalSize: number
-+	   var size: number
-+	   static var totalSize: number
- 
- 	   # Clear the total size and return the value it had before.
- 	   static def ClearTotalSize(): number
-@@ -345,14 +345,14 @@ outside of the defining class: >
- 
-     vim9script
-     class Vehicle
--	static nextID: number = 1000
-+	static var nextID: number = 1000
- 	static def GetID(): number
- 	    nextID += 1
- 	    return nextID
- 	enddef
-     endclass
-     class Car extends Vehicle
--	this.myID: number
-+	var myID: number
- 	def new()
- 	    this.myID = Vehicle.GetID()
- 	enddef
-@@ -380,20 +380,20 @@ it is.  The Shape class functions as the base for a Square and a Triangle
- class, for which objects can be created.  Example: >
- 
- 	abstract class Shape
--	   this.color = Color.Black
--	   this.thickness = 10
-+	   var color = Color.Black
-+	   var thickness = 10
- 	endclass
- 
- 	class Square extends Shape
--	   this.size: number
-+	   var size: number
- 
- 	   def new(this.size)
- 	   enddef
- 	endclass
- 
- 	class Triangle extends Shape
--	   this.base: number
--	   this.height: number
-+	   var base: number
-+	   var height: number
- 
- 	   def new(this.base, this.height)
- 	   enddef
-@@ -430,8 +430,8 @@ interface called HasSurface, which specifies one method Surface() that returns
- a number.  This example extends the one above: >
- 
- 	abstract class Shape
--	   this.color = Color.Black
--	   this.thickness = 10
-+	   var color = Color.Black
-+	   var thickness = 10
- 	endclass
- 
- 	interface HasSurface
-@@ -439,7 +439,7 @@ a number.  This example extends the one above: >
- 	endinterface
- 
- 	class Square extends Shape implements HasSurface
--	   this.size: number
-+	   var size: number
- 
- 	   def new(this.size)
- 	   enddef
-@@ -450,8 +450,8 @@ a number.  This example extends the one above: >
- 	endclass
- 
- 	class Triangle extends Shape implements HasSurface
--	   this.base: number
--	   this.height: number
-+	   var base: number
-+	   var height: number
- 
- 	   def new(this.base, this.height)
- 	   enddef
-@@ -598,13 +598,13 @@ Items in a class ~
- 						*E1318* *E1325* *E1388*
- Inside a class, in between `:class` and `:endclass`, these items can appear:
- - An object variable declaration: >
--	this._protectedVariableName: memberType
--	this.readonlyVariableName: memberType
--	public this.readwriteVariableName: memberType
-+	var _protectedVariableName: memberType
-+	var readonlyVariableName: memberType
-+	public var readwriteVariableName: memberType
- - A class variable declaration: >
--	static _protectedClassVariableName: memberType
--	static readonlyClassVariableName: memberType
--	static public readwriteClassVariableName: memberType
-+	static var _protectedClassVariableName: memberType
-+	static var readonlyClassVariableName: memberType
-+	static var public readwriteClassVariableName: memberType
- - A constructor method: >
- 	def new(arguments)
- 	def newName(arguments)
-@@ -620,9 +620,9 @@ this explicitly with ": {type}".  For simple types you can also use an
- initializer, such as "= 123", and Vim will see that the type is a number.
- Avoid doing this for more complex types and when the type will be incomplete.
- For example: >
--	this.nameList = []
-+	var nameList = []
- This specifies a list, but the item type is unknown.  Better use: >
--	this.nameList: list<string>
-+	var nameList: list<string>
- The initialization isn't needed, the list is empty by default.
- 							*E1330*
- Some types cannot be used, such as "void", "null" and "v:none".
-@@ -646,7 +646,7 @@ An interface can declare methods with `:def`, including the arguments and
- return type, but without the body and without `:enddef`.  Example: >
- 
- 	interface HasSurface
--	   this.size: number
-+	   var size: number
- 	   def Surface(): number
- 	endinterface
- 
-@@ -674,9 +674,9 @@ defined.  This default constructor will have arguments for all the object
- variables, in the order they were specified.  Thus if your class looks like: >
- 
- 	class AutoNew
--	   this.name: string
--	   this.age: number
--	   this.gender: Gender
-+	   var name: string
-+	   var age: number
-+	   var gender: Gender
- 	endclass
- 
- Then the default constructor will be: >
-@@ -690,8 +690,8 @@ value for the object variables will be used.  This is a more useful example,
- with default values: >
- 
- 	class TextPosition
--	   this.lnum: number = 1
--	   this.col: number = 1
-+	   var lnum: number = 1
-+	   var col: number = 1
- 	endclass
- 
- If you want the constructor to have mandatory arguments, you need to write it
-@@ -752,16 +752,38 @@ constructor methods.
- 
- 7.  Type definition					*Vim9-type* *:type*
- 
--A type definition is giving a name to a type specification.  This also known
--type alias.  For Example: >
-+					*E1393* *E1395* *E1396* *E1397* *E1398*
-+A type definition is giving a name to a type specification.  This is also
-+known as a "type alias".  The type alias can be used wherever a built-in type
-+can be used.  Example: >
- 
--	:type ListOfStrings = list<string>
-+    type ListOfStrings = list<string>
-+    var s: ListOfStrings = ['a', 'b']
- 
--The type alias can be used wherever a built-in type can be used.  The type
--alias name must start with an upper case character.  A type alias can be
--created only at the script level and not inside a function.  A type alias can
--be exported and used across scripts.
-+    def ProcessStr(str: ListOfStrings): ListOfStrings
-+	return str
-+    enddef
-+    echo ProcessStr(s)
++					*object-final-variable* *E1409*
++The |:final| keyword can be used to make a class or object variable a
++constant.  Examples: >
++
++    class A
++	final v1 = [1, 2]		# final object variable
++	public final v2 = {x: 1}	# final object variable
++	static final v3 = 'abc'		# final class variable
++	public static final v4 = 0z10	# final class variable
++    endclass
 +<
-+							*E1394*
-+A type alias name must start with an upper case character.  Only existing
-+types can be aliased.
++A final variable can be changed only from a constructor function.  Example: >
 +
-+							*E1399*
-+A type alias can be created only at the script level and not inside a
-+function.  A type alias can be exported and used across scripts.
-+
-+					*E1400* *E1401* *E1402* *E1403* *E1407*
-+A type alias cannot be used as an expression.  A type alias cannot be used in
-+the left-hand-side of an assignment.
-+
-+For a type alias name, the |typename()| function returns the type that is
-+aliased: >
- 
-+    type ListOfStudents = list<dict<any>>
-+    echo typename(ListOfStudents)
-+    typealias<list<dict<any>>>
++    class A
++	final v1: list<number>
++	def new()
++	    this.v1 = [1, 2]
++	enddef
++    endclass
++    var a = A.new()
++    echo a.v1
 +<
++Note that the value of a final variable can be changed.  Example: >
++
++    class A
++	public final v1 = [1, 2]
++    endclass
++    var a = A.new()
++    a.v1[0] = 6			# OK
++    a.v1->add(3)		# OK
++    a.v1 = [3, 4]		# Error
++<
++							*E1408*
++Final variables are not supported in an interface.  A class or object method
++cannot be final.
++
++					*object-const-variable*
++The |:const| keyword can be used to make a class or object variable and the
++value a constant.  Examples: >
++
++    class A
++	const v1 = [1, 2]		# const object variable
++	public const v2 = {x: 1}	# const object variable
++	static const v3 = 'abc'		# const class variable
++	public static const v4 = 0z10	# const class variable
++    endclass
++<
++A const variable can be changed only from a constructor function. Example: >
++
++    class A
++	const v1: list<number>
++	def new()
++	    this.v1 = [1, 2]
++	enddef
++    endclass
++    var a = A.new()
++    echo a.v1
++<
++A const variable and its value cannot be changed.  Example: >
++
++    class A
++	public const v1 = [1, 2]
++    endclass
++    var a = A.new()
++    a.v1[0] = 6			# Error
++    a.v1->add(3)		# Error
++    a.v1 = [3, 4]		# Error
++<
++							 *E1410*
++Const variables are not supported in an interface.  A class or object method
++cannot be a const.
++
  ==============================================================================
  
- 8.  Enum					*Vim9-enum* *:enum* *:endenum*
-@@ -925,26 +947,26 @@ Following that Vim object variables could be declared like this: >
- Some users pointed out that this looks more like an assignment than a
- declaration.  Adding "var" changes that: >
- 	class Point
--	  var this.x: number
--	  var this.y = 0
-+	  var x: number
-+	  var y = 0
- 	endclass
+ 4.  Using an abstract class			*Vim9-abstract-class*
+@@ -982,8 +1054,6 @@ function declaration syntax for class/object variables and methods.  Vim9 also
+ reuses the general function declaration syntax for methods.  So, for the sake
+ of consistency, we require "var" in these declarations.
  
- We also need to be able to declare class variables using the "static" keyword.
- There we can also choose to leave out "var": >
- 	class Point
--	  var this.x: number
-+	  var x: number
- 	  static count = 0
- 	endclass
- 
- Or do use it, before "static": >
- 	class Point
--	  var this.x: number
-+	  var x: number
- 	  var static count = 0
- 	endclass
- 
- Or after "static": >
- 	class Point
--	  var this.x: number
-+	  var x: number
- 	  static var count = 0
- 	endclass
- 
-@@ -952,9 +974,16 @@ This is more in line with "static def Func()".
- 
- There is no clear preference whether to use "var" or not.  The two main
- reasons to leave it out are:
--1. TypeScript, Java and other popular languages do not use it.
-+1. TypeScript and other popular languages do not use it.
- 2. Less clutter.
- 
-+However, it is more common for languages to reuse their general variable and
-+function declaration syntax for class/object variables and methods.  Vim9 also
-+reuses the general function declaration syntax for methods.  So, for the sake
-+of consistency, we require "var" in these declarations.
-+
-+This also allows for a natural use of "final" and "const" in the future.
-+
+-This also allows for a natural use of "final" and "const" in the future.
+-
  
  Using "ClassName.new()" to construct an object ~
  
