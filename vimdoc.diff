@@ -1,133 +1,86 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7de9c5458..54ee56f0b 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 74087620f..679654efa 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.0.  Last change: 2023 Nov 20
-+*options.txt*	For Vim version 9.0.  Last change: 2023 Dec 16
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 09
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 17
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3838,9 +3838,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		:s///gg		  subst. all	  subst. one
+@@ -1589,13 +1589,14 @@ edit F# or Fortran at all, use this in your startup vimrc: >
+ FORTRAN					*fortran.vim* *ft-fortran-syntax*
  
- 	NOTE: This option is reset when 'compatible' is set.
--	DEPRECATED: Setting this option may break plugins that are not aware
--	of this option.  Also, many users get confused that adding the /g flag
--	has the opposite effect of that it normally does.
-+	Setting this option may break plugins that rely on the default
-+	behavior of the 'g' flag. This will also make the 'g' flag have the
-+	opposite effect of that documented in |:s_g|.
- 	This option is not used in |Vim9| script.
+ Default highlighting and dialect ~
+-Highlighting appropriate for Fortran 2008 is used by default.  This choice
+-should be appropriate for most users most of the time because Fortran 2008 is
+-almost a superset of previous versions (Fortran 2003, 95, 90, and 77).  A
+-small number of features new to Fortran 2018 and Fortran 2023 are supported
+-and the complete transition to Fortran 2023 will be completed in the future.
+-A few legacy constructs deleted or declared obsolescent in recent Fortran
+-standards are highlighted as todo items.
++Vim highlights according to Fortran 2023 (the most recent standard) by
++default.  This choice should be appropriate for most users most of the time
++because Fortran 2023 is almost a superset of previous versions (Fortran 2018,
++2008, 2003, 95, 90, and 77).  A small number of features new to Fortran 2018
++and Fortran 2023 may have been omitted at present; the transition to Fortran
++2023 will be completed in the near future. A few legacy constructs deleted or
++declared obsolescent in recent Fortran standards are highlighted as todo
++items.
  
- 						*'grepformat'* *'gfm'*
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 5e844a0b0..afe5aed53 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.0.  Last change: 2023 Jun 08
-+*todo.txt*      For Vim version 9.0.  Last change: 2023 Dec 14
+ The syntax script no longer supports Fortran dialects.  The variable
+ fortran_dialect is now silently ignored.  Since computers are much faster now,
+@@ -1605,7 +1606,7 @@ Fortran source code form ~
+ Fortran code can be in either fixed or free source form.  Note that the
+ syntax highlighting will not be correct if the form is incorrectly set.
  
+-When you create a new fortran file, the syntax script assumes fixed source
++When you create a new Fortran file, the syntax script assumes fixed source
+ form.  If you always use free source form, then >
+     :let fortran_free_source=1
+ in your .vimrc prior to the :syntax on command.  If you always use fixed
+@@ -1619,10 +1620,10 @@ file.  For more information on ftplugin files, see |ftplugin|. Note that this
+ will work only if the "filetype plugin indent on" command precedes the "syntax
+ on" command in your .vimrc file.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -122,7 +122,6 @@ Upcoming larger works:
+-When you edit an existing fortran file, the syntax script will assume free
++When you edit an existing Fortran file, the syntax script will assume free
+ source form if the fortran_free_source variable has been set, and assumes
+-fixed source form if the fortran_fixed_source variable has been set.  If
+-neither of these variables have been set, the syntax script attempts to
++fixed source form if the fortran_fixed_source variable has been set.  Suppose
++neither of these variables have been set. In that case, the syntax script attempts to
+ determine which source form has been used by examining the file extension
+ using conventions common to the ifort, gfortran, Cray, NAG, and PathScale
+ compilers (.f, .for, .f77 for fixed-source, .f90, .f95, .f03, .f08 for
+@@ -1657,17 +1658,17 @@ command such as >
+     :let fortran_vendor_intrinsics=1
+ placed prior to the :syntax on command.
  
- Further Vim9 improvements:
- - Classes and Interfaces. See |vim9-classes|
--  - "final" object members - can only be set in the constructor.
-   - Cannot use class type of itself in the method (Issue #12369)
-   - Getting member of variable with "any" type should be handled at runtime.
-     Remove temporary solution from #12096 / patch 9.0.1375.
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 97813f0ee..4dc67bd87 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -364,6 +364,78 @@ super class.  Depending on the class where the member is used the
- corresponding class member will be used.  The type of the class member in a
- child class can be different from that in the super class.
+-Tabs in fortran files ~
++Tabs in Fortran files ~
+ Tabs are not recognized by the Fortran standards.  Tabs are not a good idea in
+-fixed format fortran source code which requires fixed column boundaries.
++fixed format Fortran source code which requires fixed column boundaries.
+ Therefore, tabs are marked as errors.  Nevertheless, some programmers like
+-using tabs.  If your fortran files contain tabs, then you should set the
++using tabs.  If your Fortran files contain tabs, then you should set the
+ variable fortran_have_tabs in your .vimrc with a command such as >
+     :let fortran_have_tabs=1
+ placed prior to the :syntax on command.  Unfortunately, the use of tabs will
+ mean that the syntax file will not be able to detect incorrect margins.
  
-+					*object-final-variable* *E1409*
-+The |:final| keyword can be used to make a class or object variable a
-+constant.  Examples: >
-+
-+    class A
-+	final v1 = [1, 2]		# final object variable
-+	public final v2 = {x: 1}	# final object variable
-+	static final v3 = 'abc'		# final class variable
-+	public static final v4 = 0z10	# final class variable
-+    endclass
-+<
-+A final variable can be changed only from a constructor function.  Example: >
-+
-+    class A
-+	final v1: list<number>
-+	def new()
-+	    this.v1 = [1, 2]
-+	enddef
-+    endclass
-+    var a = A.new()
-+    echo a.v1
-+<
-+Note that the value of a final variable can be changed.  Example: >
-+
-+    class A
-+	public final v1 = [1, 2]
-+    endclass
-+    var a = A.new()
-+    a.v1[0] = 6			# OK
-+    a.v1->add(3)		# OK
-+    a.v1 = [3, 4]		# Error
-+<
-+							*E1408*
-+Final variables are not supported in an interface.  A class or object method
-+cannot be final.
-+
-+					*object-const-variable*
-+The |:const| keyword can be used to make a class or object variable and the
-+value a constant.  Examples: >
-+
-+    class A
-+	const v1 = [1, 2]		# const object variable
-+	public const v2 = {x: 1}	# const object variable
-+	static const v3 = 'abc'		# const class variable
-+	public static const v4 = 0z10	# const class variable
-+    endclass
-+<
-+A const variable can be changed only from a constructor function. Example: >
-+
-+    class A
-+	const v1: list<number>
-+	def new()
-+	    this.v1 = [1, 2]
-+	enddef
-+    endclass
-+    var a = A.new()
-+    echo a.v1
-+<
-+A const variable and its value cannot be changed.  Example: >
-+
-+    class A
-+	public const v1 = [1, 2]
-+    endclass
-+    var a = A.new()
-+    a.v1[0] = 6			# Error
-+    a.v1->add(3)		# Error
-+    a.v1 = [3, 4]		# Error
-+<
-+							 *E1410*
-+Const variables are not supported in an interface.  A class or object method
-+cannot be a const.
-+
- ==============================================================================
+-Syntax folding of fortran files ~
++Syntax folding of Fortran files ~
+ If you wish to use foldmethod=syntax, then you must first set the variable
+ fortran_fold with a command such as >
+     :let fortran_fold=1
+@@ -1700,7 +1701,7 @@ Parenthesis checking does not catch too few closing parentheses.  Hollerith
+ strings are not recognized.  Some keywords may be highlighted incorrectly
+ because Fortran90 has no reserved words.
  
- 4.  Using an abstract class			*Vim9-abstract-class*
-@@ -982,8 +1054,6 @@ function declaration syntax for class/object variables and methods.  Vim9 also
- reuses the general function declaration syntax for methods.  So, for the sake
- of consistency, we require "var" in these declarations.
+-For further information related to fortran, see |ft-fortran-indent| and
++For further information related to Fortran, see |ft-fortran-indent| and
+ |ft-fortran-plugin|.
  
--This also allows for a natural use of "final" and "const" in the future.
--
- 
- Using "ClassName.new()" to construct an object ~
- 
+ FREEBASIC				*freebasic.vim* *ft-freebasic-syntax*
