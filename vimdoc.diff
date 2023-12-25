@@ -1,544 +1,261 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 6f05055c3..3f2aea926 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 196086542..deb947cf1 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.0.  Last change: 2023 Dec 14
-+*builtin.txt*	For Vim version 9.0.  Last change: 2023 Dec 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5163,8 +5163,12 @@ items({dict})						*items()*
- 			for [key, value] in items(mydict)
- 			   echo key .. ': ' .. value
- 			endfor
-+<
-+		A List or a String argument is also supported.  In these
-+		cases, items() returns a List with the index and the value at
-+		the index.
- 
--<		Can also be used as a |method|: >
-+		Can also be used as a |method|: >
- 			mydict->items()
- 
- job_ functions are documented here: |job-functions-details|
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 1dcd99bf9..f5d85f3fb 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
-@@ -1,4 +1,4 @@
--*map.txt*       For Vim version 9.0.  Last change: 2023 May 28
-+*map.txt*       For Vim version 9.0.  Last change: 2023 December 24
+-*filetype.txt*  For Vim version 9.0.  Last change: 2023 Dec 05
++*filetype.txt*  For Vim version 9.0.  Last change: 2023 Dec 23
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -406,7 +406,7 @@ Note:
- 							*E1255* *E1136*
- <Cmd> and <ScriptCmd> commands must terminate, that is, they must be followed
- by <CR> in the {rhs} of the mapping definition.  |Command-line| mode is never
--entered.
-+entered.  To use a literal <CR> in the {rhs}, use |<lt>|.
+@@ -779,6 +779,14 @@ To enable this behavior, set the following variable in your vimrc: >
+ 	let g:rst_style = 1
  
  
- 1.3 MAPPING AND MODES					*:map-modes*
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 2b762bc46..5a56899de 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
++RNOWEB							      *ft-rnoweb-plugin*
++
++The 'formatexpr' option is set dynamically with different values for R code
++and for LaTeX code. If you prefer that 'formatexpr' is not set, add to your
++|vimrc|: >
++	let rnw_dynamic_comments = 0
++
++
+ RPM SPEC						*ft-spec-plugin*
+ 
+ Since the text for this plugin is rather long it has been put in a separate
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 6cad213de..482d36630 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.0.  Last change: 2023 Dec 21
-+*version9.txt*  For Vim version 9.0.  Last change: 2023 Dec 24
+-*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 09
++*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 23
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -29634,7 +29634,7 @@ Solution:   Use K_ZERO instead.  Use macros instead of hard coded values.
- Files:      src/getchar.c, src/misc2.c, src/testdir/test_termcodes.vim
- 
- Patch 8.2.4830
--Problem:    Possible endless loop if there is unused typahead.
-+Problem:    Possible endless loop if there is unused typeahead.
- Solution:   Only loop when the typeahead changed.
- Files:      src/channel.c
- 
-@@ -31689,8 +31689,8 @@ are many minor improvements.
- 
- Vim9 classes
- ------------
--Support for classes and objects in a Vim9 script are added.  The following
--features are supported:
-+Support for classes and objects in a Vim9 script are added.  This is described
-+in |vim9-class|.  The following features are supported:
-     - Defining classes and instantiating objects
-     - Multiple constructors
-     - Class variables and methods
-@@ -31706,15 +31706,75 @@ Support for creating a type alias for an existing type is added.
- 
- Virtual text
- ------------
-+Support for adding |virtual-text| to a buffer is added.  This is useful for
-+language server features (e.g. inlay hints)
- 
- Smooth Scroll
- -------------
-+Support for scrolling text using screen lines instead of file lines is added.
-+Refer to the 'smoothscroll' option.
-+
-+EditorConfig and JSON formatting plugins are included.
-+
-+OpenVMS x86_64 platform port.
- 
- Other improvements				*new-other-9.1*
- ------------------
-+- Support for undercurl (|t_Ce|), double underline (|t_Us|), dotted underline
-+  (|t_ds|) and dashed underline (|t_Ds|) termcap entries.
-+- The 'fillchars' option is now a global-local option.
-+- The |vertical| and |horizontal| modifiers can be used with ":wincmd ="
-+  command to equalize windows vertically or horizontally.
-+- |:defer| command to defer the execution of a function till the end of a
-+  function.
-+- Support for closing a tab page using the middle mouse button.
-+- Sound support in MacOS.
-+- The |prop_remove()| function can now remove multiple text properties.
-+- The |items()| function now supports a List or a String argument.
-+- Command line completion support for |:runtime| command.
-+- Support for multiple "%=" items in 'statusline'
-+- Support for the PmenuKind, PmenuKindSel, PmenuExtra and PmenuExtraSel
-+  highlight groups.
-+- xxd: support for using colors in the hex dump output
-+- xxd: reversing a bit dump
-+- Text properties can override 'cursorline' highlight.
-+- Support for echoing messages in a popup window |:echowindow|.
-+- Control scroll behavior when spliting windows 'splitkeep'.
-+- Specify the character used for the last window line 'fillchars'
-+- Support for mouse scrolling in the MS-Windows console.
-+- Support for using different keyboard protocols 'keyprotocol'
-+- Support for UTF-16 string index.
-+- Quickfix list items can have associated custom user data.
-+- |reverse()| supports reversing a string
-+- 'switchbuf' is used by more commands.
-+- |undotree()| can be used with any buffer.
-+- |printf()| supports positional arguments
-+- Support for custom completion using |getcompletion()|
-+- Support for Python3 stable ABI
-+- Use |jumplist| like a stack
-+- Command-line completion support for option values
-+- Support for writing extended attributes in Linux
-+- 'errorformat' supports parsing a buffer number (|%b|)
-+- Termdebug: Support for variables window, moving up/down the stack frames and
-+  setting temporary breakpoints
- 
- Changed						*changed-9.1*
- -------
-+- The features |++builtin_terms|, |+cmdline_info|, |+cmdwin|, |+file_in_path|,
-+  |+float|, |+path_extra|, |+textobjects|, |+wildignore| and |+wildmenu| are
-+  available in all the builds.
-+- Support for Windows-XP is dropped.
-+- The "small" and "big" builds are dropped in favor of "tiny" and "huge"
-+  builds.
-+- Support for VisVim is removed.
-+- The optional Content-Type header is removed from the LSP messages.
-+- |charidx()| returns the character length when the index is one more than the
-+  last byte index.
-+- Ctrl-Q works like Ctrl-V in replace mode.
-+- |popup_filter_menu()| now wraps around.
-+- |g<End>| now jumps to the last non-blank character
-+- dot and hypen are supported in highlight group names
-+- |executable()| resolves symlinks on MS-Windows.
- 
- Added						*added-9.1*
- -----
-@@ -31763,6 +31823,7 @@ Commands: ~
- 
- Options: ~
- 
-+'endoffile'		write CTRL-Z at end of the file
- 'jumpoptions'		specifies how jumping is done
- 'keyprotocol'		what keyboard protocol to use for what terminal
- 'lispoptions'		changes how Lisp indenting is done
-@@ -31778,6 +31839,9 @@ The list of patches that got included since 9.0.0.  This includes all the new
- features, but does not include runtime file changes (syntax, indent, ftplugin,
- documentation, etc.)
- 
-+Note: authorship and the list of changed files is left out and only visible
-+through `git log` for each commit.
-+
- Patch 9.0.0001
- Problem:    Travis CI is no longer used.
- Solution:   Delete the Travis CI configuration. (Hugo Osvaldo Barrera,
-@@ -31853,7 +31917,7 @@ Problem:    Accessing memory beyond the end of the line.
- Solution:   Stop Visual mode when closing a window.
- 
- Patch 9.0.0018
--Problem:    Going over the end of the typahead.
-+Problem:    Going over the end of the typeahead.
- Solution:   Put a NUL after the typeahead.
- 
- Patch 9.0.0019
-@@ -32059,7 +32123,7 @@ Problem:    Cross-compiling doesn't work because of timer_create check.
- Solution:   Use AC_CACHE_CHECK(). (Richard Purdie, closes #10777)
- 
- Patch 9.0.0066
--Problem:    Switching window uneccarily when getting buffer options.
-+Problem:    Switching window unnecessarily when getting buffer options.
- Solution:   Do not switch window when getting buffer options. (closes #10767)
- 
- Patch 9.0.0067
-@@ -32201,7 +32265,7 @@ Solution:   Allocate a buffer if needed.
- 
- Patch 9.0.0098
- Problem:    missing include file in timer_create configure check.
--Solution:   Inlucde stdlib.h.
-+Solution:   Include stdlib.h.
- 
- Patch 9.0.0099
- Problem:    Scrollback can be wrong after redrawing the command line.
-@@ -32493,7 +32557,7 @@ Solution:   Keep an array of property types sorted on ID.
- 
- Patch 9.0.0166
- Problem:    When using text properties the line text length is computed twice.
--Solution:   If the text lenght was already computed don't do it again.
-+Solution:   If the text length was already computed don't do it again.
- 
- Patch 9.0.0167
- Problem:    Checking for text properties could be a bit more efficient.
-@@ -32577,7 +32641,7 @@ Problem:    Virtual text prop highlight continues after truncation.
- Solution:   Recompute the length of attributes.
- 
- Patch 9.0.0185
--Problem:    Virtual text does not show if tehre is a text prop at same
-+Problem:    Virtual text does not show if there is a text prop at same
-             position. (Ben Jackson)
- Solution:   Fix the sorting of properties. (closes #10879)
- 
-@@ -32629,7 +32693,7 @@ Problem:    Cursor displayed in wrong position after removing text prop. (Ben
- Solution:   Invalidate the cursor position. (closes #10898)
- 
- Patch 9.0.0195
--Problem:    Metafun files are not recogized.
-+Problem:    Metafun files are not recognized.
- Solution:   Add filetype detection patterns.
- 
- Patch 9.0.0196
-@@ -32649,7 +32713,7 @@ Problem:    Cursor position wrong with two right-aligned virtual texts.
- Solution:   Add the padding for right-alignment. (issue #10906)
- 
- Patch 9.0.0200
--Problem:    cursor in a wrong positoin if 'wrap' is off and using two right
-+Problem:    cursor in a wrong position if 'wrap' is off and using two right
-             aligned text props in one line.
- Solution:   Count an extra line for a right aligned text property after a
-             below or right aligned text property. (issue #10909)
-@@ -33089,7 +33153,7 @@ Solution:   Ignore deprecation warnings. (closes #11002)
- 
- Patch 9.0.0303
- Problem:    It is not easy to get information about a script.
--Solution:   Make getscriptinf() return the version.  When selecting a specific
-+Solution:   Make getscriptinfo() return the version.  When selecting a specific
-             script return functions and variables. (Yegappan Lakshmanan,
-             closes #10991)
- 
-@@ -33118,7 +33182,7 @@ Problem:    Invalid memory access when cmdheight is zero.
- Solution:   Check index in w_lines is smaller than Rows.
- 
- Patch 9.0.0310
--Problem:    Output of :messages dissappears when cmdheight is zero.
-+Problem:    Output of :messages disappears when cmdheight is zero.
- Solution:   Do not use the messages window for :messages.  Make Esc close the
-             messages window.
- 
-@@ -33339,7 +33403,7 @@ Solution:   Do not check breakpoint for non-existing line.
- 
- Patch 9.0.0361
- Problem:    Removing a listener may result in a memory leak and remove
--            subsequent listerns.
-+            subsequent listeners.
- Solution:   Init the "prev" pointer only once. (Yegappan Lakshmanan,
-             closes #11039)
- 
-@@ -33519,7 +33583,7 @@ Problem:    CI uses older clang version.
- Solution:   Switch from clang 14 to 15. (closes #11066)
- 
- Patch 9.0.0402
--Problem:    Javascript module files are not recoginzed.
-+Problem:    Javascript module files are not recognized.
- Solution:   Recognize "*.jsm" files as Javascript. (Brett Holman,
-             closes #11069)
- 
-@@ -33697,7 +33761,7 @@ Problem:    Closure in for loop test fails on some systems.
- Solution:   Do not wait for the ruler to show up. (issue #11106)
- 
- Patch 9.0.0442
--Problem:    Virtual text "above" doesn't handel line numbers.
-+Problem:    Virtual text "above" doesn't handle line numbers.
- Solution:   Take the left column offset into account. (issue #11084)
-             Also make padding work.
- 
-@@ -33811,7 +33875,7 @@ Problem:    Build failure.
- Solution:   Add missing change.
- 
- Patch 9.0.0468
--Problem:    Exectution stack underflow without the +eval feature. (Dominique
-+Problem:    Execution stack underflow without the +eval feature. (Dominique
-             Pellé)
- Solution:   Add to execution stack without FEAT_EVAL. (closes #11135)
- 
-@@ -33924,7 +33988,7 @@ Problem:    Perl test fails.
- Solution:   Remove remaining FEAT_EVAL.
- 
- Patch 9.0.0494
--Problem:    Small build misses float function declaraitons.
-+Problem:    Small build misses float function declarations.
- Solution:   Adjust #ifdefs.
- 
- Patch 9.0.0495
-@@ -34376,7 +34440,7 @@ Solution:   Recognize GYP files. (closes #11242)
- 
- Patch 9.0.0601
- Problem:    Too much indent.
--Solution:   Return out early from a funtion. (Yegappan Lakshmanan,
-+Solution:   Return out early from a function. (Yegappan Lakshmanan,
-             close #11238)
- 
- Patch 9.0.0602
-@@ -34605,7 +34669,7 @@ Problem:    'smoothscroll' not tested with 'number' and "n" in 'cpo'.
- Solution:   Add tests, fix uncovered problem.
- 
- Patch 9.0.0653
--Problem:    BS and DEL do not work properly in an interacive shell. (Gary
-+Problem:    BS and DEL do not work properly in an interactive shell. (Gary
-             Johnson)
- Solution:   Adjust the length for replaced codes.
- 
-@@ -35078,7 +35142,7 @@ Problem:    No autocmd event for changing text in a terminal window.
- Solution:   Add TextChangedT. (Shougo Matsushita, closes #11366)
- 
- Patch 9.0.0757
--Problem:    Line number not visisble with 'smoothscroll', 'nu' and 'rnu'.
-+Problem:    Line number not visible with 'smoothscroll', 'nu' and 'rnu'.
- Solution:   Put the ">>>" after the line number instead of on top.
- 
- Patch 9.0.0758
-@@ -35135,7 +35199,7 @@ Solution:   Free memory when it's a bit much. (Yegappan Lakshmanan,
-             closes #11379)
- 
- Patch 9.0.0771
--Problem:    Cannot always tell the difference beween tex and rexx files.
-+Problem:    Cannot always tell the difference between tex and rexx files.
- Solution:   Recognize tex by a leading backslash. (Martin Tournoij,
-             closes #11380)
- 
-@@ -35144,7 +35208,7 @@ Problem:    The libvterm code is outdated.
- Solution:   Include libvterm changes from revision 790 to 801.
- 
- Patch 9.0.0773
--Problem:    Huge build on macos uses dynamic Perl.
-+Problem:    Huge build on MacOS uses dynamic Perl.
- Solution:   Use built-in Perl, uninstall the brew one. (closes #11382)
- 
- Patch 9.0.0774
-@@ -35435,7 +35499,7 @@ Solution:   Only report failure when appending something. (closes #11498)
- 
- Patch 9.0.0838
- Problem:    Compiler warnings for unused variables.
--Solution:   Addjust #ifdef and remove unused variables. (John Marriott)
-+Solution:   Adjust #ifdef and remove unused variables. (John Marriott)
- 
- Patch 9.0.0839
- Problem:    Test may fail depending on sequence of events.
-@@ -35832,7 +35896,7 @@ Solution:   When dict_add() fails then don't call hash_remove().
- 
- Patch 9.0.0927
- Problem:    Coverity warns for using a NULL pointer.
--Solution:   Check for memory allocaion failure.
-+Solution:   Check for memory allocation failure.
- 
- Patch 9.0.0928
- Problem:    Using Ruby LDFLAGS may cause build problems.
-@@ -37276,7 +37340,7 @@ Solution:   Find the object method and generate code to call it.
- 
- Patch 9.0.1251
- Problem:    Checking returned value of ga_grow() is inconsistent.
--Solution:   Check for FAIL instaed of "not OK". (Yegappan Lakshmanan,
-+Solution:   Check for FAIL instead of "not OK". (Yegappan Lakshmanan,
-             closes #11897)
- 
- Patch 9.0.1252
-@@ -38160,7 +38224,7 @@ Solution:   Remove EVAL_CONSTANT. (closes #12252)
- 
- Patch 9.0.1453
- Problem:    Typos in source code and tests.
--Solution:   Fi the typos. (Dominique Pellé, closes #12217)
-+Solution:   Fix the typos. (Dominique Pellé, closes #12217)
- 
- Patch 9.0.1454
- Problem:    Code indenting is confused by macros.
-@@ -38601,7 +38665,7 @@ Solution:   Add patterns for USD filetype. (Colin Kennedy, closes #12370)
- Patch 9.0.1550
- Problem:    In cmdline window S-Tab does not select previous completion.
-             (Maxim Kim)
--Solution:   Add a mappint for S-Tab. (closes #12116)
-+Solution:   Add a mapping for S-Tab. (closes #12116)
- 
- Patch 9.0.1551
- Problem:    Position of marker for 'smoothscroll' not computed correctly.
-@@ -38914,7 +38978,7 @@ Solution:   Fix output of text field after pattern field in quickfix buffer.
- Patch 9.0.1617
- Problem:    charidx() and utf16idx() result is not consistent with byteidx().
- Solution:   When the index is equal to the length of the text return the
--            lenght of the text instead of -1. (Yegappan Lakshmanan,
-+            length of the text instead of -1. (Yegappan Lakshmanan,
-             closes #12503)
- 
- Patch 9.0.1618
-@@ -39309,7 +39373,7 @@ Problem:    Cannot wrap around in popup_filter_menu()
- Solution:   Allow to wrap around by default
- 
- Patch 9.0.1708
--Problem:    getcompletion() failes for user-defined commands
-+Problem:    getcompletion() fails for user-defined commands
- Solution:   set context for completion function
- 
- Patch 9.0.1709
-@@ -39611,7 +39675,7 @@ Solution:   add space
- 
- Patch 9.0.1779
- Problem:    Need more state() tests
--Solution:   Add a few more tests for operater pending mode and register
-+Solution:   Add a few more tests for operator pending mode and register
-             yank command
- 
- Patch 9.0.1780
-@@ -39670,8 +39734,8 @@ Solution:   Drop the Content-Type header from all messages, because we use
-             the default value anyway.
- 
- Patch 9.0.1791
--Problem:    No tests for the termdebug plugin
--Solution:   Add some simple tests for the termdebug plugin
-+Problem:    No tests for the Termdebug plugin
-+Solution:   Add some simple tests for the Termdebug plugin
- 
- Patch 9.0.1792
- Problem:    Normal mode "gM", "gj", "gk" commands behave incorrectly with
-@@ -39745,11 +39809,11 @@ Problem:    runtime: crystal scripts not recognised
- Solution:   Filetype detect Crystal scripts by shebang line
- 
- Patch 9.0.1808
--Problem:    termdebug: Typo in termdebug test
-+Problem:    Termdebug: Typo in Termdebug test
- Solution:   fix the typos
- 
- Patch 9.0.1809
--Problem:    termdebug test flayk
-+Problem:    Termdebug test flaky
- Solution:   wait slightly longer
- 
- Patch 9.0.1810
-@@ -40010,7 +40074,7 @@ Problem:    test_crash still fails for circle ci
- Solution:   give even more time to complete
- 
- Patch 9.0.1869
--Problem:    Coverity warns about unitialized var
-+Problem:    Coverity warns about uninitialized var
- Solution:   initialize it
- 
- Patch 9.0.1870
-@@ -40097,7 +40161,7 @@ Problem:    Vim9 static tests fail
- Solution:   Fix tests, make CI happy ;)
- 
- Patch 9.0.1890
--Problem:    Vim9: lookup code for class/object repaeated
-+Problem:    Vim9: lookup code for class/object repeated
- Solution:   Refactor and make use of lookup functions
- 
- Patch 9.0.1891
-@@ -40131,7 +40195,7 @@ Solution:   Check in error condition, if .= was attempted and in that case
- 
- Patch 9.0.1898
- Problem:    Vim9: restrict access to static vars and methods
--Solution:   Class members are accesible only from the class where they are
-+Solution:   Class members are accessible only from the class where they are
-             defined.
- 
- Patch 9.0.1899
-@@ -40776,12 +40840,12 @@ Problem:    Test_cq_zero_exmode fails without channel feature
- Solution:   Make the test check the channel feature
- 
- Patch 9.0.2043
--Problem:    Vim9: issue with funcref assignmentand varargs
-+Problem:    Vim9: issue with funcref assignment and varargs
- Solution:   Fix funcref type checking
- 
- Patch 9.0.2044
- Problem:    Vim9: exceptions confuse defered functions
--Solution:   save and restore exception state when calling defered
-+Solution:   save and restore exception state when calling deferred
-             functions
- 
- Patch 9.0.2045
-@@ -41031,7 +41095,7 @@ Problem:    Terminal control codes¹ are sent even when silent
- Solution:   Block any terminal codes when silent mode is on
- 
- Patch 9.0.2100
--Problem:    CI: test_termdebug fails
-+Problem:    CI: test_Termdebug fails
- Solution:   only test for a changed winlayout, if the window
-             width actually changed
- 
-@@ -41073,7 +41137,7 @@ Solution:   break out, if count is too large
- 
- Patch 9.0.2110
- Problem:    [security]: overflow in ex address parsing
--Solution:   Verify that lnum is positive, before substracting from
-+Solution:   Verify that lnum is positive, before subtracting from
-             LONG_MAX
- 
- Patch 9.0.2111
-@@ -41209,7 +41273,7 @@ Solution:   validate window pointer before calling win_enter()
- 
- Patch 9.0.2141
- Problem:    [security]: buffer-overflow in suggest_trie_walk
--Solution:   Check n before using it as index into byts array
-+Solution:   Check n before using it as index into bytes array
- 
- Patch 9.0.2142
- Problem:    [security]: stack-buffer-overflow in option callback functions
-@@ -41296,7 +41360,7 @@ Solution:   Modify `instanceof()` to use varargs instead of list
- 
- Patch 9.0.2161
- Problem:    Vim9: not able to use imported interfaces and classes
--Solution:   Detect imported class/interfaces names correclty
-+Solution:   Detect imported class/interfaces names correctly
- 
- Patch 9.0.2162
- Problem:    Vim9: type documentation out-dated
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index c1ebce4af..b71e95f42 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -1,13 +1,10 @@
--*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 14
-+*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
- 
- 
--NOTE - This is not finished yet, anything can still change! - NOTE
--
--
--Vim9 classes, objects, interfaces, types and enums.
-+Vim9 classes, objects, interfaces, types and enums.		*vim9-class*
- 
- 1.  Overview			|Vim9-class-overview|
- 2.  A simple class		|Vim9-simple-class|
-@@ -346,8 +343,8 @@ underscore as the first character in the method name: >
-     endclass
+@@ -1040,8 +1040,8 @@ r_indent_comment_column, as in the example below:
+    let r_indent_comment_column = 30
  <
- 							*E1370*
--Note that constructors cannot be declared as "static", because they always
--are.
-+Note that constructors cannot be declared as "static". They are called like a
-+static but execute as an object method; they have access to "this".
+ Any code after a line that ends with "<-" is indented. Emacs/ESS does not
+-indent the code if it is a top level function. If you prefer that the
+-Vim-R-plugin behaves like Emacs/ESS in this regard, put in your |vimrc|:
++indent the code if it is a top-level function. If you prefer a behavior like
++Emacs/ESS one in this regard, put in your |vimrc|:
+ >
+    let r_indent_ess_compatible = 1
+ <
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 0cd13d530..1c0cd9271 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 20
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 23
  
- To access the class methods and class variables of a super class in an
- extended class, the class name prefix should be used just as from anywhere
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2842,10 +2842,20 @@ To highlight R code in knitr chunk headers: >
+ 	let rmd_syn_hl_chunk = 1
+ 
+ By default, chunks of R code will be highlighted following the rules of R
+-language. If you want proper syntax highlighting of chunks of other languages,
+-you should add them to either `markdown_fenced_languages` or
+-`rmd_fenced_languages`. For example to properly highlight both R and Python,
+-you may add this to your |vimrc|: >
++language. Moreover, whenever the buffer is saved, Vim scans the buffer and
++highlights other languages if they are present in new chunks. LaTeX code also
++is automatically recognized and highlighted when the buffer is saved. This
++behavior can be controlled with the variables `rmd_dynamic_fenced_languages`,
++and `rmd_include_latex` whose valid values are: >
++	let rmd_dynamic_fenced_languages = 0 " No autodetection of languages
++	let rmd_dynamic_fenced_languages = 1 " Autodetection of languages
++	let rmd_include_latex = 0 " Don't highlight LaTeX code
++	let rmd_include_latex = 1 " Autodetect LaTeX code
++	let rmd_include_latex = 2 " Always include LaTeX highlighting
++
++If the value of `rmd_dynamic_fenced_languages` is 0, you still can set the
++list of languages whose chunks of code should be properly highlighted, as in
++the example: >
+ 	let rmd_fenced_languages = ['r', 'python']
+ 
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 0f4ea17ec..e7d0f2ae3 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2023 Dec 09
++*vim9.txt*	For Vim version 9.0.  Last change: 2023 Dec 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1055,8 +1055,11 @@ variable, since they cannot be deleted with `:unlet`.  E.g.: >
+ 
+ The values can also be useful as the default value for an argument: >
+ 	def MyFunc(b: blob = null_blob)
+-	   if b == null_blob
+-	      # b argument was not given
++	    # Note: compare against null, not null_blob,
++	    #       to distinguish the default value from an empty blob.
++	    if b == null
++	        # b argument was not given
++See |null-compare| for more information about testing against null.
+ 
+ It is possible to compare `null`  with any value, this will not give a type
+ error.  However, comparing `null` with a number, float or bool will always
+@@ -1698,6 +1701,155 @@ argument type checking: >
+ Types are checked for most builtin functions to make it easier to spot
+ mistakes.
+ 
++Categories of variables, defaults and null handling ~
++				*variable-categories* *null-variables*
++There are categories of variables:
++	primitive	number, float, boolean
++	container	string, blob, list, dict
++	specialized	function, job, channel, user-defined-object
++
++When declaring a variable without an initializer, an explicit type must be
++provided. Each category has different default initialization semantics. Here's
++an example for each category: >
++	var num: number		# primitives default to a 0 equivalent
++	var cont: list<string>	# containers default to an empty container
++	var spec: job		# specialized variables default to null
++<
++Vim does not have a familiar null value; it has various null_<type> predefined
++values, for example |null_string|, |null_list|, |null_job|. Primitives do not
++have a null_<type>. The typical use cases for null_<type> are:
++- to `clear a variable` and release its resources;
++- as a `default for a parameter` in a function definition, see |null-compare|.
++
++For a specialized variable, like `job`, null_<type> is used to clear the
++resources. For a container variable, resources can also be cleared by
++assigning an empty container to the variable. For example: >
++	var j: job = job_start(...)
++	# ... job does its work
++	j = null_job	# clear the variable and release the job's resources
++
++	var l: list<any>
++	# ... add lots of stuff to list
++	l = []  # clear the variable and release container resources
++Using the empty container, rather than null_<type>, to clear a container
++variable may avoid null complications as described in |null-anomalies|.
++
++The initialization semantics of container variables and specialized variables
++differ. An uninitialized container defaults to an empty container: >
++	var l1: list<string>		    # empty container
++	var l2: list<string> = []	    # empty container
++	var l3: list<string> = null_list    # null container
++"l1" and "l2" are equivalent and indistinguishable initializations; but "l3"
++is a null container. A null container is similar to, but different from, an
++empty container, see |null-anomalies|.
++
++Specialized variables default to null. These job initializations are
++equivalent and indistinguishable: >
++	var j1: job
++	var j2: job = null_job
++	var j3 = null_job
++
++When a list or dict is declared, if the item type is not specified and can not
++be inferred, then the type is "any": >
++	var d1 = {}		# type is "dict<any>"
++	var d2 = null_dict	# type is "dict<any>"
++
++Declaring a function, see |vim9-func-declaration|, is particularly unique.
++
++						*null-compare*
++For familiar null compare semantics, where a null container is not equal to
++an empty container, do not use null_<type> in a comparison: >
++	vim9script
++	def F(arg: list<string> = null_list)
++	    if arg == null
++	       echo "null"
++	    else
++		echo printf("not null, %sempty", empty(arg) ? '' : 'not ')
++	    endif
++	enddef
++	F()		# output: "null"
++	F(null_list)	# output: "null"
++	F([])		# output: "not null, empty"
++	F([''])		# output: "not null, not empty"
++The above function takes a `list of strings` and reports on it.
++Change the above function signature to accept different types of arguments: >
++	def F(arg: list<any> = null_list)   # any type of list
++	def F(arg: any = null)		    # any type
++<
++In the above example, where the goal is to distinguish a null list from an
++empty list, comparing against `null` instead of `null_list` is the correct
++choice. The basic reason is because "null_list == null" and "[] != null".
++Comparing to `null_list` fails since "[] == null_list". In the following section
++there are details about comparison results.
++
++					*null-details* *null-anomalies*
++This section describes issues about using null and null_<type>; included below
++are the enumerated results of null comparisons. In some cases, if familiar
++with vim9 null semantics, the programmer may chose to use null_<type> in
++comparisons and/or other situations.
++
++Elsewhere in the documentation it says:
++	Quite often a null value is handled the same as an
++	empty value, but not always
++Here's an example: >
++	vim9script
++	var s1: list<string>
++	var s2: list<string> = null_list
++	echo s1		    # output: "[]"
++	echo s2		    # output: "[]"
++	
++	echo s1 + ['a']     # output: "['a']"
++	echo s2 + ['a']     # output: "['a']"
++	
++	echo s1->add('a')   # output: "['a']"
++	echo s2->add('a')   # E1130: Can not add to null list
++<
++Two values equal to a null_<type> are not necessarily equal to each other: >
++	vim9script
++	echo {} == null_dict      # true
++	echo null_dict == null    # true
++	echo {} == null           # false
++<
++Unlike the other containers, an uninitialized string is equal to null. The
++'is' operator can be used to determine if it is a null_string: >
++	vim9script
++	var s1: string
++	var s2 = null_string
++	echo s1 == null		# true - this is unexpected
++	echo s2 == null		# true
++	echo s2 is null_string	# true
++
++	var b1: blob
++	var b2 = null_blob
++	echo b1 == null		# false
++	echo b2 == null		# true
++<
++Any variable initialized to the null_<type> is equal to the null_<type> and is
++also equal to null. For example: >
++	vim9script
++	var x = null_blob
++	echo x == null_blob	# true
++	echo x == null		# true
++<
++An uninitialized variable is usually equal to null; it depends on its type:
++	var s: string		s == null
++	var b: blob		b != null   ***
++	var l: list<any>	l != null   ***
++	var d: dict<any>	d != null   ***
++	var f: func		f == null
++	var j: job		j == null
++	var c: channel		c == null
++	var o: Class		o == null
++
++A variable initialized to empty equals null_<type>; but not null:
++	var s2: string = ""	  == null_string	!= null
++	var b2: blob = 0z	  == null_blob		!= null
++	var l2: list<any> = []	  == null_list		!= null
++	var d2: dict<any> = {}	  == null_dict		!= null
++
++NOTE: the specialized variables, like job, default to null value and have no
++corresponding empty value.
++
+ ==============================================================================
+ 
+ 5. Namespace, Import and Export
