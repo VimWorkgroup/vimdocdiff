@@ -1,81 +1,21 @@
-diff --git a/runtime/doc/ft_context.txt b/runtime/doc/ft_context.txt
-index 6303357ec..43872529c 100644
---- a/runtime/doc/ft_context.txt
-+++ b/runtime/doc/ft_context.txt
-@@ -1,4 +1,4 @@
--*ft_context.txt*	For Vim version 9.0.  Last change: 2022 Sep 27
-+*ft_context.txt*	For Vim version 9.0.  Last change: 2023 Dec 26
- 
- This is the documentation for the ConTeXt filetype plugin.
- 
-@@ -103,13 +103,13 @@ Stop all the ConTeXt jobs currently running in the background.
- Settings ~
- 					*'b:context_ignore_makefile'*
- 					*'g:context_ignore_makefile'*
--`:make` can be used to (synchronously) typeset a document. If a Makefile exists
-+|make| can be used to (synchronously) typeset a document. If a Makefile exists
- and this option is not set, standard `make` is used. If this option is set,
- `mtxrun` is invoked instead, even if a Makefile exists.
- >
- 	g:context_ignore_makefile = 0
- <
--NOTE: before using `:make`, set the working directory of the buffer to the
-+NOTE: before using |make|, set the working directory of the buffer to the
- directory of the file to be typeset.
- 
- 					*'g:context_extra_options'*
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 403ef4f30..7a67789b7 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
-@@ -1,4 +1,4 @@
--*motion.txt*    For Vim version 9.0.  Last change: 2023 Sep 28
-+*motion.txt*    For Vim version 9.0.  Last change: 2023 Dec 27
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1310,14 +1310,12 @@ bring you back to the switch statement.
- ]m			Go to [count] next start of a method (for Java or
- 			similar structured language).  When not before the
- 			start of a method, jump to the start or end of the
--			class.  When no '{' is found after the cursor, this is
--			an error.  |exclusive| motion.
-+			class.  |exclusive| motion.
- 						*]M*
- ]M			Go to [count] next end of a method (for Java or
- 			similar structured language).  When not before the end
- 			of a method, jump to the start or end of the class.
--			When no '}' is found after the cursor, this is an
--			error. |exclusive| motion.
-+			|exclusive| motion.
- 						*[m*
- [m			Go to [count] previous start of a method (for Java or
- 			similar structured language).  When not after the
 diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index b71e95f42..a7ba2cd28 100644
+index a7ba2cd28..d8d461405 100644
 --- a/runtime/doc/vim9class.txt
 +++ b/runtime/doc/vim9class.txt
 @@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 24
-+*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 25
+-*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 25
++*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -212,6 +212,8 @@ the above class): >
- <
- Simplifying the new() method ~
- 						*new()* *constructor*
-+See also |default-constructor| and |multiple-constructors|.
-+
- Many constructors take values for the object variables.  Thus you very often
- see this pattern: >
+@@ -144,8 +144,8 @@ the closest valid value.
+ If you don't care about side effects and want to allow the object variable to
+ be changed at any time, you can make it public: >
  
-@@ -801,7 +803,7 @@ first.
+-	public this.lnum: number
+-	public this.col: number
++	public var lnum: number
++	public var col: number
  
- 
- Multiple constructors ~
--
-+						*multiple-constructors*
- Normally a class has just one new() constructor.  In case you find that the
- constructor is often called with the same arguments you may want to simplify
- your code by putting those arguments into a second constructor method.  For
+ Now you don't need the SetLnum(), SetCol() and SetPosition() methods, setting
+ "pos.lnum" directly above will no longer give an error.
