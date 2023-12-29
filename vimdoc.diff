@@ -1,21 +1,78 @@
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index a7ba2cd28..d8d461405 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 482d36630..5d24b3561 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
 @@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 25
-+*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 28
+-*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 23
++*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -712,15 +712,16 @@ clojure-mode.el:
+ 
+ FORTRAN							*ft-fortran-indent*
+ 
+-Block if, select case, where, and forall constructs are indented.  So are
+-type, interface, associate, block, and enum constructs.  The indenting of
+-subroutines, functions, modules, and program blocks is optional.  Comments,
+-labeled statements, and continuation lines are indented if the Fortran is in
+-free source form, whereas they are not indented if the Fortran is in fixed
+-source form because of the left margin requirements.  Hence manual indent
+-corrections will be necessary for labeled statements and continuation lines
+-when fixed source form is being used.  For further discussion of the method
+-used for the detection of source format see |ft-fortran-syntax|.
++Block if, select case, select type, select rank,  where, forall, type,
++interface, associate, block, enum, critical, and change team constructs are
++indented. The indenting of subroutines, functions, modules, and program blocks
++is optional. Comments, labeled statements, and continuation lines are indented
++if the Fortran is in free source form, whereas they are not indented if the
++Fortran is in fixed source form because of the left margin requirements. Hence
++manual indent corrections will be necessary for labeled statements and
++continuation lines when fixed source form is being used.  For further
++discussion of the method used for the detection of source format see
++|ft-fortran-syntax|.
+ 
+ Do loops ~
+ All do loops are left unindented by default.  Do loops can be unstructured in
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 1c0cd9271..335706145 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 23
++*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -144,8 +144,8 @@ the closest valid value.
- If you don't care about side effects and want to allow the object variable to
- be changed at any time, you can make it public: >
+@@ -1674,21 +1674,22 @@ fortran_fold with a command such as >
+     :let fortran_fold=1
+ to instruct the syntax script to define fold regions for program units, that
+ is main programs starting with a program statement, subroutines, function
+-subprograms, block data subprograms, interface blocks, and modules.  If you
+-also set the variable fortran_fold_conditionals with a command such as >
++subprograms, modules, submodules, and block data units. Block, interface,
++associate, critical, type definition, and change team constructs will also be
++folded.  If you also set the variable fortran_fold_conditionals with a command
++such as >
+     :let fortran_fold_conditionals=1
+-then fold regions will also be defined for do loops, if blocks, and select
+-case constructs.  If you also set the variable fortran_fold_multilinecomments
+-with a command such as >
++then fold regions will also be defined for do loops, if blocks, select case,
++select type, and select rank constructs.  If you also set the variable
++fortran_fold_multilinecomments with a command such as >
+     :let fortran_fold_multilinecomments=1
+ then fold regions will also be defined for three or more consecutive comment
+ lines.  Note that defining fold regions can be slow for large files.
  
--	public this.lnum: number
--	public this.col: number
-+	public var lnum: number
-+	public var col: number
+ If fortran_fold, and possibly fortran_fold_conditionals and/or
+-fortran_fold_multilinecomments, have been set, then vim will fold your file if
+-you set foldmethod=syntax.  Comments or blank lines placed between two program
+-units are not folded because they are seen as not belonging to any program
+-unit.
++fortran_fold_multilinecomments, have been set, then vim will fold your file.
++Comments or blank lines placed between two program units are not folded
++because they are seen as not belonging to any program unit.
  
- Now you don't need the SetLnum(), SetCol() and SetPosition() methods, setting
- "pos.lnum" directly above will no longer give an error.
+ The syntax/fortran.vim script contains embedded comments that tell you how to
+ comment and/or uncomment some lines to (a) activate recognition of some
