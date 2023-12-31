@@ -1,78 +1,70 @@
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 482d36630..5d24b3561 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
-@@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 23
-+*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 27
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 5a56899de..fe7d1f032 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -31714,14 +31714,16 @@ Smooth Scroll
+ Support for scrolling text using screen lines instead of file lines is added.
+ Refer to the 'smoothscroll' option.
  
+-EditorConfig and JSON formatting plugins are included.
++The EditorConfig (|editorconfig-install|) and the JSON formatting
++(|ft-json-plugin|) plugins are included.
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -712,15 +712,16 @@ clojure-mode.el:
+ OpenVMS x86_64 platform port.
  
- FORTRAN							*ft-fortran-indent*
+ Other improvements				*new-other-9.1*
+ ------------------
+ - Support for undercurl (|t_Ce|), double underline (|t_Us|), dotted underline
+-  (|t_ds|) and dashed underline (|t_Ds|) termcap entries.
++  (|t_ds|) and dashed underline (|t_Ds|) termcap entries and
++  highlight modes (|highlight-term|).
+ - The 'fillchars' option is now a global-local option.
+ - The |vertical| and |horizontal| modifiers can be used with ":wincmd ="
+   command to equalize windows vertically or horizontally.
+@@ -31735,11 +31737,9 @@ Other improvements				*new-other-9.1*
+ - Support for multiple "%=" items in 'statusline'
+ - Support for the PmenuKind, PmenuKindSel, PmenuExtra and PmenuExtraSel
+   highlight groups.
+-- xxd: support for using colors in the hex dump output
+-- xxd: reversing a bit dump
+ - Text properties can override 'cursorline' highlight.
+ - Support for echoing messages in a popup window |:echowindow|.
+-- Control scroll behavior when spliting windows 'splitkeep'.
++- Control scroll behavior when splitting windows 'splitkeep'.
+ - Specify the character used for the last window line 'fillchars'
+ - Support for mouse scrolling in the MS-Windows console.
+ - Support for using different keyboard protocols 'keyprotocol'
+@@ -31750,13 +31750,18 @@ Other improvements				*new-other-9.1*
+ - |undotree()| can be used with any buffer.
+ - |printf()| supports positional arguments
+ - Support for custom completion using |getcompletion()|
+-- Support for Python3 stable ABI
++- Support for Python3 stable ABI (|python-stable|)
+ - Use |jumplist| like a stack
+ - Command-line completion support for option values
+-- Support for writing extended attributes in Linux
++- Support for writing extended attributes in Linux (|xattr|)
+ - 'errorformat' supports parsing a buffer number (|%b|)
+-- Termdebug: Support for variables window, moving up/down the stack frames and
+-  setting temporary breakpoints
++- Support for building the python interface using Python 3.12.
++- Termdebug: Support for the variables window (|termdebug_variables_window|),
++  moving up/down the stack frames (|termdebug-frames|) and setting temporary
++  breakpoints (|:Tbreak|)
++- xxd: support for using colors in the hex dump output (xxd -R)
++- xxd: reversing a bit dump (xxd -r)
++- xxd: customize the variable name used in the C include output (xxd -n)
  
--Block if, select case, where, and forall constructs are indented.  So are
--type, interface, associate, block, and enum constructs.  The indenting of
--subroutines, functions, modules, and program blocks is optional.  Comments,
--labeled statements, and continuation lines are indented if the Fortran is in
--free source form, whereas they are not indented if the Fortran is in fixed
--source form because of the left margin requirements.  Hence manual indent
--corrections will be necessary for labeled statements and continuation lines
--when fixed source form is being used.  For further discussion of the method
--used for the detection of source format see |ft-fortran-syntax|.
-+Block if, select case, select type, select rank,  where, forall, type,
-+interface, associate, block, enum, critical, and change team constructs are
-+indented. The indenting of subroutines, functions, modules, and program blocks
-+is optional. Comments, labeled statements, and continuation lines are indented
-+if the Fortran is in free source form, whereas they are not indented if the
-+Fortran is in fixed source form because of the left margin requirements. Hence
-+manual indent corrections will be necessary for labeled statements and
-+continuation lines when fixed source form is being used.  For further
-+discussion of the method used for the detection of source format see
-+|ft-fortran-syntax|.
+ Changed						*changed-9.1*
+ -------
+@@ -31773,8 +31778,9 @@ Changed						*changed-9.1*
+ - Ctrl-Q works like Ctrl-V in replace mode.
+ - |popup_filter_menu()| now wraps around.
+ - |g<End>| now jumps to the last non-blank character
+-- dot and hypen are supported in highlight group names
++- dot and hyphen are supported in highlight group names
+ - |executable()| resolves symlinks on MS-Windows.
++- Ruby 1.8 support is dropped.
  
- Do loops ~
- All do loops are left unindented by default.  Do loops can be unstructured in
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 1c0cd9271..335706145 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 23
-+*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 27
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1674,21 +1674,22 @@ fortran_fold with a command such as >
-     :let fortran_fold=1
- to instruct the syntax script to define fold regions for program units, that
- is main programs starting with a program statement, subroutines, function
--subprograms, block data subprograms, interface blocks, and modules.  If you
--also set the variable fortran_fold_conditionals with a command such as >
-+subprograms, modules, submodules, and block data units. Block, interface,
-+associate, critical, type definition, and change team constructs will also be
-+folded.  If you also set the variable fortran_fold_conditionals with a command
-+such as >
-     :let fortran_fold_conditionals=1
--then fold regions will also be defined for do loops, if blocks, and select
--case constructs.  If you also set the variable fortran_fold_multilinecomments
--with a command such as >
-+then fold regions will also be defined for do loops, if blocks, select case,
-+select type, and select rank constructs.  If you also set the variable
-+fortran_fold_multilinecomments with a command such as >
-     :let fortran_fold_multilinecomments=1
- then fold regions will also be defined for three or more consecutive comment
- lines.  Note that defining fold regions can be slow for large files.
- 
- If fortran_fold, and possibly fortran_fold_conditionals and/or
--fortran_fold_multilinecomments, have been set, then vim will fold your file if
--you set foldmethod=syntax.  Comments or blank lines placed between two program
--units are not folded because they are seen as not belonging to any program
--unit.
-+fortran_fold_multilinecomments, have been set, then vim will fold your file.
-+Comments or blank lines placed between two program units are not folded
-+because they are seen as not belonging to any program unit.
- 
- The syntax/fortran.vim script contains embedded comments that tell you how to
- comment and/or uncomment some lines to (a) activate recognition of some
+ Added						*added-9.1*
+ -----
