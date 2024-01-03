@@ -1,365 +1,1480 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index deb947cf1..597141d49 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/arabic.txt b/runtime/doc/arabic.txt
+index ff1cac435..b8fccf241 100644
+--- a/runtime/doc/arabic.txt
++++ b/runtime/doc/arabic.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*  For Vim version 9.0.  Last change: 2023 Dec 23
-+*filetype.txt*  For Vim version 9.0.  Last change: 2024 Jan 01
+-*arabic.txt*	For Vim version 9.0.  Last change: 2021 Jun 22
++*arabic.txt*	For Vim version 9.1.  Last change: 2021 Jun 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Nadim Shaikli
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index a1408edef..2ac0247bb 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.0.  Last change: 2023 May 20
++*autocmd.txt*   For Vim version 9.1.  Last change: 2023 May 20
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -169,6 +169,7 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.sh		g:bash_is_sh		|ft-sh-syntax|
- 	*.tex		g:tex_flavor		|ft-tex-plugin|
- 	*.typ		g:filetype_typ
-+	*.v		g:filetype_v
- 	*.w		g:filetype_w		|ft-cweb-syntax|
- 
- For a few filetypes the global variable is used only when the filetype could
-diff --git a/runtime/doc/ft_context.txt b/runtime/doc/ft_context.txt
-index 43872529c..8be0399a3 100644
---- a/runtime/doc/ft_context.txt
-+++ b/runtime/doc/ft_context.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 3f2aea926..084c76edf 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*ft_context.txt*	For Vim version 9.0.  Last change: 2023 Dec 26
-+*ft_context.txt*	For Vim version 9.0.  Last change: 2024 Jan 01
- 
- This is the documentation for the ConTeXt filetype plugin.
- 
-@@ -103,13 +103,13 @@ Stop all the ConTeXt jobs currently running in the background.
- Settings ~
- 					*'b:context_ignore_makefile'*
- 					*'g:context_ignore_makefile'*
--|make| can be used to (synchronously) typeset a document. If a Makefile exists
-+|:make| can be used to (synchronously) typeset a document. If a Makefile exists
- and this option is not set, standard `make` is used. If this option is set,
- `mtxrun` is invoked instead, even if a Makefile exists.
- >
- 	g:context_ignore_makefile = 0
- <
--NOTE: before using |make|, set the working directory of the buffer to the
-+NOTE: before using |:make|, set the working directory of the buffer to the
- directory of the file to be typeset.
- 
- 					*'g:context_extra_options'*
-diff --git a/runtime/doc/ft_rust.txt b/runtime/doc/ft_rust.txt
-index fb8141c14..564f3e774 100644
---- a/runtime/doc/ft_rust.txt
-+++ b/runtime/doc/ft_rust.txt
-@@ -160,7 +160,7 @@ g:rustfmt_emit_files~
- 	provided) instead of '--write-mode=overwrite'. >
- 	    let g:rustfmt_emit_files = 0
- 
--
-+<
-                                                           *g:rust_playpen_url*
- g:rust_playpen_url~
- 	Set this option to override the url for the playpen to use: >
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index f5d85f3fb..1944fdd03 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
-@@ -1,4 +1,4 @@
--*map.txt*       For Vim version 9.0.  Last change: 2023 December 24
-+*map.txt*       For Vim version 9.0.  Last change: 2023 December 31
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -586,10 +586,12 @@ While mappings are being listed, it is not possible to add or clear mappings,
- e.g. from a timer callback. *E1309*
- 
- 							*:map-verbose*
--When 'verbose' is non-zero, listing a key map will also display where it was
-+When 'verbose' is non-zero, the detected and used 'keyprotocol' value will be
-+displayed in the first line. Also a key map will also display where it was
- last defined.  Example: >
- 
- 	:verbose map <C-W>*
-+        Kitty keyboard protocol: Cleared
- 	n  <C-W>*      * <C-W><C-S>*
- 		Last set from /home/abcd/.vimrc
- 
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index fe7d1f032..124ab698d 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.0.  Last change: 2023 Dec 24
-+*version9.txt*  For Vim version 9.0.  Last change: 2024 Jan 01
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -29,6 +29,11 @@ COMPILE TIME CHANGES				|compile-changes-9|
- 
- PATCHES						|patches-9|
- 
-+VERSION 9.1					|version-9.1|
-+Changed						|changed-9.1|
-+Added						|added-9.1|
-+Patches						|patches-9.1|
-+
- 
- See |vi_diff.txt| for an overview of differences between Vi and Vim 9.0.
- See |version4.txt|, |version5.txt|, |version6.txt|, |version7.txt| and
-@@ -31683,6 +31688,8 @@ Files:      runtime/makemenu.vim
- VERSION 9.1				*version-9.1* *version9.1* *vim-9.1*
- 
- This section is about improvements made between version 9.0 and 9.1.
-+The release 9.1 is dedicated to Vims Benevolent dictator for life
-+|Bram-Moolenaar|.
- 
- This release has hundreds of bug fixes, there are a few new features and there
- are many minor improvements.
-@@ -31717,15 +31724,16 @@ Refer to the 'smoothscroll' option.
- The EditorConfig (|editorconfig-install|) and the JSON formatting
- (|ft-json-plugin|) plugins are included.
- 
--OpenVMS x86_64 platform port.
-+OpenVMS x86_64 platform port: http://www.polarhome.com/vim/
- 
- Other improvements				*new-other-9.1*
- ------------------
- - Support for undercurl (|t_Ce|), double underline (|t_Us|), dotted underline
-   (|t_ds|) and dashed underline (|t_Ds|) termcap entries and
-   highlight modes (|highlight-term|).
--- The 'fillchars' option is now a global-local option.
--- The |vertical| and |horizontal| modifiers can be used with ":wincmd ="
-+- The 'fillchars' option is now a global-local option and allows to
-+  specify the character used for the last window line.
-+- The |:vertical| and |:horizontal| modifiers can be used with ":wincmd ="
-   command to equalize windows vertically or horizontally.
- - |:defer| command to defer the execution of a function till the end of a
-   function.
-@@ -31733,35 +31741,47 @@ Other improvements				*new-other-9.1*
- - Sound support in MacOS.
- - The |prop_remove()| function can now remove multiple text properties.
- - The |items()| function now supports a List or a String argument.
-+- The |repeat()| function now supports blob repeat.
- - Command line completion support for |:runtime| command.
--- Support for multiple "%=" items in 'statusline'
-+- Support for custom completion using |getcompletion()|.
-+- Command-line completion support for option values.
-+- Support for multiple "%=" items in 'statusline'.
- - Support for the PmenuKind, PmenuKindSel, PmenuExtra and PmenuExtraSel
-   highlight groups.
- - Text properties can override 'cursorline' highlight.
- - Support for echoing messages in a popup window |:echowindow|.
- - Control scroll behavior when splitting windows 'splitkeep'.
--- Specify the character used for the last window line 'fillchars'
- - Support for mouse scrolling in the MS-Windows console.
- - Support for using different keyboard protocols 'keyprotocol'
-+  (xterm |modifyOtherKeys| and Kitty terminal protocol (CSI u) support).
- - Support for UTF-16 string index.
- - Quickfix list items can have associated custom user data.
--- |reverse()| supports reversing a string
-+- |reverse()| supports reversing a string.
- - 'switchbuf' is used by more commands.
- - |undotree()| can be used with any buffer.
--- |printf()| supports positional arguments
--- Support for custom completion using |getcompletion()|
--- Support for Python3 stable ABI (|python-stable|)
--- Use |jumplist| like a stack
--- Command-line completion support for option values
--- Support for writing extended attributes in Linux (|xattr|)
--- 'errorformat' supports parsing a buffer number (|%b|)
-+- |printf()| supports positional arguments.
-+- |col()|, |charcol()| and |virtcol()| can be used with different windows.
-+- Support for Python3 stable ABI (|python-stable|).
-+- Use |jumplist| like a stack 'jumpoptions'.
-+- Support for writing extended attributes in Linux (|xattr|).
-+- 'errorformat' supports parsing a buffer number ("%b").
- - Support for building the python interface using Python 3.12.
-+- |matchaddpos()| is no longer limited to 8 positions.
-+- |readblob()| allows to read part of a file.
-+- 'shortmess' allows to suppress "scanning" messages.
-+- Add the XChaCha20v2 encryption method 'cryptmethod'.
-+- Add support for testing syntax files.
-+- Support "**" for filename expansion with bash using globstar setting.
-+- Add quadruple prime digraph using 4'.
-+- Better high dpi support on Windows.
-+- Varous fixes for unsafe memory access, memory leaks, buffer overflows
-+  and potential crashes.
- - Termdebug: Support for the variables window (|termdebug_variables_window|),
-   moving up/down the stack frames (|termdebug-frames|) and setting temporary
--  breakpoints (|:Tbreak|)
--- xxd: support for using colors in the hex dump output (xxd -R)
--- xxd: reversing a bit dump (xxd -r)
--- xxd: customize the variable name used in the C include output (xxd -n)
-+  breakpoints (|:Tbreak|).
-+- xxd: support for using colors in the hex dump output (xxd -R).
-+- xxd: reversing a bit dump (xxd -r).
-+- xxd: customize the variable name used in the C include output (xxd -n).
- 
- Changed						*changed-9.1*
- -------
-@@ -31769,18 +31789,31 @@ Changed						*changed-9.1*
-   |+float|, |+path_extra|, |+textobjects|, |+wildignore| and |+wildmenu| are
-   available in all the builds.
- - Support for Windows-XP is dropped.
-+- Support for VisVim is removed.
- - The "small" and "big" builds are dropped in favor of "tiny" and "huge"
-   builds.
--- Support for VisVim is removed.
-+- Mention the detected 'keyprotocol' on ":verbose map" when listing mappings.
- - The optional Content-Type header is removed from the LSP messages.
- - |charidx()| returns the character length when the index is one more than the
-   last byte index.
- - Ctrl-Q works like Ctrl-V in replace mode.
- - |popup_filter_menu()| now wraps around.
--- |g<End>| now jumps to the last non-blank character
--- dot and hyphen are supported in highlight group names
-+- |popup_create()| now aborts on an error.
-+- |g<End>| now jumps to the last non-blank character.
-+- dot and hyphen are supported in highlight group names.
- - |executable()| resolves symlinks on MS-Windows.
- - Ruby 1.8 support is dropped.
-+- 'ttyfast' is always set.
-+- |virtcol2col()| returns the first byte for a multi-byte character.
-+- |i_CTRL-O| resets Select Mode.
-+- |mode()| returns more submodes.
-+- r with CTRL-C on a visual area replaces using CTRL-C consistently.
-+- The matchparen plugin no longer uses hard coded match id 3.
-+- The Statusline no longer uses hard coded values "^" and "=" if the
-+  highlighting groups for the statusline have been cleared.
-+- 'maxfuncdepth' setting is also used for the maximum callback depth.
-+- Migrate to autoconf 2.71.
-+- Start using C99 feature (declare variable in for loops).
- 
- Added						*added-9.1*
- -----
-@@ -31790,7 +31823,7 @@ Various syntax, indent and other plugins were added.
- Functions: ~
- 
- |err_teapot()|		produce error 418 or 503
--|getbufoneline()|	get a one line from the specified buffer
-+|getbufoneline()|	get a single line from the specified buffer
- |getcellwidths()|	get character cell width overrides
- |getmouseshape()|	get name of the current mouse shape
- |getscriptinfo()|	get list of sourced vim scripts
-@@ -31813,13 +31846,13 @@ Autocommands: ~
- 
- Commands: ~
- 
--|:abstract|		define an Vim9 abstract class
-+|:abstract|		define a Vim9 abstract class
- |:class|		start of a class specification
- |:defer|		call function when current function is done
- |:echowindow|		same as :echomsg, but use a popup window
- |:endinterface|		end of an interface specification
- |:endclass|		end of a class specification
--|:horizontal|		following window command work horizontally
-+|:horizontal|		following window command works horizontally
- |:interface|		start of an interface specification
- |:public|		prefix for a class or object member
- |:static|		prefix for a class member or function
-@@ -41429,4 +41462,73 @@ Patch 9.0.2175
- Problem:    Compiler warning for uninitialized var
- Solution:   initialize variable to NULL
- 
-+Patch 9.0.2176
-+Problem:    Compile error with Motif UI + mouse support (after v9.0.1262)
-+Solution:   Use correct oldval option pointer
-+
-+Patch 9.0.2177
-+Problem:    Wrong cursor position when dragging out of window.
-+Solution:   Don't use ScreenCols[] when mouse is not in current window.
-+
-+Patch 9.0.2178
-+Problem:    reg_executing() returns wrong result in :normal with range
-+            when 'showcmd' is set (after 8.2.4705).
-+Solution:   Reset "pending_end_reg_executing" when executing a register.
-+
-+Patch 9.0.2179
-+Problem:    no filetype detection for execline scripts
-+Solution:   Add filetype detection for execline
-+
-+Patch 9.0.2180
-+Problem:    POSIX function name in exarg struct causes issues
-+            on OpenVMS
-+Solution:   Rename getline member in exarg struct to ea_getline,
-+            remove isinf() workaround for VMS
-+
-+Patch 9.0.2181
-+Problem:    Vim9: missing error messages
-+Solution:   Add one more error message
-+
-+Patch 9.0.2182
-+Problem:    Vim9: need a way to reserve future extension
-+Solution:   reserve double underscore prefix for future use
-+            (Yegappan Lakshmanan)
-+
-+Patch 9.0.2183
-+Problem:    Maximum callback depth is not configurable.
-+Solution:   Revert patch 9.0.2103.  Set 'maxfuncdepth' in test.
-+            (zeertzjq)
-+
-+Patch 9.0.2184
-+Problem:    Vim9: inconsistent :type/:class messages
-+Solution:   Update the Messages (Ernie Rael)
-+
-+Patch 9.0.2185
-+Problem:    Coverity complains about not checking return value
-+            in compare_isn_not_values (after 9.0.2184)
-+Solution:   cast return value to "(void)" to make intention clear
-+
-+Patch 9.0.2186
-+Problem:    LTCG compile error on Win/ARM64 for `write_chars()`
-+Solution:   Explicitly initialise the storage to use data rather than BSS
-+            (Saleem Abdulrasool)
-+
-+Patch 9.0.2187
-+Problem:    Visual selection isn't drawn with 'breakindent' when the line
-+            doesn't fit in the window (Jaehwang Jung)
-+Solution:   Adjust wlv->fromcol also for 'breakindent' (zeertzjq)
-+
-+Patch 9.0.2188
-+Problem:    cursor wrong after { in single line buffer
-+            (Edwin Chan)
-+Solution:   do not place the cursor at the end for a single
-+            line buffer when moving backwards (Gary Johnson)
-+
-+Patch 9.0.2189
-+Problem:    Wrong display when 'breakindentopt' contains "sbr" and
-+            'showbreak' and 'nobreakindent' are set.
-+Solution:   Always reset wlv->need_showbreak regardless of the values of
-+            'breakindent' and 'showbreak', as they aren't checked when
-+            setting wlv->need_showbreak (zeertzjq)
-+
-  vim:tw=78:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index d8d461405..c295fa4f5 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.0.  Last change: 2023 Dec 28
-+*vim9class.txt*	For Vim version 9.0.  Last change: 2024 Jan 01
+-*builtin.txt*	For Vim version 9.0.  Last change: 2023 Dec 24
++*builtin.txt*	For Vim version 9.1.  Last change: 2023 Dec 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -104,7 +104,7 @@ You can create an object from this class with the new() method: >
- The object variables "lnum" and "col" can be accessed directly: >
- 
- 	echo $'The text position is ({pos.lnum}, {pos.col})'
--<							*E1317* *E1327*
-+<						    *E1317* *E1327* *:this*
- If you have been using other object-oriented languages you will notice that in
- Vim, within a class definition, the object members are consistently referred
- to with the "this." prefix.  This is different from languages like Java and
-@@ -713,7 +713,7 @@ Some types cannot be used, such as "void", "null" and "v:none".
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 972886d01..7063cad30 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.0.  Last change: 2023 Dec 19
++*change.txt*    For Vim version 9.1.  Last change: 2023 Dec 19
  
  
- Defining an interface ~
--						*:interface* *:endinterface*
-+					*Interface* *:interface* *:endinterface*
- An interface is defined between `:interface` and `:endinterface`.  It may be
- prefixed with `:export`: >
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index a8cb196e1..d625a01b2 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1,4 +1,4 @@
+-*channel.txt*      For Vim version 9.0.  Last change: 2023 Aug 15
++*channel.txt*      For Vim version 9.1.  Last change: 2023 Aug 15
  
-@@ -834,7 +834,7 @@ constructor methods.
  
- ==============================================================================
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 4295a78b0..13c4d729b 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 9.0.  Last change: 2023 Dec 09
++*cmdline.txt*   For Vim version 9.1.  Last change: 2023 Dec 09
  
--7.  Type definition					*Vim9-type* *:type*
-+7.  Type definition				*typealias* *Vim9-type* *:type*
  
- 					*E1393* *E1395* *E1396* *E1397* *E1398*
- A type definition is giving a name to a type specification.  This is also
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/debug.txt b/runtime/doc/debug.txt
+index 6fd88b679..1d3090af8 100644
+--- a/runtime/doc/debug.txt
++++ b/runtime/doc/debug.txt
+@@ -1,4 +1,4 @@
+-*debug.txt*     For Vim version 9.0.  Last change: 2019 May 07
++*debug.txt*     For Vim version 9.1.  Last change: 2019 May 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/debugger.txt b/runtime/doc/debugger.txt
+index 5c5c8d33d..6b2b2528e 100644
+--- a/runtime/doc/debugger.txt
++++ b/runtime/doc/debugger.txt
+@@ -1,4 +1,4 @@
+-*debugger.txt*  For Vim version 9.0.  Last change: 2019 Dec 21
++*debugger.txt*  For Vim version 9.1.  Last change: 2019 Dec 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index 932569475..1b1ad8561 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
+@@ -1,4 +1,4 @@
+-*develop.txt*   For Vim version 9.0.  Last change: 2022 Sep 20
++*develop.txt*   For Vim version 9.1.  Last change: 2022 Sep 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 3caa7cf60..91b004745 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -1,4 +1,4 @@
+-*diff.txt*      For Vim version 9.0.  Last change: 2023 Apr 04
++*diff.txt*      For Vim version 9.1.  Last change: 2023 Apr 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/digraph.txt b/runtime/doc/digraph.txt
+index 624aa27fa..6bed06523 100644
+--- a/runtime/doc/digraph.txt
++++ b/runtime/doc/digraph.txt
+@@ -1,4 +1,4 @@
+-*digraph.txt*   For Vim version 9.0.  Last change: 2023 Oct 20
++*digraph.txt*   For Vim version 9.1.  Last change: 2023 Oct 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 7ebb41e82..2ea6839c9 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.0.  Last change: 2023 Sep 27
++*editing.txt*   For Vim version 9.1.  Last change: 2023 Sep 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 2a4bd4c7d..d52f7fe16 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.0.  Last change: 2023 Dec 09
++*eval.txt*	For Vim version 9.1.  Last change: 2023 Dec 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/farsi.txt b/runtime/doc/farsi.txt
+index a2afab4fa..f4474038d 100644
+--- a/runtime/doc/farsi.txt
++++ b/runtime/doc/farsi.txt
+@@ -1,4 +1,4 @@
+-*farsi.txt*     For Vim version 9.0.  Last change: 2019 May 05
++*farsi.txt*     For Vim version 9.1.  Last change: 2019 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Mortaza Ghassab Shiran
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 597141d49..e8445db54 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*  For Vim version 9.0.  Last change: 2024 Jan 01
++*filetype.txt*  For Vim version 9.1.  Last change: 2024 Jan 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/fold.txt b/runtime/doc/fold.txt
+index e8078be22..b29049205 100644
+--- a/runtime/doc/fold.txt
++++ b/runtime/doc/fold.txt
+@@ -1,4 +1,4 @@
+-*fold.txt*      For Vim version 9.0.  Last change: 2023 Mar 24
++*fold.txt*      For Vim version 9.1.  Last change: 2023 Mar 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/ft_ada.txt b/runtime/doc/ft_ada.txt
+index fe002564e..80ed728d3 100644
+--- a/runtime/doc/ft_ada.txt
++++ b/runtime/doc/ft_ada.txt
+@@ -1,4 +1,4 @@
+-*ft_ada.txt*	For Vim version 9.0.  Last change: 2022 Mar 13
++*ft_ada.txt*	For Vim version 9.1.  Last change: 2022 Mar 13
+ 
+ 
+ 		    ADA FILE TYPE PLUG-INS REFERENCE MANUAL~
+diff --git a/runtime/doc/ft_context.txt b/runtime/doc/ft_context.txt
+index 8be0399a3..fa8316457 100644
+--- a/runtime/doc/ft_context.txt
++++ b/runtime/doc/ft_context.txt
+@@ -1,4 +1,4 @@
+-*ft_context.txt*	For Vim version 9.0.  Last change: 2024 Jan 01
++*ft_context.txt*	For Vim version 9.1.  Last change: 2024 Jan 01
+ 
+ This is the documentation for the ConTeXt filetype plugin.
+ 
+diff --git a/runtime/doc/ft_mp.txt b/runtime/doc/ft_mp.txt
+index 595bc0241..11ddd3b79 100644
+--- a/runtime/doc/ft_mp.txt
++++ b/runtime/doc/ft_mp.txt
+@@ -1,4 +1,4 @@
+-*ft_mp.txt*	For Vim version 9.0.  Last change: 2022 Aug 12
++*ft_mp.txt*	For Vim version 9.1.  Last change: 2022 Aug 12
+ 
+ This is the documentation for the METAFONT and MetaPost filetype plugins.
+ Unless otherwise specified, the commands, settings and mappings defined below
+diff --git a/runtime/doc/ft_sql.txt b/runtime/doc/ft_sql.txt
+index 0bf98861e..f98b06252 100644
+--- a/runtime/doc/ft_sql.txt
++++ b/runtime/doc/ft_sql.txt
+@@ -1,4 +1,4 @@
+-*ft_sql.txt*	For Vim version 9.0.  Last change: 2022 Apr 06
++*ft_sql.txt*	For Vim version 9.1.  Last change: 2022 Apr 06
+ 
+ by David Fishburn
+ 
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 0fcceddb6..6e0875281 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
+@@ -1,4 +1,4 @@
+-*gui.txt*       For Vim version 9.0.  Last change: 2023 Apr 29
++*gui.txt*       For Vim version 9.1.  Last change: 2023 Apr 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
+index d8ce03e51..780c0a00f 100644
+--- a/runtime/doc/gui_w32.txt
++++ b/runtime/doc/gui_w32.txt
+@@ -1,4 +1,4 @@
+-*gui_w32.txt*   For Vim version 9.0.  Last change: 2022 Mar 09
++*gui_w32.txt*   For Vim version 9.1.  Last change: 2022 Mar 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 14ed9f5c9..23633f1a4 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
+@@ -1,4 +1,4 @@
+-*gui_x11.txt*   For Vim version 9.0.  Last change: 2022 Apr 03
++*gui_x11.txt*   For Vim version 9.1.  Last change: 2022 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/hangulin.txt b/runtime/doc/hangulin.txt
+index 76db5b249..3f37d8eb8 100644
+--- a/runtime/doc/hangulin.txt
++++ b/runtime/doc/hangulin.txt
+@@ -1,4 +1,4 @@
+-*hangulin.txt*  For Vim version 9.0.  Last change: 2019 Nov 21
++*hangulin.txt*  For Vim version 9.1.  Last change: 2019 Nov 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Chi-Deok Hwang and Sung-Hyun Nam
+diff --git a/runtime/doc/hebrew.txt b/runtime/doc/hebrew.txt
+index 2644f81a5..c30b452e2 100644
+--- a/runtime/doc/hebrew.txt
++++ b/runtime/doc/hebrew.txt
+@@ -1,4 +1,4 @@
+-*hebrew.txt*    For Vim version 9.0.  Last change: 2019 May 05
++*hebrew.txt*    For Vim version 9.1.  Last change: 2019 May 05
+ 
+ 
+ 	   VIM REFERENCE MANUAL    by Ron Aaron (and Avner Lottem)
+diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
+index e4e25ab0d..7109bae54 100644
+--- a/runtime/doc/help.txt
++++ b/runtime/doc/help.txt
+@@ -1,4 +1,4 @@
+-*help.txt*	For Vim version 9.0.  Last change: 2022 Dec 03
++*help.txt*	For Vim version 9.1.  Last change: 2022 Dec 03
+ 
+ 			VIM - main help file
+ 									 k
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index 61bd21848..07a4c9656 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
+@@ -1,4 +1,4 @@
+-*helphelp.txt*	For Vim version 9.0.  Last change: 2022 Jan 08
++*helphelp.txt*	For Vim version 9.1.  Last change: 2022 Jan 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/howto.txt b/runtime/doc/howto.txt
+index 75169a99b..e71ee8436 100644
+--- a/runtime/doc/howto.txt
++++ b/runtime/doc/howto.txt
+@@ -1,4 +1,4 @@
+-*howto.txt*	For Vim version 9.0.  Last change: 2006 Apr 02
++*howto.txt*	For Vim version 9.1.  Last change: 2006 Apr 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/if_cscop.txt b/runtime/doc/if_cscop.txt
+index 8f98161e7..3fa8f817f 100644
+--- a/runtime/doc/if_cscop.txt
++++ b/runtime/doc/if_cscop.txt
+@@ -1,4 +1,4 @@
+-*if_cscop.txt*  For Vim version 9.0.  Last change: 2022 Jan 08
++*if_cscop.txt*  For Vim version 9.1.  Last change: 2022 Jan 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Andy Kahn
+diff --git a/runtime/doc/if_lua.txt b/runtime/doc/if_lua.txt
+index 63ee91aee..e779d0aa8 100644
+--- a/runtime/doc/if_lua.txt
++++ b/runtime/doc/if_lua.txt
+@@ -1,4 +1,4 @@
+-*if_lua.txt*    For Vim version 9.0.  Last change: 2021 Aug 06
++*if_lua.txt*    For Vim version 9.1.  Last change: 2021 Aug 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Luis Carvalho
+diff --git a/runtime/doc/if_mzsch.txt b/runtime/doc/if_mzsch.txt
+index 9e9b252e7..ea5401298 100644
+--- a/runtime/doc/if_mzsch.txt
++++ b/runtime/doc/if_mzsch.txt
+@@ -1,4 +1,4 @@
+-*if_mzsch.txt*  For Vim version 9.0.  Last change: 2020 Oct 14
++*if_mzsch.txt*  For Vim version 9.1.  Last change: 2020 Oct 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Sergey Khorev
+diff --git a/runtime/doc/if_ole.txt b/runtime/doc/if_ole.txt
+index 39d70a84f..b08fa9818 100644
+--- a/runtime/doc/if_ole.txt
++++ b/runtime/doc/if_ole.txt
+@@ -1,4 +1,4 @@
+-*if_ole.txt*    For Vim version 9.0.  Last change: 2023 Nov 19
++*if_ole.txt*    For Vim version 9.1.  Last change: 2023 Nov 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Paul Moore
+diff --git a/runtime/doc/if_perl.txt b/runtime/doc/if_perl.txt
+index 5cc992d0d..86edd05a0 100644
+--- a/runtime/doc/if_perl.txt
++++ b/runtime/doc/if_perl.txt
+@@ -1,4 +1,4 @@
+-*if_perl.txt*   For Vim version 9.0.  Last change: 2023 May 14
++*if_perl.txt*   For Vim version 9.1.  Last change: 2023 May 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Sven Verdoolaege
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index 4ea6d1380..8456d08c6 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
+@@ -1,4 +1,4 @@
+-*if_pyth.txt*   For Vim version 9.0.  Last change: 2023 Oct 25
++*if_pyth.txt*   For Vim version 9.1.  Last change: 2023 Oct 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Paul Moore
+diff --git a/runtime/doc/if_ruby.txt b/runtime/doc/if_ruby.txt
+index caecc6d2c..6a01568a9 100644
+--- a/runtime/doc/if_ruby.txt
++++ b/runtime/doc/if_ruby.txt
+@@ -1,4 +1,4 @@
+-*if_ruby.txt*   For Vim version 9.0.  Last change: 2019 Jul 21
++*if_ruby.txt*   For Vim version 9.1.  Last change: 2019 Jul 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Shugo Maeda
+diff --git a/runtime/doc/if_sniff.txt b/runtime/doc/if_sniff.txt
+index 27db68871..7cbb0ff97 100644
+--- a/runtime/doc/if_sniff.txt
++++ b/runtime/doc/if_sniff.txt
+@@ -1,4 +1,4 @@
+-*if_sniff.txt*	For Vim version 9.0.  Last change: 2016 Feb 27
++*if_sniff.txt*	For Vim version 9.1.  Last change: 2016 Feb 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL
+diff --git a/runtime/doc/if_tcl.txt b/runtime/doc/if_tcl.txt
+index 7091469ac..4ed789a0a 100644
+--- a/runtime/doc/if_tcl.txt
++++ b/runtime/doc/if_tcl.txt
+@@ -1,4 +1,4 @@
+-*if_tcl.txt*    For Vim version 9.0.  Last change: 2022 Jan 08
++*if_tcl.txt*    For Vim version 9.1.  Last change: 2022 Jan 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Ingo Wilken
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index 5d24b3561..7865bb689 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -1,4 +1,4 @@
+-*indent.txt*    For Vim version 9.0.  Last change: 2023 Dec 27
++*indent.txt*    For Vim version 9.1.  Last change: 2023 Dec 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index 6f4b5d74d..1b012b7da 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -1,4 +1,4 @@
+-*index.txt*     For Vim version 9.0.  Last change: 2023 Jan 09
++*index.txt*     For Vim version 9.1.  Last change: 2023 Jan 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 8696e912f..de8866fc6 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -1,4 +1,4 @@
+-*insert.txt*    For Vim version 9.0.  Last change: 2022 Sep 30
++*insert.txt*    For Vim version 9.1.  Last change: 2022 Sep 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 567f347f9..185796f63 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
+@@ -1,4 +1,4 @@
+-*intro.txt*     For Vim version 9.0.  Last change: 2023 Nov 18
++*intro.txt*     For Vim version 9.1.  Last change: 2023 Nov 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 1944fdd03..d458aa661 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.0.  Last change: 2023 December 31
++*map.txt*       For Vim version 9.1.  Last change: 2023 December 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/mbyte.txt b/runtime/doc/mbyte.txt
+index 81d391c3e..91154a744 100644
+--- a/runtime/doc/mbyte.txt
++++ b/runtime/doc/mbyte.txt
+@@ -1,4 +1,4 @@
+-*mbyte.txt*     For Vim version 9.0.  Last change: 2022 Apr 03
++*mbyte.txt*     For Vim version 9.1.  Last change: 2022 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar et al.
+diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
+index 92a8e3cda..133d47ad1 100644
+--- a/runtime/doc/message.txt
++++ b/runtime/doc/message.txt
+@@ -1,4 +1,4 @@
+-*message.txt*   For Vim version 9.0.  Last change: 2023 Dec 20
++*message.txt*   For Vim version 9.1.  Last change: 2023 Dec 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/mlang.txt b/runtime/doc/mlang.txt
+index 8997e1c27..82c9772a7 100644
+--- a/runtime/doc/mlang.txt
++++ b/runtime/doc/mlang.txt
+@@ -1,4 +1,4 @@
+-*mlang.txt*     For Vim version 9.0.  Last change: 2022 Sep 17
++*mlang.txt*     For Vim version 9.1.  Last change: 2022 Sep 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 7a67789b7..448b68bce 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1,4 +1,4 @@
+-*motion.txt*    For Vim version 9.0.  Last change: 2023 Dec 27
++*motion.txt*    For Vim version 9.1.  Last change: 2023 Dec 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/netbeans.txt b/runtime/doc/netbeans.txt
+index 905c79791..a62123ce6 100644
+--- a/runtime/doc/netbeans.txt
++++ b/runtime/doc/netbeans.txt
+@@ -1,4 +1,4 @@
+-*netbeans.txt*  For Vim version 9.0.  Last change: 2023 Nov 26
++*netbeans.txt*  For Vim version 9.1.  Last change: 2023 Nov 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur et al.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 34059e0ea..e6c20220b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.0.  Last change: 2023 Dec 20
++*options.txt*	For Vim version 9.1.  Last change: 2023 Dec 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/os_390.txt b/runtime/doc/os_390.txt
+index 42c8a8b51..e15cd258f 100644
+--- a/runtime/doc/os_390.txt
++++ b/runtime/doc/os_390.txt
+@@ -1,4 +1,4 @@
+-*os_390.txt*    For Vim version 9.0.  Last change: 2019 Dec 07
++*os_390.txt*    For Vim version 9.1.  Last change: 2019 Dec 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Ralf Schandl
+diff --git a/runtime/doc/os_amiga.txt b/runtime/doc/os_amiga.txt
+index 062ad3b2e..32d460281 100644
+--- a/runtime/doc/os_amiga.txt
++++ b/runtime/doc/os_amiga.txt
+@@ -1,4 +1,4 @@
+-*os_amiga.txt*  For Vim version 9.0.  Last change: 2010 Aug 14
++*os_amiga.txt*  For Vim version 9.1.  Last change: 2010 Aug 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_beos.txt b/runtime/doc/os_beos.txt
+index 8a2ac487b..5ac41597f 100644
+--- a/runtime/doc/os_beos.txt
++++ b/runtime/doc/os_beos.txt
+@@ -1,4 +1,4 @@
+-*os_beos.txt*	For Vim version 9.0.  Last change: 2020 Jun 07
++*os_beos.txt*	For Vim version 9.1.  Last change: 2020 Jun 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_dos.txt b/runtime/doc/os_dos.txt
+index e5e405caf..e81ba9a5a 100644
+--- a/runtime/doc/os_dos.txt
++++ b/runtime/doc/os_dos.txt
+@@ -1,4 +1,4 @@
+-*os_dos.txt*    For Vim version 9.0.  Last change: 2006 Mar 30
++*os_dos.txt*    For Vim version 9.1.  Last change: 2006 Mar 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_haiku.txt b/runtime/doc/os_haiku.txt
+index fdcf7fe78..8fe8c9f56 100644
+--- a/runtime/doc/os_haiku.txt
++++ b/runtime/doc/os_haiku.txt
+@@ -1,4 +1,4 @@
+-*os_haiku.txt*	For Vim version 9.0.  Last change: 2020 May 13
++*os_haiku.txt*	For Vim version 9.1.  Last change: 2020 May 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_mac.txt b/runtime/doc/os_mac.txt
+index b18e8e0a7..0421fb7b1 100644
+--- a/runtime/doc/os_mac.txt
++++ b/runtime/doc/os_mac.txt
+@@ -1,4 +1,4 @@
+-*os_mac.txt*    For Vim version 9.0.  Last change: 2019 Apr 21
++*os_mac.txt*    For Vim version 9.1.  Last change: 2019 Apr 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar et al.
+diff --git a/runtime/doc/os_mint.txt b/runtime/doc/os_mint.txt
+index 4273c5501..54d40a3df 100644
+--- a/runtime/doc/os_mint.txt
++++ b/runtime/doc/os_mint.txt
+@@ -1,4 +1,4 @@
+-*os_mint.txt*   For Vim version 9.0.  Last change: 2020 Jul 14
++*os_mint.txt*   For Vim version 9.1.  Last change: 2020 Jul 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Jens M. Felderhoff
+diff --git a/runtime/doc/os_msdos.txt b/runtime/doc/os_msdos.txt
+index 67821ed47..d6d67f004 100644
+--- a/runtime/doc/os_msdos.txt
++++ b/runtime/doc/os_msdos.txt
+@@ -1,4 +1,4 @@
+-*os_msdos.txt*  For Vim version 9.0.  Last change: 2016 Feb 26
++*os_msdos.txt*  For Vim version 9.1.  Last change: 2016 Feb 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_os2.txt b/runtime/doc/os_os2.txt
+index a07767ef9..bd24d139a 100644
+--- a/runtime/doc/os_os2.txt
++++ b/runtime/doc/os_os2.txt
+@@ -1,4 +1,4 @@
+-*os_os2.txt*    For Vim version 9.0.  Last change: 2015 Dec 31
++*os_os2.txt*    For Vim version 9.1.  Last change: 2015 Dec 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Paul Slootman
+diff --git a/runtime/doc/os_qnx.txt b/runtime/doc/os_qnx.txt
+index ade1c7a56..e1a586d14 100644
+--- a/runtime/doc/os_qnx.txt
++++ b/runtime/doc/os_qnx.txt
+@@ -1,4 +1,4 @@
+-*os_qnx.txt*    For Vim version 9.0.  Last change: 2005 Mar 29
++*os_qnx.txt*    For Vim version 9.1.  Last change: 2005 Mar 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Julian Kinraid
+diff --git a/runtime/doc/os_risc.txt b/runtime/doc/os_risc.txt
+index 92af8cd6b..dad3549b9 100644
+--- a/runtime/doc/os_risc.txt
++++ b/runtime/doc/os_risc.txt
+@@ -1,4 +1,4 @@
+-*os_risc.txt*   For Vim version 9.0.  Last change: 2011 May 10
++*os_risc.txt*   For Vim version 9.1.  Last change: 2011 May 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Thomas Leonard
+diff --git a/runtime/doc/os_unix.txt b/runtime/doc/os_unix.txt
+index 9908b154c..90069a20b 100644
+--- a/runtime/doc/os_unix.txt
++++ b/runtime/doc/os_unix.txt
+@@ -1,4 +1,4 @@
+-*os_unix.txt*   For Vim version 9.0.  Last change: 2022 Nov 25
++*os_unix.txt*   For Vim version 9.1.  Last change: 2022 Nov 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
+index e7fa348af..ff435482d 100644
+--- a/runtime/doc/os_vms.txt
++++ b/runtime/doc/os_vms.txt
+@@ -1,4 +1,4 @@
+-*os_vms.txt*    For Vim version 9.0.  Last change: 2023 Dec 14
++*os_vms.txt*    For Vim version 9.1.  Last change: 2023 Dec 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index 1156dd538..bbe994008 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
+@@ -1,4 +1,4 @@
+-*os_win32.txt*  For Vim version 9.0.  Last change: 2023 Dec 04
++*os_win32.txt*  For Vim version 9.1.  Last change: 2023 Dec 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by George Reilly
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index 70227a72e..2d1898de5 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
+@@ -1,4 +1,4 @@
+-*pattern.txt*   For Vim version 9.0.  Last change: 2023 Oct 23
++*pattern.txt*   For Vim version 9.1.  Last change: 2023 Oct 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
+index 77805880a..e86932c35 100644
+--- a/runtime/doc/pi_getscript.txt
++++ b/runtime/doc/pi_getscript.txt
+@@ -1,4 +1,4 @@
+-*pi_getscript.txt*  For Vim version 9.0.  Last change: 2017 Aug 01
++*pi_getscript.txt*  For Vim version 9.1.  Last change: 2017 Aug 01
+ >
+ 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
+ <
+diff --git a/runtime/doc/pi_gzip.txt b/runtime/doc/pi_gzip.txt
+index 71e76cc28..c34db2784 100644
+--- a/runtime/doc/pi_gzip.txt
++++ b/runtime/doc/pi_gzip.txt
+@@ -1,4 +1,4 @@
+-*pi_gzip.txt*   For Vim version 9.0.  Last change: 2023 Nov 14
++*pi_gzip.txt*   For Vim version 9.1.  Last change: 2023 Nov 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 30c164660..07d70c831 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -1,4 +1,4 @@
+-*pi_netrw.txt*  For Vim version 9.0.  Last change: 2023 May 14
++*pi_netrw.txt*  For Vim version 9.1.  Last change: 2023 May 14
+ 
+ 	    ------------------------------------------------
+ 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
+diff --git a/runtime/doc/pi_paren.txt b/runtime/doc/pi_paren.txt
+index 9af0e9c95..719353fa9 100644
+--- a/runtime/doc/pi_paren.txt
++++ b/runtime/doc/pi_paren.txt
+@@ -1,4 +1,4 @@
+-*pi_paren.txt*  For Vim version 9.0.  Last change: 2013 May 08
++*pi_paren.txt*  For Vim version 9.1.  Last change: 2013 May 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/pi_spec.txt b/runtime/doc/pi_spec.txt
+index 27d60b8fe..a8d26cdb1 100644
+--- a/runtime/doc/pi_spec.txt
++++ b/runtime/doc/pi_spec.txt
+@@ -1,4 +1,4 @@
+-*pi_spec.txt*   For Vim version 9.0.  Last change: 2006 Apr 24
++*pi_spec.txt*   For Vim version 9.1.  Last change: 2006 Apr 24
+ 
+ by Gustavo Niemeyer ~
+ 
+diff --git a/runtime/doc/pi_tar.txt b/runtime/doc/pi_tar.txt
+index 37b2886d8..0ab111c28 100644
+--- a/runtime/doc/pi_tar.txt
++++ b/runtime/doc/pi_tar.txt
+@@ -1,4 +1,4 @@
+-*pi_tar.txt*	For Vim version 9.0.  Last change: 2022 Oct 17
++*pi_tar.txt*	For Vim version 9.1.  Last change: 2022 Oct 17
+ 
+ 		       +====================+
+ 		       | Tar File Interface |
+diff --git a/runtime/doc/pi_vimball.txt b/runtime/doc/pi_vimball.txt
+index 045c5c4f8..35d4d7cbf 100644
+--- a/runtime/doc/pi_vimball.txt
++++ b/runtime/doc/pi_vimball.txt
+@@ -1,4 +1,4 @@
+-*pi_vimball.txt*	For Vim version 9.0.  Last change: 2016 Apr 11
++*pi_vimball.txt*	For Vim version 9.1.  Last change: 2016 Apr 11
+ 
+ 			       ----------------
+ 			       Vimball Archiver
+diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
+index 14ae34015..2e98becf1 100644
+--- a/runtime/doc/pi_zip.txt
++++ b/runtime/doc/pi_zip.txt
+@@ -1,4 +1,4 @@
+-*pi_zip.txt*	For Vim version 9.0.  Last change: 2023 Nov 05
++*pi_zip.txt*	For Vim version 9.1.  Last change: 2023 Nov 05
+ 
+ 				+====================+
+ 				| Zip File Interface |
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index 463bc9a2b..f5cb12fb9 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -1,4 +1,4 @@
+-*popup.txt*  For Vim version 9.0.  Last change: 2022 Oct 07
++*popup.txt*  For Vim version 9.1.  Last change: 2022 Oct 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/print.txt b/runtime/doc/print.txt
+index 53f17e154..84fca4406 100644
+--- a/runtime/doc/print.txt
++++ b/runtime/doc/print.txt
+@@ -1,4 +1,4 @@
+-*print.txt*     For Vim version 9.0.  Last change: 2022 Oct 01
++*print.txt*     For Vim version 9.1.  Last change: 2022 Oct 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index cbfd791d5..325f59220 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1,4 +1,4 @@
+-*quickfix.txt*  For Vim version 9.0.  Last change: 2023 Jan 18
++*quickfix.txt*  For Vim version 9.1.  Last change: 2023 Jan 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 577554329..dcbb52013 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.0.  Last change: 2023 Dec 05
++*quickref.txt*  For Vim version 9.1.  Last change: 2023 Dec 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/quotes.txt b/runtime/doc/quotes.txt
+index 181682d44..0eeb1b691 100644
+--- a/runtime/doc/quotes.txt
++++ b/runtime/doc/quotes.txt
+@@ -1,4 +1,4 @@
+-*quotes.txt*    For Vim version 9.0.  Last change: 2018 Mar 29
++*quotes.txt*    For Vim version 9.1.  Last change: 2018 Mar 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/recover.txt b/runtime/doc/recover.txt
+index bfc59d31e..fd817ebc6 100644
+--- a/runtime/doc/recover.txt
++++ b/runtime/doc/recover.txt
+@@ -1,4 +1,4 @@
+-*recover.txt*   For Vim version 9.0.  Last change: 2023 Apr 22
++*recover.txt*   For Vim version 9.1.  Last change: 2023 Apr 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/remote.txt b/runtime/doc/remote.txt
+index 724b58ccc..5a6898c25 100644
+--- a/runtime/doc/remote.txt
++++ b/runtime/doc/remote.txt
+@@ -1,4 +1,4 @@
+-*remote.txt*    For Vim version 9.0.  Last change: 2022 Feb 17
++*remote.txt*    For Vim version 9.1.  Last change: 2022 Feb 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 247dd0992..e95b6a1ae 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*    For Vim version 9.0.  Last change: 2023 May 26
++*repeat.txt*    For Vim version 9.1.  Last change: 2023 May 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/rileft.txt b/runtime/doc/rileft.txt
+index 623ac387b..8589bb6a3 100644
+--- a/runtime/doc/rileft.txt
++++ b/runtime/doc/rileft.txt
+@@ -1,4 +1,4 @@
+-*rileft.txt*    For Vim version 9.0.  Last change: 2022 Oct 12
++*rileft.txt*    For Vim version 9.1.  Last change: 2022 Oct 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Avner Lottem
+diff --git a/runtime/doc/russian.txt b/runtime/doc/russian.txt
+index 4e8c5ed5c..bf6493d5e 100644
+--- a/runtime/doc/russian.txt
++++ b/runtime/doc/russian.txt
+@@ -1,4 +1,4 @@
+-*russian.txt*   For Vim version 9.0.  Last change: 2006 Apr 24
++*russian.txt*   For Vim version 9.1.  Last change: 2006 Apr 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Vassily Ragosin
+diff --git a/runtime/doc/scroll.txt b/runtime/doc/scroll.txt
+index 91fa22824..cf7935312 100644
+--- a/runtime/doc/scroll.txt
++++ b/runtime/doc/scroll.txt
+@@ -1,4 +1,4 @@
+-*scroll.txt*    For Vim version 9.0.  Last change: 2022 Oct 17
++*scroll.txt*    For Vim version 9.1.  Last change: 2022 Oct 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/sign.txt b/runtime/doc/sign.txt
+index d9bfed697..02240f01a 100644
+--- a/runtime/doc/sign.txt
++++ b/runtime/doc/sign.txt
+@@ -1,4 +1,4 @@
+-*sign.txt*      For Vim version 9.0.  Last change: 2023 Feb 21
++*sign.txt*      For Vim version 9.1.  Last change: 2023 Feb 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index 941ef9dc8..dea3adb87 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
+@@ -1,4 +1,4 @@
+-*spell.txt*	For Vim version 9.0.  Last change: 2023 May 25
++*spell.txt*	For Vim version 9.1.  Last change: 2023 May 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/sponsor.txt b/runtime/doc/sponsor.txt
+index 548cde8cb..86da8920c 100644
+--- a/runtime/doc/sponsor.txt
++++ b/runtime/doc/sponsor.txt
+@@ -1,4 +1,4 @@
+-*sponsor.txt*   For Vim version 9.0.  Last change: 2023 Mar 24
++*sponsor.txt*   For Vim version 9.1.  Last change: 2023 Mar 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 1e7daa6b5..ff069ca3f 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 9.0.  Last change: 2023 Oct 20
++*starting.txt*  For Vim version 9.1.  Last change: 2023 Oct 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 335706145..040780b35 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.0.  Last change: 2023 Dec 27
++*syntax.txt*	For Vim version 9.1.  Last change: 2023 Dec 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
+index a010e2fd2..a98fe956f 100644
+--- a/runtime/doc/tabpage.txt
++++ b/runtime/doc/tabpage.txt
+@@ -1,4 +1,4 @@
+-*tabpage.txt*   For Vim version 9.0.  Last change: 2022 Feb 02
++*tabpage.txt*   For Vim version 9.1.  Last change: 2022 Feb 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index f90632c0c..aa7b9dd48 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
+@@ -1,4 +1,4 @@
+-*tagsrch.txt*   For Vim version 9.0.  Last change: 2023 Feb 13
++*tagsrch.txt*   For Vim version 9.1.  Last change: 2023 Feb 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index c57387eab..546b0bf90 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -1,4 +1,4 @@
+-*term.txt*      For Vim version 9.0.  Last change: 2023 Dec 09
++*term.txt*      For Vim version 9.1.  Last change: 2023 Dec 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 5647ff49b..c5331fa85 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.0.  Last change: 2023 Nov 08
++*terminal.txt*	For Vim version 9.1.  Last change: 2023 Nov 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 2d78c0ec1..dabdd32b0 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -1,4 +1,4 @@
+-*testing.txt*	For Vim version 9.0.  Last change: 2023 May 18
++*testing.txt*	For Vim version 9.1.  Last change: 2023 May 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 14fe2977a..bf7fd16f1 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*  For Vim version 9.0.  Last change: 2023 Apr 23
++*textprop.txt*  For Vim version 9.1.  Last change: 2023 Apr 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/tips.txt b/runtime/doc/tips.txt
+index 0dfddb255..7ed8e0010 100644
+--- a/runtime/doc/tips.txt
++++ b/runtime/doc/tips.txt
+@@ -1,4 +1,4 @@
+-*tips.txt*      For Vim version 9.0.  Last change: 2023 Aug 10
++*tips.txt*      For Vim version 9.1.  Last change: 2023 Aug 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index afe5aed53..9847ff7d3 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.0.  Last change: 2023 Dec 14
++*todo.txt*      For Vim version 9.1.  Last change: 2023 Dec 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
+index 3a2474793..6b7705045 100644
+--- a/runtime/doc/uganda.txt
++++ b/runtime/doc/uganda.txt
+@@ -1,4 +1,4 @@
+-*uganda.txt*    For Vim version 9.0.  Last change: 2022 Mar 02
++*uganda.txt*    For Vim version 9.1.  Last change: 2022 Mar 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/undo.txt b/runtime/doc/undo.txt
+index dc2274c14..40edf2fdf 100644
+--- a/runtime/doc/undo.txt
++++ b/runtime/doc/undo.txt
+@@ -1,4 +1,4 @@
+-*undo.txt*      For Vim version 9.0.  Last change: 2022 Jun 02
++*undo.txt*      For Vim version 9.1.  Last change: 2022 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 1fe780076..f6d3d0a8f 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.0.  Last change: 2023 May 23
++*userfunc.txt*	For Vim version 9.1.  Last change: 2023 May 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
+index e8279fd30..fafb242b0 100644
+--- a/runtime/doc/usr_01.txt
++++ b/runtime/doc/usr_01.txt
+@@ -1,4 +1,4 @@
+-*usr_01.txt*	For Vim version 9.0.  Last change: 2023 May 12
++*usr_01.txt*	For Vim version 9.1.  Last change: 2023 May 12
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
+index 680a4e607..486426ed7 100644
+--- a/runtime/doc/usr_02.txt
++++ b/runtime/doc/usr_02.txt
+@@ -1,4 +1,4 @@
+-*usr_02.txt*	For Vim version 9.0.  Last change: 2021 Apr 24
++*usr_02.txt*	For Vim version 9.1.  Last change: 2021 Apr 24
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_03.txt b/runtime/doc/usr_03.txt
+index b2abc430d..eb9e311d0 100644
+--- a/runtime/doc/usr_03.txt
++++ b/runtime/doc/usr_03.txt
+@@ -1,4 +1,4 @@
+-*usr_03.txt*	For Vim version 9.0.  Last change: 2023 Mar 13
++*usr_03.txt*	For Vim version 9.1.  Last change: 2023 Mar 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_04.txt b/runtime/doc/usr_04.txt
+index 91c13aa4a..b81fccc51 100644
+--- a/runtime/doc/usr_04.txt
++++ b/runtime/doc/usr_04.txt
+@@ -1,4 +1,4 @@
+-*usr_04.txt*	For Vim version 9.0.  Last change: 2021 Feb 22
++*usr_04.txt*	For Vim version 9.1.  Last change: 2021 Feb 22
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
+index 275599973..05239eeeb 100644
+--- a/runtime/doc/usr_05.txt
++++ b/runtime/doc/usr_05.txt
+@@ -1,4 +1,4 @@
+-*usr_05.txt*	For Vim version 9.0.  Last change: 2023 Sep 12
++*usr_05.txt*	For Vim version 9.1.  Last change: 2023 Sep 12
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_06.txt b/runtime/doc/usr_06.txt
+index 2b6fa5133..6d76c53e1 100644
+--- a/runtime/doc/usr_06.txt
++++ b/runtime/doc/usr_06.txt
+@@ -1,4 +1,4 @@
+-*usr_06.txt*	For Vim version 9.0.  Last change: 2021 Nov 07
++*usr_06.txt*	For Vim version 9.1.  Last change: 2021 Nov 07
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_07.txt b/runtime/doc/usr_07.txt
+index 2be3062ac..ea4875ec5 100644
+--- a/runtime/doc/usr_07.txt
++++ b/runtime/doc/usr_07.txt
+@@ -1,4 +1,4 @@
+-*usr_07.txt*	For Vim version 9.0.  Last change: 2020 Mar 23
++*usr_07.txt*	For Vim version 9.1.  Last change: 2020 Mar 23
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_08.txt b/runtime/doc/usr_08.txt
+index 148f0cf86..a24473baa 100644
+--- a/runtime/doc/usr_08.txt
++++ b/runtime/doc/usr_08.txt
+@@ -1,4 +1,4 @@
+-*usr_08.txt*	For Vim version 9.0.  Last change: 2021 May 20
++*usr_08.txt*	For Vim version 9.1.  Last change: 2021 May 20
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_09.txt b/runtime/doc/usr_09.txt
+index 43394da6e..6fac5c2a7 100644
+--- a/runtime/doc/usr_09.txt
++++ b/runtime/doc/usr_09.txt
+@@ -1,4 +1,4 @@
+-*usr_09.txt*	For Vim version 9.0.  Last change: 2017 Aug 11
++*usr_09.txt*	For Vim version 9.1.  Last change: 2017 Aug 11
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_10.txt b/runtime/doc/usr_10.txt
+index 220a7ab0a..4ffd23556 100644
+--- a/runtime/doc/usr_10.txt
++++ b/runtime/doc/usr_10.txt
+@@ -1,4 +1,4 @@
+-*usr_10.txt*	For Vim version 9.0.  Last change: 2019 Nov 22
++*usr_10.txt*	For Vim version 9.1.  Last change: 2019 Nov 22
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_11.txt b/runtime/doc/usr_11.txt
+index 3a61082cb..9ba6f4420 100644
+--- a/runtime/doc/usr_11.txt
++++ b/runtime/doc/usr_11.txt
+@@ -1,4 +1,4 @@
+-*usr_11.txt*	For Vim version 9.0.  Last change: 2020 Oct 25
++*usr_11.txt*	For Vim version 9.1.  Last change: 2020 Oct 25
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_12.txt b/runtime/doc/usr_12.txt
+index a5f75ec8c..fb90c613b 100644
+--- a/runtime/doc/usr_12.txt
++++ b/runtime/doc/usr_12.txt
+@@ -1,4 +1,4 @@
+-*usr_12.txt*	For Vim version 9.0.  Last change: 2022 Nov 19
++*usr_12.txt*	For Vim version 9.1.  Last change: 2022 Nov 19
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_20.txt b/runtime/doc/usr_20.txt
+index 479f57c76..486f18f99 100644
+--- a/runtime/doc/usr_20.txt
++++ b/runtime/doc/usr_20.txt
+@@ -1,4 +1,4 @@
+-*usr_20.txt*	For Vim version 9.0.  Last change: 2021 Nov 18
++*usr_20.txt*	For Vim version 9.1.  Last change: 2021 Nov 18
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_21.txt b/runtime/doc/usr_21.txt
+index 2f6ee9c5d..95ded58ea 100644
+--- a/runtime/doc/usr_21.txt
++++ b/runtime/doc/usr_21.txt
+@@ -1,4 +1,4 @@
+-*usr_21.txt*	For Vim version 9.0.  Last change: 2019 Apr 25
++*usr_21.txt*	For Vim version 9.1.  Last change: 2019 Apr 25
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_22.txt b/runtime/doc/usr_22.txt
+index 8ed102850..57862edaa 100644
+--- a/runtime/doc/usr_22.txt
++++ b/runtime/doc/usr_22.txt
+@@ -1,4 +1,4 @@
+-*usr_22.txt*	For Vim version 9.0.  Last change: 2020 Mar 28
++*usr_22.txt*	For Vim version 9.1.  Last change: 2020 Mar 28
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_23.txt b/runtime/doc/usr_23.txt
+index cbcc4844c..016f74295 100644
+--- a/runtime/doc/usr_23.txt
++++ b/runtime/doc/usr_23.txt
+@@ -1,4 +1,4 @@
+-*usr_23.txt*	For Vim version 9.0.  Last change: 2020 Dec 19
++*usr_23.txt*	For Vim version 9.1.  Last change: 2020 Dec 19
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_24.txt b/runtime/doc/usr_24.txt
+index 361ce1bb8..72f43f068 100644
+--- a/runtime/doc/usr_24.txt
++++ b/runtime/doc/usr_24.txt
+@@ -1,4 +1,4 @@
+-*usr_24.txt*	For Vim version 9.0.  Last change: 2018 Mar 18
++*usr_24.txt*	For Vim version 9.1.  Last change: 2018 Mar 18
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_25.txt b/runtime/doc/usr_25.txt
+index 2f25a9fb2..af013bcfe 100644
+--- a/runtime/doc/usr_25.txt
++++ b/runtime/doc/usr_25.txt
+@@ -1,4 +1,4 @@
+-*usr_25.txt*	For Vim version 9.0.  Last change: 2016 Mar 28
++*usr_25.txt*	For Vim version 9.1.  Last change: 2016 Mar 28
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_26.txt b/runtime/doc/usr_26.txt
+index 7fec325cf..81345f459 100644
+--- a/runtime/doc/usr_26.txt
++++ b/runtime/doc/usr_26.txt
+@@ -1,4 +1,4 @@
+-*usr_26.txt*	For Vim version 9.0.  Last change: 2006 Apr 24
++*usr_26.txt*	For Vim version 9.1.  Last change: 2006 Apr 24
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_27.txt b/runtime/doc/usr_27.txt
+index 54e5c3a4b..bb5b5657a 100644
+--- a/runtime/doc/usr_27.txt
++++ b/runtime/doc/usr_27.txt
+@@ -1,4 +1,4 @@
+-*usr_27.txt*	For Vim version 9.0.  Last change: 2019 Jul 14
++*usr_27.txt*	For Vim version 9.1.  Last change: 2019 Jul 14
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_28.txt b/runtime/doc/usr_28.txt
+index d0c351667..54111665d 100644
+--- a/runtime/doc/usr_28.txt
++++ b/runtime/doc/usr_28.txt
+@@ -1,4 +1,4 @@
+-*usr_28.txt*	For Vim version 9.0.  Last change: 2008 Jun 14
++*usr_28.txt*	For Vim version 9.1.  Last change: 2008 Jun 14
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_29.txt b/runtime/doc/usr_29.txt
+index 20712f27a..a534c6f1c 100644
+--- a/runtime/doc/usr_29.txt
++++ b/runtime/doc/usr_29.txt
+@@ -1,4 +1,4 @@
+-*usr_29.txt*	For Vim version 9.0.  Last change: 2022 Mar 13
++*usr_29.txt*	For Vim version 9.1.  Last change: 2022 Mar 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_30.txt b/runtime/doc/usr_30.txt
+index a23df9660..19a1259fe 100644
+--- a/runtime/doc/usr_30.txt
++++ b/runtime/doc/usr_30.txt
+@@ -1,4 +1,4 @@
+-*usr_30.txt*	For Vim version 9.0.  Last change: 2007 Nov 10
++*usr_30.txt*	For Vim version 9.1.  Last change: 2007 Nov 10
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_31.txt b/runtime/doc/usr_31.txt
+index 455274f4f..5e4a261e5 100644
+--- a/runtime/doc/usr_31.txt
++++ b/runtime/doc/usr_31.txt
+@@ -1,4 +1,4 @@
+-*usr_31.txt*	For Vim version 9.0.  Last change: 2020 Jul 28
++*usr_31.txt*	For Vim version 9.1.  Last change: 2020 Jul 28
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_32.txt b/runtime/doc/usr_32.txt
+index 9733d709c..6ab89622b 100644
+--- a/runtime/doc/usr_32.txt
++++ b/runtime/doc/usr_32.txt
+@@ -1,4 +1,4 @@
+-*usr_32.txt*	For Vim version 9.0.  Last change: 2010 Jul 20
++*usr_32.txt*	For Vim version 9.1.  Last change: 2010 Jul 20
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_40.txt b/runtime/doc/usr_40.txt
+index 27323c6f4..b8dfae6b7 100644
+--- a/runtime/doc/usr_40.txt
++++ b/runtime/doc/usr_40.txt
+@@ -1,4 +1,4 @@
+-*usr_40.txt*	For Vim version 9.0.  Last change: 2022 Jun 23
++*usr_40.txt*	For Vim version 9.1.  Last change: 2022 Jun 23
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index b40763123..c4f2a8c4b 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.0.  Last change: 2023 May 06
++*usr_41.txt*	For Vim version 9.1.  Last change: 2023 May 06
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_42.txt b/runtime/doc/usr_42.txt
+index cef7ae028..2763ff283 100644
+--- a/runtime/doc/usr_42.txt
++++ b/runtime/doc/usr_42.txt
+@@ -1,4 +1,4 @@
+-*usr_42.txt*	For Vim version 9.0.  Last change: 2008 May 05
++*usr_42.txt*	For Vim version 9.1.  Last change: 2008 May 05
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_43.txt b/runtime/doc/usr_43.txt
+index 9095a8ec3..41b08de18 100644
+--- a/runtime/doc/usr_43.txt
++++ b/runtime/doc/usr_43.txt
+@@ -1,4 +1,4 @@
+-*usr_43.txt*	For Vim version 9.0.  Last change: 2015 Oct 23
++*usr_43.txt*	For Vim version 9.1.  Last change: 2015 Oct 23
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_44.txt b/runtime/doc/usr_44.txt
+index 11a028607..1d1b5a1e1 100644
+--- a/runtime/doc/usr_44.txt
++++ b/runtime/doc/usr_44.txt
+@@ -1,4 +1,4 @@
+-*usr_44.txt*	For Vim version 9.0.  Last change: 2017 May 06
++*usr_44.txt*	For Vim version 9.1.  Last change: 2017 May 06
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_45.txt b/runtime/doc/usr_45.txt
+index 7e919a942..4a3684e5a 100644
+--- a/runtime/doc/usr_45.txt
++++ b/runtime/doc/usr_45.txt
+@@ -1,4 +1,4 @@
+-*usr_45.txt*	For Vim version 9.0.  Last change: 2022 May 13
++*usr_45.txt*	For Vim version 9.1.  Last change: 2022 May 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_50.txt b/runtime/doc/usr_50.txt
+index fc46388c0..ee377cabe 100644
+--- a/runtime/doc/usr_50.txt
++++ b/runtime/doc/usr_50.txt
+@@ -1,4 +1,4 @@
+-*usr_50.txt*	For Vim version 9.0.  Last change: 2022 Jun 20
++*usr_50.txt*	For Vim version 9.1.  Last change: 2022 Jun 20
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
+index e83324a66..f2b5e13b7 100644
+--- a/runtime/doc/usr_51.txt
++++ b/runtime/doc/usr_51.txt
+@@ -1,4 +1,4 @@
+-*usr_51.txt*	For Vim version 9.0.  Last change: 2022 Jun 03
++*usr_51.txt*	For Vim version 9.1.  Last change: 2022 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index 787dd91e6..222b899c3 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
+@@ -1,4 +1,4 @@
+-*usr_52.txt*	For Vim version 9.0.  Last change: 2022 Jun 04
++*usr_52.txt*	For Vim version 9.1.  Last change: 2022 Jun 04
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_90.txt b/runtime/doc/usr_90.txt
+index 781a0ffdf..418f1f0dc 100644
+--- a/runtime/doc/usr_90.txt
++++ b/runtime/doc/usr_90.txt
+@@ -1,4 +1,4 @@
+-*usr_90.txt*	For Vim version 9.0.  Last change: 2022 May 13
++*usr_90.txt*	For Vim version 9.1.  Last change: 2022 May 13
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
+index 655d6a90d..4cb404bc8 100644
+--- a/runtime/doc/usr_toc.txt
++++ b/runtime/doc/usr_toc.txt
+@@ -1,4 +1,4 @@
+-*usr_toc.txt*	For Vim version 9.0.  Last change: 2022 Jun 20
++*usr_toc.txt*	For Vim version 9.1.  Last change: 2022 Jun 20
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index ec2e3fdec..0aa5c7431 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.0.  Last change: 2023 Sep 27
++*various.txt*   For Vim version 9.1.  Last change: 2023 Sep 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/version4.txt b/runtime/doc/version4.txt
+index 052cbbd63..ab358d288 100644
+--- a/runtime/doc/version4.txt
++++ b/runtime/doc/version4.txt
+@@ -1,4 +1,4 @@
+-*version4.txt*  For Vim version 9.0.  Last change: 2006 Apr 24
++*version4.txt*  For Vim version 9.1.  Last change: 2006 Apr 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/version5.txt b/runtime/doc/version5.txt
+index cde0ad05a..19fcf9e1c 100644
+--- a/runtime/doc/version5.txt
++++ b/runtime/doc/version5.txt
+@@ -1,4 +1,4 @@
+-*version5.txt*  For Vim version 9.0.  Last change: 2022 Nov 09
++*version5.txt*  For Vim version 9.1.  Last change: 2022 Nov 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/version6.txt b/runtime/doc/version6.txt
+index e14e15886..f4d2a9858 100644
+--- a/runtime/doc/version6.txt
++++ b/runtime/doc/version6.txt
+@@ -1,4 +1,4 @@
+-*version6.txt*  For Vim version 9.0.  Last change: 2022 Apr 06
++*version6.txt*  For Vim version 9.1.  Last change: 2022 Apr 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/version7.txt b/runtime/doc/version7.txt
+index 7ca46c59a..a5460771f 100644
+--- a/runtime/doc/version7.txt
++++ b/runtime/doc/version7.txt
+@@ -1,4 +1,4 @@
+-*version7.txt*  For Vim version 9.0.  Last change: 2021 May 17
++*version7.txt*  For Vim version 9.1.  Last change: 2021 May 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/version8.txt b/runtime/doc/version8.txt
+index fd30bbc73..1d36c78b1 100644
+--- a/runtime/doc/version8.txt
++++ b/runtime/doc/version8.txt
+@@ -1,4 +1,4 @@
+-*version8.txt*  For Vim version 9.0.  Last change: 2022 Feb 26
++*version8.txt*  For Vim version 9.1.  Last change: 2022 Feb 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 124ab698d..0f4400a3f 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.0.  Last change: 2024 Jan 01
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jan 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41531,4 +41531,8 @@ Solution:   Always reset wlv->need_showbreak regardless of the values of
+             'breakindent' and 'showbreak', as they aren't checked when
+             setting wlv->need_showbreak (zeertzjq)
+ 
+- vim:tw=78:ts=8:noet:ft=help:norl:
++Patch 9.0.2190
++Problem:    proto files need update
++Solution:   re-generate them
++
++ vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index 433270647..1714833c8 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
+@@ -1,4 +1,4 @@
+-*vi_diff.txt*   For Vim version 9.0.  Last change: 2022 Apr 03
++*vi_diff.txt*   For Vim version 9.1.  Last change: 2022 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index e7d0f2ae3..b12b1cc99 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.0.  Last change: 2023 Dec 24
++*vim9.txt*	For Vim version 9.1.  Last change: 2023 Dec 24
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index c295fa4f5..ca9daffac 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.0.  Last change: 2024 Jan 01
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
+index a91969e41..3f48915c6 100644
+--- a/runtime/doc/visual.txt
++++ b/runtime/doc/visual.txt
+@@ -1,4 +1,4 @@
+-*visual.txt*    For Vim version 9.0.  Last change: 2023 Sep 19
++*visual.txt*    For Vim version 9.1.  Last change: 2023 Sep 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 74cec4230..806474875 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.0.  Last change: 2022 Nov 27
++*windows.txt*   For Vim version 9.1.  Last change: 2022 Nov 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+diff --git a/runtime/doc/workshop.txt b/runtime/doc/workshop.txt
+index f71866dd1..9ec30da95 100644
+--- a/runtime/doc/workshop.txt
++++ b/runtime/doc/workshop.txt
+@@ -1,4 +1,4 @@
+-*workshop.txt*  For Vim version 9.0.  Last change: 2019 Jan 17
++*workshop.txt*  For Vim version 9.1.  Last change: 2019 Jan 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur
