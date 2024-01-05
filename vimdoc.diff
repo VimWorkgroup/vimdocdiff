@@ -1,97 +1,211 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e6c20220b..4dff6b53f 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 084c76edf..94fcdf70c 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2023 Dec 20
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Jan 03
+-*builtin.txt*	For Vim version 9.1.  Last change: 2023 Dec 24
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 04
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -997,11 +997,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	what the background color looks like.  For changing the background
- 	color, see |:hi-normal|.
+@@ -370,6 +370,8 @@ matchadd({group}, {pattern} [, {priority} [, {id} [, {dict}]]])
+ matchaddpos({group}, {pos} [, {priority} [, {id} [, {dict}]]])
+ 				Number	highlight positions with {group}
+ matcharg({nr})			List	arguments of |:match|
++matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict})
++				List	all the {pat} matches in buffer {buf}
+ matchdelete({id} [, {win}])	Number	delete match identified by {id}
+ matchend({expr}, {pat} [, {start} [, {count}]])
+ 				Number	position where {pat} ends in {expr}
+@@ -381,6 +383,8 @@ matchlist({expr}, {pat} [, {start} [, {count}]])
+ 				List	match and submatches of {pat} in {expr}
+ matchstr({expr}, {pat} [, {start} [, {count}]])
+ 				String	{count}'th match of {pat} in {expr}
++matchstrlist({list}, {pat} [, {dict})
++				List	all the {pat} matches in {list}
+ matchstrpos({expr}, {pat} [, {start} [, {count}]])
+ 				List	{count}'th match of {pat} in {expr}
+ max({expr})			Number	maximum value of items in {expr}
+@@ -3566,6 +3570,7 @@ getcompletion({pat}, {type} [, {filtered}])		*getcompletion()*
+ 		help		help subjects
+ 		highlight	highlight groups
+ 		history		|:history| suboptions
++		keymap		keyboard mappings
+ 		locale		locale names (as output of locale -a)
+ 		mapclear	buffer argument
+ 		mapping		mapping name
+@@ -6054,6 +6059,51 @@ matcharg({nr})							*matcharg()*
  
--	When 'background' is set Vim will adjust the default color groups for
--	the new value.  But the colors used for syntax highlighting will not
--	change.					*g:colors_name*
-+	When 'background' is changed Vim will adjust the default color groups
-+	for the new value.  But the colors used for syntax highlighting will
-+	not change.					*g:colors_name*
- 	When a color scheme is loaded (the "g:colors_name" variable is set)
--	setting 'background' will cause the color scheme to be reloaded.  If
-+	changing 'background' will cause the color scheme to be reloaded.  If
- 	the color scheme adjusts to the value of 'background' this will work.
- 	However, if the color scheme sets 'background' itself the effect may
- 	be undone.  First delete the "g:colors_name" variable when needed.
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 040780b35..e3cac2e24 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2023 Dec 27
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 03
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1261,7 +1261,7 @@ To highlight KDE-reserved features, set >
- g:desktop_enable_kde follows g:desktop_enable_nonstd if not supplied
- 
- 
--DIFF							*diff.vim*
-+DIFF						*diff.vim* *ft-diff-syntax*
- 
- The diff highlighting normally finds translated headers.  This can be slow if
- there are very long lines in the file.  To disable translations: >
-@@ -1270,7 +1270,15 @@ there are very long lines in the file.  To disable translations: >
- 
- Also see |diff-slow|.
- 
-+Since the Vim 9.1 release |version-9.1| the diff filetype links the diffAdded,
-+diffRemoved and diffChanged highlighting groups to |hl-DiffAdd|,
-+|hl-DiffDelete| and |hl-DiffChange| by default.  If you do not want this, you
-+can change it to the previous groups like this in your |.vimrc| >
- 
-+	hi link diffRemoved Special
-+	hi link diffChanged PreProc
-+	hi link diffAdded Identifier
+ 		Can also be used as a |method|: >
+ 			GetMatch()->matcharg()
 +<
- DIRCOLORS			       *dircolors.vim* *ft-dircolors-syntax*
++							*matchbufline()*
++matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
++		Returns the |List| of matches in lines from {lnum} to {end} in
++		buffer {buf} where {pat} matches.
++
++		{lnum} and {end} can either be a line number or the string "$"
++		to refer to the last line in {buf}.
++
++		The {dict} argument supports following items:
++		    submatches	include submatch information (|/\(|)
++
++		For each match, a |Dict| with the following items is returned:
++		    byteidx	starting byte index of the match
++		    lnum	line number where there is a match
++		    text	matched string
++		Note that there can be multiple matches in a single line.
++
++		This function works only for loaded buffers. First call
++		|bufload()| if needed.
++
++		When {buf} is not a valid buffer, the buffer is not loaded or
++		{lnum} or {end} is not valid then an error is given and an
++		empty |List| is returned.
++
++		Examples: >
++		    " Assuming line 3 in buffer 5 contains "a"
++		    :echo matchbufline(5, '\<\k\+\>', 3, 3)
++		    [{'lnum': 3, 'byteidx': 0, 'text': 'a'}]
++		    " Assuming line 4 in buffer 10 contains "tik tok"
++		    :echo matchbufline(10, '\<\k\+\>', 1, 4)
++		    [{'lnum': 4, 'byteidx': 0, 'text': 'tik'}, {'lnum': 4, 'byteidx': 4, 'text': 'tok'}]
++<
++		If {submatch} is present and is v:true, then submatches like
++		"\1", "\2", etc. are also returned.  Example: >
++		    " Assuming line 2 in buffer 2 contains "acd"
++		    :echo matchbufline(2, '\(a\)\?\(b\)\?\(c\)\?\(.*\)', 2, 2
++						\ {'submatches': v:true})
++		    [{'lnum': 2, 'byteidx': 0, 'text': 'acd', 'submatches': ['a', '', 'c', 'd', '', '', '', '', '']}]
++<		The "submatches" List always contains 9 items.  If a submatch
++		is not found, then an empty string is returned for that
++		submatch.
++
++		Can also be used as a |method|: >
++			GetBuffer()->matchbufline('mypat', 1, '$')
  
- The dircolors utility highlighting definition has one option.  It exists to
-@@ -1669,27 +1677,19 @@ placed prior to the :syntax on command.  Unfortunately, the use of tabs will
- mean that the syntax file will not be able to detect incorrect margins.
+ matchdelete({id} [, {win})		       *matchdelete()* *E802* *E803*
+ 		Deletes a match with ID {id} previously defined by |matchadd()|
+@@ -6187,6 +6237,40 @@ matchlist({expr}, {pat} [, {start} [, {count}]])		*matchlist()*
  
- Syntax folding of Fortran files ~
--If you wish to use foldmethod=syntax, then you must first set the variable
--fortran_fold with a command such as >
-+Vim will fold your file using foldmethod=syntax, if you set the variable
-+fortran_fold in your .vimrc with a command such as >
-     :let fortran_fold=1
- to instruct the syntax script to define fold regions for program units, that
- is main programs starting with a program statement, subroutines, function
--subprograms, modules, submodules, and block data units. Block, interface,
--associate, critical, type definition, and change team constructs will also be
--folded.  If you also set the variable fortran_fold_conditionals with a command
--such as >
-+subprograms, modules, submodules, blocks of comment lines, and block data
-+units. Block, interface, associate, critical, type definition, and change team
-+constructs will also be folded.  If you also set the variable
-+fortran_fold_conditionals with a command such as >
-     :let fortran_fold_conditionals=1
- then fold regions will also be defined for do loops, if blocks, select case,
--select type, and select rank constructs.  If you also set the variable
--fortran_fold_multilinecomments with a command such as >
--    :let fortran_fold_multilinecomments=1
--then fold regions will also be defined for three or more consecutive comment
--lines.  Note that defining fold regions can be slow for large files.
--
--If fortran_fold, and possibly fortran_fold_conditionals and/or
--fortran_fold_multilinecomments, have been set, then vim will fold your file.
--Comments or blank lines placed between two program units are not folded
--because they are seen as not belonging to any program unit.
-+select type, and select rank constructs.  Note that defining fold regions can
-+be slow for large files.
+ 		Can also be used as a |method|: >
+ 			GetText()->matchlist('word')
++<
++						*matchstrlist()*
++matchstrlist({list}, {pat} [, {dict}])
++		Returns the |List| of matches in {list} where {pat} matches.
++		{list} is a |List| of strings.  {pat} is matched against each
++		string in {list}.
++
++		The {dict} argument supports following items:
++		    submatches	include submatch information (|/\(|)
++
++		For each match, a |Dict| with the following items is returned:
++		    byteidx	starting byte index of the match.
++		    idx		index in {list} of the match.
++		    text	matched string
++		    submatches	a List of submatches.  Present only if
++				"submatches" is set to v:true in {dict}.
++
++		Example: >
++		    :echo matchstrlist(['tik tok'], '\<\k\+\>')
++		    [{'idx': 0, 'byteidx': 0, 'text': 'tik'}, {'idx': 0, 'byteidx': 4, 'text': 'tok'}]
++		    :echo matchstrlist(['a', 'b'], '\<\k\+\>')
++		    [{'idx': 0, 'byteidx': 0, 'text': 'a'}, {'idx': 1, 'byteidx': 0, 'text': 'b'}]
++<
++		If "submatches" is present and is v:true, then submatches like
++		"\1", "\2", etc. are also returned.  Example: >
++		    :echo matchstrlist(['acd'], '\(a\)\?\(b\)\?\(c\)\?\(.*\)',
++						\ #{submatches: v:true})
++		    [{'idx': 0, 'byteidx': 0, 'text': 'acd', 'submatches': ['a', '', 'c', 'd', '', '', '', '', '']}]
++<		The "submatches" List always contains 9 items.  If a submatch
++		is not found, then an empty string is returned for that
++		submatch.
++
++		Can also be used as a |method|: >
++			GetListOfStrings()->matchstrlist('mypat')
  
- The syntax/fortran.vim script contains embedded comments that tell you how to
- comment and/or uncomment some lines to (a) activate recognition of some
+ matchstr({expr}, {pat} [, {start} [, {count}]])			*matchstr()*
+ 		Same as |match()|, but return the matched string.  Example: >
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index d458aa661..7d4d53048 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.1.  Last change: 2023 December 31
++*map.txt*       For Vim version 9.1.  Last change: 2024 Jan 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1631,6 +1631,7 @@ completion can be enabled:
+ 	-complete=help		help subjects
+ 	-complete=highlight	highlight groups
+ 	-complete=history	:history suboptions
++	-complete=keymap	keyboard mappings
+ 	-complete=locale	locale names (as output of locale -a)
+ 	-complete=mapclear	buffer argument
+ 	-complete=mapping	mapping name
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 448b68bce..8c07fbf53 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -600,7 +600,8 @@ i]						*v_i]* *v_i[* *i]* *i[*
+ i[			"inner [] block", select [count] '[' ']' blocks.  This
+ 			goes backwards to the [count] unclosed '[', and finds
+ 			the matching ']'.  The enclosed text is selected,
+-			excluding the '[' and ']'.  The |cpo-M| option flag
++			excluding the '[' and ']'.  It's an error to select an
++			empty inner block like "[]".  The |cpo-M| option flag
+ 			is used to handle escaped brackets.
+ 			When used in Visual mode it is made characterwise.
+ 
+@@ -618,7 +619,8 @@ i(							*vib* *v_ib* *v_i(* *ib*
+ ib			"inner block", select [count] blocks, from "[count] [("
+ 			to the matching ')', excluding the '(' and ')' (see
+ 			|[(|).  If the cursor is not inside a () block, then
+-			find the next "(".  The |cpo-M| option flag
++			find the next "(".  It's an error to select an empty
++			inner block like "()".  The |cpo-M| option flag
+ 			is used to handle escaped parenthesis.
+ 			When used in Visual mode it is made characterwise.
+ 
+@@ -632,8 +634,9 @@ a<			"a <> block", select [count] <> blocks, from the
+ i>						*v_i>* *v_i<* *i>* *i<*
+ i<			"inner <> block", select [count] <> blocks, from
+ 			the [count]'th unmatched '<' backwards to the matching
+-			'>', excluding the '<' and '>'.  The |cpo-M| option flag
+-			is used to handle escaped '<' and '>'.
++			'>', excluding the '<' and '>'.  It's an error to
++			select an empty inner block like "<>".  The |cpo-M|
++			option flag is used to handle escaped '<' and '>'.
+ 			When used in Visual mode it is made characterwise.
+ 
+ 						*v_at* *at*
+@@ -663,7 +666,8 @@ i}							*v_i}* *i}* *i{*
+ i{							*v_iB* *v_i{* *iB*
+ iB			"inner Block", select [count] Blocks, from "[count] [{"
+ 			to the matching '}', excluding the '{' and '}' (see
+-			|[{|).  The |cpo-M| option flag is used to handle
++			|[{|).  It's an error to select an empty inner block
++			like "{}".  The |cpo-M| option flag is used to handle
+ 			escaped braces.
+ 			When used in Visual mode it is made characterwise.
+ 
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index c4f2a8c4b..2286d4851 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -743,10 +743,13 @@ String manipulation:					*string-functions*
+ 	toupper()		turn a string to uppercase
+ 	charclass()		class of a character
+ 	match()			position where a pattern matches in a string
++	matchbufline()		all the matches of a pattern in a buffer
+ 	matchend()		position where a pattern match ends in a string
+ 	matchfuzzy()		fuzzy matches a string in a list of strings
+ 	matchfuzzypos()		fuzzy matches a string in a list of strings
+ 	matchstr()		match of a pattern in a string
++	matchstrlist()		all the matches of a pattern in a List of
++				strings
+ 	matchstrpos()		match and positions of a pattern in a string
+ 	matchlist()		like matchstr() and also return submatches
+ 	stridx()		first index of a short string in a long string
