@@ -1,515 +1,184 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 94fcdf70c..9ac79c611 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index cc293a597..6715f655b 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 04
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 05
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 03
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7388,9 +7388,9 @@ reltime({start}, {end})					*reltime()*
- 			echo startTime->reltime()->reltimestr()
+@@ -271,6 +271,10 @@ you can see the actual color, except for "Ignore"):
+ 	*Todo		anything that needs extra attention; mostly the
+ 			keywords TODO FIXME and XXX
+ 
++	*Added		added line in a diff
++	*Changed	changed line in a diff
++	*Removed	removed line in a diff
++
+ The names marked with * are the preferred groups; the others are minor groups.
+ For the preferred groups, the "syntax.vim" file contains default highlighting.
+ The minor groups are linked to the preferred groups, so they get the same
+@@ -1261,7 +1265,7 @@ To highlight KDE-reserved features, set >
+ g:desktop_enable_kde follows g:desktop_enable_nonstd if not supplied
+ 
+ 
+-DIFF						*diff.vim* *ft-diff-syntax*
++DIFF							*diff.vim*
+ 
+ The diff highlighting normally finds translated headers.  This can be slow if
+ there are very long lines in the file.  To disable translations: >
+@@ -1270,15 +1274,6 @@ there are very long lines in the file.  To disable translations: >
+ 
+ Also see |diff-slow|.
+ 
+-Since the Vim 9.1 release |version-9.1| the diff filetype links the diffAdded,
+-diffRemoved and diffChanged highlighting groups to |hl-DiffAdd|,
+-|hl-DiffDelete| and |hl-DiffChange| by default.  If you do not want this, you
+-can change it to the previous groups like this in your |.vimrc| >
+-
+-	hi link diffRemoved Special
+-	hi link diffChanged PreProc
+-	hi link diffAdded Identifier
+-<
+ DIRCOLORS			       *dircolors.vim* *ft-dircolors-syntax*
+ 
+ The dircolors utility highlighting definition has one option.  It exists to
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index ca9daffac..6e94e8483 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 01
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -106,17 +106,17 @@ The object variables "lnum" and "col" can be accessed directly: >
+ 	echo $'The text position is ({pos.lnum}, {pos.col})'
+ <						    *E1317* *E1327* *:this*
+ If you have been using other object-oriented languages you will notice that in
+-Vim, within a class definition, the object members are consistently referred
+-to with the "this." prefix.  This is different from languages like Java and
+-TypeScript.  The naming convention makes the object members easy to spot.
+-Also, when a variable does not have the "this." prefix you know it is not an
+-object variable.
++Vim, within a class definition, the declared object members are consistently
++referred to with the "this." prefix.  This is different from languages like
++Java and TypeScript.  The naming convention makes the object members easy to
++spot.  Also, when a variable does not have the "this." prefix you know it is
++not an object variable.
+ 								*E1411*
+ From outside the class definition, access an object's methods and variables by
+ using the object name followed by a dot following by the member: >
+ 
+ 	pos.lnum
+-	pos.setCol(10)
++	pos.SetCol(10)
  <
- 		Without an argument reltime() returns the current time (the
--		representation is system-dependent, it can not be used as the
-+		representation is system-dependent, it cannot be used as the
- 		wall-clock time, see |localtime()| for that).
--		With one argument is returns the time passed since the time
-+		With one argument it returns the time passed since the time
- 		specified in the argument.
- 		With two arguments it returns the time passed between {start}
- 		and {end}.
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index e8445db54..4876e3d75 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -1,4 +1,4 @@
--*filetype.txt*  For Vim version 9.1.  Last change: 2024 Jan 01
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Jan 04
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -148,6 +148,7 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.cls		g:filetype_cls
- 	*.csh		g:filetype_csh		|ft-csh-syntax|
- 	*.dat		g:filetype_dat
-+	*.def		g:filetype_def
- 	*.f		g:filetype_f		|ft-forth-syntax|
- 	*.frm		g:filetype_frm		|ft-form-syntax|
- 	*.fs		g:filetype_fs		|ft-forth-syntax|
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index de8866fc6..6ebd83e3e 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2022 Sep 30
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Jan 04
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -168,22 +168,22 @@ CTRL-R CTRL-O {register}			*i_CTRL-R_CTRL-O*
- 		auto-indent.  Does the same as pasting with the mouse
- 		|<MiddleMouse>|. When the register is linewise this will
- 		insert the text above the current line, like with `P`.
--		Does not replace characters!
- 		The '.' register (last inserted text) is still inserted as
- 		typed.
- 		After this command, the '.' register contains the command
- 		typed and not the text. I.e., the literals "^R^O" and not the
- 		text from the register.
-+		Does not replace characters in |Replace-mode|!
- 
- CTRL-R CTRL-P {register}			*i_CTRL-R_CTRL-P*
- 		Insert the contents of a register literally and fix the
- 		indent, like |[<MiddleMouse>|.
--		Does not replace characters!
- 		The '.' register (last inserted text) is still inserted as
- 		typed.
- 		After this command, the '.' register contains the command
- 		typed and not the text. I.e., the literals "^R^P" and not the
- 		text from the register.
-+		Does not replace characters in |Replace-mode|!
- 
- 						*i_CTRL-T*
- CTRL-T		Insert one shiftwidth of indent at the start of the current
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index e3cac2e24..cc293a597 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -2251,6 +2251,56 @@ have the following in your .vimrc: >
- 	let filetype_m = "mma"
- 
- 
-+MODULA2					*modula2.vim* *ft-modula2-syntax*
-+
-+Vim will recognise comments with dialect tags to automatically select a given
-+dialect.
-+
-+The syntax for a dialect tag comment is: >
-+
-+	taggedComment :=
-+	  '(*!' dialectTag '*)'
-+	  ;
-+
-+	dialectTag :=
-+	  m2pim | m2iso | m2r10
-+	  ;
-+
-+	reserved words
-+	  m2pim = 'm2pim', m2iso = 'm2iso', m2r10 = 'm2r10'
-+
-+A dialect tag comment is recognised by Vim if it occurs within the first 200
-+lines of the source file. Only the very first such comment is recognised, any
-+additional dialect tag comments are ignored.
-+
-+Example: >
-+
-+	DEFINITION MODULE FooLib; (*!m2pim*)
-+	...
-+
-+Variable g:modula2_default_dialect sets the default Modula-2 dialect when the
-+dialect cannot be determined from the contents of the Modula-2 file: if
-+defined and set to 'm2pim', the default dialect is PIM.
-+
-+Example: >
-+
-+	let g:modula2_default_dialect = 'm2pim'
-+
-+
-+Highlighting is further configurable for each dialect via the following
-+variables.
-+
-+Variable			Highlight ~
-+*modula2_iso_allow_lowline*	allow low line in identifiers
-+*modula2_iso_disallow_octals*	disallow octal integer literals
-+*modula2_iso_disallow_synonyms*	disallow "@", "&" and "~" synonyms
-+
-+*modula2_pim_allow_lowline*	allow low line in identifiers
-+*modula2_pim_disallow_octals*	disallow octal integer literals
-+*modula2_pim_disallow_synonyms*	disallow "&" and "~" synonyms
-+
-+*modula2_r10_allow_lowline*	allow low line in identifiers
-+
- MOO						*moo.vim* *ft-moo-syntax*
- 
- If you use C-style comments inside expressions and find it mangles your
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 0f4400a3f..697fd7984 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Jan 01
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Jan 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -12957,7 +12957,7 @@ Files:      src/fileio.c
- Patch 8.2.2056
- Problem:    Configure fails when building with the
-             "implicit-function-declaration" error enabled, specifically on Mac.
--Solution:   Declear the functions like in the source code. (suggestion by
-+Solution:   Declare the functions like in the source code. (suggestion by
-             Clemens Lang, closes #7380)
- Files:      src/configure.ac, src/auto/configure
- 
-@@ -18862,7 +18862,7 @@ Solution:   Do not handle text properties when deleting a line for splitting a
- Files:      src/structs.h, src/memline.c, src/testdir/test_textprop.vim
- 
- Patch 8.2.3063
--Problem:    Crash when switching 'cryptmethod' to xchaha20 with an existing
-+Problem:    Crash when switching 'cryptmethod' to xchacha20 with an existing
-             undo file. (Martin Tournoij)
- Solution:   Disable reading undo file when decoding can't be done inplace.
-             (issue #8467)
-@@ -19819,7 +19819,7 @@ Solution:   Add missing changes.
- Files:      src/globals.h
- 
- Patch 8.2.3218
--Problem:    When using xchaha20 crypt undo file is not removed.
-+Problem:    When using xchacha20 crypt undo file is not removed.
- Solution:   Reset 'undofile' and delete the file. (Christian Brabandt,
-             closes #8630, closes #8467)
- Files:      src/bufwrite.c, src/crypt.c, src/proto/undo.pro,
-@@ -29043,7 +29043,7 @@ Files:      src/testdir/test_autocmd.vim
- 
- Patch 8.2.4729
- Problem:    HEEx and Surface templates do not need a separate filetype.
--Solution:   Use Eelixir for the similar filetypes. (Aaron Tinio, closes #10124)
-+Solution:   Use Elixir for the similar filetypes. (Aaron Tinio, closes #10124)
- Files:      runtime/filetype.vim, src/testdir/test_filetype.vim
- 
- Patch 8.2.4730
-@@ -31688,7 +31688,7 @@ Files:      runtime/makemenu.vim
- VERSION 9.1				*version-9.1* *version9.1* *vim-9.1*
- 
- This section is about improvements made between version 9.0 and 9.1.
--The release 9.1 is dedicated to Vims Benevolent dictator for life
-+The release 9.1 is dedicated to Vim's Benevolent dictator for life
- |Bram-Moolenaar|.
- 
- This release has hundreds of bug fixes, there are a few new features and there
-@@ -31774,7 +31774,7 @@ Other improvements				*new-other-9.1*
- - Support "**" for filename expansion with bash using globstar setting.
- - Add quadruple prime digraph using 4'.
- - Better high dpi support on Windows.
--- Varous fixes for unsafe memory access, memory leaks, buffer overflows
-+- Various fixes for unsafe memory access, memory leaks, buffer overflows
-   and potential crashes.
- - Termdebug: Support for the variables window (|termdebug_variables_window|),
-   moving up/down the stack frames (|termdebug-frames|) and setting temporary
-@@ -32098,7 +32098,7 @@ Problem:    Split else-of is confusing.
- Solution:   Join the lines. (closes #10696)
- 
- Patch 9.0.0051
--Problem:    Using CTRL-C wih :append may hang Vim.
-+Problem:    Using CTRL-C with :append may hang Vim.
- Solution:   Reset got_int. (closes #10729, closes #10728)
- 
- Patch 9.0.0052
-@@ -32487,7 +32487,7 @@ Solution:   pass the command modifier in sticky_cmdmod_flags. (Kota Kato,
-             closes #10845)
- 
- Patch 9.0.0141
--Problem:    "delmenu" does not remove autocmmands. Running menu test function
-+Problem:    "delmenu" does not remove autocommands. Running menu test function
-             alone fails.
- Solution:   Delete autocommands Make sure there is at least one menu.
-             (closes #10848)
-@@ -32663,7 +32663,7 @@ Solution:   Remove ch_logfile() calls.
- 
- Patch 9.0.0181
- Problem:    Textprop test with line2byte() fails on MS-Windows.
--Solution:   Fix updating chuncks in ml_delete_int().
-+Solution:   Fix updating chunks in ml_delete_int().
- 
- Patch 9.0.0182
- Problem:    Quarto files are not recognized.
-@@ -32901,7 +32901,7 @@ Problem:    Cannot make difference between the end of :normal and a character
- Solution:   Add the "typebuf_was_empty" flag. (closes #10950)
- 
- Patch 9.0.0235
--Problem:    'autoshelldir' does not work with chunked respose.
-+Problem:    'autoshelldir' does not work with chunked response.
- Solution:   Collect chunks before parsing OSC 7. (closes #10949)
- 
- Patch 9.0.0236
-@@ -32991,7 +32991,7 @@ Solution:   Add #ifdef.
- 
- Patch 9.0.0256
- Problem:    Compiler warning for uninitialized variables.
--Solution:   Initilize the variables.
-+Solution:   Initialize the variables.
- 
- Patch 9.0.0257
- Problem:    "->" in ":scriptnames" output not tested yet.
-@@ -33101,7 +33101,7 @@ Problem:    Build failure without the +eval feature.
- Solution:   Add #ifdef.
- 
- Patch 9.0.0282
--Problem:    A nested timout stops the previous timeout.
-+Problem:    A nested timeout stops the previous timeout.
- Solution:   Ignore any nested timeout.
- 
- Patch 9.0.0283
-@@ -33542,7 +33542,7 @@ Problem:    Coverity complains about unused value.
- Solution:   Use the value.
- 
- Patch 9.0.0384
--Problem:    Covertity still complains about using return value of getc().
-+Problem:    Coverity still complains about using return value of getc().
- Solution:   Check for EOF.
- 
- Patch 9.0.0385
-@@ -34271,7 +34271,7 @@ Problem:    Crash when using NUL in buffer that uses :source.
- Solution:   Don't get a next line when skipping over NL.
- 
- Patch 9.0.0553
--Problem:    No error for "|" after "{" in lamda.
-+Problem:    No error for "|" after "{" in lambda.
- Solution:   Check for invalid "|". (closes #11199)
- 
- Patch 9.0.0554
-@@ -34310,7 +34310,7 @@ Solution:   Set a timeout of 30 seconds.
- 
- Patch 9.0.0562
- Problem:    HSL playlist files are not recognized.
--Solution:   Add a pattern to recognize HSL palylist files. (Benoît Ryder,
-+Solution:   Add a pattern to recognize HSL playlist files. (Benoît Ryder,
-             closes #11204)
- 
- Patch 9.0.0563
-@@ -34400,7 +34400,7 @@ Solution:   Also remove /private from the expected directory.
- 
- Patch 9.0.0583
- Problem:    Only recognizing .m3u8 files is inconsistent.
--Solution:   Also matc .m3u files. (issue #11204)
-+Solution:   Also match .m3u files. (issue #11204)
- 
- Patch 9.0.0584
- Problem:    Cscope test with wrong executable name fails.
-@@ -34678,7 +34678,7 @@ Solution:   Stop at line 1 when 'smoothscroll' is not set. (closes #11261)
- Patch 9.0.0646
- Problem:    with 'smoothscroll' set CTRL-E does not work properly when
-             'foldmethod' is set to "indent". (Yee Cheng Chin)
--Solution:   Merge the code for scroling with folds and 'smoothscroll'.
-+Solution:   Merge the code for scrolling with folds and 'smoothscroll'.
-             (closes #11262)
- 
- Patch 9.0.0647
-@@ -34770,7 +34770,7 @@ Patch 9.0.0666
- Problem:    Spacing-combining characters handled as composing, causing text to
-             take more space than expected.
- Solution:   Handle characters marked with "Mc" not as composing.
--            (closes #11282
-+            (closes #11282)
- 
- Patch 9.0.0667
- Problem:    ml_get error when 'splitkeep' is "screen". (Marius Gedminas)
-@@ -34858,7 +34858,7 @@ Solution:   Use a pointer to the first char. (Yee Cheng Chin, closes #11302)
- 
- Patch 9.0.0686
- Problem:    The right ALT key does not work on some MS-Windows keyboards.
--Solution:   Adjust the modifiers based on GetKeyState(). (Anoton Sharonov,
-+Solution:   Adjust the modifiers based on GetKeyState(). (Anton Sharonov,
-             closes #11300)
- 
- Patch 9.0.0687
-@@ -35139,7 +35139,7 @@ Solution:   Adjust expected result to slightly different behavior.  Correct
- 
- Patch 9.0.0747
- Problem:    Too many #ifdefs.
--Solution:   Gradudate the +cmdline_info feature. (Martin Tournoij,
-+Solution:   Graduate the +cmdline_info feature. (Martin Tournoij,
-             closes #11330)
- 
- Patch 9.0.0748
-@@ -35305,7 +35305,7 @@ Solution:   Free the allocated memory when bailing out.
- 
- Patch 9.0.0786
- Problem:    User command does not get number from :tab modifier.
--Solution:   Include the number. (closes #11393, closes #6801)
-+Solution:   Include the number. (closes #11393, closes #6901)
- 
- Patch 9.0.0787
- Problem:    MS-Windows: mouse scrolling in terminal misbehaves without dll.
-@@ -35372,8 +35372,8 @@ Solution:   Remove one typedef.
- 
- Patch 9.0.0801
- Problem:    The modifyOtherKeys flag is set when it should not.
--Solution:   Do not handle special key codes with a modifer value above 16 as a
--            modifyOtherKeys value. (issue #11403)
-+Solution:   Do not handle special key codes with a modifier value above 16 as
-+            a modifyOtherKeys value. (issue #11403)
- 
- Patch 9.0.0802
- Problem:    MS-Windows: cannot map console mouse scroll events.
-@@ -35385,7 +35385,7 @@ Problem:    readblob() cannot read from character device.
- Solution:   Use S_ISCHR() to not check the size. (Ken Takata, closes #11407)
- 
- Patch 9.0.0804
--Problem:    Crash when trying to divice the largest negative number by -1.
-+Problem:    Crash when trying to divide the largest negative number by -1.
- Solution:   Handle this case specifically.
- 
- Patch 9.0.0805
-@@ -35974,7 +35974,7 @@ Solution:   Improve code formatting.
- 
- Patch 9.0.0935
- Problem:    When using dash it may not be recognize as filetype "sh".
--Solution:   Add checks for "dash". (Eisuke Kawashima,closes #11600)
-+Solution:   Add checks for "dash". (Eisuke Kawashima, closes #11600)
- 
- Patch 9.0.0936
- Problem:    Wrong type for "isunnamed" returned by getreginfo().
-@@ -36465,7 +36465,7 @@ Solution:   When setting "curwin" also set "curbuf". (closes #11687)
- 
- Patch 9.0.1045
- Problem:    In a class object members cannot be initialized.
--Solution:   Support initializing object members. Make "dissassemble" work on
-+Solution:   Support initializing object members. Make "disassemble" work on
-             an object method.
- 
- Patch 9.0.1046
-@@ -36668,7 +36668,7 @@ Problem:    Clang warns for unused variable.
- Solution:   Adjust #ifdef. (John Marriott)
- 
- Patch 9.0.1089
--Problem:    unnessary assignment
-+Problem:    unnecessary assignment
- Solution:   Remove the assignment. (Luuk van Baal, closes #1136)
- 
- Patch 9.0.1090
-@@ -36886,11 +36886,11 @@ Solution:   Only use the member when the type is a list. (closes #11774)
- 
- Patch 9.0.1139
- Problem:    Cannot create a new object in a compiled function.
--Solution:   Compile the instructins to create a new object.
-+Solution:   Compile the instructions to create a new object.
- 
- Patch 9.0.1140
- Problem:    Cannot call an object method in a compiled function.
--Solution:   Compile the instructins to invoke an object method.
-+Solution:   Compile the instructions to invoke an object method.
- 
- Patch 9.0.1141
- Problem:    'cursorcolumn' and 'colorcolumn' wrong after concealing and
-@@ -37031,7 +37031,7 @@ Solution:   Redraw the screen when the cell widths have changed. (Yasuhiro
- 
- Patch 9.0.1172
- Problem:    When 'selection' is "exclusive" then "1v" is one char short.
--Solution:   Add one character when 'selection' is "exclusive. (closes #11791)
-+Solution:   Add one character when 'selection' is "exclusive". (closes #11791)
- 
- Patch 9.0.1173
- Problem:    Compiler warning for unused variable on non-Unix systems.
-@@ -37264,7 +37264,7 @@ Problem:    Reading past the end of a line when formatting text.
- Solution:   Check for not going over the end of the line.
- 
- Patch 9.0.1226
--Problem:    Spurious empty line when using text propertie and virtual text.
-+Problem:    Spurious empty line when using text properties and virtual text.
- Solution:   Do not set "text_prop_follows" when the other text property is not
-             virtual text. (closes #11846)
- 
-@@ -37504,7 +37504,7 @@ Problem:    Display shows lines scrolled down erroneously. (Yishai Lerner)
- Solution:   Do not change "wl_lnum" at index zero. (closes #11938)
- 
- Patch 9.0.1280
--Problem:    Inssufficient testing for what 9.0.1265 fixes.
-+Problem:    Insufficient testing for what 9.0.1265 fixes.
- Solution:   Add a couple of test cases. (issue #11885)
- 
- Patch 9.0.1281
-@@ -37533,7 +37533,7 @@ Problem:    Coverity warns for using a NULL pointer.
- Solution:   Bail out whan "varp" is NULL.
- 
- Patch 9.0.1287
--Problem:    With the Kitty key protocl Esc with NumLock cannot be mapped.
-+Problem:    With the Kitty key protocol Esc with NumLock cannot be mapped.
- Solution:   Also use K_ESC when there is a modifier. (closes #11811)
- 
- Patch 9.0.1288
-@@ -37706,7 +37706,7 @@ Solution:   Use the same code as used for "j"/"k" to go to the next/previous
- 
- Patch 9.0.1325
- Problem:    'colorcolumn' highlight wrong with virtual text above.
--Solution:   Adjust column of 'colorcolumn' for text propertly. (closes #12004)
-+Solution:   Adjust column of 'colorcolumn' for text property. (closes #12004)
- 
- Patch 9.0.1326
- Problem:    Relative line number not updated with virtual text above.
-@@ -37965,8 +37965,8 @@ Problem:    xxd: combination of little endian and cols fails. (Aapo
- Solution:   Round up the space taken by the hex output. (closes #12097)
- 
- Patch 9.0.1384
--Problem:    Setting HOMEBREW_NO_AUTO_UPDATE is not needed with Homebew version
--            4.
-+Problem:    Setting HOMEBREW_NO_AUTO_UPDATE is not needed with Homebrew
-+            version 4.
- Solution:   Remove setting HOMEBREW_NO_AUTO_UPDATE. (closes #12008)
- 
- Patch 9.0.1385
-@@ -38413,7 +38413,7 @@ Solution:   Add entry for Xchacha, even though it is not used.
- 
- Patch 9.0.1485
- Problem:    no functions for converting from/to UTF-16 index.
--Solution:   Add UTF-16 flag to existing funtions and add strutf16len() and
-+Solution:   Add UTF-16 flag to existing functions and add strutf16len() and
-             utf16idx(). (Yegappan Lakshmanan, closes #12216)
- 
- Patch 9.0.1486
-@@ -38427,7 +38427,7 @@ Solution:   Use "vscode-jsonrpc" instead of "vim-jsonrpc". (Yegappan
- 
- Patch 9.0.1488
- Problem:    xchacha20v2 crypt header is platform dependent.
--Solution:   Avoid using "size_t". (Ozaki Kiichi, closses #12296)
-+Solution:   Avoid using "size_t". (Ozaki Kiichi, closes #12296)
- 
- Patch 9.0.1489
- Problem:    Crypt with libsodium is not tested on CI.
-@@ -39720,7 +39720,7 @@ Solution:   Add a few more tests for operator pending mode and register
- Patch 9.0.1780
- Problem:    Vim9 type not defined during object creation
- Solution:   Define type during object creation and not during class
--            definition, parse mulit-line member initializers, fix lock
-+            definition, parse multi-line member initializers, fix lock
-             initialization
- 
- Patch 9.0.1781
-@@ -39786,7 +39786,7 @@ Problem:    obsolete macros in configure script
- Solution:   Remove those and start moving to autoconf 2.71
- 
- Patch 9.0.1794
--Problem:    autoconf: not correctly detecing include dirs
-+Problem:    autoconf: not correctly detecting include dirs
- Solution:   make use of python3 to generate includedirs
- 
- Patch 9.0.1795
-@@ -40117,7 +40117,7 @@ Problem:    Coverity warns about uninitialized var
- Solution:   initialize it
- 
- Patch 9.0.1870
--Problem:    Vim9: disassamble does not show static
-+Problem:    Vim9: disassemble does not show static
- Solution:   Show static flag
- 
- Patch 9.0.1871
-@@ -40860,7 +40860,7 @@ Solution:   Fix cmdline completion fuzzy/Ctrl-E/Ctrl-Y/options when not
- Patch 9.0.2038
- Problem:    Vim9: object method funcref not cleaned up after use
- Solution:   Clean up type stack after using object method funcref,
--            remove now longer used ISN_DEFEROBJ instrunction
-+            remove now longer used ISN_DEFEROBJ instruction
- 
- Patch 9.0.2039
- Problem:    completion shows current word after completion restart
-@@ -40883,7 +40883,7 @@ Problem:    Vim9: issue with funcref assignment and varargs
- Solution:   Fix funcref type checking
- 
- Patch 9.0.2044
--Problem:    Vim9: exceptions confuse defered functions
-+Problem:    Vim9: exceptions confuse deferred functions
- Solution:   save and restore exception state when calling deferred
-             functions
- 
+ 							*E1405* *E1406*
+ A class name cannot be used as an expression.  A class name cannot be used in
+@@ -164,7 +164,7 @@ from outside the class or its sub-classes, you can make them protected.  This
+ is done by prefixing an underscore to the name: >
+ 
+ 	var _lnum: number
+-	var _col number
++	var _col: number
+ 
+ Now you need to provide methods to get the value of the protected variables.
+ These are commonly called getters.  We recommend using a name that starts with
+@@ -174,7 +174,7 @@ These are commonly called getters.  We recommend using a name that starts with
+ 	   return this._lnum
+ 	enddef
+ 
+-	def GetCol() number
++	def GetCol(): number
+ 	   return this._col
+ 	enddef
+ 
+@@ -330,7 +330,8 @@ variables but they have no access to the object variables, they cannot use the
+ 
+ Inside the class the class method can be called by name directly, outside the
+ class the class name must be prefixed: `OtherThing.ClearTotalSize()`.  To use
+-a super class method in a child class, the class name must be prefixed.
++a class method from a parent class in a child class, the class name must be
++prefixed.
+ 
+ Just like object methods the access can be made protected by using an
+ underscore as the first character in the method name: >
+@@ -492,17 +493,15 @@ prefix when defining the method: >
+ 
+ 	abstract class Shape
+ 	   abstract def Draw()
+-	   abstract static def SetColor()
+ 	endclass
+ <
+ A static method in an abstract class cannot be an abstract method.
+ 
+ 						*E1373*
+-A class extending the abstract class must implement all the abstract methods.
+-The signature (arguments, argument types and return type) must be exactly the
+-same.  If the return type of a method is a class, then that class or one of
+-its subclasses can be used in the extended method.  Class methods in an
+-abstract class can also be abstract methods.
++A non-abstract class extending the abstract class must implement all the
++abstract methods.  The signature (arguments, argument types and return type)
++must be exactly the same.  If the return type of a method is a class, then
++that class or one of its subclasses can be used in the extended method.
+ 
+ ==============================================================================
+ 
+@@ -610,7 +609,7 @@ once.  They can appear in any order, although this order is recommended: >
+ <							*E1355* *E1369*
+ Each variable and method name can be used only once.  It is not possible to
+ define a method with the same name and different type of arguments.  It is not
+-possible to use a public and protected member variable with the same name.  A
++possible to use a public and protected member variable with the same name.  An
+ object variable name used in a super class cannot be reused in a child class.
+ 
+ 
+@@ -688,7 +687,7 @@ Inside a class, in between `:class` and `:endclass`, these items can appear:
+ - A class variable declaration: >
+ 	static var _protectedClassVariableName: memberType
+ 	static var readonlyClassVariableName: memberType
+-	static var public readwriteClassVariableName: memberType
++	public static var readwriteClassVariableName: memberType
+ - A constructor method: >
+ 	def new(arguments)
+ 	def newName(arguments)
+@@ -747,7 +746,7 @@ null object ~
+ When a variable is declared to have the type of an object, but it is not
+ initialized, the value is null.  When trying to use this null object Vim often
+ does not know what class was supposed to be used.  Vim then cannot check if
+-a variable name is correct and you will get an "Using a null object" error,
++a variable name is correct and you will get a "Using a null object" error,
+ even when the variable name is invalid. *E1360* *E1362*
+ 
+ 
+@@ -787,7 +786,7 @@ the name, you can define the constructor like this: >
+ <
+ When using the default new() method, if the order of the object variables in
+ the class is changed later, then all the callers of the default new() method
+-needs to change.  To avoid this, the new() method can be explicitly defined
++need to change.  To avoid this, the new() method can be explicitly defined
+ without any arguments.
+ 
+ 							*E1328*
+@@ -993,7 +992,7 @@ in the body, while for other variables this is not needed and often omitted.
+ This leads to a mix of variables with and without "this.", which is
+ inconsistent.
+ 
+-For |Vim9| classes the "this." prefix is always used.  Also for declaring the
++For |Vim9| classes the "this." prefix is always used for declared methods and
+ variables.  Simple and consistent.  When looking at the code inside a class
+ it's also directly clear which variable references are object variables and
+ which aren't.
+@@ -1029,7 +1028,7 @@ Following that Vim object variables could be declared like this: >
+ 	endclass
+ 
+ Some users pointed out that this looks more like an assignment than a
+-declaration.  Adding "var" changes that: >
++declaration.  Adding "var" and omitting "this." changes that: >
+ 	class Point
+ 	  var x: number
+ 	  var y = 0
