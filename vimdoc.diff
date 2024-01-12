@@ -1,103 +1,65 @@
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index 07d70c831..90164e299 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 9847ff7d3..746488ecc 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -130,8 +130,6 @@ Further Vim9 improvements:
+     Issue #11822: any.Func() can be a dict or an object call, need to handle
+     this at runtime.  Also see #12198 for an example.
+     Possibly issue #11981 can be fixed at the same time (has two examples).
+-  - Make ":defcompile ClassName" compile all functions and methods in the
+-    class.
+   - Forward declaration of a class?  E.g. for Clone() function.
+ 	Email lifepillar 2023 Mar 26
+   - object empty(), len() - can class define a method to be used for them?
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index b12b1cc99..b246fcbce 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*pi_netrw.txt*  For Vim version 9.1.  Last change: 2023 May 14
-+*pi_netrw.txt*  For Vim version 9.1.  Last change: 2023 Jun 19
- 
- 	    ------------------------------------------------
- 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
-@@ -1625,10 +1625,8 @@ A further approach is to delete files which match a pattern.
-       This will cause the matching files to be marked.  Then,
-       press "D".
- 
--If your vim has 7.4 with patch#1107, then |g:netrw_localrmdir| no longer
--is used to remove directories; instead, vim's |delete()| is used with
--the "d" option.  Please note that only empty directories may be deleted
--with the "D" mapping.  Regular files are deleted with |delete()|, too.
-+Please note that only empty directories may be deleted with the "D" mapping.
-+Regular files are deleted with |delete()|, too.
- 
- The |g:netrw_rm_cmd|, |g:netrw_rmf_cmd|, and |g:netrw_rmdir_cmd| variables are
- used to control the attempts to remove remote files and directories.  The
-@@ -1647,8 +1645,7 @@ to remove it again using the g:netrw_rmf_cmd variable.  Its default value is:
- 	|g:netrw_rmf_cmd|: ssh HOSTNAME rm -f
- 
- Related topics: |netrw-d|
--Associated setting variable: |g:netrw_localrmdir| |g:netrw_rm_cmd|
--                             |g:netrw_rmdir_cmd|   |g:netrw_ssh_cmd|
-+Associated setting variable: |g:netrw_rm_cmd| |g:netrw_ssh_cmd|
+-*vim9.txt*	For Vim version 9.1.  Last change: 2023 Dec 24
++*vim9.txt*	For Vim version 9.1.  Last change: 2024 Jan 12
  
  
- *netrw-explore*  *netrw-hexplore* *netrw-nexplore* *netrw-pexplore*
-@@ -1691,7 +1688,11 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
- 	  to 2; edits will thus preferentially be made in window#2.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1260,10 +1260,12 @@ Script-local variables in a |Vim9| script must be declared at the script
+ level.  They cannot be created in a function, also not in a legacy function.
  
- 	  The [N] specifies a |g:netrw_winsize| just for the new :Lexplore
--	  window.
-+	  window. That means that
-+	    if [N] < 0 : use |N| columns for the Lexplore window
-+	    if [N] = 0 : a normal split is made
-+	    if [N] > 0 : use N% of the current window will be used for the
-+	                 new window
+ 						*:defc* *:defcompile*
+-:defc[ompile]		Compile functions defined in the current script that
+-			were not compiled yet.
+-			This will report any errors found during compilation.
+-			This excludes functions defined inside a class.
++:defc[ompile]		Compile functions and classes (|class-compile|)
++			defined in the current script that were not compiled
++			yet.  This will report any errors found during
++			compilation.
++
++:defc[ompile] MyClass  Compile all methods in a class |class-compile|.
  
- 	  Those who like this method often also like tree style displays;
- 	  see |g:netrw_liststyle|.
-@@ -2863,14 +2864,6 @@ your browsing preferences.  (see also: |netrw-settings|)
- 				=" /c move"                     Windows
- 				Options for |g:netrw_localmovecmd|
+ :defc[ompile] {func}
+ :defc[ompile] debug {func}
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 6e94e8483..ba821c1b2 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 06
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 12
  
--  *g:netrw_localrmdir*		="rmdir"        Linux/Unix/MacOS/Cygwin
--				=expand("$COMSPEC")             Windows
--				Remove directory command (rmdir)
--				This variable is only used if your vim is
--				earlier than 7.4 or if your vim doesn't
--				have patch#1107.  Otherwise, |delete()|
--				is used with the "d" option.
--
-   *g:netrw_maxfilenamelen*	=32 by default, selected so as to make long
- 				    listings fit on 80 column displays.
- 				If your screen is wider, and you have file
-@@ -3781,7 +3774,7 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	     Netrw uses several system level commands to do things (see
  
- 		 |g:netrw_localcopycmd|, |g:netrw_localmovecmd|,
--		 |g:netrw_localrmdir|, |g:netrw_mkdir_cmd|).
-+		 |g:netrw_mkdir_cmd|).
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -830,7 +830,14 @@ Note that the method name must start with "new".  If there is no method called
+ "new()" then the default constructor is added, even though there are other
+ constructor methods.
  
- 	    You may need to adjust the default commands for one or more of
- 	    these commands by setting them properly in your .vimrc.  Another
-@@ -3907,8 +3900,13 @@ netrw:
++Compiling methods in a Class ~
++							*class-compile*
++The |:defcompile| command can be used to compile all the class and object
++methods defined in a class: >
+ 
++	defcompile MyClass	# Compile class "MyClass"
++	defcompile		# Compile the classes in the current script
++<
  ==============================================================================
- 12. History						*netrw-history* {{{1
  
--	v172:	Apr 22, 2023	* removed g:netrw_localrmdiropt
--				  removed g:netrw_localrmdir
-+	v172:	Sep 02, 2021	* (Bram Moolenaar) Changed "l:go" to "go"
-+				* (Bram Moolenaar) no need for "b" in
-+				  netrw-safe guioptions
-+		Nov 15, 2021	* removed netrw_localrm and netrw_localrmdir
-+				  references
-+		Aug 18, 2022	* (Miguel Barro) improving compatability with
-+				  powershell
- 	v171:	Oct 09, 2020	* included code in s:NetrwOptionsSafe()
- 				  to allow |'bh'| to be set to delete when
- 				  rather than hide when g:netrw_fastbrowse
-@@ -3996,7 +3994,6 @@ netrw:
- 				  |g:netrw_localcopydircmdopt|
- 				  |g:netrw_localmkdiropt|
- 				  |g:netrw_localmovecmdopt|
--				  g:netrw_localrmdiropt
- 		Nov 21, 2016	* (mattn) provided a patch for preview; swapped
- 				  winwidth() with winheight()
- 		Nov 22, 2016	* (glacambre) reported that files containing
-@@ -4056,7 +4053,7 @@ netrw:
- 				  refreshes.  However, inside a |:map-<expr>|,
- 				  tab and window changes are disallowed.  Fixed.
- 				  (affects netrw's s:LocalBrowseRefresh())
--				* |g:netrw_localrmdir| not used any more, but
-+				* g:netrw_localrmdir not used any more, but
- 				  the relevant patch that causes |delete()| to
- 				  take over was #1107 (not #1109).
- 				* |expand()| is now used on |g:netrw_home|;
+ 7.  Type definition				*typealias* *Vim9-type* *:type*
