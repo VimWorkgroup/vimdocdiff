@@ -1,65 +1,91 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 9847ff7d3..746488ecc 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -130,8 +130,6 @@ Further Vim9 improvements:
-     Issue #11822: any.Func() can be a dict or an object call, need to handle
-     this at runtime.  Also see #12198 for an example.
-     Possibly issue #11981 can be fixed at the same time (has two examples).
--  - Make ":defcompile ClassName" compile all functions and methods in the
--    class.
-   - Forward declaration of a class?  E.g. for Clone() function.
- 	Email lifepillar 2023 Mar 26
-   - object empty(), len() - can class define a method to be used for them?
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index b12b1cc99..b246fcbce 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 9ac79c611..4bbf5066f 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.1.  Last change: 2023 Dec 24
-+*vim9.txt*	For Vim version 9.1.  Last change: 2024 Jan 12
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 05
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1260,10 +1260,12 @@ Script-local variables in a |Vim9| script must be declared at the script
- level.  They cannot be created in a function, also not in a legacy function.
+@@ -198,6 +198,8 @@ foldclosedend({lnum})		Number	last line of fold at {lnum} if closed
+ foldlevel({lnum})		Number	fold level at {lnum}
+ foldtext()			String	line displayed for closed fold
+ foldtextresult({lnum})		String	text for closed fold at {lnum}
++foreach({expr1}, {expr2})	List/Dict/Blob/String
++					for each item in {expr1} call {expr2}
+ foreground()			Number	bring the Vim window to the foreground
+ fullcommand({name} [, {vim9}])	String	get full command from {name}
+ funcref({name} [, {arglist}] [, {dict}])
+@@ -2995,6 +2997,45 @@ foldtextresult({lnum})					*foldtextresult()*
  
- 						*:defc* *:defcompile*
--:defc[ompile]		Compile functions defined in the current script that
--			were not compiled yet.
--			This will report any errors found during compilation.
--			This excludes functions defined inside a class.
-+:defc[ompile]		Compile functions and classes (|class-compile|)
-+			defined in the current script that were not compiled
-+			yet.  This will report any errors found during
-+			compilation.
+ 		Can also be used as a |method|: >
+ 			GetLnum()->foldtextresult()
 +
-+:defc[ompile] MyClass  Compile all methods in a class |class-compile|.
- 
- :defc[ompile] {func}
- :defc[ompile] debug {func}
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 6e94e8483..ba821c1b2 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
++foreach({expr1}, {expr2})					*foreach()*
++		{expr1} must be a |List|, |String|, |Blob| or |Dictionary|.
++		For each item in {expr1} execute {expr2}. {expr1} is not
++		modified; its values may be, as with |:lockvar| 1. *E741*
++		See |map()| and |filter()| to modify {expr1}.
++
++		{expr2} must be a |string| or |Funcref|.
++
++		If {expr2} is a |string|, inside {expr2} |v:val| has the value
++		of the current item.  For a |Dictionary| |v:key| has the key
++		of the current item and for a |List| |v:key| has the index of
++		the current item.  For a |Blob| |v:key| has the index of the
++		current byte. For a |String| |v:key| has the index of the
++		current character.
++		Examples: >
++			call foreach(mylist, 'used[v:val] = true')
++<		This records the items that are in the {expr1} list.
++
++		Note that {expr2} is the result of expression and is then used
++		as a command.  Often it is good to use a |literal-string| to
++		avoid having to double backslashes.
++
++		If {expr2} is a |Funcref| it must take two arguments:
++			1. the key or the index of the current item.
++			2. the value of the current item.
++		With a legacy script lambda you don't get an error if it only
++		accepts one argument, but with a Vim9 lambda you get "E1106:
++		One argument too many", the number of arguments must match.
++		If the function returns a value, it is ignored.
++
++		Returns {expr1} in all cases.
++		When an error is encountered while executing {expr2} no
++		further items in {expr1} are processed.
++		When {expr2} is a Funcref errors inside a function are ignored,
++		unless it was defined with the "abort" flag.
++
++		Can also be used as a |method|: >
++			mylist->foreach(expr2)
+ <
+ 							*foreground()*
+ foreground()	Move the Vim window to the foreground.  Useful when sent from
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 2286d4851..0990a0651 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
 @@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 06
-+*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Jan 12
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2023 May 06
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Jan 13
  
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -830,7 +830,14 @@ Note that the method name must start with "new".  If there is no method called
- "new()" then the default constructor is added, even though there are other
- constructor methods.
- 
-+Compiling methods in a Class ~
-+							*class-compile*
-+The |:defcompile| command can be used to compile all the class and object
-+methods defined in a class: >
- 
-+	defcompile MyClass	# Compile class "MyClass"
-+	defcompile		# Compile the classes in the current script
-+<
- ==============================================================================
- 
- 7.  Type definition				*typealias* *Vim9-type* *:type*
+@@ -798,6 +798,7 @@ List manipulation:					*list-functions*
+ 	filter()		remove selected items from a List
+ 	map()			change each List item
+ 	mapnew()		make a new List with changed items
++	foreach()		apply function to List items
+ 	reduce()		reduce a List to a value
+ 	slice()			take a slice of a List
+ 	sort()			sort a List
+@@ -829,6 +830,7 @@ Dictionary manipulation:				*dict-functions*
+ 	filter()		remove selected entries from a Dictionary
+ 	map()			change each Dictionary entry
+ 	mapnew()		make a new Dictionary with changed items
++	foreach()		apply function to Dictionary items
+ 	keys()			get List of Dictionary keys
+ 	values()		get List of Dictionary values
+ 	items()			get List of Dictionary key-value pairs
