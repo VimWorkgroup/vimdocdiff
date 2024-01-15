@@ -1,91 +1,163 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 2ac0247bb..0ace7b1da 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2023 May 20
++*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jan 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -340,6 +340,7 @@ Name			triggered by ~
+ |GUIEnter|		after starting the GUI successfully
+ |GUIFailed|		after starting the GUI failed
+ |TermResponse|		after the terminal response to |t_RV| is received
++|TermResponseAll|	after the terminal response to |t_RV| and others is received
+ 
+ |QuitPre|		when using `:quit`, before deciding whether to exit
+ |ExitPre|		when using a command that may make Vim exit
+@@ -1220,6 +1221,24 @@ TermResponse			After the response to |t_RV| is received from
+ 				triggered halfway executing another event,
+ 				especially if file I/O, a shell command or
+ 				anything else that takes time is involved.
++							*TermResponseAll*
++TermResponseAll			After the response to |t_RV|, |t_RC|, |t_RS|,
++				|t_RB|, |t_RF|, or |t_u7| are received from
++				the terminal.  The value of |v:termresponse|,
++				|v:termblinkresp|, |v:termstyleresp|,
++				|v:termrbgresp|, |v:termrfgresp|, and
++				|v:termu7resp|, correspondingly, can be used.
++				<amatch> will be set to any of:
++				    "version",
++				    "cursorblink",
++				    "cursorshape",
++				    "background",
++				    "foreground",
++				    "ambiguouswidth"
++				Note that this event may be triggered halfway
++				executing another event, especially if file I/O,
++				a shell command or anything else that takes time
++				is involved.
+ 							*TextChanged*
+ TextChanged			After a change was made to the text in the
+ 				current buffer in Normal mode.  That is after
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 9ac79c611..4bbf5066f 100644
+index 4bbf5066f..adb5dc435 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
+@@ -3001,7 +3001,7 @@ foldtextresult({lnum})					*foldtextresult()*
+ foreach({expr1}, {expr2})					*foreach()*
+ 		{expr1} must be a |List|, |String|, |Blob| or |Dictionary|.
+ 		For each item in {expr1} execute {expr2}. {expr1} is not
+-		modified; its values may be, as with |:lockvar| 1. *E741*
++		modified; its values may be, as with |:lockvar| 1. |E741|
+ 		See |map()| and |filter()| to modify {expr1}.
+ 
+ 		{expr2} must be a |string| or |Funcref|.
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 2ea6839c9..d0f893856 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 05
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 13
+-*editing.txt*   For Vim version 9.1.  Last change: 2023 Sep 27
++*editing.txt*   For Vim version 9.1.  Last change: 2024 Jan 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1329,8 +1329,9 @@ b:browsefilter variable.  You would most likely set b:browsefilter in a
+ filetype plugin, so that the browse dialog would contain entries related to
+ the type of file you are currently editing.  Disadvantage: This makes it
+ difficult to start editing a file of a different type.  To overcome this, you
+-may want to add "All Files\t*.*\n" as the final filter, so that the user can
+-still access any desired file.
++may want to add "All Files (*.*)\t*\n" as the final filter on Windows or "All
++Files (*)\t*\n" on other platforms, so that the user can still access any
++desired file.
+ 
+ To avoid setting browsefilter when Vim does not actually support it, you can
+ use has("browsefilter"): >
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index d52f7fe16..9c12fb850 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2023 Dec 09
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Jan 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -198,6 +198,8 @@ foldclosedend({lnum})		Number	last line of fold at {lnum} if closed
- foldlevel({lnum})		Number	fold level at {lnum}
- foldtext()			String	line displayed for closed fold
- foldtextresult({lnum})		String	text for closed fold at {lnum}
-+foreach({expr1}, {expr2})	List/Dict/Blob/String
-+					for each item in {expr1} call {expr2}
- foreground()			Number	bring the Vim window to the foreground
- fullcommand({name} [, {vim9}])	String	get full command from {name}
- funcref({name} [, {arglist}] [, {dict}])
-@@ -2995,6 +2997,45 @@ foldtextresult({lnum})					*foldtextresult()*
+@@ -2568,8 +2568,9 @@ v:termresponse	The escape sequence returned by the terminal for the |t_RV|
+ 		'c', with only digits and ';' in between.
+ 		When this option is set, the TermResponse autocommand event is
+ 		fired, so that you can react to the response from the
+-		terminal.  You can use |terminalprops()| to see what Vim
+-		figured out about the terminal.
++		terminal.  The TermResponseAll event is also fired, with
++		<amatch> set to "version".  You can use |terminalprops()| to see
++		what Vim figured out about the terminal.
+ 		The response from a new xterm is: "<Esc>[> Pp ; Pv ; Pc c".  Pp
+ 		is the terminal type: 0 for vt100 and 1 for vt220.  Pv is the
+ 		patch level (since this was introduced in patch 95, it's
+@@ -2581,27 +2582,37 @@ v:termresponse	The escape sequence returned by the terminal for the |t_RV|
+ 						*v:termblinkresp*
+ v:termblinkresp	The escape sequence returned by the terminal for the |t_RC|
+ 		termcap entry.  This is used to find out whether the terminal
+-		cursor is blinking. This is used by |term_getcursor()|.
++		cursor is blinking. This is used by |term_getcursor()|.  When
++		this option is set, the TermResponseAll autocommand event is
++		fired, with <amatch> set to "cursorblink".
  
- 		Can also be used as a |method|: >
- 			GetLnum()->foldtextresult()
-+
-+foreach({expr1}, {expr2})					*foreach()*
-+		{expr1} must be a |List|, |String|, |Blob| or |Dictionary|.
-+		For each item in {expr1} execute {expr2}. {expr1} is not
-+		modified; its values may be, as with |:lockvar| 1. *E741*
-+		See |map()| and |filter()| to modify {expr1}.
-+
-+		{expr2} must be a |string| or |Funcref|.
-+
-+		If {expr2} is a |string|, inside {expr2} |v:val| has the value
-+		of the current item.  For a |Dictionary| |v:key| has the key
-+		of the current item and for a |List| |v:key| has the index of
-+		the current item.  For a |Blob| |v:key| has the index of the
-+		current byte. For a |String| |v:key| has the index of the
-+		current character.
-+		Examples: >
-+			call foreach(mylist, 'used[v:val] = true')
-+<		This records the items that are in the {expr1} list.
-+
-+		Note that {expr2} is the result of expression and is then used
-+		as a command.  Often it is good to use a |literal-string| to
-+		avoid having to double backslashes.
-+
-+		If {expr2} is a |Funcref| it must take two arguments:
-+			1. the key or the index of the current item.
-+			2. the value of the current item.
-+		With a legacy script lambda you don't get an error if it only
-+		accepts one argument, but with a Vim9 lambda you get "E1106:
-+		One argument too many", the number of arguments must match.
-+		If the function returns a value, it is ignored.
-+
-+		Returns {expr1} in all cases.
-+		When an error is encountered while executing {expr2} no
-+		further items in {expr1} are processed.
-+		When {expr2} is a Funcref errors inside a function are ignored,
-+		unless it was defined with the "abort" flag.
-+
-+		Can also be used as a |method|: >
-+			mylist->foreach(expr2)
- <
- 							*foreground()*
- foreground()	Move the Vim window to the foreground.  Useful when sent from
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 2286d4851..0990a0651 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
+ 						*v:termstyleresp*
+ v:termstyleresp	The escape sequence returned by the terminal for the |t_RS|
+ 		termcap entry.  This is used to find out what the shape of the
+-		cursor is.  This is used by |term_getcursor()|.
++		cursor is.  This is used by |term_getcursor()|.  When this
++		option is set, the TermResponseAll autocommand event is fired,
++		with <amatch> set to "cursorshape".
+ 
+ 						*v:termrbgresp*
+ v:termrbgresp	The escape sequence returned by the terminal for the |t_RB|
+ 		termcap entry.  This is used to find out what the terminal
+-		background color is, see 'background'.
++		background color is; see 'background'.  When this option is
++		set, the TermResponseAll autocommand event is fired, with
++		<amatch> set to "background".
+ 
+ 						*v:termrfgresp*
+ v:termrfgresp	The escape sequence returned by the terminal for the |t_RF|
+ 		termcap entry.  This is used to find out what the terminal
+-		foreground color is.
++		foreground color is.  When this option is set, the
++		TermResponseAll autocommand event is fired, with <amatch> set
++		to "foreground".
+ 
+ 						*v:termu7resp*
+ v:termu7resp	The escape sequence returned by the terminal for the |t_u7|
+ 		termcap entry.  This is used to find out what the terminal
+-		does with ambiguous width characters, see 'ambiwidth'.
++		does with ambiguous width characters, see 'ambiwidth'.  When
++		this option is set, the TermResponseAll autocommand event is
++		fired, with <amatch> set to "ambiguouswidth".
+ 
+ 					*v:testing* *testing-variable*
+ v:testing	Must be set before using `test_garbagecollect_now()`.
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 746488ecc..c29ac2e2c 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2023 May 06
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Jan 13
+-*todo.txt*      For Vim version 9.1.  Last change: 2023 Dec 14
++*todo.txt*      For Vim version 9.1.  Last change: 2024 Jan 14
  
- 		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -798,6 +798,7 @@ List manipulation:					*list-functions*
- 	filter()		remove selected items from a List
- 	map()			change each List item
- 	mapnew()		make a new List with changed items
-+	foreach()		apply function to List items
- 	reduce()		reduce a List to a value
- 	slice()			take a slice of a List
- 	sort()			sort a List
-@@ -829,6 +830,7 @@ Dictionary manipulation:				*dict-functions*
- 	filter()		remove selected entries from a Dictionary
- 	map()			change each Dictionary entry
- 	mapnew()		make a new Dictionary with changed items
-+	foreach()		apply function to Dictionary items
- 	keys()			get List of Dictionary keys
- 	values()		get List of Dictionary values
- 	items()			get List of Dictionary key-value pairs
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1121,9 +1121,6 @@ When t_Co is changed from termresponse, the OptionSet autocommand event isn't
+ triggered.  Use the code from the end of set_num_option() in
+ set_color_count().
+ 
+-Add another autocommand like TermResponse that is fired for the other terminal
+-responses, such as bg and fg.  Use "bg", "fg", "blink", etc. for the name.
+-
+ When using command line window, CmdlineLeave is triggered without
+ CmdlineEnter.  (xtal8, 2017 Oct 30, #2263)
+ Add some way to get the nested state.  Although CmdwinEnter is obviously
