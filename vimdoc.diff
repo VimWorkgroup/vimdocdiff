@@ -1,163 +1,97 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 2ac0247bb..0ace7b1da 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2023 May 20
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jan 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -340,6 +340,7 @@ Name			triggered by ~
- |GUIEnter|		after starting the GUI successfully
- |GUIFailed|		after starting the GUI failed
- |TermResponse|		after the terminal response to |t_RV| is received
-+|TermResponseAll|	after the terminal response to |t_RV| and others is received
- 
- |QuitPre|		when using `:quit`, before deciding whether to exit
- |ExitPre|		when using a command that may make Vim exit
-@@ -1220,6 +1221,24 @@ TermResponse			After the response to |t_RV| is received from
- 				triggered halfway executing another event,
- 				especially if file I/O, a shell command or
- 				anything else that takes time is involved.
-+							*TermResponseAll*
-+TermResponseAll			After the response to |t_RV|, |t_RC|, |t_RS|,
-+				|t_RB|, |t_RF|, or |t_u7| are received from
-+				the terminal.  The value of |v:termresponse|,
-+				|v:termblinkresp|, |v:termstyleresp|,
-+				|v:termrbgresp|, |v:termrfgresp|, and
-+				|v:termu7resp|, correspondingly, can be used.
-+				<amatch> will be set to any of:
-+				    "version",
-+				    "cursorblink",
-+				    "cursorshape",
-+				    "background",
-+				    "foreground",
-+				    "ambiguouswidth"
-+				Note that this event may be triggered halfway
-+				executing another event, especially if file I/O,
-+				a shell command or anything else that takes time
-+				is involved.
- 							*TextChanged*
- TextChanged			After a change was made to the text in the
- 				current buffer in Normal mode.  That is after
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 4bbf5066f..adb5dc435 100644
+index adb5dc435..1236703fc 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -3001,7 +3001,7 @@ foldtextresult({lnum})					*foldtextresult()*
- foreach({expr1}, {expr2})					*foreach()*
- 		{expr1} must be a |List|, |String|, |Blob| or |Dictionary|.
- 		For each item in {expr1} execute {expr2}. {expr1} is not
--		modified; its values may be, as with |:lockvar| 1. *E741*
-+		modified; its values may be, as with |:lockvar| 1. |E741|
- 		See |map()| and |filter()| to modify {expr1}.
+@@ -6114,8 +6114,8 @@ matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
  
- 		{expr2} must be a |string| or |Funcref|.
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index 2ea6839c9..d0f893856 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
+ 		For each match, a |Dict| with the following items is returned:
+ 		    byteidx	starting byte index of the match
+-		    lnum	line number where there is a match
+-		    text	matched string
++		    lnum	line number where there is a match
++		    text	matched string
+ 		Note that there can be multiple matches in a single line.
+ 
+ 		This function works only for loaded buffers. First call
+@@ -6126,19 +6126,19 @@ matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
+ 		empty |List| is returned.
+ 
+ 		Examples: >
+-		    " Assuming line 3 in buffer 5 contains "a"
+-		    :echo matchbufline(5, '\<\k\+\>', 3, 3)
+-		    [{'lnum': 3, 'byteidx': 0, 'text': 'a'}]
+-		    " Assuming line 4 in buffer 10 contains "tik tok"
+-		    :echo matchbufline(10, '\<\k\+\>', 1, 4)
+-		    [{'lnum': 4, 'byteidx': 0, 'text': 'tik'}, {'lnum': 4, 'byteidx': 4, 'text': 'tok'}]
++		    " Assuming line 3 in buffer 5 contains "a"
++		    :echo matchbufline(5, '\<\k\+\>', 3, 3)
++		    [{'lnum': 3, 'byteidx': 0, 'text': 'a'}]
++		    " Assuming line 4 in buffer 10 contains "tik tok"
++		    :echo matchbufline(10, '\<\k\+\>', 1, 4)
++		    [{'lnum': 4, 'byteidx': 0, 'text': 'tik'}, {'lnum': 4, 'byteidx': 4, 'text': 'tok'}]
+ <
+ 		If {submatch} is present and is v:true, then submatches like
+-		"\1", "\2", etc. are also returned.  Example: >
+-		    " Assuming line 2 in buffer 2 contains "acd"
+-		    :echo matchbufline(2, '\(a\)\?\(b\)\?\(c\)\?\(.*\)', 2, 2
++		"\1", "\2", etc. are also returned.  Example: >
++		    " Assuming line 2 in buffer 2 contains "acd"
++		    :echo matchbufline(2, '\(a\)\?\(b\)\?\(c\)\?\(.*\)', 2, 2
+ 						\ {'submatches': v:true})
+-		    [{'lnum': 2, 'byteidx': 0, 'text': 'acd', 'submatches': ['a', '', 'c', 'd', '', '', '', '', '']}]
++		    [{'lnum': 2, 'byteidx': 0, 'text': 'acd', 'submatches': ['a', '', 'c', 'd', '', '', '', '', '']}]
+ <		The "submatches" List always contains 9 items.  If a submatch
+ 		is not found, then an empty string is returned for that
+ 		submatch.
+@@ -6296,10 +6296,10 @@ matchstrlist({list}, {pat} [, {dict}])
+ 				"submatches" is set to v:true in {dict}.
+ 
+ 		Example: >
+-		    :echo matchstrlist(['tik tok'], '\<\k\+\>')
+-		    [{'idx': 0, 'byteidx': 0, 'text': 'tik'}, {'idx': 0, 'byteidx': 4, 'text': 'tok'}]
+-		    :echo matchstrlist(['a', 'b'], '\<\k\+\>')
+-		    [{'idx': 0, 'byteidx': 0, 'text': 'a'}, {'idx': 1, 'byteidx': 0, 'text': 'b'}]
++		    :echo matchstrlist(['tik tok'], '\<\k\+\>')
++		    [{'idx': 0, 'byteidx': 0, 'text': 'tik'}, {'idx': 0, 'byteidx': 4, 'text': 'tok'}]
++		    :echo matchstrlist(['a', 'b'], '\<\k\+\>')
++		    [{'idx': 0, 'byteidx': 0, 'text': 'a'}, {'idx': 1, 'byteidx': 0, 'text': 'b'}]
+ <
+ 		If "submatches" is present and is v:true, then submatches like
+ 		"\1", "\2", etc. are also returned.  Example: >
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 6715f655b..5abc4e95b 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -5304,6 +5304,14 @@ ctermul={color-nr}				*highlight-ctermul*
+ 	command is given.  If the Normal group colors are changed later, the
+ 	"fg" and "bg" colors will not be adjusted.
+ 
++ctermfont={font-nr}				*highlight-ctermfont*
++	This gives the alternative font number to use in the terminal. The
++	available fonts depend on the terminal, and if the terminal is not set
++	up for alternative fonts this simply won't do anything. The range of
++	{font-nr} is 0-10 where 0 resets the font to the default font, 1-9
++	selects one of the 9 alternate fonts, and 10 selects the Fraktur font.
++	For more information see your terminal's handling of SGR parameters
++	10-20. |t_CF|
+ 
+ 3. highlight arguments for the GUI
+ 
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 546b0bf90..8154ec596 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
 @@ -1,4 +1,4 @@
--*editing.txt*   For Vim version 9.1.  Last change: 2023 Sep 27
-+*editing.txt*   For Vim version 9.1.  Last change: 2024 Jan 14
+-*term.txt*      For Vim version 9.1.  Last change: 2023 Dec 09
++*term.txt*      For Vim version 9.1.  Last change: 2024 Jan 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1329,8 +1329,9 @@ b:browsefilter variable.  You would most likely set b:browsefilter in a
- filetype plugin, so that the browse dialog would contain entries related to
- the type of file you are currently editing.  Disadvantage: This makes it
- difficult to start editing a file of a different type.  To overcome this, you
--may want to add "All Files\t*.*\n" as the final filter, so that the user can
--still access any desired file.
-+may want to add "All Files (*.*)\t*\n" as the final filter on Windows or "All
-+Files (*)\t*\n" on other platforms, so that the user can still access any
-+desired file.
- 
- To avoid setting browsefilter when Vim does not actually support it, you can
- use has("browsefilter"): >
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index d52f7fe16..9c12fb850 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2023 Dec 09
-+*eval.txt*	For Vim version 9.1.  Last change: 2024 Jan 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2568,8 +2568,9 @@ v:termresponse	The escape sequence returned by the terminal for the |t_RV|
- 		'c', with only digits and ';' in between.
- 		When this option is set, the TermResponse autocommand event is
- 		fired, so that you can react to the response from the
--		terminal.  You can use |terminalprops()| to see what Vim
--		figured out about the terminal.
-+		terminal.  The TermResponseAll event is also fired, with
-+		<amatch> set to "version".  You can use |terminalprops()| to see
-+		what Vim figured out about the terminal.
- 		The response from a new xterm is: "<Esc>[> Pp ; Pv ; Pc c".  Pp
- 		is the terminal type: 0 for vt100 and 1 for vt220.  Pv is the
- 		patch level (since this was introduced in patch 95, it's
-@@ -2581,27 +2582,37 @@ v:termresponse	The escape sequence returned by the terminal for the |t_RV|
- 						*v:termblinkresp*
- v:termblinkresp	The escape sequence returned by the terminal for the |t_RC|
- 		termcap entry.  This is used to find out whether the terminal
--		cursor is blinking. This is used by |term_getcursor()|.
-+		cursor is blinking. This is used by |term_getcursor()|.  When
-+		this option is set, the TermResponseAll autocommand event is
-+		fired, with <amatch> set to "cursorblink".
- 
- 						*v:termstyleresp*
- v:termstyleresp	The escape sequence returned by the terminal for the |t_RS|
- 		termcap entry.  This is used to find out what the shape of the
--		cursor is.  This is used by |term_getcursor()|.
-+		cursor is.  This is used by |term_getcursor()|.  When this
-+		option is set, the TermResponseAll autocommand event is fired,
-+		with <amatch> set to "cursorshape".
- 
- 						*v:termrbgresp*
- v:termrbgresp	The escape sequence returned by the terminal for the |t_RB|
- 		termcap entry.  This is used to find out what the terminal
--		background color is, see 'background'.
-+		background color is; see 'background'.  When this option is
-+		set, the TermResponseAll autocommand event is fired, with
-+		<amatch> set to "background".
- 
- 						*v:termrfgresp*
- v:termrfgresp	The escape sequence returned by the terminal for the |t_RF|
- 		termcap entry.  This is used to find out what the terminal
--		foreground color is.
-+		foreground color is.  When this option is set, the
-+		TermResponseAll autocommand event is fired, with <amatch> set
-+		to "foreground".
- 
- 						*v:termu7resp*
- v:termu7resp	The escape sequence returned by the terminal for the |t_u7|
- 		termcap entry.  This is used to find out what the terminal
--		does with ambiguous width characters, see 'ambiwidth'.
-+		does with ambiguous width characters, see 'ambiwidth'.  When
-+		this option is set, the TermResponseAll autocommand event is
-+		fired, with <amatch> set to "ambiguouswidth".
- 
- 					*v:testing* *testing-variable*
- v:testing	Must be set before using `test_garbagecollect_now()`.
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 746488ecc..c29ac2e2c 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2023 Dec 14
-+*todo.txt*      For Vim version 9.1.  Last change: 2024 Jan 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1121,9 +1121,6 @@ When t_Co is changed from termresponse, the OptionSet autocommand event isn't
- triggered.  Use the code from the end of set_num_option() in
- set_color_count().
- 
--Add another autocommand like TermResponse that is fired for the other terminal
--responses, such as bg and fg.  Use "bg", "fg", "blink", etc. for the name.
--
- When using command line window, CmdlineLeave is triggered without
- CmdlineEnter.  (xtal8, 2017 Oct 30, #2263)
- Add some way to get the nested state.  Although CmdwinEnter is obviously
+@@ -448,6 +448,7 @@ Added by Vim (there are no standard codes for these):
+ 	t_AU	set underline color (ANSI)			*t_AU* *'t_AU'*
+ 	t_Ce	undercurl and underline end			*t_Ce* *'t_Ce'*
+ 	t_Cs	undercurl (curly underline) mode		*t_Cs* *'t_Cs'*
++	t_CF	set alternate font (using index 0 - 10)		*t_CF* *'t_CF'*
+ 	t_Us	double underline mode				*t_Us* *'t_Us'*
+ 	t_ds	dotted underline mode				*t_ds* *'t_ds'*
+ 	t_Ds	dashed underline mode				*t_Ds* *'t_Ds'*
