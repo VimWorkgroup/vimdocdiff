@@ -1,97 +1,51 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index adb5dc435..1236703fc 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -6114,8 +6114,8 @@ matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
- 
- 		For each match, a |Dict| with the following items is returned:
- 		    byteidx	starting byte index of the match
--		    lnum	line number where there is a match
--		    text	matched string
-+		    lnum	line number where there is a match
-+		    text	matched string
- 		Note that there can be multiple matches in a single line.
- 
- 		This function works only for loaded buffers. First call
-@@ -6126,19 +6126,19 @@ matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
- 		empty |List| is returned.
- 
- 		Examples: >
--		    " Assuming line 3 in buffer 5 contains "a"
--		    :echo matchbufline(5, '\<\k\+\>', 3, 3)
--		    [{'lnum': 3, 'byteidx': 0, 'text': 'a'}]
--		    " Assuming line 4 in buffer 10 contains "tik tok"
--		    :echo matchbufline(10, '\<\k\+\>', 1, 4)
--		    [{'lnum': 4, 'byteidx': 0, 'text': 'tik'}, {'lnum': 4, 'byteidx': 4, 'text': 'tok'}]
-+		    " Assuming line 3 in buffer 5 contains "a"
-+		    :echo matchbufline(5, '\<\k\+\>', 3, 3)
-+		    [{'lnum': 3, 'byteidx': 0, 'text': 'a'}]
-+		    " Assuming line 4 in buffer 10 contains "tik tok"
-+		    :echo matchbufline(10, '\<\k\+\>', 1, 4)
-+		    [{'lnum': 4, 'byteidx': 0, 'text': 'tik'}, {'lnum': 4, 'byteidx': 4, 'text': 'tok'}]
- <
- 		If {submatch} is present and is v:true, then submatches like
--		"\1", "\2", etc. are also returned.  Example: >
--		    " Assuming line 2 in buffer 2 contains "acd"
--		    :echo matchbufline(2, '\(a\)\?\(b\)\?\(c\)\?\(.*\)', 2, 2
-+		"\1", "\2", etc. are also returned.  Example: >
-+		    " Assuming line 2 in buffer 2 contains "acd"
-+		    :echo matchbufline(2, '\(a\)\?\(b\)\?\(c\)\?\(.*\)', 2, 2
- 						\ {'submatches': v:true})
--		    [{'lnum': 2, 'byteidx': 0, 'text': 'acd', 'submatches': ['a', '', 'c', 'd', '', '', '', '', '']}]
-+		    [{'lnum': 2, 'byteidx': 0, 'text': 'acd', 'submatches': ['a', '', 'c', 'd', '', '', '', '', '']}]
- <		The "submatches" List always contains 9 items.  If a submatch
- 		is not found, then an empty string is returned for that
- 		submatch.
-@@ -6296,10 +6296,10 @@ matchstrlist({list}, {pat} [, {dict}])
- 				"submatches" is set to v:true in {dict}.
- 
- 		Example: >
--		    :echo matchstrlist(['tik tok'], '\<\k\+\>')
--		    [{'idx': 0, 'byteidx': 0, 'text': 'tik'}, {'idx': 0, 'byteidx': 4, 'text': 'tok'}]
--		    :echo matchstrlist(['a', 'b'], '\<\k\+\>')
--		    [{'idx': 0, 'byteidx': 0, 'text': 'a'}, {'idx': 1, 'byteidx': 0, 'text': 'b'}]
-+		    :echo matchstrlist(['tik tok'], '\<\k\+\>')
-+		    [{'idx': 0, 'byteidx': 0, 'text': 'tik'}, {'idx': 0, 'byteidx': 4, 'text': 'tok'}]
-+		    :echo matchstrlist(['a', 'b'], '\<\k\+\>')
-+		    [{'idx': 0, 'byteidx': 0, 'text': 'a'}, {'idx': 1, 'byteidx': 0, 'text': 'b'}]
- <
- 		If "submatches" is present and is v:true, then submatches like
- 		"\1", "\2", etc. are also returned.  Example: >
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 6715f655b..5abc4e95b 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -5304,6 +5304,14 @@ ctermul={color-nr}				*highlight-ctermul*
- 	command is given.  If the Normal group colors are changed later, the
- 	"fg" and "bg" colors will not be adjusted.
- 
-+ctermfont={font-nr}				*highlight-ctermfont*
-+	This gives the alternative font number to use in the terminal. The
-+	available fonts depend on the terminal, and if the terminal is not set
-+	up for alternative fonts this simply won't do anything. The range of
-+	{font-nr} is 0-10 where 0 resets the font to the default font, 1-9
-+	selects one of the 9 alternate fonts, and 10 selects the Fraktur font.
-+	For more information see your terminal's handling of SGR parameters
-+	10-20. |t_CF|
- 
- 3. highlight arguments for the GUI
- 
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index 546b0bf90..8154ec596 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 4dff6b53f..b3f049419 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.1.  Last change: 2023 Dec 09
-+*term.txt*      For Vim version 9.1.  Last change: 2024 Jan 15
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Jan 03
++*options.txt*	For Vim version 9.1.  Last change: 2024 Jan 17
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -448,6 +448,7 @@ Added by Vim (there are no standard codes for these):
- 	t_AU	set underline color (ANSI)			*t_AU* *'t_AU'*
- 	t_Ce	undercurl and underline end			*t_Ce* *'t_Ce'*
- 	t_Cs	undercurl (curly underline) mode		*t_Cs* *'t_Cs'*
-+	t_CF	set alternate font (using index 0 - 10)		*t_CF* *'t_CF'*
- 	t_Us	double underline mode				*t_Us* *'t_Us'*
- 	t_ds	dotted underline mode				*t_ds* *'t_ds'*
- 	t_Ds	dashed underline mode				*t_Ds* *'t_Ds'*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3478,12 +3478,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'fillchars'* *'fcs'*
+ 'fillchars' 'fcs'	string	(default "vert:|,fold:-,eob:~")
+ 			global or local to window |global-local|
+-			{not available when compiled without the |+folding|
+-			feature}
+ 	Characters to fill the statuslines, vertical separators and special
+ 	lines in the window.
+ 	It is a comma-separated list of items.  Each item has a name, a colon
+-	and the value of that item:
++	and the value of that item: |E1511|
+ 
+ 	  item name	default		Used for ~
+ 	  stl		' '		statusline of the current window
+@@ -3504,7 +3502,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <
+ 	For the "stl", "stlnc", "foldopen", "foldclose" and "foldsep" items
+ 	single-byte and multibyte characters are supported.  But double-width
+-	characters are not supported.
++	characters are not supported. |E1512|
+ 
+ 	The highlighting used for these items:
+ 	  item name	highlight group ~
+@@ -5243,7 +5241,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 'listchars' 'lcs'	string	(default "eol:$")
+ 			global or local to window |global-local|
+ 	Strings to use in 'list' mode and for the |:list| command.  It is a
+-	comma-separated list of string settings.
++	comma-separated list of string settings. *E1511*
+ 							*lcs-eol*
+ 	  eol:c		Character to show at the end of each line.  When
+ 			omitted, there is no extra character at the end of the
+@@ -5319,7 +5317,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	The characters ':' and ',' should not be used.  UTF-8 characters can
+ 	be used when 'encoding' is "utf-8", otherwise only printable
+-	characters are allowed.  All characters must be single width.
++	characters are allowed.  All characters must be single width. *E1512*
+ 
+ 	Each character can be specified as hex: >
+ 		set listchars=eol:\\x24
