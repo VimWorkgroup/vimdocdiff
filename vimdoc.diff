@@ -1,153 +1,29 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 0ace7b1da..164136179 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jan 14
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jan 23
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1098,7 +1098,7 @@ SafeState			When nothing is pending, going to wait for the
- 				- Command line completion is active
- 				You can use `mode()` to find out what state
- 				Vim is in.  That may be:
--				- VIsual mode
-+				- Visual mode
- 				- Normal mode
- 				- Insert mode
- 				- Command-line mode
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 1236703fc..9b706ba20 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 13
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 23
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3244,6 +3244,8 @@ getbufinfo([{dict}])
- 			bufnr		Buffer number.
- 			changed		TRUE if the buffer is modified.
- 			changedtick	Number of changes made to the buffer.
-+			command		TRUE if the buffer belongs to the
-+					command-line window |cmdwin|.
- 			hidden		TRUE if the buffer is hidden.
- 			lastused	Timestamp in seconds, like
- 					|localtime()|, when the buffer was
-diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
-index 780c0a00f..c6f5725d8 100644
---- a/runtime/doc/gui_w32.txt
-+++ b/runtime/doc/gui_w32.txt
-@@ -1,4 +1,4 @@
--*gui_w32.txt*   For Vim version 9.1.  Last change: 2022 Mar 09
-+*gui_w32.txt*   For Vim version 9.1.  Last change: 2024 Jan 23
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -454,4 +454,38 @@ You may need to get the vim16x16.xpm file from github:
- https://github.com/vim/vim/blob/master/runtime/vim16x16.xpm
- 
- 
-+Keycode translation strategy    *w32-experimental-keycode-trans-strategy*
-+
-+In Patch v8.2.4807 W32 GVIM was changed over to experimental keycode
-+translation method with the aim to be able to use more keyboard shortcuts and
-+especially supporting non-standard keyboard layouts. In order to implement
-+this support Win API TranslateMessage() call was dropped, and instead the
-+recognition of keycode was changed over to ToUnicode() Win API call. This
-+approach uncovered numerous corner cases, which are apparently covered by
-+TranslateMessage() implementation, each of it is necessary to be dealt with on
-+an individual basis. Therefore the decision was taken to declare this
-+functionality experimental for the time being and to recover "classic" keycode
-+translation method as default again.
-+
-+Discussion about use of "experimental" keycode translation method will
-+probably last some time yet. In the meantime, if you are impacted by this
-+change over back to "classic" keycode translation method in W32 GVIM, you can
-+enable "experimental" translation method again in your vimrc using following
-+snippet:
-+>
-+  :call test_mswin_event('set_keycode_trans_strategy', {'strategy': 'experimental'})
-+<
-+Similarly, in case you need to turn back "classic" keycode translation method
-+(for example for testing purposes), please use:
-+>
-+  :call test_mswin_event('set_keycode_trans_strategy', {'strategy': 'classic'})
-+<
-+Alternatively (this method is especially useful for the TINY GVIM build, where
-+test_mswin_event() cannot be called), an environment variable
-+VIM_KEYCODE_TRANS_STRATEGY can be set to the desired value ("experimental" or
-+"classic"), to override the default, e.g., type in dos prompt:
-+>
-+        set VIM_KEYCODE_TRANS_STRATEGY=experimental
-+        gvim.exe
-+<
-  vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index 1b012b7da..d26592a13 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
-@@ -1172,6 +1172,8 @@ tag		command		action ~
- |:>|		:>		shift lines one 'shiftwidth' right
- |:@|		:@		execute contents of a register
- |:@@|		:@@		repeat the previous ":@"
-+|:2match|	:2mat[ch]	define a second match to highlight
-+|:3match|	:3mat[ch]	define a third match to highlight
- |:Next|		:N[ext]		go to previous file in the argument list
- |:Print|	:P[rint]	print lines
- |:X|		:X		ask for encryption key
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 5abc4e95b..a2377b567 100644
+index a2377b567..c4f59aee1 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 06
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 23
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 23
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1026,6 +1026,8 @@ Variable		Highlight ~
- *c_no_c99*		don't highlight C99 standard items
- *c_no_c11*		don't highlight C11 standard items
- *c_no_bsd*		don't highlight BSD specific types
-+*c_functions*		highlight function calls and definitions
-+*c_function_pointers*	highlight function pointers definitions
+@@ -1594,13 +1594,11 @@ edit F# or Fortran at all, use this in your startup vimrc: >
+ FORTRAN					*fortran.vim* *ft-fortran-syntax*
  
- When 'foldmethod' is set to "syntax" then /* */ comments and { } blocks will
- become a fold.  If you don't want comments to become a fold use: >
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index dabdd32b0..442285dc8 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
-@@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 9.1.  Last change: 2023 May 18
-+*testing.txt*	For Vim version 9.1.  Last change: 2024 Jan 23
+ Default highlighting and dialect ~
+-Vim highlights according to Fortran 2023 (the most recent standard) by
+-default.  This choice should be appropriate for most users most of the time
+-because Fortran 2023 is almost a superset of previous versions (Fortran 2018,
+-2008, 2003, 95, 90, and 77).  A small number of features new to Fortran 2018
+-and Fortran 2023 may have been omitted at present; the transition to Fortran
+-2023 will be completed in the near future. A few legacy constructs deleted or
+-declared obsolescent in recent Fortran standards are highlighted as todo
++Vim highlights according to Fortran 2023 (the most recent standard). This
++choice should be appropriate for most users most of the time because Fortran
++2023 is almost a superset of previous versions (Fortran 2018, 2008, 2003, 95,
++90, 77, and 66).  A few legacy constructs deleted or declared obsolescent,
++respectively, in recent Fortran standards are highlighted as errors and todo
+ items.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -234,6 +234,8 @@ test_mswin_event({event}, {args})		*test_mswin_event()*
- 		{event} is a String and the supported values are:
- 		    "mouse"	mouse event.
- 		    "key"	keyboard event.
-+		    "set_keycode_trans_strategy"
-+				Change the key transation method
- 
- 		"mouse":
- 		  Inject either a mouse button click, or a mouse move, event.
-@@ -290,6 +292,14 @@ test_mswin_event({event}, {args})		*test_mswin_event()*
- 				unprocessed key events.  All other {args}
- 				items are optional when this is set and true.
- 
-+		"set_keycode_trans_strategy":
-+		  |w32-experimental-keycode-trans-strategy|
-+		  Switch the keycode translation method. The supported methods are:
-+		    experimental:   The method used after Patch v8.2.4807
-+				    using ToUnicode() Win API call.
-+		    classic:	    The method used pre Patch v8.2.4807
-+				    using the TranslateMessage() Win API call.
-+
- 		Returns TRUE if the event is successfully added or executed,
- 		FALSE if there is a failure.
- 
+ The syntax script no longer supports Fortran dialects.  The variable
