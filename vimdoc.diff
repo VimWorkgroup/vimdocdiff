@@ -1,59 +1,179 @@
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 23633f1a4..bc2ba5437 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 5001205ea..19b9bc9f6 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*gui_x11.txt*   For Vim version 9.1.  Last change: 2022 Apr 03
-+*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Jan 30
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -580,7 +580,8 @@ command line argument).
- 							*gui-x11-kde*
- There is no KDE version of Vim.  There has been some work on a port using the
- Qt toolkit, but it never worked properly and it has been abandoned.  Work
--continues on Yzis: https://github.com/chrizel/Yzis.
-+continues on Yzis: https://github.com/chrizel/Yzis but it seems also
-+abandoned.
- 
- ==============================================================================
- 8. Compiling						*gui-x11-compiling*
-@@ -647,6 +648,15 @@ versions.  This will cause problems.  For example, using header files for
- X11R5 with a library for X11R6 probably doesn't work (although the linking
- won't give an error message, Vim will crash later).
- 
-+							*gui-wayland*
-+Initial support for the Wayland display server protocol has landed in patch
-+9.1.0064. To enable it, you need to set the environment variable
-+"$GVIM_ENABLE_WAYLAND" in your shell.
-+
-+Note: The Wayland protocol is subject to some restrictions, so the following
-+functions won't work: |getwinpos()|, |getwinposx()|, |getwinposy()| and the
-+|v:windowid| variable won't be available.
-+
- ==============================================================================
- 9. X11 selection mechanism				*x11-selection*
- 
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index b3f049419..78cac3f33 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Jan 17
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Jan 30
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jan 29
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8581,8 +8581,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	will not work (except in the GUI).
- 	If the title cannot be restored, it is set to the value of 'titleold'.
- 	You might want to restore the title outside of Vim then.
--	When using an xterm from a remote machine you can use this command:
-+	When using an xterm from a remote machine you can use this command: >
+@@ -147,6 +147,8 @@ delete({fname} [, {flags}])	Number	delete the file or directory {fname}
+ deletebufline({buf}, {first} [, {last}])
+ 				Number	delete lines from buffer {buf}
+ did_filetype()			Number	|TRUE| if FileType autocmd event used
++diff({fromlist}, {tolist} [, {options}])
++				List	diff two Lists of strings
+ diff_filler({lnum})		Number	diff filler lines about {lnum}
+ diff_hlID({lnum}, {col})	Number	diff highlighting at {lnum}/{col}
+ digraph_get({chars})		String	get the |digraph| of {chars}
+@@ -2046,6 +2048,67 @@ did_filetype()	Returns |TRUE| when autocommands are being executed and the
+ 		editing another buffer to set 'filetype' and load a syntax
+ 		file.
+ 
++diff({fromlist}, {tolist} [, {options}])		*diff()*
++		Returns a String or a List containing the diff between the
++		strings in {fromlist} and {tolist}.  Uses the Vim internal
++		diff library to compute the diff.
 +
- 	    rsh machine_name xterm -display $DISPLAY &
-+	    ssh -X machine_name xterm &
++							*E106*
++		The optional "output" item in {options} specifies the returned
++		diff format.  The following values are supported:
++		    indices	Return a List of the starting and ending
++				indices and a count of the strings in each
++				diff hunk.
++		    unified	Return the unified diff output as a String.
++				This is the default.
++
++		If the "output" item in {options} is "indices", then a List is
++		returned.  Each List item contains a Dict with the following
++		items for each diff hunk:
++		    from_idx	start index in {fromlist} for this diff hunk.
++		    from_count	number of strings in {fromlist} that are
++				added/removed/modified in this diff hunk.
++		    to_idx	start index in {tolist} for this diff hunk.
++		    to_count	number of strings in {tolist} that are
++				added/removed/modified in this diff hunk.
++
++		The {options} Dict argument also specifies diff options
++		(similar to 'diffopt') and supports the following items:
++		    iblank		ignore changes where lines are all
++					blank.
++		    icase		ignore changes in case of text.
++		    iwhite		ignore changes in amount of white
++					space.
++		    iwhiteall		ignore all white space changes.
++		    iwhiteeol		ignore white space changes at end of
++					line.
++		    indent-heuristic	use the indent heuristic for the
++					internal diff library.
++		    algorithm		Dict specifying the diff algorithm to
++					use.  Supported boolean items are
++					"myers", "minimal", "patience" and
++					"histogram".
++		For more information about these options, refer to 'diffopt'.
++
++		Returns an empty List or String if {fromlist} and {tolist} are
++		identical.
++
++		Examples:
++		    :echo diff(['abc'], ['xxx'])
++		     @@ -1 +1 @@
++		     -abc
++		     +xxx
++
++		    :echo diff(['abc'], ['xxx'], {'output': 'indices'})
++		     [{'from_idx': 0, 'from_count': 1, 'to_idx': 0, 'to_count': 1}]
++		    :echo diff(readfile('oldfile'), readfile('newfile'))
++		    :echo diff(getbufline(5, 1, '$'), getbufline(6, 1, '$'))
++
++		For more examples, refer to |diff-func-examples|
++
++		Can also be used as a |method|: >
++			GetFromList->diff(to_list)
 +<
- 	then the WINDOWID environment variable should be inherited and the
- 	title of the window should change back to what it should be after
- 	exiting Vim.
+ diff_filler({lnum})					*diff_filler()*
+ 		Returns the number of filler lines above line {lnum}.
+ 		These are the lines that were inserted at this point in
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 91b004745..05dd4a6be 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -1,4 +1,4 @@
+-*diff.txt*      For Vim version 9.1.  Last change: 2023 Apr 04
++*diff.txt*      For Vim version 9.1.  Last change: 2024 Feb 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -476,4 +476,43 @@ Otherwise, the expression is evaluated in the context of the script where the
+ option was set, thus script-local items are available.
+ 
+ 
++DIFF FUNCTION EXAMPLES				*diff-func-examples*
++
++Some examples for using the |diff()| function to compute the diff indices
++between two Lists of strings are below.
++>
++  " some lines are changed
++  :echo diff(['abc', 'def', 'ghi'], ['abx', 'rrr', 'xhi'], {'output': 'indices'})
++   [{'from_idx': 0, 'from_count': 3, 'to_idx': 0, 'to_count': 3}]
++
++  " few lines added at the beginning
++  :echo diff(['ghi'], ['abc', 'def', 'ghi'], {'output': 'indices'})
++   [{'from_idx': 0, 'from_count': 0, 'to_idx': 0, 'to_count': 2}]
++
++  " few lines removed from the beginning
++  :echo diff(['abc', 'def', 'ghi'], ['ghi'], {'output': 'indices'})
++   [{'from_idx': 0, 'from_count': 2, 'to_idx': 0, 'to_count': 0}]
++
++  " few lines added in the middle
++  :echo diff(['abc', 'jkl'], ['abc', 'def', 'ghi', 'jkl'], {'output': 'indices'})
++   [{'from_idx': 1, 'from_count': 0, 'to_idx': 1, 'to_count': 2}]
++
++  " few lines removed in the middle
++  :echo diff(['abc', 'def', 'ghi', 'jkl'], ['abc', 'jkl'], {'output': 'indices'})
++   [{'from_idx': 1, 'from_count': 2, 'to_idx': 1, 'to_count': 0}]
++
++  " few lines added at the end
++  :echo diff(['abc'], ['abc', 'def', 'ghi'], {'output': 'indices'})
++   [{'from_idx': 1, 'from_count': 0, 'to_idx': 1, 'to_count': 2}]
++
++  " few lines removed from the end
++  :echo diff(['abc', 'def', 'ghi'], ['abc'], {'output': 'indices'})
++   [{'from_idx': 1, 'from_count': 2, 'to_idx': 1, 'to_count': 0}]
++
++  " disjointed changes
++  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices'})
++   [{'from_idx': 0, 'from_count': 1, 'to_idx': 0, 'to_count': 1},
++    {'from_idx': 3, 'from_count': 1, 'to_idx': 3, 'to_count': 1}]
++<
++
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index bb58597a4..953ae4782 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 Jan 14
++*todo.txt*      For Vim version 9.1.  Last change: 2024 Feb 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -956,9 +956,6 @@ When 'sidescrolloff' is set, using "zl" to go to the end of the line, suddenly
+ scrolls back.  Should allow for this scrolling, like 'scrolloff' does when
+ using CTRL-E. (Yee Cheng Chin, #3721)
+ 
+-Add function to make use of internal diff, working on two lists and returning
+-unified diff (list of lines).
+-
+ When splitting a window with few text lines, the relative cursor position is
+ kept, which means part of the text isn't displayed.  Better show all the text
+ when possible. (Dylan Lloyd, #3973)
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 0990a0651..0ca19beb0 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Jan 13
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Feb 01
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -1368,6 +1368,7 @@ Various:					*various-functions*
+ 	changenr()		return number of most recent change
+ 	cscope_connection()	check if a cscope connection exists
+ 	did_filetype()		check if a FileType autocommand was used
++	diff()			diff two Lists of strings
+ 	eventhandler()		check if invoked by an event handler
+ 	getpid()		get process ID of Vim
+ 	getscriptinfo()		get list of sourced vim scripts
