@@ -1,59 +1,80 @@
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 19b9bc9f6..062da08d6 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -2093,7 +2093,7 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
+ 		Returns an empty List or String if {fromlist} and {tolist} are
+ 		identical.
+ 
+-		Examples:
++		Examples: >
+ 		    :echo diff(['abc'], ['xxx'])
+ 		     @@ -1 +1 @@
+ 		     -abc
+@@ -2103,7 +2103,7 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
+ 		     [{'from_idx': 0, 'from_count': 1, 'to_idx': 0, 'to_count': 1}]
+ 		    :echo diff(readfile('oldfile'), readfile('newfile'))
+ 		    :echo diff(getbufline(5, 1, '$'), getbufline(6, 1, '$'))
+-
++<
+ 		For more examples, refer to |diff-func-examples|
+ 
+ 		Can also be used as a |method|: >
 diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 9c12fb850..574b9c9dd 100644
+index 574b9c9dd..75ea2c7f4 100644
 --- a/runtime/doc/eval.txt
 +++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2024 Jan 14
-+*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 05
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 05
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2005,9 +2005,14 @@ v:collate	The current locale setting for collation order of the runtime
- 								*v:colornames*
- v:colornames    A dictionary that maps color names to hex color strings. These
- 		color names can be used with the |highlight-guifg|,
--		|highlight-guibg|, and |highlight-guisp| parameters. Updating
--		an entry in v:colornames has no immediate effect on the syntax
--		highlighting. The highlight commands (probably in a
-+		|highlight-guibg|, and |highlight-guisp| parameters.
-+
-+		The key values in the dictionary (the color names) should be
-+		lower cased, because Vim looks up a color by its lower case
-+		name.
-+
-+		Updating an entry in v:colornames has no immediate effect on
-+		the syntax highlighting. The highlight commands (probably in a
- 		colorscheme script) need to be re-evaluated in order to use
- 		the updated color values. For example: >
+@@ -425,6 +425,18 @@ To change part of a list you can specify the first and last item to be
+ modified.  The value must at least have the number of items in the range: >
+ 	:let list[3:5] = [3, 4, 5]
  
++To add items to a List in-place, you can use the |+=| operator: >
++	:let listA = [1, 2]
++	:let listA += [3, 4]
++<
++When two variables refer to the same List, changing one List in-place will
++cause the referenced List to be changed in-place: >
++	:let listA = [1, 2]
++	:let listB = listA
++	:let listB += [3, 4]
++	:echo listA
++	[1, 2, 3, 4]
++<
+ Adding and removing items from a list is done with functions.  Here are a few
+ examples: >
+ 	:call insert(list, 'a')		" prepend item 'a'
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index c4f59aee1..1c9f6f2b5 100644
+index 1c9f6f2b5..83285dd28 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jan 24
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Feb 05
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Feb 05
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Feb 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5265,7 +5265,8 @@ ctermul={color-nr}				*highlight-ctermul*
- 	"cterm=" argument AFTER the "ctermfg=" or "ctermbg=" argument.	Or use
- 	a number instead of a color name.
+@@ -1331,12 +1331,15 @@ Stack Overflow -
  
--	The case of the color names is ignored.
-+	The case of the color names is ignored, however Vim will use lower
-+	case color names when reading from the |v:colornames| dictionary.
- 	Note that for 16 color ansi style terminals (including xterms), the
- 	numbers in the NR-8 column is used.  Here '*' means 'add 8' so that
- 	Blue is 12, DarkGray is 8 etc.
-@@ -5384,8 +5385,8 @@ guisp={color-name}					*highlight-guisp*
- 	    :highlight Comment guifg=#11f0c3 guibg=#ff00ff
- <
- 	If you are authoring a color scheme and use the same hexadecimal value
--	repeatedly, you can define a name for it in |v:colornames|. For
--	example: >
-+	repeatedly, you can define a (lower case) name for it in |v:colornames|.
-+	For example: >
+ https://stackoverflow.com/questions/12407800/which-comment-style-should-i-use-in-batch-files
  
- 	    # provide a default value for this color but allow the user to
- 	    # override it.
+-To allow the use of the :: idiom for comments in the Windows Command
+-Interpreter or working with MS-DOS bat files, set the
+-dosbatch_colons_comment variable to anything: >
++To allow the use of the :: idiom for comments in command blocks with the
++Windows Command Interpreter set the dosbatch_colons_comment variable to
++anything: >
+ 
+    :let dosbatch_colons_comment = 1
+ 
++If this variable is set then a :: comment that is the last line in a command
++block will be highlighted as an error.
++
+ There is an option that covers whether *.btm files should be detected as type
+ "dosbatch" (MS-DOS batch files) or type "btm" (4DOS batch files).  The latter
+ is used by default.  You may select the former with the following line: >
