@@ -1,80 +1,30 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 19b9bc9f6..062da08d6 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -2093,7 +2093,7 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
- 		Returns an empty List or String if {fromlist} and {tolist} are
- 		identical.
- 
--		Examples:
-+		Examples: >
- 		    :echo diff(['abc'], ['xxx'])
- 		     @@ -1 +1 @@
- 		     -abc
-@@ -2103,7 +2103,7 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
- 		     [{'from_idx': 0, 'from_count': 1, 'to_idx': 0, 'to_count': 1}]
- 		    :echo diff(readfile('oldfile'), readfile('newfile'))
- 		    :echo diff(getbufline(5, 1, '$'), getbufline(6, 1, '$'))
--
-+<
- 		For more examples, refer to |diff-func-examples|
- 
- 		Can also be used as a |method|: >
 diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 574b9c9dd..75ea2c7f4 100644
+index 75ea2c7f4..3dbbbeafb 100644
 --- a/runtime/doc/eval.txt
 +++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 05
-+*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 06
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 06
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Feb 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -425,6 +425,18 @@ To change part of a list you can specify the first and last item to be
+@@ -303,7 +303,9 @@ List concatenation ~
+ 							*list-concatenation*
+ Two lists can be concatenated with the "+" operator: >
+ 	:let longlist = mylist + [5, 6]
++A list can be concatenated with another one in place using the "+=" operator or |extend()|: >
+ 	:let mylist += [7, 8]
++	:call extend(mylist, [7, 8])
+ 
+ To prepend or append an item, turn the item into a list by putting [] around
+ it.  To change a list in-place, refer to |list-modification| below.
+@@ -425,7 +427,8 @@ To change part of a list you can specify the first and last item to be
  modified.  The value must at least have the number of items in the range: >
  	:let list[3:5] = [3, 4, 5]
  
-+To add items to a List in-place, you can use the |+=| operator: >
-+	:let listA = [1, 2]
-+	:let listA += [3, 4]
-+<
-+When two variables refer to the same List, changing one List in-place will
-+cause the referenced List to be changed in-place: >
-+	:let listA = [1, 2]
-+	:let listB = listA
-+	:let listB += [3, 4]
-+	:echo listA
-+	[1, 2, 3, 4]
-+<
- Adding and removing items from a list is done with functions.  Here are a few
- examples: >
- 	:call insert(list, 'a')		" prepend item 'a'
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 1c9f6f2b5..83285dd28 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Feb 05
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Feb 06
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1331,12 +1331,15 @@ Stack Overflow -
- 
- https://stackoverflow.com/questions/12407800/which-comment-style-should-i-use-in-batch-files
- 
--To allow the use of the :: idiom for comments in the Windows Command
--Interpreter or working with MS-DOS bat files, set the
--dosbatch_colons_comment variable to anything: >
-+To allow the use of the :: idiom for comments in command blocks with the
-+Windows Command Interpreter set the dosbatch_colons_comment variable to
-+anything: >
- 
-    :let dosbatch_colons_comment = 1
- 
-+If this variable is set then a :: comment that is the last line in a command
-+block will be highlighted as an error.
-+
- There is an option that covers whether *.btm files should be detected as type
- "dosbatch" (MS-DOS batch files) or type "btm" (4DOS batch files).  The latter
- is used by default.  You may select the former with the following line: >
+-To add items to a List in-place, you can use the |+=| operator: >
++To add items to a List in-place, you can use the += operator
++|list-concatenation|: >
+ 	:let listA = [1, 2]
+ 	:let listA += [3, 4]
+ <
