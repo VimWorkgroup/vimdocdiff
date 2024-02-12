@@ -1,39 +1,51 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 062da08d6..0dca4679e 100644
+index 0dca4679e..0b3d59e96 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 01
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 11
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 11
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2074,20 +2074,22 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
- 
- 		The {options} Dict argument also specifies diff options
- 		(similar to 'diffopt') and supports the following items:
-+		    algorithm		Dict specifying the diff algorithm to
-+					use.  Supported boolean items are
-+					"myers", "minimal", "patience" and
-+					"histogram".
-+		    context		unified diff context length.  Default
-+					is 1.
+@@ -2078,8 +2078,7 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
+ 					use.  Supported boolean items are
+ 					"myers", "minimal", "patience" and
+ 					"histogram".
+-		    context		unified diff context length.  Default
+-					is 1.
++		    context		diff context length.  Default is 0.
  		    iblank		ignore changes where lines are all
  					blank.
  		    icase		ignore changes in case of text.
-+		    indent-heuristic	use the indent heuristic for the
-+					internal diff library.
- 		    iwhite		ignore changes in amount of white
- 					space.
- 		    iwhiteall		ignore all white space changes.
- 		    iwhiteeol		ignore white space changes at end of
+@@ -2092,6 +2091,10 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
  					line.
--		    indent-heuristic	use the indent heuristic for the
--					internal diff library.
--		    algorithm		Dict specifying the diff algorithm to
--					use.  Supported boolean items are
--					"myers", "minimal", "patience" and
--					"histogram".
  		For more information about these options, refer to 'diffopt'.
  
++		To compute the unified diff, all the items in {fromlist} are
++		concatenated into a string using a newline separator and the
++		same for {tolist}.  The unified diff output uses line numbers.
++
  		Returns an empty List or String if {fromlist} and {tolist} are
+ 		identical.
+ 
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 05dd4a6be..e3abbdeff 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -510,9 +510,14 @@ between two Lists of strings are below.
+    [{'from_idx': 1, 'from_count': 2, 'to_idx': 1, 'to_count': 0}]
+ 
+   " disjointed changes
+-  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices'})
++  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices', 'context': 0})
+    [{'from_idx': 0, 'from_count': 1, 'to_idx': 0, 'to_count': 1},
+     {'from_idx': 3, 'from_count': 1, 'to_idx': 3, 'to_count': 1}]
++
++  " disjointed changes with context length 1
++  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices', 'context': 1})
++   [{'from_idx': 0, 'from_count': 4, 'to_idx': 0, 'to_count': 4}]
++
+ <
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
