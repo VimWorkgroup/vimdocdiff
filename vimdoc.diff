@@ -1,51 +1,29 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0dca4679e..0b3d59e96 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 4876e3d75..b56a3d3fa 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 11
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 12
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 Jan 04
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Feb 14
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2078,8 +2078,7 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
- 					use.  Supported boolean items are
- 					"myers", "minimal", "patience" and
- 					"histogram".
--		    context		unified diff context length.  Default
--					is 1.
-+		    context		diff context length.  Default is 0.
- 		    iblank		ignore changes where lines are all
- 					blank.
- 		    icase		ignore changes in case of text.
-@@ -2092,6 +2091,10 @@ diff({fromlist}, {tolist} [, {options}])		*diff()*
- 					line.
- 		For more information about these options, refer to 'diffopt'.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -564,6 +564,18 @@ under it.  If not found, a new entry and item is prepended to the beginning of
+ the Changelog.
  
-+		To compute the unified diff, all the items in {fromlist} are
-+		concatenated into a string using a newline separator and the
-+		same for {tolist}.  The unified diff output uses line numbers.
+ 
++ASCIIDOC						*ft-asciidoc-plugin*
 +
- 		Returns an empty List or String if {fromlist} and {tolist} are
- 		identical.
- 
-diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
-index 05dd4a6be..e3abbdeff 100644
---- a/runtime/doc/diff.txt
-+++ b/runtime/doc/diff.txt
-@@ -510,9 +510,14 @@ between two Lists of strings are below.
-    [{'from_idx': 1, 'from_count': 2, 'to_idx': 1, 'to_count': 0}]
- 
-   " disjointed changes
--  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices'})
-+  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices', 'context': 0})
-    [{'from_idx': 0, 'from_count': 1, 'to_idx': 0, 'to_count': 1},
-     {'from_idx': 3, 'from_count': 1, 'to_idx': 3, 'to_count': 1}]
++To enable |folding| use this: >
++	let g:asciidoc_folding = 1
 +
-+  " disjointed changes with context length 1
-+  :echo diff(['ab', 'def', 'ghi', 'jkl'], ['abc', 'def', 'ghi', 'jk'], {'output': 'indices', 'context': 1})
-+   [{'from_idx': 0, 'from_count': 4, 'to_idx': 0, 'to_count': 4}]
++To disable nesting of folded headers use this: >
++	let g:asciidoc_foldnested = 0
 +
- <
++To disable folding everything under the title use this: >
++	let asciidoc_fold_under_title = 0
++
++
+ FORTRAN							*ft-fortran-plugin*
  
-  vim:tw=78:ts=8:noet:ft=help:norl:
+ Options:
