@@ -1,29 +1,167 @@
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 442285dc8..356d74e39 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 0b3d59e96..0cddeffa7 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 9.1.  Last change: 2024 Jan 23
-+*testing.txt*	For Vim version 9.1.  Last change: 2024 Feb 18
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 12
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -235,7 +235,7 @@ test_mswin_event({event}, {args})		*test_mswin_event()*
- 		    "mouse"	mouse event.
- 		    "key"	keyboard event.
- 		    "set_keycode_trans_strategy"
--				Change the key transation method
-+				Change the key translation method.
+@@ -10762,10 +10762,10 @@ win_screenpos({nr})					*win_screenpos()*
+ 			GetWinid()->win_screenpos()
+ <
+ win_splitmove({nr}, {target} [, {options}])		*win_splitmove()*
+-		Move the window {nr} to a new split of the window {target}.
+-		This is similar to moving to {target}, creating a new window
+-		using |:split| but having the same contents as window {nr}, and
+-		then closing {nr}.
++		Temporarily switch to window {target}, then move window {nr}
++		to a new split adjacent to {target}.
++		Unlike commands such as |:split|, no new windows are created
++		(the |window-ID| of window {nr} is unchanged after the move).
  
- 		"mouse":
- 		  Inject either a mouse button click, or a mouse move, event.
-@@ -294,7 +294,8 @@ test_mswin_event({event}, {args})		*test_mswin_event()*
+ 		Both {nr} and {target} can be window numbers or |window-ID|s.
+ 		Both must be in the current tab page.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 697fd7984..e8973ce73 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -41535,4 +41535,77 @@ Patch 9.0.2190
+ Problem:    proto files need update
+ Solution:   re-generate them
  
- 		"set_keycode_trans_strategy":
- 		  |w32-experimental-keycode-trans-strategy|
--		  Switch the keycode translation method. The supported methods are:
-+		  Switch the keycode translation method. The supported methods
-+		  are:
- 		    experimental:   The method used after Patch v8.2.4807
- 				    using ToUnicode() Win API call.
- 		    classic:	    The method used pre Patch v8.2.4807
++==============================================================================
++VERSION 9.2				*version-9.2* *version9.2* *vim-9.2*
++
++This section is about improvements made between version 9.1 and 9.2
++and is a work in progress.
++
++Support for Wayland UI.
++
++Other improvements				*new-other-9.2*
++------------------
++
++Changed						*changed-9.2*
++-------
++
++Added						*added-9.2*
++-----
++
++Various syntax, indent and other plugins were added.
++
++Functions: ~
++
++|diff()|		diff two Lists of strings
++|foreach()|		apply function to List items
++|matchbufline()|	all the matches of a pattern in a buffer
++|matchstrlist()|	all the matches of a pattern in a List of strings
++
++
++Autocommands: ~
++
++|TermResponseAll|	after the terminal response to |t_RV| and others is
++			received
++|WinNewPre|		before creating a new window
++
++
++Commands: ~
++
++
++Options: ~
++
++==============================================================================
++INCOMPATIBLE CHANGES				*incompatible-9.2*
++
++==============================================================================
++IMPROVEMENTS					*improvements-9.2*
++
++Support for command-line completion of 'keymap' option values.
++
++Support for compiling all the methods in a Vim9 class using |:defcompile|.
++
++Support for alternate font highlighting using |t_CF| terminal code.
++
++Support for Super key mappings in GTK using <D-Key>.
++
++Improved visual highlighting.
++
++Python3 support in OpenVMS.
++
++==============================================================================
++COMPILE TIME CHANGES				*compile-changes-9.2*
++
++Support for building with Ruby 3.3.
++
++Support for building Vim 9 in z/OS (MVS).
++
++==============================================================================
++PATCHES						*patches-9.2* *bug-fixes-9.2*
++						*patches-after-9.1*
++
++The list of patches that got included since 9.1.0.  This includes all the new
++features, but does not include runtime file changes (syntax, indent, ftplugin,
++documentation, etc.)
++
++
+  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 806474875..e264e5117 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.1.  Last change: 2022 Nov 27
++*windows.txt*   For Vim version 9.1.  Last change: 2024 Feb 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -519,35 +519,33 @@ horizontally split windows.  CTRL-W H does it the other way around.
+ 
+ 						*CTRL-W_K*
+ CTRL-W K	Move the current window to be at the very top, using the full
+-		width of the screen.  This works like closing the current
+-		window and then creating another one with ":topleft split",
+-		except that the current window contents is used for the new
+-		window.
++		width of the screen.  This works like `:topleft split`, except
++		it is applied to the current window and no new window is
++		created.
+ 
+ 						*CTRL-W_J*
+ CTRL-W J	Move the current window to be at the very bottom, using the
+-		full width of the screen.  This works like closing the current
+-		window and then creating another one with ":botright split",
+-		except that the current window contents is used for the new
+-		window.
++		full width of the screen.  This works like `:botright split`,
++		except it is applied to the current window and no new window
++		is created.
+ 
+ 						*CTRL-W_H*
+ CTRL-W H	Move the current window to be at the far left, using the
+-		full height of the screen.  This works like closing the
+-		current window and then creating another one with
+-		`:vert topleft split`, except that the current window contents
+-		is used for the new window.
++		full height of the screen.  This works like
++		`:vert topleft split`, except it is applied to the current
++		window and no new window is created.
+ 
+ 						*CTRL-W_L*
+ CTRL-W L	Move the current window to be at the far right, using the full
+-		height of the screen.  This works like closing the
+-		current window and then creating another one with
+-		`:vert botright split`, except that the current window
+-		contents is used for the new window.
++		height of the screen.  This works like `:vert botright split`,
++		except it is applied to the current window and no new window
++		is created.
+ 
+ 						*CTRL-W_T*
+ CTRL-W T	Move the current window to a new tab page.  This fails if
+ 		there is only one window in the current tab page.
++		This works like `:tab split`, except the previous window is
++		closed.
+ 		When a count is specified the new tab page will be opened
+ 		before the tab page with this index.  Otherwise it comes after
+ 		the current tab page.
