@@ -1,167 +1,137 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0b3d59e96..0cddeffa7 100644
+index 0cddeffa7..f1256b027 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 12
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 20
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 20
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 21
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -10762,10 +10762,10 @@ win_screenpos({nr})					*win_screenpos()*
- 			GetWinid()->win_screenpos()
- <
- win_splitmove({nr}, {target} [, {options}])		*win_splitmove()*
--		Move the window {nr} to a new split of the window {target}.
--		This is similar to moving to {target}, creating a new window
--		using |:split| but having the same contents as window {nr}, and
--		then closing {nr}.
-+		Temporarily switch to window {target}, then move window {nr}
-+		to a new split adjacent to {target}.
-+		Unlike commands such as |:split|, no new windows are created
-+		(the |window-ID| of window {nr} is unchanged after the move).
+@@ -263,6 +263,8 @@ getqflist({what})		Dict	get specific quickfix list properties
+ getreg([{regname} [, 1 [, {list}]]])
+ 				String or List   contents of a register
+ getreginfo([{regname}])		Dict	information about a register
++getregion({pos1}, {pos2}, {type})
++				List	get the text from {pos1} to {pos2}
+ getregtype([{regname}])		String	type of a register
+ getscriptinfo([{opts}])		List	list of sourced scripts
+ gettabinfo([{expr}])		List	list of tab pages
+@@ -2538,6 +2540,9 @@ expand({string} [, {nosuf} [, {list}]])				*expand()*
+ 		for a non-existing file is not included, unless {string} does
+ 		not start with '%', '#' or '<', see below.
  
- 		Both {nr} and {target} can be window numbers or |window-ID|s.
- 		Both must be in the current tab page.
++		For a |:terminal| window '%' expands to a '!' followed by
++		the command or shell that is run |terminal-bufname|
++
+ 		When {string} starts with '%', '#' or '<', the expansion is
+ 		done like for the |cmdline-special| variables with their
+ 		associated modifiers.  Here is a short overview:
+@@ -4266,6 +4271,43 @@ getreginfo([{regname}])					*getreginfo()*
+ 		Can also be used as a |method|: >
+ 			GetRegname()->getreginfo()
+ 
++getregion({pos1}, {pos2}, {type})			*getregion()*
++		Returns the list of strings from {pos1} to {pos2} as if it's
++		selected in visual mode of {type}.
++		For possible values of {pos1} and {pos2} see |line()|.
++		{type} is the selection type:
++			"v" for |characterwise| mode
++			"V" for |linewise| mode
++			"<CTRL-V>" for |blockwise-visual| mode
++		You can get the last selection type by |visualmode()|.
++		If Visual mode is active, use |mode()| to get the Visual mode
++		(e.g., in a |:vmap|).
++		This function uses the line and column number from the
++		specified position.
++		It is useful to get text starting and ending in different
++		columns, such as |characterwise-visual| selection.
++
++		Note that:
++		- Order of {pos1} and {pos2} doesn't matter, it will always
++		  return content from the upper left position to the lower
++		  right position.
++		- If 'virtualedit' is enabled and selection is past the end of
++		  line, resulting lines are filled with blanks.
++		- If the selection starts or ends in the middle of a multibyte
++		  character, it is not included but its selected part is
++		  substituted with spaces.
++		- If {pos1} or {pos2} equals "v" (see |line()|) and it is not in
++		  |visual-mode|, an empty list is returned.
++		- If {pos1}, {pos2} or {type} is an invalid string, an empty
++		  list is returned.
++
++		Examples: >
++			:xnoremap <CR>
++			\ <Cmd>echow getregion('v', '.', mode())<CR>
++<
++		Can also be used as a |method|: >
++			'.'->getregion("'a", 'v')
++<
+ getregtype([{regname}])					*getregtype()*
+ 		The result is a String, which is type of register {regname}.
+ 		The value will be one of:
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index c5331fa85..3720603ff 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2023 Nov 08
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Feb 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -208,6 +208,7 @@ Command syntax ~
+ 			[command].  Use `:execute` if you must have a Vim
+ 			command following in the same line.
+ 
++							*terminal-bufname*
+ 			A new buffer will be created, using [command] or
+ 			'shell' as the name, prefixed with a "!".  If a buffer
+ 			by this name already exists a number is added in
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 0ca19beb0..0d832a34c 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Feb 01
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Feb 20
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -929,6 +929,7 @@ Cursor and mark position:		*cursor-functions* *mark-functions*
+ 
+ Working with text in the current buffer:		*text-functions*
+ 	getline()		get a line or list of lines from the buffer
++	getregion()		get a region of text from the buffer
+ 	setline()		replace a line in the buffer
+ 	append()		append line or list of lines in the buffer
+ 	indent()		indent of a specific line
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 697fd7984..e8973ce73 100644
+index e8973ce73..7b9a3664a 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -41535,4 +41535,77 @@ Patch 9.0.2190
- Problem:    proto files need update
- Solution:   re-generate them
- 
-+==============================================================================
-+VERSION 9.2				*version-9.2* *version9.2* *vim-9.2*
-+
-+This section is about improvements made between version 9.1 and 9.2
-+and is a work in progress.
-+
-+Support for Wayland UI.
-+
-+Other improvements				*new-other-9.2*
-+------------------
-+
-+Changed						*changed-9.2*
-+-------
-+
-+Added						*added-9.2*
-+-----
-+
-+Various syntax, indent and other plugins were added.
-+
-+Functions: ~
-+
-+|diff()|		diff two Lists of strings
-+|foreach()|		apply function to List items
-+|matchbufline()|	all the matches of a pattern in a buffer
-+|matchstrlist()|	all the matches of a pattern in a List of strings
-+
-+
-+Autocommands: ~
-+
-+|TermResponseAll|	after the terminal response to |t_RV| and others is
-+			received
-+|WinNewPre|		before creating a new window
-+
-+
-+Commands: ~
-+
-+
-+Options: ~
-+
-+==============================================================================
-+INCOMPATIBLE CHANGES				*incompatible-9.2*
-+
-+==============================================================================
-+IMPROVEMENTS					*improvements-9.2*
-+
-+Support for command-line completion of 'keymap' option values.
-+
-+Support for compiling all the methods in a Vim9 class using |:defcompile|.
-+
-+Support for alternate font highlighting using |t_CF| terminal code.
-+
-+Support for Super key mappings in GTK using <D-Key>.
-+
-+Improved visual highlighting.
-+
-+Python3 support in OpenVMS.
-+
-+==============================================================================
-+COMPILE TIME CHANGES				*compile-changes-9.2*
-+
-+Support for building with Ruby 3.3.
-+
-+Support for building Vim 9 in z/OS (MVS).
-+
-+==============================================================================
-+PATCHES						*patches-9.2* *bug-fixes-9.2*
-+						*patches-after-9.1*
-+
-+The list of patches that got included since 9.1.0.  This includes all the new
-+features, but does not include runtime file changes (syntax, indent, ftplugin,
-+documentation, etc.)
-+
-+
-  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 806474875..e264e5117 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
 @@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.1.  Last change: 2022 Nov 27
-+*windows.txt*   For Vim version 9.1.  Last change: 2024 Feb 20
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Jan 05
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Feb 21
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -519,35 +519,33 @@ horizontally split windows.  CTRL-W H does it the other way around.
+@@ -41560,6 +41560,7 @@ Functions: ~
+ |foreach()|		apply function to List items
+ |matchbufline()|	all the matches of a pattern in a buffer
+ |matchstrlist()|	all the matches of a pattern in a List of strings
++|getregion()|		get a region of text from a buffer
  
- 						*CTRL-W_K*
- CTRL-W K	Move the current window to be at the very top, using the full
--		width of the screen.  This works like closing the current
--		window and then creating another one with ":topleft split",
--		except that the current window contents is used for the new
--		window.
-+		width of the screen.  This works like `:topleft split`, except
-+		it is applied to the current window and no new window is
-+		created.
  
- 						*CTRL-W_J*
- CTRL-W J	Move the current window to be at the very bottom, using the
--		full width of the screen.  This works like closing the current
--		window and then creating another one with ":botright split",
--		except that the current window contents is used for the new
--		window.
-+		full width of the screen.  This works like `:botright split`,
-+		except it is applied to the current window and no new window
-+		is created.
+ Autocommands: ~
+@@ -41577,6 +41578,9 @@ Options: ~
+ ==============================================================================
+ INCOMPATIBLE CHANGES				*incompatible-9.2*
  
- 						*CTRL-W_H*
- CTRL-W H	Move the current window to be at the far left, using the
--		full height of the screen.  This works like closing the
--		current window and then creating another one with
--		`:vert topleft split`, except that the current window contents
--		is used for the new window.
-+		full height of the screen.  This works like
-+		`:vert topleft split`, except it is applied to the current
-+		window and no new window is created.
++Improved/Different MS-Windows mapping support
++|w32-experimental-keycode-trans-strategy|
++
+ ==============================================================================
+ IMPROVEMENTS					*improvements-9.2*
  
- 						*CTRL-W_L*
- CTRL-W L	Move the current window to be at the far right, using the full
--		height of the screen.  This works like closing the
--		current window and then creating another one with
--		`:vert botright split`, except that the current window
--		contents is used for the new window.
-+		height of the screen.  This works like `:vert botright split`,
-+		except it is applied to the current window and no new window
-+		is created.
- 
- 						*CTRL-W_T*
- CTRL-W T	Move the current window to a new tab page.  This fails if
- 		there is only one window in the current tab page.
-+		This works like `:tab split`, except the previous window is
-+		closed.
- 		When a count is specified the new tab page will be opened
- 		before the tab page with this index.  Otherwise it comes after
- 		the current tab page.
