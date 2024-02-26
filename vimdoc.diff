@@ -1,87 +1,278 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index b117bf84b..849b1808f 100644
+index 849b1808f..0af9b0e0f 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 22
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 24
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 24
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6090,6 +6090,7 @@ match({expr}, {pat} [, {start} [, {count}]])			*match()*
- 		Note that when {count} is added the way {start} works changes,
- 		see above.
+@@ -2405,11 +2405,11 @@ exists({expr})	The result is a Number, which is |TRUE| if {expr} is defined,
+ 			varname		internal variable (see
+ 			dict.key	|internal-variables|).  Also works
+ 			list[i]		for |curly-braces-names|, |Dictionary|
+-			import.Func	entries, |List| items, imported
+-					items, etc.
+-					Does not work for local variables in a
+-					compiled `:def` function.
+-					Also works for a function in |Vim9|
++			import.Func	entries, |List| items, class and
++			class.Func	object methods, imported items, etc.
++			object.Func	Does not work for local variables in a
++			class.varname	compiled `:def` function.
++			object.varname	Also works for a function in |Vim9|
+ 					script, since it can be used as a
+ 					function reference.
+ 					Beware that evaluating an index may
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index b56a3d3fa..41b27ccb1 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -496,7 +496,7 @@ g:changelog_new_date_format
+ 				%%	insert a single '%' character
+ 				%d	insert the date from above
+ 				%u	insert the user from above
+-                                %p	insert result of b:changelog_entry_prefix
++				%p	insert result of b:changelog_entry_prefix
+ 				%c	where to position cursor when done
+ 			The default is "%d  %u\n\n\t* %p%c\n\n", which produces
+ 			something like (| is where cursor will be, unless at
+@@ -510,7 +510,7 @@ g:changelog_new_entry_format
+ 			The format used when creating a new entry.
+ 			The following table describes special tokens in the
+ 			string:
+-                                %p	insert result of b:changelog_entry_prefix
++				%p	insert result of b:changelog_entry_prefix
+ 				%c	where to position cursor when done
+ 			The default is "\t*%c", which produces something
+ 			similar to >
+diff --git a/runtime/doc/ft_ada.txt b/runtime/doc/ft_ada.txt
+index 80ed728d3..35dd534bb 100644
+--- a/runtime/doc/ft_ada.txt
++++ b/runtime/doc/ft_ada.txt
+@@ -172,7 +172,7 @@ GNAT OBJECT ~
+ 							       *g:gnat.Make()*
+ g:gnat.Make()
+ 		Calls |g:gnat.Make_Command| and displays the result inside a
+-               |quickfix| window.
++		|quickfix| window.
  
-+						*match-pattern*
- 		See |pattern| for the patterns that are accepted.
- 		The 'ignorecase' option is used to set the ignore-caseness of
- 		the pattern.  'smartcase' is NOT used.  The matching is always
-@@ -6237,6 +6238,9 @@ matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
- 		This function works only for loaded buffers. First call
- 		|bufload()| if needed.
+ 							     *g:gnat.Pretty()*
+ g:gnat.Pretty()
+diff --git a/runtime/doc/ft_sql.txt b/runtime/doc/ft_sql.txt
+index f98b06252..110784d8c 100644
+--- a/runtime/doc/ft_sql.txt
++++ b/runtime/doc/ft_sql.txt
+@@ -371,7 +371,7 @@ This command breaks down as: >
+     'sqlKeyword'	   - Display the items for the sqlKeyword highlight
+ 			     group
+     'sqlKeyword\w*'	   - A second option available with Vim 7.4 which
+-                             uses a regular expression to determine which
++			     uses a regular expression to determine which
+ 			     syntax groups to use
+     )<CR>		   - Execute the :let command
+     <C-X><C-O>		   - Trigger the standard omni completion key stroke.
+diff --git a/runtime/doc/if_ole.txt b/runtime/doc/if_ole.txt
+index b08fa9818..c546e971a 100644
+--- a/runtime/doc/if_ole.txt
++++ b/runtime/doc/if_ole.txt
+@@ -39,9 +39,9 @@ instance), code similar to the following should be used:
+ 	$vim = new Win32::OLE 'Vim.Application';
  
-+		See |match-pattern| for information about the effect of some
-+		option settings on the pattern.
-+
- 		When {buf} is not a valid buffer, the buffer is not loaded or
- 		{lnum} or {end} is not valid then an error is given and an
- 		empty |List| is returned.
-@@ -6411,6 +6415,9 @@ matchstrlist({list}, {pat} [, {dict}])
- 		    submatches	a List of submatches.  Present only if
- 				"submatches" is set to v:true in {dict}.
+ [C#] >
+-        // Add a reference to Vim in your project.
+-        // Choose the COM tab.
+-        // Select "Vim Ole Interface 1.1 Type Library"
++	// Add a reference to Vim in your project.
++	// Choose the COM tab.
++	// Select "Vim Ole Interface 1.1 Type Library"
+ 	Vim.Vim vimobj = new Vim.Vim();
  
-+		See |match-pattern| for information about the effect of some
-+		option settings on the pattern.
-+
- 		Example: >
- 		    :echo matchstrlist(['tik tok'], '\<\k\+\>')
- 		    [{'idx': 0, 'byteidx': 0, 'text': 'tik'}, {'idx': 0, 'byteidx': 4, 'text': 'tok'}]
+ Vim does not support acting as a "hidden" OLE server, like some other OLE
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index cf83ffc0c..12297261c 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -592,7 +592,7 @@ displayed in the first line. Also a key map will also display where it was
+ last defined.  Example: >
+ 
+ 	:verbose map <C-W>*
+-        Kitty keyboard protocol: Cleared
++	Kitty keyboard protocol: Cleared
+ 	n  <C-W>*      * <C-W><C-S>*
+ 		Last set from /home/abcd/.vimrc
+ 
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 78cac3f33..48e45e835 100644
+index 48e45e835..210bfdcbd 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Jan 30
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Feb 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -365,11 +365,24 @@ created, thus they behave slightly differently:
- 			For a global option the global value is
+@@ -366,14 +366,14 @@ created, thus they behave slightly differently:
  			shown (but that might change in the future).
  
--:setl[ocal] {option}<	Set the local value of {option} to its global value by
--			copying the value.
--
--:se[t] {option}<	For |global-local| options: Remove the local value of
--			{option}, so that the global value will be used.
-+:se[t] {option}<	Set the effective value of {option} to its global
-+                        value.
-+			For string |global-local| options, the local value is
-+			removed, so that the global value will be used.
-+			For all other options, the global value is copied to
-+			the local value.
-+
-+:setl[ocal] {option}<	Set the effective value of {option} to its global
-+                        value.
-+			For number and boolean |global-local| options, the
-+			local value is removed, so that the global value will
-+			be used.
-+			For all other options, including string |global-local|
-+			options, the global value is copied to the local
+ :se[t] {option}<	Set the effective value of {option} to its global
+-                        value.
 +			value.
-+
-+Note that the behaviour for |global-local| options is slightly different
-+between string and number-based options.
+ 			For string |global-local| options, the local value is
+ 			removed, so that the global value will be used.
+ 			For all other options, the global value is copied to
+ 			the local value.
  
- 							*:setg* *:setglobal*
- :setg[lobal][!] ...	Like ":set" but set only the global value for a local
-@@ -4000,7 +4013,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'guiligatures'* *'gli'* *E1243*
- 'guiligatures' 'gli'	string	(default "")
+ :setl[ocal] {option}<	Set the effective value of {option} to its global
+-                        value.
++			value.
+ 			For number and boolean |global-local| options, the
+ 			local value is removed, so that the global value will
+ 			be used.
+@@ -2932,7 +2932,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				Use the indent heuristic for the internal
+ 				diff library.
+ 
+-                algorithm:{text} Use the specified diff algorithm with the
++		algorithm:{text} Use the specified diff algorithm with the
+ 				internal diff engine. Currently supported
+ 				algorithms are:
+ 				myers      the default algorithm
+@@ -6467,7 +6467,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	this option at the default "on".  Only switch it off when working with
+ 	old Vi scripts.
+ 
+-                                               *'renderoptions'* *'rop'*
++						*'renderoptions'* *'rop'*
+ 'renderoptions' 'rop'	string  (default: empty)
  			global
--			{only for GTK GUI}
-+			{only for GTK and Win32 GUI}
- 	List of ASCII characters that, when combined together, can create more
- 	complex shapes. Each character must be a printable ASCII character
- 	with a value in the 32-127 range.
+ 			{only available when compiled with GUI and DIRECTX on
+diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
+index ff435482d..862f31d07 100644
+--- a/runtime/doc/os_vms.txt
++++ b/runtime/doc/os_vms.txt
+@@ -753,7 +753,7 @@ Solution 2.  Different directories: >
+ 	$      say "IA64 platform"
+ 	$      define/nolog VIM RF10:[UTIL.IA64_EXE] ! IA64 executables
+ 	$ endif
+-        $! VIMRUNTIME must be defined in order to find runtime files
++	$! VIMRUNTIME must be defined in order to find runtime files
+ 	$ define/nolog VIMRUNTIME RF10:[UTIL.VIM73]
+ 
+ A good example for this approach is the [GNU]gnu_tools.com script from
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 90164e299..2b22105d5 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -642,7 +642,7 @@ additional prompting.
+ 	work with your ftp client.  Otherwise the script will
+ 	prompt for user-id and password.
+ 
+-        (*3) for ftp, "machine" may be machine#port or machine:port
++	(*3) for ftp, "machine" may be machine#port or machine:port
+ 	if a different port is needed than the standard ftp port
+ 
+ 	(*4) for http:..., if wget is available it will be used.  Otherwise,
+@@ -788,7 +788,7 @@ below, a {netfile} is a URL to a remote file.
+ 		(related: |netrw-userpass|)
+ 
+ :NetrwSettings  This command is described in |netrw-settings| -- used to
+-                display netrw settings and change netrw behavior.
++		display netrw settings and change netrw behavior.
+ 
+ 
+ ==============================================================================
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 325f59220..ae3bfb57b 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -378,14 +378,14 @@ processing a quickfix or location list command, it will be aborted.
+ 			List all errors.
+ 
+ :cl[ist]! +{count}	List the current and next {count} error lines.  This
+-                        is useful to see unrecognized lines after the current
++			is useful to see unrecognized lines after the current
+ 			one.  For example, if ":clist" shows:
+-        8384 testje.java:252: error: cannot find symbol ~
+-                        Then using ":cl! +3" shows the reason:
+-        8384 testje.java:252: error: cannot find symbol ~
+-        8385:   ZexitCode = Fmainx(); ~
+-        8386:               ^ ~
+-        8387:   symbol:   method Fmainx() ~
++	8384 testje.java:252: error: cannot find symbol ~
++			Then using ":cl! +3" shows the reason:
++	8384 testje.java:252: error: cannot find symbol ~
++	8385:   ZexitCode = Fmainx(); ~
++	8386:               ^ ~
++	8387:   symbol:   method Fmainx() ~
+ 
+ :lli[st] [from] [, [to]]				*:lli* *:llist*
+ 			Same as ":clist", except the location list for the
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 3720603ff..8535fcf96 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1025,17 +1025,17 @@ This can be used to pass the current directory from a shell to Vim.
+ Put this in your .vimrc: >
+ 	def g:Tapi_lcd(_, path: string)
+ 	    if isdirectory(path)
+-                execute 'silent lcd ' .. fnameescape(path)
+-            endif
++		execute 'silent lcd ' .. fnameescape(path)
++	    endif
+ 	enddef
+ <
+ And, in a bash init file: >
+-        if [[ -n "$VIM_TERMINAL" ]]; then
+-            PROMPT_COMMAND='_vim_sync_PWD'
+-            function _vim_sync_PWD() {
+-              printf '\033]51;["call", "Tapi_lcd", "%q"]\007' "$PWD"
+-            }
+-        fi
++	if [[ -n "$VIM_TERMINAL" ]]; then
++	    PROMPT_COMMAND='_vim_sync_PWD'
++	    function _vim_sync_PWD() {
++		printf '\033]51;["call", "Tapi_lcd", "%q"]\007' "$PWD"
++	    }
++	fi
+ <
+ Or, for zsh: >
+ 	if [[ -n "$VIM_TERMINAL" ]]; then
+@@ -1403,8 +1403,8 @@ Other commands ~
+  *:Asm*	     jump to the window with the disassembly, create it if there
+ 	     isn't one
+  *:Var*	     jump to the window with the local and argument variables,
+-             create it if there isn't one. This window updates whenever the
+-             program is stopped
++	     create it if there isn't one. This window updates whenever the
++	     program is stopped
+ 
+ Events ~
+ 							*termdebug-events*
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 0d832a34c..04a9afb1b 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Feb 20
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Feb 25
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -69,7 +69,7 @@ The output of the example code is:
+ 
+ In the first line the `vim9script` command makes clear this is a new, |Vim9|
+ script file.  That matters for how the rest of the file is used.  It is
+-recommended to put it in the very fist line, before any comments.
++recommended to put it in the very first line, before any comments.
+ 							*vim9-declarations*
+ The `var i = 1` command declares the "i" variable and initializes it.  The
+ generic form is: >
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 0f5884b65..7dd2ab018 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -2024,7 +2024,7 @@ Note that this does not work for variables, only for functions.
+ 					    *import-legacy* *legacy-import*
+ `:import` can also be used in legacy Vim script.  The imported namespace still
+ becomes script-local, even when the "s:" prefix is not given. For example: >
+-        import "myfile.vim"
++	import "myfile.vim"
+ 	call s:myfile.MyFunc()
+ 
+ And using the "as name" form: >
