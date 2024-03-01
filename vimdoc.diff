@@ -1,22 +1,54 @@
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 7865bb689..fe24505ed 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 6d1d372cf..dbad8802e 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 9.1.  Last change: 2023 Dec 27
-+*indent.txt*    For Vim version 9.1.  Last change: 2024 Feb 29
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Feb 28
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 01
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1255,5 +1255,11 @@ Example of configuration: >
- This variable is equivalent to `g:vim_indent.line_continuation`.
- It's supported for backward compatibility.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4281,32 +4281,31 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
+ 		The optional argument {opts} is a Dict and supports the
+ 		following items:
  
-+YAML							*ft-yaml-indent*
-+
-+By default, the yaml indent script does not try to detect multiline scalars.
-+If you want to enable this, set the following variable: >
-+
-+  let g:yaml_indent_multiline_scalar = 1
+-			type		Specify the selection type
++			type		Specify the region's selection type
+ 					(default: "v"):
+ 			    "v"		for |characterwise| mode
+ 			    "V"		for |linewise| mode
+ 			    "<CTRL-V>"	for |blockwise-visual| mode
  
-  vim:tw=78:ts=8:noet:ft=help:norl:
+-			exclusive	If |true|, use exclusive selection
+-					for the end position 'selection'.
++			exclusive	If |TRUE|, use exclusive selection
++					for the end position
++					(default: follow 'selection')
+ 
+ 		You can get the last selection type by |visualmode()|.
+ 		If Visual mode is active, use |mode()| to get the Visual mode
+ 		(e.g., in a |:vmap|).
+-		This function uses the line and column number from the
+-		specified position.
+-		It is useful to get text starting and ending in different
+-		columns, such as |characterwise-visual| selection.
++		This function is useful to get text starting and ending in
++		different columns, such as a |characterwise-visual| selection.
+ 
+ 		Note that:
+ 		- Order of {pos1} and {pos2} doesn't matter, it will always
+ 		  return content from the upper left position to the lower
+ 		  right position.
+-		- If 'virtualedit' is enabled and selection is past the end of
+-		  line, resulting lines are filled with blanks.
+-		- If the selection starts or ends in the middle of a multibyte
+-		  character, it is not included but its selected part is
+-		  substituted with spaces.
++		- If 'virtualedit' is enabled and the region is past the end
++		  of the lines, resulting lines are padded with spaces.
++		- If the region is blockwise and it starts or ends in the
++		  middle of a multi-cell character, it is not included but
++		  its selected part is substituted with spaces.
+ 		- If {pos1} or {pos2} is not current in the buffer, an empty
+ 		  list is returned.
+ 
