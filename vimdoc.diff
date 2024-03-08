@@ -1,67 +1,32 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0d47e3653..09b4dd068 100644
+index 09b4dd068..fb957e54a 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 03
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 06
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 06
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4274,11 +4274,13 @@ getreginfo([{regname}])					*getreginfo()*
- 			GetRegname()->getreginfo()
- 
- getregion({pos1}, {pos2} [, {opts}])			*getregion()*
--		Returns the list of strings from {pos1} to {pos2} in current
-+		Returns the list of strings from {pos1} to {pos2} from a
- 		buffer.
- 
+@@ -4280,7 +4280,7 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
  		{pos1} and {pos2} must both be |List|s with four numbers.
--		See |getpos()| for the format of the list.
-+		See |getpos()| for the format of the list.  It's possible
-+		to specify positions from a different buffer, but please
-+		note the limitations at |getregion-notes|
+ 		See |getpos()| for the format of the list.  It's possible
+ 		to specify positions from a different buffer, but please
+-		note the limitations at |getregion-notes|
++		note the limitations at |getregion-notes|.
  
  		The optional argument {opts} is a Dict and supports the
  		following items:
-@@ -4299,6 +4301,7 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
- 		This function is useful to get text starting and ending in
- 		different columns, such as a |characterwise-visual| selection.
- 
-+							*getregion-notes*
- 		Note that:
- 		- Order of {pos1} and {pos2} doesn't matter, it will always
- 		  return content from the upper left position to the lower
-@@ -4308,8 +4311,12 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
- 		- If the region is blockwise and it starts or ends in the
- 		  middle of a multi-cell character, it is not included but
- 		  its selected part is substituted with spaces.
--		- If {pos1} or {pos2} is not current in the buffer, an empty
-+		- If {pos1} and {pos2} are not in the same buffer, an empty
+@@ -4314,9 +4314,9 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
+ 		- If {pos1} and {pos2} are not in the same buffer, an empty
  		  list is returned.
-+		- {pos1} and {pos2} must belong to a |bufloaded()| buffer.
-+		- It is evaluated in current window context, this makes a
-+		  different if a buffer is displayed in a different window and
-+		  'virtualedit' or 'list' is set
+ 		- {pos1} and {pos2} must belong to a |bufloaded()| buffer.
+-		- It is evaluated in current window context, this makes a
+-		  different if a buffer is displayed in a different window and
+-		  'virtualedit' or 'list' is set
++		- It is evaluated in current window context, which makes a
++		  difference if the buffer is displayed in a window with
++		  different 'virtualedit' or 'list' values.
  
  		Examples: >
  			:xnoremap <CR>
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e38aa81a8..9af7411d9 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 03
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 06
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7253,7 +7253,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  q	use "recording" instead of "recording @a"		*shm-q*
- 	  F	don't give the file info when editing a file, like	*shm-F*
- 		`:silent` was used for the command; note that this also
--		affects messages from autocommands
-+		affects messages from autocommands and 'autoread' reloading
- 	  S	do not show search count message when searching, e.g.	*shm-S*
- 		"[1/5]"
- 
