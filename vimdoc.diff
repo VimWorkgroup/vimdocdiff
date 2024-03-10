@@ -1,32 +1,31 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 09b4dd068..fb957e54a 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 83285dd28..de8a665e1 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 06
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 07
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Feb 06
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Mar 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4280,7 +4280,7 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
- 		{pos1} and {pos2} must both be |List|s with four numbers.
- 		See |getpos()| for the format of the list.  It's possible
- 		to specify positions from a different buffer, but please
--		note the limitations at |getregion-notes|
-+		note the limitations at |getregion-notes|.
+@@ -2236,10 +2236,19 @@ MARKDOWN						*ft-markdown-syntax*
  
- 		The optional argument {opts} is a Dict and supports the
- 		following items:
-@@ -4314,9 +4314,9 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
- 		- If {pos1} and {pos2} are not in the same buffer, an empty
- 		  list is returned.
- 		- {pos1} and {pos2} must belong to a |bufloaded()| buffer.
--		- It is evaluated in current window context, this makes a
--		  different if a buffer is displayed in a different window and
--		  'virtualedit' or 'list' is set
-+		- It is evaluated in current window context, which makes a
-+		  difference if the buffer is displayed in a window with
-+		  different 'virtualedit' or 'list' values.
+ If you have long regions there might be wrong highlighting.  At the cost of
+ slowing down displaying, you can have the engine look further back to sync on
+-the start of a region, for example 500 lines: >
++the start of a region, for example 500 lines (default is 50): >
  
- 		Examples: >
- 			:xnoremap <CR>
+ 	:let g:markdown_minlines = 500
+ 
++If you want to enable fenced code block syntax highlighting in your markdown
++documents you can enable like this: >
++
++	:let g:markdown_fenced_languages = ['html', 'python', 'bash=sh']
++
++To disable markdown syntax concealing add the following to your vimrc: >
++
++	:let g:markdown_syntax_conceal = 0
++
+ 
+ MATHEMATICA		*mma.vim* *ft-mma-syntax* *ft-mathematica-syntax*
+ 
