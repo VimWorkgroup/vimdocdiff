@@ -1,78 +1,269 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 5f9f51ecb..32094b398 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index ec702201d..1f7a4f1bd 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jan 25
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Mar 26
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -428,6 +428,9 @@ Name			triggered by ~
- 
- |SessionLoadPost|	after loading a session file
- 
-+|SessionWritePost|	After writing the session file using
-+			the |:mksession| command.
-+
- |MenuPopup|		just before showing the popup menu
- |CompleteChanged|	after Insert mode completion menu changed
- |CompleteDonePre|	after Insert mode completion is done, before clearing
-@@ -1114,6 +1117,9 @@ SafeStateAgain			Like SafeState but after processing any
- 
- 							*SessionLoadPost*
- SessionLoadPost			After loading the session file created using
-+				the |:mksession| command.
-+							*SessionWritePost*
-+SessionWritePost		After writing a session file by calling
- 				the |:mksession| command.
- 							*ShellCmdPost*
- ShellCmdPost			After executing a shell command with |:!cmd|,
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index cd425b819..ff7497037 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 25
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 26
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 23
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7502,8 +7502,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	highlighted with |hl-NonText|.
+@@ -9598,6 +9598,8 @@ string({expr})	Return {expr} converted to a String.  If {expr} is a Number,
+ 			Dictionary	{key: value, key: value}
+ 			Class		class SomeName
+ 			Object		object of SomeName {lnum: 1, col: 3}
++			Enum		enum EnumName
++			EnumValue	enum.value
+ 
+ 		When a |List| or |Dictionary| has a recursive reference it is
+ 		replaced by "[...]" or "{...}".  Using eval() on the result
+@@ -10461,6 +10463,8 @@ type({expr})	The result is a Number representing the type of {expr}.
+ 			Class:	   12  |v:t_class|
+ 			Object:	   13  |v:t_object|
+ 			Typealias: 14  |v:t_typealias|
++			Enum:	   15  |v:t_enum|
++			EnumValue: 16  |v:t_enumvalue|
+ 		For backward compatibility, this method can be used: >
+ 			:if type(myvar) == type(0)
+ 			:if type(myvar) == type("")
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index f2ff3a883..fd37d974e 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Mar 20
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Mar 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2601,6 +2601,10 @@ v:t_class	Value of |class| type.  Read-only.  See: |type()|
+ v:t_object	Value of |object| type.  Read-only.  See: |type()|
+ 					*v:t_typealias* *t_typealias-variable*
+ v:t_typealias	Value of |typealias| type.  Read-only.  See: |type()|
++					*v:t_enum* *t_enum-variable*
++v:t_enum	Value of |enum| type.  Read-only.  See: |type()|
++					*v:t_enumvalue* *t_enumvalue-variable*
++v:t_enumvalue	Value of |enumvalue| type.  Read-only.  See: |type()|
+ 
+ 				*v:termresponse* *termresponse-variable*
+ v:termresponse	The escape sequence returned by the terminal for the |t_RV|
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index ff7497037..4eaedc250 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 26
++*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -7503,7 +7503,7 @@ A jump table for the options with a short description can be found at |Q_op|.
  	You may also want to add "lastline" to the 'display' option to show as
  	much of the last line as possible.
--	NOTE: only partly implemented, currently works with CTRL-E, CTRL-Y
--	and scrolling with the mouse.
-+	NOTE: only partly implemented, currently works with CTRL-E, CTRL-Y,
-+	CTRL-B, CTRL-F and scrolling with the mouse.
+ 	NOTE: only partly implemented, currently works with CTRL-E, CTRL-Y,
+-	CTRL-B, CTRL-F and scrolling with the mouse.
++	CTRL-D, CTRL-U, CTRL-F, CTRL-B and scrolling with the mouse.
  
  					*'softtabstop'* *'sts'*
  'softtabstop' 'sts'	number	(default 0)
+@@ -9469,8 +9469,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	will scroll 'window' minus two lines, with a minimum of one.
+ 	When 'window' is equal to 'lines' minus one CTRL-F and CTRL-B scroll
+ 	in a much smarter way, taking care of wrapping lines.
+-	When resizing the Vim window, the value is smaller than 1 or more than
+-	or equal to 'lines' it will be set to 'lines' minus 1.
++	When resizing the Vim window, and the value is smaller than 1 or more
++	than or equal to 'lines' it will be set to 'lines' minus 1.
+ 	Note: Do not confuse this with the height of the Vim window, use
+ 	'lines' for that.
+ 
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 2b4a70a3a..8712008cf 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 Mar 03
++*todo.txt*      For Vim version 9.1.  Last change: 2024 Mar 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -144,7 +144,6 @@ Further Vim9 improvements:
+   - More efficient way for interface member index than iterating over list?
+   - a variant of type() that returns a different type for each class?
+       list<number> and list<string> should also differ.
+-- implement :enum
+ - Promise class, could be used to wait on a popup close callback?
+ - class local to a function
+ - Use Vim9 for more runtime files.
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index bf16d4953..82482a762 100644
+index 82482a762..587cdd532 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Mar 03
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Mar 26
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Mar 26
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Mar 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41554,6 +41554,8 @@ Other improvements				*new-other-9.2*
- Changed						*changed-9.2*
+@@ -41548,6 +41548,8 @@ Vim9 script
+ Add support for internal builtin functions with vim9 objects, see
+ |builtin-object-methods|
+ 
++Enum support for Vim9 script |:enum|
++
+ Other improvements				*new-other-9.2*
+ ------------------
+ 
+@@ -41555,6 +41557,7 @@ Changed						*changed-9.2*
  -------
  
-+- use 'smoothscroll' logic for CTRL-F and CTRL-B for pagewise scrolling
-+
+ - use 'smoothscroll' logic for CTRL-F and CTRL-B for pagewise scrolling
++- use 'smoothscroll' logic for CTRL-D and CTRL-U for half-pagewise scrolling
+ 
  Added						*added-9.2*
  -----
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index a00a5b787..8820d77b5 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Mar 03
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Mar 28
  
-@@ -41570,6 +41572,7 @@ Functions: ~
  
- Autocommands: ~
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -904,19 +904,125 @@ aliased: >
  
-+|SessionWritePost|	after writing the session file |:mksession|
- |TermResponseAll|	after the terminal response to |t_RV| and others is
- 			received
- |WinNewPre|		before creating a new window
+ 8.  Enum					*Vim9-enum* *:enum* *:endenum*
+ 
+-{not implemented yet}
+-
++						*enum* *E1418* *E1419* *E1420*
+ An enum is a type that can have one of a list of values.  Example: >
+ 
+-	:enum Color
+-		White
+-		Red
+-		Green
+-		Blue
+-		Black
+-	:endenum
++    :enum Color
++	White,
++	Red,
++	Green, Blue, Black
++    :endenum
++<
++						*enumvalue* *E1422*
++The enum values are separated by commas.  More than one enum value can be
++listed in a single line.  The final enum value should not be followed by a
++comma.
++
++An enum value is accessed using the enum name followed by the value name: >
++
++    var a: Color = Color.Blue
++<
++Enums are treated as classes, where each enum value is essentially an instance
++of that class.  Unlike typical object instantiation with the |new()| method,
++enum instances cannot be created this way.
++
++An enum can only be defined in a |Vim9| script file.	*E1414*
++An enum cannot be defined inside a function.
++
++							*E1415*
++An enum name must start with an uppercase letter.  The name of an enum value
++in an enum can start with an upper or lowercase letter.
++
++							*E1416*
++An enum can implement an interface but cannot extend a class: >
++
++    enum MyEnum implements MyIntf
++	Value1,
++	Value2
++
++	def SomeMethod()
++	enddef
++    endenum
++<
++							*enum-constructor*
++The enum value objects in an enum are constructed like any other objects using
++the |new()| method.  Arguments can be passed to the enum constructor by
++specifying them after the enum value name, just like calling a function.  The
++default constructor doesn't have any arguments.
++
++							*E1417*
++An enum can contain class variables, class methods, object variables and
++object methods.  The methods in an enum cannot be |:abstract| methods.
++
++The following example shows an enum with object variables and methods: >
++
++    vim9script
++    enum Planet
++	Earth(1, false),
++	Jupiter(95, true),
++	Saturn(146, true)
++
++	var moons: number
++	var has_rings: bool
++	def GetMoons(): number
++	    return this.moons
++	enddef
++    endenum
++    echo Planet.Jupiter.GetMoons()
++    echo Planet.Earth.has_rings
++<
++						*E1421* *E1423* *E1424* *E1425*
++Enums and their values are immutable. They cannot be modified after
++declaration and cannot be utilized as numerical or string types.
++
++						*enum-name*
++Each enum value object has a "name" instance variable which contains the name
++of the enum value.  This is a readonly variable.
++
++						*enum-ordinal* *E1426*
++Each enum value has an associated ordinal number starting with 0.  The ordinal
++number of an enum value can be accessed using the "ordinal" instance variable.
++This is a readonly variable.  Note that if the ordering of the enum values in
++an enum is changed, then their ordinal values will also change.
++
++						*enum-values*
++All the values in an enum can be accessed using the "values" class variable
++which is a List of the enum objects.  This is a readonly variable.
++
++Example: >
++    enum Planet
++	Mercury,
++	Venus,
++	Earth
++    endenum
++
++    echo Planet.Mercury
++    echo Planet.Venus.name
++    echo Planet.Venus.ordinal
++    for p in Planet.values
++	# ...
++    endfor
++<
++An enum is a class with class variables for the enum value objects and object
++variables for the enum value name and the enum value ordinal: >
++
++    enum Planet
++	Mercury,
++	Venus
++    endenum
++<
++The above enum definition is equivalent to the following class definition: >
++
++    class Planet
++      public static final Mercury: Planet = Planet.new('Mercury', 0)
++      public static final Venus: Planet = Planet.new('Venus', 1)
+ 
++      public static const values: list<Planet> = [Planet.Mercury, Planet.Venus]
+ 
++      public const name: string
++      public const ordinal: number
++    endclass
++<
+ ==============================================================================
+ 
+ 9.  Rationale
