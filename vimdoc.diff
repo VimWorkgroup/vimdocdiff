@@ -1,13 +1,49 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 9e57a8cc4..088daa75a 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -9599,7 +9599,7 @@ string({expr})	Return {expr} converted to a String.  If {expr} is a Number,
- 			Class		class SomeName
- 			Object		object of SomeName {lnum: 1, col: 3}
- 			Enum		enum EnumName
--			EnumValue	enum.value
-+			EnumValue	enum name.value {name: str, ordinal: nr}
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 41b27ccb1..dba8ee2e4 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 Feb 14
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 03
  
- 		When a |List| or |Dictionary| has a recursive reference it is
- 		replaced by "[...]" or "{...}".  Using eval() on the result
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -437,6 +437,19 @@ So to enable this only for ruby, set the following variable: >
+ If both, the global `plugin_exec` and the `<filetype>_exec` specific variable
+ are set, the filetype specific variable should have precedent.
+ 
++
++ASCIIDOC						*ft-asciidoc-plugin*
++
++To enable |folding| use this: >
++	let g:asciidoc_folding = 1
++
++To disable nesting of folded headers use this: >
++	let g:asciidoc_foldnested = 0
++
++To disable folding everything under the title use this: >
++	let asciidoc_fold_under_title = 0
++
++
+ AWK							*ft-awk-plugin*
+ 
+ Support for features specific to GNU Awk, like @include, can be enabled by
+@@ -564,18 +577,6 @@ under it.  If not found, a new entry and item is prepended to the beginning of
+ the Changelog.
+ 
+ 
+-ASCIIDOC						*ft-asciidoc-plugin*
+-
+-To enable |folding| use this: >
+-	let g:asciidoc_folding = 1
+-
+-To disable nesting of folded headers use this: >
+-	let g:asciidoc_foldnested = 0
+-
+-To disable folding everything under the title use this: >
+-	let asciidoc_fold_under_title = 0
+-
+-
+ FORTRAN							*ft-fortran-plugin*
+ 
+ Options:
