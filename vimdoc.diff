@@ -1,116 +1,138 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 088daa75a..fb7c794f6 100644
+index fb7c794f6..a426124a0 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Mar 29
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Apr 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1771,7 +1771,7 @@ confirm({msg} [, {choices} [, {default} [, {type}]]])
- 		made.  It returns the number of the choice.  For the first
- 		choice this is 1.
- 		Note: confirm() is only supported when compiled with dialog
--		support, see |+dialog_con| and |+dialog_gui|.
-+		support, see |+dialog_con| |+dialog_con_gui| and |+dialog_gui|.
- 
- 		{msg} is displayed in a |dialog| with {choices} as the
- 		alternatives.  When {choices} is missing or empty, "&OK" is
-@@ -2307,7 +2307,8 @@ eval({string})	Evaluate {string} and return the result.  Especially useful to
- 		turn the result of |string()| back into the original value.
- 		This works for Numbers, Floats, Strings, Blobs and composites
- 		of them.  Also works for |Funcref|s that refer to existing
--		functions.
-+		functions.  In |Vim9| script, it can be used to obtain |enum|
-+		values from their fully qualified names.
- 
+@@ -220,12 +220,12 @@ getbufvar({buf}, {varname} [, {def}])
+ 				any	variable {varname} in buffer {buf}
+ getcellwidths()			List	get character cell width overrides
+ getchangelist([{buf}])		List	list of change list items
+-getchar([expr])			Number or String
++getchar([{expr}])		Number or String
+ 					get one character from the user
+ getcharmod()			Number	modifiers for the last typed character
+ getcharpos({expr})		List	position of cursor, mark, etc.
+ getcharsearch()			Dict	last character search
+-getcharstr([expr])		String	get one character from the user
++getcharstr([{expr}])		String	get one character from the user
+ getcmdcompltype()		String	return the type of the current
+ 					command-line completion
+ getcmdline()			String	return the current command-line
+@@ -398,7 +398,7 @@ menu_info({name} [, {mode}])	Dict	get menu item information
+ min({expr})			Number	minimum value of items in {expr}
+ mkdir({name} [, {flags} [, {prot}]])
+ 				Number	create directory {name}
+-mode([expr])			String	current editing mode
++mode([{expr}])			String	current editing mode
+ mzeval({expr})			any	evaluate |MzScheme| expression
+ nextnonblank({lnum})		Number	line nr of non-blank line >= {lnum}
+ nr2char({expr} [, {utf8}])	String	single char with ASCII/UTF-8 value {expr}
+@@ -699,7 +699,7 @@ test_override({expr}, {val})	none	test with Vim internal overrides
+ test_refcount({expr})		Number	get the reference count of {expr}
+ test_setmouse({row}, {col})	none	set the mouse position for testing
+ test_settime({expr})		none	set current time for testing
+-test_srand_seed([seed])		none	set seed for testing srand()
++test_srand_seed([{seed}])	none	set seed for testing srand()
+ test_unknown()			any	unknown value for testing
+ test_void()			any	void value for testing
+ timer_info([{id}])		List	information about timers
+@@ -729,7 +729,7 @@ virtcol({expr} [, {list} [, {winid}])
+ 					screen column of cursor or mark
+ virtcol2col({winid}, {lnum}, {col})
+ 				Number  byte index of a character on screen
+-visualmode([expr])		String	last visual mode used
++visualmode([{expr}])		String	last visual mode used
+ wildmenumode()			Number	whether 'wildmenu' mode is active
+ win_execute({id}, {command} [, {silent}])
+ 				String	execute {command} in window {id}
+@@ -3455,16 +3455,16 @@ getchangelist([{buf}])					*getchangelist()*
  		Can also be used as a |method|: >
- 			argv->join()->eval()
-@@ -11199,6 +11200,7 @@ cscope			Compiled with |cscope| support.
- cursorbind		Compiled with |'cursorbind'| (always true)
- debug			Compiled with "DEBUG" defined.
- dialog_con		Compiled with console dialog support.
-+dialog_con_gui		Compiled with console and GUI dialog support.
- dialog_gui		Compiled with GUI dialog support.
- diff			Compiled with |vimdiff| and 'diff' support.
- digraphs		Compiled with support for digraphs.
-diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
-index f2b5e13b7..b0bf79224 100644
---- a/runtime/doc/usr_51.txt
-+++ b/runtime/doc/usr_51.txt
+ 			GetBufnr()->getchangelist()
+ 
+-getchar([expr])						*getchar()*
++getchar([{expr}])					*getchar()*
+ 		Get a single character from the user or input stream.
+-		If [expr] is omitted, wait until a character is available.
+-		If [expr] is 0, only get a character when one is available.
++		If {expr} is omitted, wait until a character is available.
++		If {expr} is 0, only get a character when one is available.
+ 			Return zero otherwise.
+-		If [expr] is 1, only check if a character is available, it is
++		If {expr} is 1, only check if a character is available, it is
+ 			not consumed.  Return zero if no character available.
+ 		If you prefer always getting a string use |getcharstr()|.
+ 
+-		Without [expr] and when [expr] is 0 a whole character or
++		Without {expr} and when {expr} is 0 a whole character or
+ 		special key is returned.  If it is a single character, the
+ 		result is a Number.  Use |nr2char()| to convert it to a String.
+ 		Otherwise a String is returned with the encoded character.
+@@ -3474,11 +3474,11 @@ getchar([expr])						*getchar()*
+ 		also a String when a modifier (shift, control, alt) was used
+ 		that is not included in the character.
+ 
+-		When [expr] is 0 and Esc is typed, there will be a short delay
++		When {expr} is 0 and Esc is typed, there will be a short delay
+ 		while Vim waits to see if this is the start of an escape
+ 		sequence.
+ 
+-		When [expr] is 1 only the first byte is returned.  For a
++		When {expr} is 1 only the first byte is returned.  For a
+ 		one-byte character it is the character itself as a number.
+ 		Use nr2char() to convert it to a String.
+ 
+@@ -3589,13 +3589,13 @@ getcharsearch()						*getcharsearch()*
+ <		Also see |setcharsearch()|.
+ 
+ 
+-getcharstr([expr])					*getcharstr()*
++getcharstr([{expr}])					*getcharstr()*
+ 		Get a single character from the user or input stream as a
+ 		string.
+-		If [expr] is omitted, wait until a character is available.
+-		If [expr] is 0 or false, only get a character when one is
++		If {expr} is omitted, wait until a character is available.
++		If {expr} is 0 or false, only get a character when one is
+ 			available.  Return an empty string otherwise.
+-		If [expr] is 1 or true, only check if a character is
++		If {expr} is 1 or true, only check if a character is
+ 			available, it is not consumed.  Return an empty string
+ 			if no character is available.
+ 		Otherwise this works like |getchar()|, except that a number
+@@ -6648,8 +6648,8 @@ mkdir({name} [, {flags} [, {prot}]])
+ 			GetName()->mkdir()
+ <
+ 							*mode()*
+-mode([expr])	Return a string that indicates the current mode.
+-		If [expr] is supplied and it evaluates to a non-zero Number or
++mode([{expr}])	Return a string that indicates the current mode.
++		If {expr} is supplied and it evaluates to a non-zero Number or
+ 		a non-empty String (|non-zero-arg|), then the full mode is
+ 		returned, otherwise only the first letter is returned.
+ 		Also see |state()|.
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index 356d74e39..9b9f60b66 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
 @@ -1,4 +1,4 @@
--*usr_51.txt*	For Vim version 9.1.  Last change: 2022 Jun 03
-+*usr_51.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -649,13 +649,9 @@ When you write a compiler file and put it in your personal runtime directory
- make the default file skip the settings.
- 							*:CompilerSet*
- The second mechanism is to use ":set" for ":compiler!" and ":setlocal" for
--":compiler".  Vim defines the ":CompilerSet" user command for this.  However,
--older Vim versions don't, thus your plugin should define it then.  This is an
--example: >
-+":compiler".  Vim defines the ":CompilerSet" user command for this.  This is
-+an example: >
- 
--  if exists(":CompilerSet") != 2
--    command -nargs=* CompilerSet setlocal <args>
--  endif
-   CompilerSet errorformat&		" use the default 'errorformat'
-   CompilerSet makeprg=nmake
- 
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 8820d77b5..804e02dc1 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Mar 28
-+*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
+-*testing.txt*	For Vim version 9.1.  Last change: 2024 Feb 18
++*testing.txt*	For Vim version 9.1.  Last change: 2024 Apr 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -328,10 +328,27 @@ variables but they have no access to the object variables, they cannot use the
- 	   enddef
- 	endclass
+@@ -438,8 +438,8 @@ test_settime({expr})					*test_settime()*
+ 			GetTime()->test_settime()
  
--Inside the class the class method can be called by name directly, outside the
--class the class name must be prefixed: `OtherThing.ClearTotalSize()`.  To use
--a class method from a parent class in a child class, the class name must be
--prefixed.
-+Inside the class, the class method can be called by name directly, outside the
-+class, the class name must be prefixed: `OtherThing.ClearTotalSize()`.  Also,
-+the name prefix must be used for public class methods in the special contexts
-+of class variable initializers and of lambda expressions and nested functions:
-+>
-+    class OtherThing
-+	static var name: string = OtherThing.GiveName()
-+
-+	static def GiveName(): string
-+	    def DoGiveName(): string
-+		return OtherThing.NameAny()
-+	    enddef
-+
-+	    return DoGiveName()
-+	enddef
-+
-+	static def NameAny(): string
-+	    return "any"
-+	enddef
-+    endclass
-+<
  
- Just like object methods the access can be made protected by using an
- underscore as the first character in the method name: >
-@@ -972,8 +989,8 @@ The following example shows an enum with object variables and methods: >
-     echo Planet.Earth.has_rings
- <
- 						*E1421* *E1423* *E1424* *E1425*
--Enums and their values are immutable. They cannot be modified after
--declaration and cannot be utilized as numerical or string types.
-+Enums and their values are immutable.  They cannot be utilized as numerical or
-+string types.  Enum values can declare mutable instance variables.
+-test_srand_seed([seed])					*test_srand_seed()*
+-		When [seed] is given this sets the seed value used by
++test_srand_seed([{seed}])				*test_srand_seed()*
++		When {seed} is given this sets the seed value used by
+ 		`srand()`.  When omitted the test seed is removed.
  
- 						*enum-name*
- Each enum value object has a "name" instance variable which contains the name
+ 
