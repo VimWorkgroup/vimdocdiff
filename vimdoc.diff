@@ -1,138 +1,164 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index fb7c794f6..a426124a0 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index dba8ee2e4..aa7c9ae0c 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Apr 07
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 03
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -157,6 +157,8 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.inc		g:filetype_inc
+ 	*.lsl		g:filetype_lsl
+ 	*.m		g:filetype_m		|ft-mathematica-syntax|
++	*.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md
++			g:filetype_md		|ft-pandoc-syntax|
+ 	*.mod		g:filetype_mod
+ 	*.p		g:filetype_p		|ft-pascal-syntax|
+ 	*.pl		g:filetype_pl
+@@ -172,6 +174,7 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.typ		g:filetype_typ
+ 	*.v		g:filetype_v
+ 	*.w		g:filetype_w		|ft-cweb-syntax|
++	*.md		g:pandoc#filetypes#pandoc_markdown
+ 
+ For a few filetypes the global variable is used only when the filetype could
+ not be detected:
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index de8a665e1..5e290ecb1 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Mar 10
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 08
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -220,12 +220,12 @@ getbufvar({buf}, {varname} [, {def}])
- 				any	variable {varname} in buffer {buf}
- getcellwidths()			List	get character cell width overrides
- getchangelist([{buf}])		List	list of change list items
--getchar([expr])			Number or String
-+getchar([{expr}])		Number or String
- 					get one character from the user
- getcharmod()			Number	modifiers for the last typed character
- getcharpos({expr})		List	position of cursor, mark, etc.
- getcharsearch()			Dict	last character search
--getcharstr([expr])		String	get one character from the user
-+getcharstr([{expr}])		String	get one character from the user
- getcmdcompltype()		String	return the type of the current
- 					command-line completion
- getcmdline()			String	return the current command-line
-@@ -398,7 +398,7 @@ menu_info({name} [, {mode}])	Dict	get menu item information
- min({expr})			Number	minimum value of items in {expr}
- mkdir({name} [, {flags} [, {prot}]])
- 				Number	create directory {name}
--mode([expr])			String	current editing mode
-+mode([{expr}])			String	current editing mode
- mzeval({expr})			any	evaluate |MzScheme| expression
- nextnonblank({lnum})		Number	line nr of non-blank line >= {lnum}
- nr2char({expr} [, {utf8}])	String	single char with ASCII/UTF-8 value {expr}
-@@ -699,7 +699,7 @@ test_override({expr}, {val})	none	test with Vim internal overrides
- test_refcount({expr})		Number	get the reference count of {expr}
- test_setmouse({row}, {col})	none	set the mouse position for testing
- test_settime({expr})		none	set current time for testing
--test_srand_seed([seed])		none	set seed for testing srand()
-+test_srand_seed([{seed}])	none	set seed for testing srand()
- test_unknown()			any	unknown value for testing
- test_void()			any	void value for testing
- timer_info([{id}])		List	information about timers
-@@ -729,7 +729,7 @@ virtcol({expr} [, {list} [, {winid}])
- 					screen column of cursor or mark
- virtcol2col({winid}, {lnum}, {col})
- 				Number  byte index of a character on screen
--visualmode([expr])		String	last visual mode used
-+visualmode([{expr}])		String	last visual mode used
- wildmenumode()			Number	whether 'wildmenu' mode is active
- win_execute({id}, {command} [, {silent}])
- 				String	execute {command} in window {id}
-@@ -3455,16 +3455,16 @@ getchangelist([{buf}])					*getchangelist()*
- 		Can also be used as a |method|: >
- 			GetBufnr()->getchangelist()
+@@ -2467,6 +2467,95 @@ by the camlp4 preprocessor.  Setting the variable >
+ prevents highlighting of "end" as error, which is useful when sources
+ contain very long structures that Vim does not synchronize anymore.
  
--getchar([expr])						*getchar()*
-+getchar([{expr}])					*getchar()*
- 		Get a single character from the user or input stream.
--		If [expr] is omitted, wait until a character is available.
--		If [expr] is 0, only get a character when one is available.
-+		If {expr} is omitted, wait until a character is available.
-+		If {expr} is 0, only get a character when one is available.
- 			Return zero otherwise.
--		If [expr] is 1, only check if a character is available, it is
-+		If {expr} is 1, only check if a character is available, it is
- 			not consumed.  Return zero if no character available.
- 		If you prefer always getting a string use |getcharstr()|.
++PANDOC						*ft-pandoc-syntax*
++
++By default, markdown files will be detected as filetype "markdown".
++Alternatively, you may want them to be detected as filetype "pandoc" instead.
++To do so, set the following: >
++
++	:let g:markdown_md = 'pandoc'
++
++The pandoc syntax plugin uses |conceal| for pretty highlighting. Default is 1 >
++
++	:let g:pandoc#syntax#conceal#use = 1
++
++To specify elements that should not be concealed, set the following variable: >
++
++	:let g:pandoc#syntax#conceal#blacklist = []
++
++This is a list of the rules wich can be used here:
++
++  - titleblock
++  - image
++  - block
++  - subscript
++  - superscript
++  - strikeout
++  - atx
++  - codeblock_start
++  - codeblock_delim
++  - footnote
++  - definition
++  - list
++  - newline
++  - dashes
++  - ellipses
++  - quotes
++  - inlinecode
++  - inlinemath
++
++You can customize the way concealing works. For example, if you prefer to mark
++footnotes with the `*` symbol: >
++
++	:let g:pandoc#syntax#conceal#cchar_overrides = {"footnote" : "*"}
++
++To conceal the urls in links, use: >
++
++	:let g:pandoc#syntax#conceal#urls = 1
++
++Prevent highlighting specific codeblock types so that they remain Normal.
++Codeblock types include "definition" for codeblocks inside definition blocks
++and "delimited" for delimited codeblocks. Default = [] >
++
++	:let g:pandoc#syntax#codeblocks#ignore = ['definition']
++
++Use embedded highlighting for delimited codeblocks where a language is
++specified. Default = 1 >
++
++	:let g:pandoc#syntax#codeblocks#embeds#use = 1
++
++For specify what languages and using what syntax files to highlight embeds. This is a
++list of language names. When the language pandoc and vim use don't match, you
++can use the "PANDOC=VIM" syntax. For example: >
++
++	:let g:pandoc#syntax#codeblocks#embeds#langs = ["ruby", "bash=sh"]
++
++To use italics and strong in emphases. Default = 1 >
++
++	:let *g:pandoc#syntax#style#emphases = 1
++
++"0" will add "block" to g:pandoc#syntax#conceal#blacklist, because otherwise
++you couldn't tell where the styles are applied.
++
++To add underline subscript, superscript and strikeout text styles. Default = 1 >
++
++	:let g:pandoc#syntax#style#underline_special = 1
++
++Detect and highlight definition lists. Disabling this can improve performance.
++Default = 1 (i.e., enabled by default) >
++
++	:let g:pandoc#syntax#style#use_definition_lists = 1
++
++The pandoc syntax script also comes with the following commands: >
++
++	:PandocHighlight LANG
++
++Enables embedded highlighting for language LANG in codeblocks. Uses the
++syntax for items in g:pandoc#syntax#codeblocks#embeds#langs. >
++
++	:PandocUnhighlight LANG
++
++Disables embedded highlighting for language LANG in codeblocks.
  
--		Without [expr] and when [expr] is 0 a whole character or
-+		Without {expr} and when {expr} is 0 a whole character or
- 		special key is returned.  If it is a single character, the
- 		result is a Number.  Use |nr2char()| to convert it to a String.
- 		Otherwise a String is returned with the encoded character.
-@@ -3474,11 +3474,11 @@ getchar([expr])						*getchar()*
- 		also a String when a modifier (shift, control, alt) was used
- 		that is not included in the character.
+ PAPP						*papp.vim* *ft-papp-syntax*
  
--		When [expr] is 0 and Esc is typed, there will be a short delay
-+		When {expr} is 0 and Esc is typed, there will be a short delay
- 		while Vim waits to see if this is the start of an escape
- 		sequence.
- 
--		When [expr] is 1 only the first byte is returned.  For a
-+		When {expr} is 1 only the first byte is returned.  For a
- 		one-byte character it is the character itself as a number.
- 		Use nr2char() to convert it to a String.
- 
-@@ -3589,13 +3589,13 @@ getcharsearch()						*getcharsearch()*
- <		Also see |setcharsearch()|.
- 
- 
--getcharstr([expr])					*getcharstr()*
-+getcharstr([{expr}])					*getcharstr()*
- 		Get a single character from the user or input stream as a
- 		string.
--		If [expr] is omitted, wait until a character is available.
--		If [expr] is 0 or false, only get a character when one is
-+		If {expr} is omitted, wait until a character is available.
-+		If {expr} is 0 or false, only get a character when one is
- 			available.  Return an empty string otherwise.
--		If [expr] is 1 or true, only check if a character is
-+		If {expr} is 1 or true, only check if a character is
- 			available, it is not consumed.  Return an empty string
- 			if no character is available.
- 		Otherwise this works like |getchar()|, except that a number
-@@ -6648,8 +6648,8 @@ mkdir({name} [, {flags} [, {prot}]])
- 			GetName()->mkdir()
- <
- 							*mode()*
--mode([expr])	Return a string that indicates the current mode.
--		If [expr] is supplied and it evaluates to a non-zero Number or
-+mode([{expr}])	Return a string that indicates the current mode.
-+		If {expr} is supplied and it evaluates to a non-zero Number or
- 		a non-empty String (|non-zero-arg|), then the full mode is
- 		returned, otherwise only the first letter is returned.
- 		Also see |state()|.
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 356d74e39..9b9f60b66 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
+@@ -5496,6 +5585,9 @@ MessageWindow	Messages popup window used by `:echowindow`.  If not defined
+ 		|hl-WarningMsg| is used.
+ 							*hl-ModeMsg*
+ ModeMsg		'showmode' message (e.g., "-- INSERT --").
++							*hl-MsgArea*
++MsgArea		Command-line area, also used for outputting messages, see also
++		'cmdheight'
+ 							*hl-MoreMsg*
+ MoreMsg		|more-prompt|
+ 							*hl-NonText*
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 587cdd532..30fd79148 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 9.1.  Last change: 2024 Feb 18
-+*testing.txt*	For Vim version 9.1.  Last change: 2024 Apr 07
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Mar 28
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 08
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -438,8 +438,8 @@ test_settime({expr})					*test_settime()*
- 			GetTime()->test_settime()
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41581,6 +41581,10 @@ Autocommands: ~
+ |WinNewPre|		before creating a new window
  
  
--test_srand_seed([seed])					*test_srand_seed()*
--		When [seed] is given this sets the seed value used by
-+test_srand_seed([{seed}])				*test_srand_seed()*
-+		When {seed} is given this sets the seed value used by
- 		`srand()`.  When omitted the test seed is removed.
++Highlighting: ~
++
++|hl-MsgArea|		highlighting of the Command-line and messages area.
++
+ Commands: ~
  
  
