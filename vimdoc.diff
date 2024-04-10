@@ -1,164 +1,37 @@
 diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index dba8ee2e4..aa7c9ae0c 100644
+index aa7c9ae0c..f13cfc60d 100644
 --- a/runtime/doc/filetype.txt
 +++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 03
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 08
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 08
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 09
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -157,6 +157,8 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.inc		g:filetype_inc
- 	*.lsl		g:filetype_lsl
- 	*.m		g:filetype_m		|ft-mathematica-syntax|
-+	*.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md
-+			g:filetype_md		|ft-pandoc-syntax|
- 	*.mod		g:filetype_mod
- 	*.p		g:filetype_p		|ft-pascal-syntax|
- 	*.pl		g:filetype_pl
-@@ -172,6 +174,7 @@ variables can be used to overrule the filetype used for certain extensions:
+@@ -174,7 +174,6 @@ variables can be used to overrule the filetype used for certain extensions:
  	*.typ		g:filetype_typ
  	*.v		g:filetype_v
  	*.w		g:filetype_w		|ft-cweb-syntax|
-+	*.md		g:pandoc#filetypes#pandoc_markdown
+-	*.md		g:pandoc#filetypes#pandoc_markdown
  
  For a few filetypes the global variable is used only when the filetype could
  not be detected:
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index de8a665e1..5e290ecb1 100644
+index 5e290ecb1..cc04c59c4 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Mar 10
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 08
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 08
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2467,6 +2467,95 @@ by the camlp4 preprocessor.  Setting the variable >
- prevents highlighting of "end" as error, which is useful when sources
- contain very long structures that Vim does not synchronize anymore.
+@@ -2532,7 +2532,7 @@ can use the "PANDOC=VIM" syntax. For example: >
  
-+PANDOC						*ft-pandoc-syntax*
-+
-+By default, markdown files will be detected as filetype "markdown".
-+Alternatively, you may want them to be detected as filetype "pandoc" instead.
-+To do so, set the following: >
-+
-+	:let g:markdown_md = 'pandoc'
-+
-+The pandoc syntax plugin uses |conceal| for pretty highlighting. Default is 1 >
-+
-+	:let g:pandoc#syntax#conceal#use = 1
-+
-+To specify elements that should not be concealed, set the following variable: >
-+
-+	:let g:pandoc#syntax#conceal#blacklist = []
-+
-+This is a list of the rules wich can be used here:
-+
-+  - titleblock
-+  - image
-+  - block
-+  - subscript
-+  - superscript
-+  - strikeout
-+  - atx
-+  - codeblock_start
-+  - codeblock_delim
-+  - footnote
-+  - definition
-+  - list
-+  - newline
-+  - dashes
-+  - ellipses
-+  - quotes
-+  - inlinecode
-+  - inlinemath
-+
-+You can customize the way concealing works. For example, if you prefer to mark
-+footnotes with the `*` symbol: >
-+
-+	:let g:pandoc#syntax#conceal#cchar_overrides = {"footnote" : "*"}
-+
-+To conceal the urls in links, use: >
-+
-+	:let g:pandoc#syntax#conceal#urls = 1
-+
-+Prevent highlighting specific codeblock types so that they remain Normal.
-+Codeblock types include "definition" for codeblocks inside definition blocks
-+and "delimited" for delimited codeblocks. Default = [] >
-+
-+	:let g:pandoc#syntax#codeblocks#ignore = ['definition']
-+
-+Use embedded highlighting for delimited codeblocks where a language is
-+specified. Default = 1 >
-+
-+	:let g:pandoc#syntax#codeblocks#embeds#use = 1
-+
-+For specify what languages and using what syntax files to highlight embeds. This is a
-+list of language names. When the language pandoc and vim use don't match, you
-+can use the "PANDOC=VIM" syntax. For example: >
-+
-+	:let g:pandoc#syntax#codeblocks#embeds#langs = ["ruby", "bash=sh"]
-+
-+To use italics and strong in emphases. Default = 1 >
-+
-+	:let *g:pandoc#syntax#style#emphases = 1
-+
-+"0" will add "block" to g:pandoc#syntax#conceal#blacklist, because otherwise
-+you couldn't tell where the styles are applied.
-+
-+To add underline subscript, superscript and strikeout text styles. Default = 1 >
-+
-+	:let g:pandoc#syntax#style#underline_special = 1
-+
-+Detect and highlight definition lists. Disabling this can improve performance.
-+Default = 1 (i.e., enabled by default) >
-+
-+	:let g:pandoc#syntax#style#use_definition_lists = 1
-+
-+The pandoc syntax script also comes with the following commands: >
-+
-+	:PandocHighlight LANG
-+
-+Enables embedded highlighting for language LANG in codeblocks. Uses the
-+syntax for items in g:pandoc#syntax#codeblocks#embeds#langs. >
-+
-+	:PandocUnhighlight LANG
-+
-+Disables embedded highlighting for language LANG in codeblocks.
+ To use italics and strong in emphases. Default = 1 >
  
- PAPP						*papp.vim* *ft-papp-syntax*
+-	:let *g:pandoc#syntax#style#emphases = 1
++	:let g:pandoc#syntax#style#emphases = 1
  
-@@ -5496,6 +5585,9 @@ MessageWindow	Messages popup window used by `:echowindow`.  If not defined
- 		|hl-WarningMsg| is used.
- 							*hl-ModeMsg*
- ModeMsg		'showmode' message (e.g., "-- INSERT --").
-+							*hl-MsgArea*
-+MsgArea		Command-line area, also used for outputting messages, see also
-+		'cmdheight'
- 							*hl-MoreMsg*
- MoreMsg		|more-prompt|
- 							*hl-NonText*
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 587cdd532..30fd79148 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Mar 28
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 08
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41581,6 +41581,10 @@ Autocommands: ~
- |WinNewPre|		before creating a new window
- 
- 
-+Highlighting: ~
-+
-+|hl-MsgArea|		highlighting of the Command-line and messages area.
-+
- Commands: ~
- 
- 
+ "0" will add "block" to g:pandoc#syntax#conceal#blacklist, because otherwise
+ you couldn't tell where the styles are applied.
