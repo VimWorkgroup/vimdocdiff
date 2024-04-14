@@ -1,46 +1,63 @@
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index a5d3c2937..ca8f0aee8 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index cc04c59c4..06885752e 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*editing.txt*   For Vim version 9.1.  Last change: 2024 Apr 11
-+*editing.txt*   For Vim version 9.1.  Last change: 2024 Apr 12
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -658,8 +658,8 @@ list of the current window.
- 
- :[count]arge[dit][!] [++opt] [+cmd] {name} ..		*:arge* *:argedit*
- 			Add {name}s to the argument list and edit it.
--			When {name} already exists in the argument list, this
--			entry is edited.
-+			There is no check for duplicates, it is possible to
-+			add a file to the argument list twice |:argded|.
- 			This is like using |:argadd| and then |:edit| (with
- 			the small exception that |:edit| does not change the
- 			argument list, so the argument list pointer isn't
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 7dd2ab018..ffb5c2e19 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.1.  Last change: 2024 Jan 12
-+*vim9.txt*	For Vim version 9.1.  Last change: 2024 Apr 12
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 09
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -641,6 +641,14 @@ No command can follow the "{", only a comment can be used there.
- The block can also be used for defining a user command.  Inside the block Vim9
- syntax will be used.
+@@ -3764,12 +3764,15 @@ Some folding is now supported with syntax/vim.vim: >
+    g:vimsyn_folding == 0 or doesn't exist: no syntax-based folding
+    g:vimsyn_folding =~ 'a' : augroups
+    g:vimsyn_folding =~ 'f' : fold functions
++   g:vimsyn_folding =~ 'h' : fold heredocs
++   g:vimsyn_folding =~ 'H' : fold Vim9-script legacy headers
+    g:vimsyn_folding =~ 'l' : fold lua      script
+    g:vimsyn_folding =~ 'm' : fold mzscheme script
+    g:vimsyn_folding =~ 'p' : fold perl     script
+    g:vimsyn_folding =~ 'P' : fold python   script
+    g:vimsyn_folding =~ 'r' : fold ruby     script
+    g:vimsyn_folding =~ 't' : fold tcl      script
++let g:vimsyn_folding = 'acfhlmpPrt'
+ <
+ 							*g:vimsyn_noerror*
+ Not all error highlighting that syntax/vim.vim does may be correct; Vim script
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index ffb5c2e19..7a49aa082 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.1.  Last change: 2024 Apr 12
++*vim9.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
  
-+This is an example of using here-docs: >
-+    com SomeCommand {
-+        g:someVar =<< trim eval END
-+          ccc
-+          ddd
-+        END
-+      }
-+
- If the statements include a dictionary, its closing bracket must not be
- written at the start of a line.  Otherwise, it would be parsed as the end of
- the block.  This does not work: >
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1521,7 +1521,6 @@ Custom types can be defined with `:type`: >
+ 	:type MyList list<string>
+ Custom types must start with a capital letter, to avoid name clashes with
+ builtin types added later, similarly to user functions.
+-{not implemented yet}
+ 
+ And classes and interfaces can be used as types: >
+ 	:class MyClass
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 804e02dc1..ef96aa907 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -593,7 +593,7 @@ A class is defined between `:class` and `:endclass`.  The whole class is
+ defined in one script file.  It is not possible to add to a class later.
+ 
+ A class can only be defined in a |Vim9| script file.  *E1316*
+-A class cannot be defined inside a function.
++A class cannot be defined inside a function.  *E1429*
+ 
+ It is possible to define more than one class in a script file.  Although it
+ usually is better to export only one main class.  It can be useful to define
