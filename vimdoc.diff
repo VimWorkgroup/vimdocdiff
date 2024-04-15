@@ -1,170 +1,48 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 7063cad30..cd3d6add4 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index ae3bfb57b..e659d3950 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.1.  Last change: 2023 Dec 19
-+*change.txt*    For Vim version 9.1.  Last change: 2024 Apr 14
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2023 Jan 18
++*quickfix.txt*  For Vim version 9.1.  Last change: 2023 Apr 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1345,8 +1345,8 @@ expression (like with the "/" command).
- The expression must evaluate to a String.  A Number is always automatically
- converted to a String.  For the "p" and ":put" command, if the result is a
- Float it's converted into a String.  If the result is a List each element is
--turned into a String and used as a line.  A Dictionary or FuncRef results in
--an error message (use string() to convert).
-+turned into a String and used as a line.  A Dictionary is converted into a
-+String.  A FuncRef results in an error message (use string() to convert).
+@@ -1321,6 +1321,15 @@ If Vim was started from the compiler, the :sh and some :!  commands will not
+ work, because Vim is then running in the same process as the compiler and
+ stdin (standard input) will not be interactive.
  
- If the "= register is used for the "p" command, the String is split up at <NL>
- characters.  If the String ends in a <NL>, it is regarded as a linewise
++PANDOC					*quickfix-pandoc* *compiler-pandoc*
++
++The Pandoc compiler plugin expects that an output file type extension is
++passed to make, say :make html or :make pdf.
++
++Additional arguments can be passed to pandoc:
++
++- either by appending them to make, say `:make html --self-contained` .
++- or setting them in `b:pandoc_compiler_args` or `g:pandoc_compiler_args`
+ 
+ PERL					*quickfix-perl* *compiler-perl*
+ 
 diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index a7574450b..d97e1ba61 100644
+index d97e1ba61..ed5bdee7a 100644
 --- a/runtime/doc/starting.txt
 +++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Mar 13
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 14
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 14
++*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -811,7 +811,8 @@ accordingly.  Vim proceeds in this order:
- 	name.  Also see |vimrc-intro|.
+@@ -1100,9 +1100,9 @@ The location of this standard configuration directory is configurable by the
+ user, using environment variable but should also give fallback in case those
+ variables weren't set.
  
- 	Places for your personal initializations:
--		Unix		$HOME/.vimrc or $HOME/.vim/vimrc
-+		Unix		$HOME/.vimrc, $HOME/.vim/vimrc
-+                                or $XDG_CONFIG_HOME/vim/vimrc
- 		MS-Windows	$HOME/_vimrc, $HOME/vimfiles/vimrc
- 				or $VIM/_vimrc
- 		Amiga		s:.vimrc, home:.vimrc, home:vimfiles:vimrc
-@@ -853,15 +854,16 @@ accordingly.  Vim proceeds in this order:
- 	I   The environment variable VIMINIT (see also |compatible-default|) (*)
- 	    The value of $VIMINIT is used as an Ex command line.
- 	II  The user vimrc file(s):
--		    "$HOME/.vimrc"	   (for Unix) (*)
--		    "$HOME/.vim/vimrc"	   (for Unix) (*)
--		    "s:.vimrc"		   (for Amiga) (*)
--		    "home:.vimrc"	   (for Amiga) (*)
--		    "home:vimfiles:vimrc"  (for Amiga) (*)
--		    "$VIM/.vimrc"	   (for Amiga) (*)
--		    "$HOME/_vimrc"	   (for Win32) (*)
--		    "$HOME/vimfiles/vimrc" (for Win32) (*)
--		    "$VIM/_vimrc"	   (for Win32) (*)
-+		    "$HOME/.vimrc"		(for Unix) (*)
-+		    "$HOME/.vim/vimrc"		(for Unix) (*)
-+		    "$HOME/.config/vim/vimrc"	(for Unix) (*)
-+		    "s:.vimrc"			(for Amiga) (*)
-+		    "home:.vimrc"		(for Amiga) (*)
-+		    "home:vimfiles:vimrc"	(for Amiga) (*)
-+		    "$VIM/.vimrc"		(for Amiga) (*)
-+		    "$HOME/_vimrc"		(for Win32) (*)
-+		    "$HOME/vimfiles/vimrc"	(for Win32) (*)
-+		    "$VIM/_vimrc"		(for Win32) (*)
- 		    "$HOME/config/settings/vim/vimrc"	(for Haiku) (*)
- 
- 		Note: For Unix and Amiga, when ".vimrc" does not exist,
-@@ -1085,6 +1087,44 @@ defaults.vim from your .vimrc, first unlet skip_defaults_vim, as in the
- example above.
- 
- 
-+					*xdg-base-dir* *$XDG_CONFIG_HOME*
-+XDG Base Directory Specification ~
-+
-+The XDG Base Directory Specification aims to define a standard location for
-+configuration files used by applications.  This is mainly done to prevent
-+the legacy behavior of dumping everything into the users home directory.
-+The specification can be found online at
-+https://specifications.freedesktop.org/basedir-spec/latest/
-+
-+The location of this standard configuration directory is configurable by the
-+user, using environment variable but should also give fallback in case those
-+variables weren't set.
-+
-+This is a not an exhaustive list of those directories:
-+   Environment var	default location	Description ~
-+  `$XDG_CACHE_HOME`	$HOME/.cache		Ephemiral data files
-+  `$XDG_CONFIG_HOME`	$HOME/.config		Configuration files
-+  `$XDG_DATA_HOME`	$HOME/.local/share	Persistent data files
-+  `$XDG_STATE_HOME`	$HOME/.local/state	State data files
-+
-+Vim will only care of the `$XDG_CONFIG_HOME` directory, the others are not
-+(yet) used for its various configuration and state files.
-+
-+							*xdg-vimrc*
-+Vim, on Unix systems, will look at `$XDG_CONFIG_HOME/vim/vimrc` for its
-+configuration (see |vimrc|) but it will source it only if no other
-+initialization file is found in `$HOME` or `$HOME/.vim` (thus making this
-+feature backward compatible). However, if you want to migrate to use
-+`$XDG_CONFIG_HOME/vim/` directory, you will have to move away your `~/.vimrc`
-+and `~/.vim/vimrc` file.
-+
-+							*xdg-runtime*
-+When the |xdg-vimrc| is used the |'runtimepath'| will be modified accordingly
-+to respect the |xdg-base-dir|: >
-+
-+    "$XDG_CONFIG_HOME/vim,$VIMRUNTIME,/after,$XDG_CONFIG_HOME/vim/after"
-+<
-+
- Avoiding trojan horses ~
- 							*trojan-horse*
- While reading the "vimrc" or the "exrc" file in the current directory, some
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index d958229bc..1256d750d 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.1.  Last change: 2024 Feb 28
-+*term.txt*      For Vim version 9.1.  Last change: 2024 Apr 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -382,7 +382,7 @@ The options are listed below.  The associated termcap code is always equal to
- the last two characters of the option name.  Only one termcap code is
- required: Cursor motion, 't_cm'.
- 
--The options 't_da', 't_db', 't_ms', 't_xs', 't_xn' represent flags in the
-+The options 't_da', 't_db', 't_ms', 't_xs', 't_xn', 't_xo' represent flags in the
- termcap.  When the termcap flag is present, the option will be set to "y".
- But any non-empty string means that the flag is set.  An empty string means
- that the flag is not set.  't_CS' works like this too, but it isn't a termcap
-@@ -441,6 +441,11 @@ OUTPUT CODES						*terminal-output-codes*
- 								*t_xn* *'t_xn'*
- 	t_xn	if non-empty, writing a character at the last screen cell
- 		does not cause scrolling
-+								*t_xo* *'t_xo'*
-+	t_xo	if non-empty, terminal uses xon/xoff handshaking, mapping
-+		CTRL-S will not be possible then, since it is used for flow
-+		control (used by vt420 terminal).  Setting this flag has only
-+		an effect when starting Vim.
- 	t_ZH	italics mode					*t_ZH* *'t_ZH'*
- 	t_ZR	italics end					*t_ZR* *'t_ZR'*
- 
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 30fd79148..c2779236c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 08
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41543,6 +41543,8 @@ and is a work in progress.
- 
- Support for Wayland UI.
- 
-+Support for the XDG Desktop Specification |xdg-base-dir|
-+
- Vim9 script
- -----------
- Add support for internal builtin functions with vim9 objects, see
-@@ -41591,6 +41593,7 @@ Commands: ~
- Options: ~
- 
- 'winfixbuf'		Keep buffer focused in a window
-+'t_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420).
- 
- ==============================================================================
- INCOMPATIBLE CHANGES				*incompatible-9.2*
+-This is a not an exhaustive list of those directories:
++This is not an exhaustive list of those directories:
+    Environment var	default location	Description ~
+-  `$XDG_CACHE_HOME`	$HOME/.cache		Ephemiral data files
++  `$XDG_CACHE_HOME`	$HOME/.cache		Ephemeral data files
+   `$XDG_CONFIG_HOME`	$HOME/.config		Configuration files
+   `$XDG_DATA_HOME`	$HOME/.local/share	Persistent data files
+   `$XDG_STATE_HOME`	$HOME/.local/state	State data files
