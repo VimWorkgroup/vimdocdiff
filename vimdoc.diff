@@ -1,48 +1,19 @@
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index ae3bfb57b..e659d3950 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 6e0875281..3fda6e1ca 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
 @@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2023 Jan 18
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2023 Apr 15
+-*gui.txt*       For Vim version 9.1.  Last change: 2023 Apr 29
++*gui.txt*       For Vim version 9.1.  Last change: 2024 Apr 17
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1321,6 +1321,15 @@ If Vim was started from the compiler, the :sh and some :!  commands will not
- work, because Vim is then running in the same process as the compiler and
- stdin (standard input) will not be interactive.
- 
-+PANDOC					*quickfix-pandoc* *compiler-pandoc*
-+
-+The Pandoc compiler plugin expects that an output file type extension is
-+passed to make, say :make html or :make pdf.
-+
-+Additional arguments can be passed to pandoc:
-+
-+- either by appending them to make, say `:make html --self-contained` .
-+- or setting them in `b:pandoc_compiler_args` or `g:pandoc_compiler_args`
- 
- PERL					*quickfix-perl* *compiler-perl*
- 
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index d97e1ba61..ed5bdee7a 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 14
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 15
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1100,9 +1100,9 @@ The location of this standard configuration directory is configurable by the
- user, using environment variable but should also give fallback in case those
- variables weren't set.
- 
--This is a not an exhaustive list of those directories:
-+This is not an exhaustive list of those directories:
-    Environment var	default location	Description ~
--  `$XDG_CACHE_HOME`	$HOME/.cache		Ephemiral data files
-+  `$XDG_CACHE_HOME`	$HOME/.cache		Ephemeral data files
-   `$XDG_CONFIG_HOME`	$HOME/.config		Configuration files
-   `$XDG_DATA_HOME`	$HOME/.local/share	Persistent data files
-   `$XDG_STATE_HOME`	$HOME/.local/state	State data files
+@@ -70,6 +70,8 @@ When the GUI starts up initializations are carried out, in this order:
+   - For Win32, $HOME is set by Vim if needed, see |$HOME-windows|.
+   - When a "_gvimrc" file is not found, ".gvimrc" is tried too.  And vice
+     versa.
++  - On Unix, if "~/.config/vim/gvimrc" or "$XDG_CONFIG_HOME/vim/gvimrc"
++    exists, it is sourced.  You can check this with ":version".
+   The name of the first file found is stored in $MYGVIMRC, unless it was
+   already set.
+ - If the 'exrc' option is set (which is NOT the default) the file ./.gvimrc
