@@ -1,45 +1,57 @@
 diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index fb1dd2144..455a04a41 100644
+index 455a04a41..b83a61e00 100644
 --- a/runtime/doc/starting.txt
 +++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 19
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 20
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 20
++*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 21
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -93,20 +93,20 @@ filename	One or more file names.  The first one will be the current
+@@ -1097,7 +1097,7 @@ The specification can be found online at
+ https://specifications.freedesktop.org/basedir-spec/latest/
  
- The startup mode can be changed by using another name instead of "vim", which
- is equal to giving options:
--ex	vim -e	    Start in Ex mode (see |Ex-mode|).		    *ex*
--exim	vim -E	    Start in improved Ex mode (see |Ex-mode|).	    *exim*
--			(normally not installed)
--view	vim -R	    Start in read-only mode (see |-R|).		    *view*
--gvim	vim -g	    Start the GUI (see |gui|).			    *gvim*
--gex	vim -eg	    Start the GUI in Ex mode.			  *gex*
--gview	vim -Rg	    Start the GUI in read-only mode.		  *gview*
--rvim	vim -Z	    Like "vim", but in restricted mode (see |-Z|)   *rvim*
--rview	vim -RZ	    Like "view", but in restricted mode.	  *rview*
--rgvim	vim -gZ	    Like "gvim", but in restricted mode.	  *rgvim*
--rgview	vim -RgZ    Like "gview", but in restricted mode.	  *rgview*
--evim    vim -y      Easy Vim: set 'insertmode' (see |-y|)	    *evim*
--eview   vim -yR     Like "evim" in read-only mode		  *eview*
--vimdiff vim -d	    Start in diff mode |diff-mode|
-+ex	 vim -e	    Start in Ex mode (see |Ex-mode|).		  *ex*
-+exim	 vim -E	    Start in improved Ex mode (see |Ex-mode|).	  *exim*
-+		    (normally not installed)
-+view	 vim -R	    Start in read-only mode (see |-R|).		  *view*
-+gvim	 vim -g	    Start the GUI (see |gui|).			  *gvim*
-+gex	 vim -eg    Start the GUI in Ex mode.			  *gex*
-+gview	 vim -Rg    Start the GUI in read-only mode.		  *gview*
-+rvim	 vim -Z	    Like "vim", but in restricted mode (see |-Z|)   *rvim*
-+rview	 vim -RZ    Like "view", but in restricted mode.	  *rview*
-+rgvim	 vim -gZ    Like "gvim", but in restricted mode.	  *rgvim*
-+rgview	 vim -RgZ   Like "gview", but in restricted mode.	  *rgview*
-+evim     vim -y     Easy Vim: set 'insertmode' (see |-y|)	  *evim*
-+eview    vim -yR    Like "evim" in read-only mode		  *eview*
-+vimdiff  vim -d	    Start in diff mode |diff-mode|
- gvimdiff vim -gd    Start in diff mode |diff-mode|
+ The location of this standard configuration directory is configurable by the
+-user, using environment variable but should also give fallback in case those
++user, using an environment variable but should also give fallback in case those
+ variables weren't set.
  
- Additional characters may follow, they are ignored.  For example, you can have
+ This is not an exhaustive list of those directories:
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 06885752e..619046ec8 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -930,6 +930,21 @@ nasm_loose_syntax	unofficial parser allowed syntax not as Error
+ nasm_ctx_outside_macro	contexts outside macro not as Error
+ nasm_no_warn		potentially risky syntax not as ToDo
+ 
++ASTRO						*astro.vim* *ft-astro-syntax*
++
++Configuration
++
++The following variables control certain syntax highlighting features.
++You can add them to your .vimrc: >
++	let g:astro_typescript = "enable"
++<
++Enables TypeScript and TSX for ".astro" files. Default Value: "disable" >
++	let g:astro_stylus = "enable"
++<
++Enables Stylus for ".astro" files. Default Value: "disable"
++
++NOTE: You need to install an external plugin to support stylus in astro files.
++
+ 
+ ASPPERL and ASPVBS			*ft-aspperl-syntax* *ft-aspvbs-syntax*
+ 
+@@ -6118,5 +6133,4 @@ literal text specify the size of that text (in bytes):
+ 		many places.
+ "<\@1<=span"	Matches the same, but only tries one byte before "span".
+ 
+-
+  vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
