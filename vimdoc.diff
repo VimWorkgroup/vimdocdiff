@@ -1,57 +1,115 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 455a04a41..b83a61e00 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index bc2ba5437..dbd4b1084 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 20
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 21
+-*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Jan 30
++*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Apr 22
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1097,7 +1097,7 @@ The specification can be found online at
- https://specifications.freedesktop.org/basedir-spec/latest/
+@@ -636,8 +636,8 @@ that version.
+ For Motif, you need at least Motif version 1.2 and/or X11R5.  Motif 2.0 and
+ X11R6 are OK.  Motif 1.1 and X11R4 might work, no guarantee (there may be a
+ few problems, but you might make it compile and run with a bit of work, please
+-send me the patches if you do).  The newest releases of LessTif have been
+-reported to work fine too.
++send patches if you do).  The newest releases of LessTif have been reported to
++work fine too.
  
- The location of this standard configuration directory is configurable by the
--user, using environment variable but should also give fallback in case those
-+user, using an environment variable but should also give fallback in case those
- variables weren't set.
+ 					    *gui-x11-athena* *gui-x11-neXtaw*
+ Support for the Athena GUI and neXtaw was removed in patch 8.2.4677.
+diff --git a/runtime/doc/sponsor.txt b/runtime/doc/sponsor.txt
+index 6f4e9f353..169816896 100644
+--- a/runtime/doc/sponsor.txt
++++ b/runtime/doc/sponsor.txt
+@@ -1,4 +1,4 @@
+-*sponsor.txt*   For Vim version 9.1.  Last change: 2023 Mar 24
++*sponsor.txt*   For Vim version 9.1.  Last change: 2024 Apr 22
  
- This is not an exhaustive list of those directories:
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -60,9 +60,7 @@ Credit card	Through PayPal, see the PayPal site for information:
+ 
+ Other methods	See |iccf-donations|.
+ 		Include "Vim sponsor" or "Vim registration" in the comment of
+-		your money transfer.  Send me an e-mail that mentions the
+-		amount you transferred if you want to vote for features and
+-		show others you are a registered Vim user or sponsor.
++		your money transfer.
+ 
+ 
+ QUESTIONS AND ANSWERS				*sponsor-faq* *register-faq*
+@@ -135,10 +133,10 @@ for features.
+ 
+ I donated $$$, now please add feature XYZ!
+ 
+-There is no direct relation between your donation and the work developers
+-does. Otherwise you would be paying for work and we would have to pay tax
+-over the donation.  If you want to hire one of the developers for specific
+-work, contact them directly, don't use the donation system.
++There is no direct relation between your donation and the work developers do.
++Otherwise you would be paying for work and we would have to pay tax over the
++donation.  If you want to hire one of the developers for specific work,
++contact them directly, don't use the donation system.
+ 
+ 
+ Are the donations tax deductible?
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 06885752e..619046ec8 100644
+index 619046ec8..7269e7d20 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 21
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 21
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 22
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -930,6 +930,21 @@ nasm_loose_syntax	unofficial parser allowed syntax not as Error
- nasm_ctx_outside_macro	contexts outside macro not as Error
- nasm_no_warn		potentially risky syntax not as ToDo
+@@ -2685,8 +2685,8 @@ perl_string_as_statement, it will be highlighted as in the second line.
+ The syncing has 3 options.  The first two switch off some triggering of
+ synchronization and should only be needed in case it fails to work properly.
+ If while scrolling all of a sudden the whole screen changes color completely
+-then you should try and switch off one of those.  Let me know if you can
+-figure out the line that causes the mistake.
++then you should try and switch off one of those.  Let the developer know if
++you can figure out the line that causes the mistake.
  
-+ASTRO						*astro.vim* *ft-astro-syntax*
-+
-+Configuration
-+
-+The following variables control certain syntax highlighting features.
-+You can add them to your .vimrc: >
-+	let g:astro_typescript = "enable"
-+<
-+Enables TypeScript and TSX for ".astro" files. Default Value: "disable" >
-+	let g:astro_stylus = "enable"
-+<
-+Enables Stylus for ".astro" files. Default Value: "disable"
-+
-+NOTE: You need to install an external plugin to support stylus in astro files.
-+
+ One triggers on "^\s*sub\s*" and the other on "^[$@%]" more or less. >
  
- ASPPERL and ASPVBS			*ft-aspperl-syntax* *ft-aspvbs-syntax*
- 
-@@ -6118,5 +6133,4 @@ literal text specify the size of that text (in bytes):
+@@ -6133,4 +6133,5 @@ literal text specify the size of that text (in bytes):
  		many places.
  "<\@1<=span"	Matches the same, but only tries one byte before "span".
  
--
++
   vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
+index 6b7705045..513759f60 100644
+--- a/runtime/doc/uganda.txt
++++ b/runtime/doc/uganda.txt
+@@ -1,4 +1,4 @@
+-*uganda.txt*    For Vim version 9.1.  Last change: 2022 Mar 02
++*uganda.txt*    For Vim version 9.1.  Last change: 2024 Apr 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -203,7 +203,7 @@ visited about once a year to check the progress (at our own cost).  I have
+ visited the centre myself many times, starting in 1993.  The visit reports are
+ on the ICCF web site.
+ 
+-If you have any further questions, send me e-mail: <Bram@vim.org>.
++If you have any further questions, send e-mail: <Bram@vim.org>.
+ 
+ The address of the centre is:
+ 			Kibaale Children's Centre
+@@ -223,9 +223,8 @@ Canada:		Contact Kuwasha in Surrey, Canada.  They take care of the
+ 		Canadian sponsors for the children in Kibaale.  Kuwasha
+ 		forwards 100% of the money to the project in Uganda.  You can
+ 		send them a one time donation directly.
+-		Please send me a note so that I know what has been donated
+-		because of Vim.  Look on their site for information about
+-		sponsorship: https://www.kuwasha.net/
++		Look on their site for information about sponsorship:
++		https://www.kuwasha.net/
+ 		If you make a donation to Kuwasha you will receive a tax
+ 		receipt which can be submitted with your tax return.
+ 
