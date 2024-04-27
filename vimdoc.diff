@@ -1,181 +1,23 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index a426124a0..79f3cd7c6 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -9980,6 +9980,10 @@ synconcealed({lnum}, {col})				*synconcealed()*
- 			synconcealed(lnum, 5)   [1, 'X', 2]
- 			synconcealed(lnum, 6)   [0, '', 0]
- 
-+		Note: Doesn't consider |matchadd()| highlighting items,
-+		since syntax and matching highlighting are two different
-+		mechanisms |syntax-vs-match|.
-+
- 
- synstack({lnum}, {col})					*synstack()*
- 		Return a |List|, which is the stack of syntax items at the
-diff --git a/runtime/doc/os_dos.txt b/runtime/doc/os_dos.txt
-index e81ba9a5a..1b738f43a 100644
---- a/runtime/doc/os_dos.txt
-+++ b/runtime/doc/os_dos.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 13c4d729b..214571f28 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*os_dos.txt*    For Vim version 9.1.  Last change: 2006 Mar 30
-+*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Apr 25
+-*cmdline.txt*   For Vim version 9.1.  Last change: 2023 Dec 09
++*cmdline.txt*   For Vim version 9.1.  Last change: 2024 Apr 27
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -330,6 +330,11 @@ following values:
- 'shellpipe'	>%s 2>&1
- 'shellredir'	>%s 2>&1
+@@ -650,6 +650,12 @@ followed by another Vim command:
+     :[range]!
+     a user defined command without the "-bar" argument |:command|
  
-+Note: those options are only set after reading the |.vimrc| file, in
-+particular setting the 'shell' option via |-c| is too late to take effect for
-+the other shell related settings.  Consider using |--cmd| to override this
-+option via the command line.
++    and the following |Vim9-script| keywords:
++    :abstract
++    :class
++    :enum
++    :interface
 +
- If you find that PowerShell commands are taking a long time to run then try
- with "-NoProfile" at the beginning of the 'shellcmdflag'.  Note this will
- prevent any PowerShell environment setup by the profile from taking place.
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 2d1898de5..f16e7d2d6 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -1,4 +1,4 @@
--*pattern.txt*   For Vim version 9.1.  Last change: 2023 Oct 23
-+*pattern.txt*   For Vim version 9.1.  Last change: 2024 Apr 26
+ Note that this is confusing (inherited from Vi): With ":g" the '|' is included
+ in the command, with ":s" it is not.
  
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1394,6 +1394,19 @@ Finally, these constructs are unique to Perl:
- ==============================================================================
- 10. Highlighting matches				*match-highlight*
- 
-+							*syntax-vs-match*
-+		Note that the match highlight mechanism is independent
-+		of |syntax-highlighting|, which is (usually) a buffer-local
-+		highlighting, while matching is window-local, both methods
-+		can be freely mixed.  Match highlighting functions give you
-+		a bit more flexibility in when and how to apply, but are
-+		typically only used for temporary highlighting, without strict
-+		rules.  Both methods can be used to conceal text.
-+
-+		Thus the matching functions like |matchadd()| won't consider
-+		syntax rules and functions like |synconcealed()| and the
-+		other way around.
-+
- 							*:mat* *:match*
- :mat[ch] {group} /{pattern}/
- 		Define a pattern to highlight in the current window.  It will
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 7269e7d20..bfc464534 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 22
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 26
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2086,6 +2086,15 @@ To disable syntax highlighting of errors: >
- 	let g:vim_json_warnings = 0
- 
- 
-+JQ				*jq.vim* *jq_quote_highlight* *ft-jq-syntax*
-+
-+To disable numbers having their own color add the following to your vimrc: >
-+	hi link jqNumber Normal
-+
-+If you want quotes to have different highlighting than strings >
-+	let g:jq_quote_highlight = 1
-+
-+
- LACE						*lace.vim* *ft-lace-syntax*
- 
- Lace (Language for Assembly of Classes in Eiffel) is case insensitive, but the
-@@ -4314,7 +4323,9 @@ Whether or not it is actually concealed depends on the value of the
- 'conceallevel' option.  The 'concealcursor' option is used to decide whether
- concealable items in the current line are displayed unconcealed to be able to
- edit the line.
--Another way to conceal text is with |matchadd()|.
-+
-+Another way to conceal text is with |matchadd()|, but internally this works a
-+bit differently |syntax-vs-match|.
- 
- concealends						*:syn-concealends*
- 
-@@ -4322,7 +4333,9 @@ When the "concealends" argument is given, the start and end matches of
- the region, but not the contents of the region, are marked as concealable.
- Whether or not they are actually concealed depends on the setting on the
- 'conceallevel' option. The ends of a region can only be concealed separately
--in this way when they have their own highlighting via "matchgroup"
-+in this way when they have their own highlighting via "matchgroup".  The
-+|synconcealed()| function can be used to retrieve information about conealed
-+items.
- 
- cchar							*:syn-cchar*
- 							*E844*
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index 05239eeeb..063af9bfc 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
-@@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.1.  Last change: 2023 Sep 12
-+*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Apr 26
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -436,6 +436,18 @@ when Vim starts, add the following line to your vimrc file: >
- After restarting your Vim, the plugin is active and you can read about it at: >
- 	:h editorconfig.txt
- 
-+
-+Adding comment package					*comment-install*
-+
-+Load the plugin with this command: >
-+    packadd comment
-+<
-+This way you can use the plugin with the default key bindings `gc` and similar
-+for commenting (which is a well-established mapping in the Vim community).
-+
-+After restarting your Vim, the plugin is active and you can read about it at: >
-+	:h comment.txt
-+
- More information about packages can be found here: |packages|.
- 
- ==============================================================================
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 04a9afb1b..6137cfd5a 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Feb 25
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Apr 26
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -1096,7 +1096,7 @@ Syntax and highlighting:	  *syntax-functions* *highlighting-functions*
- 	synIDattr()		get a specific attribute of a syntax ID
- 	synIDtrans()		get translated syntax ID
- 	synstack()		get list of syntax IDs at a specific position
--	synconcealed()		get info about concealing
-+	synconcealed()		get info about (syntax) concealing
- 	diff_hlID()		get highlight ID for diff mode at a position
- 	matchadd()		define a pattern to highlight (a "match")
- 	matchaddpos()		define a list of positions to highlight
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index c2779236c..03050ee4d 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 14
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 26
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41554,6 +41554,7 @@ Enum support for Vim9 script |:enum|
- 
- Other improvements				*new-other-9.2*
- ------------------
-+The comment plugin |comment-install| is included.
- 
- Changed						*changed-9.2*
- -------
