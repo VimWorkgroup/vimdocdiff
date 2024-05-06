@@ -1,86 +1,282 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 79f3cd7c6..47cc92cdf 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 32094b398..037f89c4c 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Apr 07
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 04
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4382,7 +4382,7 @@ getscriptinfo([{opts}])					*getscriptinfo()*
- 
- 		Examples: >
- 			:echo getscriptinfo({'name': 'myscript'})
--			:echo getscriptinfo({'sid': 15}).variables
-+			:echo getscriptinfo({'sid': 15})[0].variables
- <
- gettabinfo([{tabnr}])					*gettabinfo()*
- 		If {tabnr} is not specified, then information about all the
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 806f5f0b8..795a5d014 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Mar 29
-+*options.txt*	For Vim version 9.1.  Last change: 2024 May 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6683,7 +6683,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- <
- 				*'runtimepath'* *'rtp'* *vimfiles*
- 'runtimepath' 'rtp'	string	(default:
--					Unix:  "$HOME/.vim,
-+					Unix:  "$HOME/.vim or
-+						$XDG_CONFIG_HOME/vim,
- 						$VIM/vimfiles,
- 						$VIMRUNTIME,
- 						$VIM/vimfiles/after,
-@@ -6735,6 +6736,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 
- 	And any other file searched for with the |:runtime| command.
- 
-+	For $XDG_CONFIG_HOME see |xdg-base-dir|.
-+
- 	The defaults for most systems are setup to search five locations:
- 	1. In your home directory, for your personal preferences.
- 	2. In a system-wide Vim directory, for preferences from the system
-@@ -8986,13 +8989,15 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'viewdir'* *'vdir'*
- 'viewdir' 'vdir'	string	(default for Amiga: "home:vimfiles/view",
- 					 for Win32: "$HOME/vimfiles/view",
--					 for Unix: "$HOME/.vim/view",
-+					 for Unix: "$HOME/.vim/view" or
-+					           "$XDG_CONFIG_HOME/vim/view"
- 					 for macOS: "$VIM/vimfiles/view",
- 					 for VMS: "sys$login:vimfiles/view")
- 			global
- 			{not available when compiled without the |+mksession|
- 			feature}
- 	Name of the directory where to store files for |:mkview|.
-+	For $XDG_CONFIG_HOME see |xdg-base-dir|.
- 	This option cannot be set from a |modeline| or in the |sandbox|, for
- 	security reasons.
- 
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index b83a61e00..71b620a20 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Apr 21
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 May 02
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Mar 26
++*autocmd.txt*   For Vim version 9.1.  Last change: 2024 May 05
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1119,8 +1119,8 @@ feature backward compatible). However, if you want to migrate to use
- and `~/.vim/vimrc` file.
+@@ -428,8 +428,8 @@ Name			triggered by ~
  
- 							*xdg-runtime*
--When the |xdg-vimrc| is used the |'runtimepath'| will be modified accordingly
--to respect the |xdg-base-dir|: >
-+When the |xdg-vimrc| is used the 'runtimepath' and 'packpath' options will be
-+modified accordingly to respect the |xdg-base-dir|: >
+ |SessionLoadPost|	after loading a session file
  
-     "$XDG_CONFIG_HOME/vim,$VIMRUNTIME,/after,$XDG_CONFIG_HOME/vim/after"
- <
+-|SessionWritePost|	After writing the session file using
+-			the |:mksession| command.
++|SessionWritePost|	after writing the session file using
++			the |:mksession| command
+ 
+ |MenuPopup|		just before showing the popup menu
+ |CompleteChanged|	after Insert mode completion menu changed
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 47cc92cdf..f62cc83ca 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 04
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2544,7 +2544,7 @@ expand({string} [, {nosuf} [, {list}]])				*expand()*
+ 		not start with '%', '#' or '<', see below.
+ 
+ 		For a |:terminal| window '%' expands to a '!' followed by
+-		the command or shell that is run |terminal-bufname|
++		the command or shell that is run.  |terminal-bufname|
+ 
+ 		When {string} starts with '%', '#' or '<', the expansion is
+ 		done like for the |cmdline-special| variables with their
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index cd3d6add4..16ad114f1 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.1.  Last change: 2024 Apr 14
++*change.txt*    For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1346,7 +1346,7 @@ The expression must evaluate to a String.  A Number is always automatically
+ converted to a String.  For the "p" and ":put" command, if the result is a
+ Float it's converted into a String.  If the result is a List each element is
+ turned into a String and used as a line.  A Dictionary is converted into a
+-String.  A FuncRef results in an error message (use string() to convert).
++String.  A Funcref results in an error message (use string() to convert).
+ 
+ If the "= register is used for the "p" command, the String is split up at <NL>
+ characters.  If the String ends in a <NL>, it is regarded as a linewise
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index fd37d974e..ae93b35b3 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Mar 28
++*eval.txt*	For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3099,7 +3099,7 @@ text...
+ :cons[t] {var-name} = {expr1}
+ :cons[t] [{name1}, {name2}, ...] = {expr1}
+ :cons[t] [{name}, ..., ; {lastname}] = {expr1}
+-:cons[t] {var-name} =<< [trim] {marker}
++:cons[t] {var-name} =<< [trim] [eval] {marker}
+ text...
+ text...
+ {marker}
+diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
+index fe24505ed..2e57423fb 100644
+--- a/runtime/doc/indent.txt
++++ b/runtime/doc/indent.txt
+@@ -1261,5 +1261,5 @@ By default, the yaml indent script does not try to detect multiline scalars.
+ If you want to enable this, set the following variable: >
+ 
+   let g:yaml_indent_multiline_scalar = 1
+-
++<
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 12297261c..365f49ad1 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*       For Vim version 9.1.  Last change: 2024 Jan 25
++*map.txt*       For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -986,11 +986,11 @@ For the Meta modifier the "T" character is used.  For example, to map Meta-b
+ in Insert mode: >
+ 	:imap <T-b> terrible
+ 
+-1.12 MAPPING SUPER-KEYS or COMMAND-KEYS		*:map-super-keys* *:map-cmd-key*
++1.12 MAPPING SUPER-KEYS or COMMAND-KEYS	     *:map-super-keys* *:map-cmd-key*
+ 
+-The Super modifier is available in GUI mode (when |gui_running| is 1) for
+-GVim on Linux and MacVim on Mac OS. If you're on a Mac, this represents the
+-Command key, on Linux with the GTK GUI it represents the Super key.
++The Super modifier is available in GUI mode (when |gui_running| is 1) for gVim
++on Linux and MacVim on Mac OS. If you're on a Mac, this represents the Command
++key, on Linux with the GTK GUI it represents the Super key.
+ The character "D" is used for the Super / Command modifier.
+ 
+ For example, to map Command-b in Insert mode: >
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 71b620a20..a1c9d1de3 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 May 02
++*starting.txt*  For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -104,9 +104,9 @@ rvim	 vim -Z	    Like "vim", but in restricted mode (see |-Z|)   *rvim*
+ rview	 vim -RZ    Like "view", but in restricted mode.	  *rview*
+ rgvim	 vim -gZ    Like "gvim", but in restricted mode.	  *rgvim*
+ rgview	 vim -RgZ   Like "gview", but in restricted mode.	  *rgview*
+-evim     vim -y     Easy Vim: set 'insertmode' (see |-y|)	  *evim*
+-eview    vim -yR    Like "evim" in read-only mode		  *eview*
+-vimdiff  vim -d	    Start in diff mode |diff-mode|
++evim	 vim -y     Easy Vim: set 'insertmode' (see |-y|)	  *evim*
++eview	 vim -yR    Like "evim" in read-only mode		  *eview*
++vimdiff	 vim -d	    Start in diff mode |diff-mode|
+ gvimdiff vim -gd    Start in diff mode |diff-mode|
+ 
+ Additional characters may follow, they are ignored.  For example, you can have
+@@ -812,7 +812,7 @@ accordingly.  Vim proceeds in this order:
+ 
+ 	Places for your personal initializations:
+ 		Unix		$HOME/.vimrc, $HOME/.vim/vimrc
+-                                or $XDG_CONFIG_HOME/vim/vimrc
++				or $XDG_CONFIG_HOME/vim/vimrc
+ 		MS-Windows	$HOME/_vimrc, $HOME/vimfiles/vimrc
+ 				or $VIM/_vimrc
+ 		Amiga		s:.vimrc, home:.vimrc, home:vimfiles:vimrc
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 697e35d0f..fbf48c6d7 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Apr 28
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -946,7 +946,8 @@ Enables Stylus for ".astro" files. Default Value: "disable"
+ NOTE: You need to install an external plugin to support stylus in astro files.
+ 
+ 
+-ASPPERL and ASPVBS			*ft-aspperl-syntax* *ft-aspvbs-syntax*
++ASPPERL							*ft-aspperl-syntax*
++ASPVBS							*ft-aspvbs-syntax*
+ 
+ *.asp and *.asa files could be either Perl or Visual Basic script.  Since it's
+ hard to detect this you can set two global variables to tell Vim what you are
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 1256d750d..da6156c7b 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -1,4 +1,4 @@
+-*term.txt*      For Vim version 9.1.  Last change: 2024 Apr 14
++*term.txt*      For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -382,8 +382,8 @@ The options are listed below.  The associated termcap code is always equal to
+ the last two characters of the option name.  Only one termcap code is
+ required: Cursor motion, 't_cm'.
+ 
+-The options 't_da', 't_db', 't_ms', 't_xs', 't_xn', 't_xo' represent flags in the
+-termcap.  When the termcap flag is present, the option will be set to "y".
++The options 't_da', 't_db', 't_ms', 't_xs', 't_xn', 't_xo' represent flags in
++the termcap.  When the termcap flag is present, the option will be set to "y".
+ But any non-empty string means that the flag is set.  An empty string means
+ that the flag is not set.  't_CS' works like this too, but it isn't a termcap
+ flag.
+diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
+index d0f1d46c4..3882cda59 100644
+--- a/runtime/doc/testing.txt
++++ b/runtime/doc/testing.txt
+@@ -1,4 +1,4 @@
+-*testing.txt*	For Vim version 9.1.  Last change: 2024 May 03
++*testing.txt*	For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -365,32 +365,32 @@ test_override({name}, {val})				*test_override()*
+ 		{name}	     effect when {val} is non-zero ~
+ 		alloc_lines  make a copy of every buffer line into allocated
+ 			     memory, so that memory access errors can be found
+-			     by valgrind
++			     by valgrind.
+ 		autoload     `import autoload` will load the script right
+-			     away, not postponed until an item is used
+-		char_avail   disable the char_avail() function
++			     away, not postponed until an item is used.
++		char_avail   disable the char_avail() function.
+ 		defcompile   all the |:def| functions in a sourced script are
+ 			     compiled when defined.  This is similar to using
+ 			     the |:defcompile| command in a script.
+ 		nfa_fail     makes the NFA regexp engine fail to force a
+-			     fallback to the old engine
++			     fallback to the old engine.
+ 		no_query_mouse  do not query the mouse position for "dec"
+-				terminals
++				terminals.
+ 		no_wait_return	set the "no_wait_return" flag.  Not restored
+ 				with "ALL".
+-		redraw       disable the redrawing() function
+-		redraw_flag  ignore the RedrawingDisabled flag
+-		starting     reset the "starting" variable, see below
++		redraw       disable the redrawing() function.
++		redraw_flag  ignore the RedrawingDisabled flag.
++		starting     reset the "starting" variable, see below.
+ 		term_props   reset all terminal properties when the version
+-			     string is detected
++			     string is detected.
+ 		ui_delay     time in msec to use in ui_delay(); overrules a
+-			     wait time of up to 3 seconds for messages
+-		unreachable  no error for code after `:throw` and `:return`
+-		uptime	     overrules sysinfo.uptime
++			     wait time of up to 3 seconds for messages.
++		unreachable  no error for code after `:throw` and `:return`.
++		uptime	     overrules sysinfo.uptime.
+ 		vterm_title  setting the window title by a job running in a
+-			     terminal window
++			     terminal window.
+ 		ALL	     clear all overrides, except alloc_lines ({val} is
+-			     not used)
++			     not used).
+ 
+ 		"starting" is to be used when a test should behave like
+ 		startup was done.  Since the tests are run by sourcing a
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 03050ee4d..9259cde9e 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Apr 26
++*version9.txt*  For Vim version 9.1.  Last change: 2024 May 05
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -32090,7 +32090,7 @@ Solution:   Store the text column when drawing text.
+ 
+ Patch 9.0.0049
+ Problem:    Csv and tsv files are not recognized.
+-Solution:   Add patterns fo csv and tsv files. (Leandro Lourenci,
++Solution:   Add patterns for csv and tsv files. (Leandro Lourenci,
+             closes #10680)
+ 
+ Patch 9.0.0050
+@@ -40641,7 +40641,7 @@ Solution:   Use the class-related grow array for storing the
+ 
+ Patch 9.0.1989
+ Problem:    Vim9: double error message given
+-Solution:   Only give second error message, if ther
++Solution:   Only give second error message, if there
+              wasn't one given before
+ 
+ Patch 9.0.1990
+@@ -40687,7 +40687,7 @@ Solution:   Mention the defining class for variable access error message
+ 
+ Patch 9.0.2000
+ Problem:    Vim9: use-after-free in deep call stack
+-Solution:   Get the objct pointer from execution stack
++Solution:   Get the object pointer from execution stack
+ 
+ Patch 9.0.2001
+ Problem:    Vim9: segfault with islocked()
