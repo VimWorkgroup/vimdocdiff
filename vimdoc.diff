@@ -1,289 +1,527 @@
+diff --git a/runtime/doc/debug.txt b/runtime/doc/debug.txt
+index 1d3090af8..4963fdd03 100644
+--- a/runtime/doc/debug.txt
++++ b/runtime/doc/debug.txt
+@@ -1,4 +1,4 @@
+-*debug.txt*     For Vim version 9.1.  Last change: 2019 May 07
++*debug.txt*     For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -160,7 +160,7 @@ In WinDbg: choose Open Crash Dump on the File menu. Follow the instructions in
+ 3.5 Obtaining Microsoft Debugging Tools ~
+ 
+ The Debugging Tools for Windows (including WinDbg) can be downloaded from
+-    http://www.microsoft.com/whdc/devtools/debugging/default.mspx
++    https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-download-tools
+ This includes the WinDbg debugger.
+ 
+ Visual C++ 2005 Express Edition can be downloaded for free from:
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index 1b1ad8561..678a92461 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
+@@ -1,4 +1,4 @@
+-*develop.txt*   For Vim version 9.1.  Last change: 2022 Sep 20
++*develop.txt*   For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -152,7 +152,7 @@ VIM IS... NOT						*design-not*
+   everything but the kitchen sink, but some people say that you can clean one
+   with it.  ;-)"
+   To use Vim with gdb see |terminal-debugger|.  Other (older) tools can be
+-  found at http://www.agide.org and http://clewn.sf.net.
++  found at http://www.agide.org (link seems dead)  and http://clewn.sf.net.
+ - Vim is not a fancy GUI editor that tries to look nice at the cost of
+   being less consistent over all platforms.  But functional GUI features are
+   welcomed.
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index de33c9caa..3b559196b 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
+@@ -1,4 +1,4 @@
+-*gui.txt*       For Vim version 9.1.  Last change: 2024 May 01
++*gui.txt*       For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1238,7 +1238,8 @@ This section describes other features which are related to the GUI.
+ 	endif
+ 
+ A recommended Japanese font is MS Mincho.  You can find info here:
+-http://www.lexikan.com/mincho.htm
++https://learn.microsoft.com/en-us/typography/font-list/ms-mincho
++It should be distributed with Windows.
+ 
+ ==============================================================================
+ 8. Shell Commands					*gui-shell*
+diff --git a/runtime/doc/if_cscop.txt b/runtime/doc/if_cscop.txt
+index 3fa8f817f..bb4c6a18d 100644
+--- a/runtime/doc/if_cscop.txt
++++ b/runtime/doc/if_cscop.txt
+@@ -1,4 +1,4 @@
+-*if_cscop.txt*  For Vim version 9.1.  Last change: 2022 Jan 08
++*if_cscop.txt*  For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Andy Kahn
+@@ -358,7 +358,7 @@ system calls: fork(), pipe(), execl(), waitpid().  This means it is mostly
+ limited to Unix systems.
+ 
+ Additionally Cscope support works for Win32.  For more information and a
+-cscope version for Win32 see:
++cscope version for Win32 see (link seems dead):
+ 
+ 	http://iamphet.nm.ru/cscope/index.html
+ 
+diff --git a/runtime/doc/mbyte.txt b/runtime/doc/mbyte.txt
+index 91154a744..e38c30cb1 100644
+--- a/runtime/doc/mbyte.txt
++++ b/runtime/doc/mbyte.txt
+@@ -1,4 +1,4 @@
+-*mbyte.txt*     For Vim version 9.1.  Last change: 2022 Apr 03
++*mbyte.txt*     For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar et al.
+@@ -451,18 +451,19 @@ Useful utilities for converting the charset:
+     Chinese:	    hc
+ 	Hc is "Hanzi Converter".  Hc convert a GB file to a Big5 file, or Big5
+ 	file to GB file.  Hc can be found at:
++	https://www.freshports.org/chinese/hc
+ 	ftp://ftp.cuhk.hk/pub/chinese/ifcss/software/unix/convert/hc-30.tar.gz
+ 
+     Korean:	    hmconv
+ 	Hmconv is Korean code conversion utility especially for E-mail.  It can
+ 	convert between EUC-KR and ISO-2022-KR.  Hmconv can be found at:
+-	ftp://ftp.kaist.ac.kr/pub/hangul/code/hmconv/
++	https://www.freshports.org/korean/hmconv/
+ 
+     Multilingual:   lv
+ 	Lv is a Powerful Multilingual File Viewer.  And it can be worked as
+ 	|charset| converter.  Supported |charset|: ISO-2022-CN, ISO-2022-JP,
+ 	ISO-2022-KR, EUC-CN, EUC-JP, EUC-KR, EUC-TW, UTF-7, UTF-8, ISO-8859
+-	series, Shift_JIS, Big5 and HZ.  Lv can be found at:
++	series, Shift_JIS, Big5 and HZ.  Lv can be found at (link seems dead):
+ 	http://www.ff.iij4u.or.jp/~nrt/lv/index.html
+ 
+ 
+@@ -777,13 +778,13 @@ is suitable for complex input, such as CJK.
+ 
+   For example, there are xwnmo and kinput2 Japanese |IM-server|, both are
+   FrontEnd system.  Xwnmo is distributed with Wnn (see below), kinput2 can be
+-  found at: ftp://ftp.sra.co.jp/pub/x11/kinput2/
++  found at (link seems dead): ftp://ftp.sra.co.jp/pub/x11/kinput2/
+ 
+   For Chinese, there's a great XIM server named "xcin", you can input both
+   Traditional and Simplified Chinese characters.  And it can accept other
+-  locale if you make a correct input table.  Xcin can be found at:
+-  http://cle.linux.org.tw/xcin/
+-  Others are scim: http://scim.freedesktop.org/ and fcitx:
++  locale if you make a correct input table.  Xcin can be found at (link seems
++  dead): http://cle.linux.org.tw/xcin/
++  Others are scim: https://www.freedesktop.org/wiki/Software/scim/  and fcitx:
+   http://www.fcitx.org/
+ 
+ - Conversion Server
+@@ -800,8 +801,8 @@ is suitable for complex input, such as CJK.
+   number of Hira-gana characters are 76.  So, first, we pre-input text as
+   pronounced in Hira-gana, second, we convert Hira-gana to Kanji or Kata-Kana,
+   if needed.  There are some Kana-Kanji conversion server: jserver
+-  (distributed with Wnn, see below) and canna.  Canna can be found at:
+-  http://canna.sourceforge.jp/
++  (distributed with Wnn, see below) and canna.Canna can be found at:
++  https://osdn.net/projects/canna/
+ 
+ There is a good input system: Wnn4.2.  Wnn 4.2 contains,
+     xwnmo (|IM-server|)
+diff --git a/runtime/doc/netbeans.txt b/runtime/doc/netbeans.txt
+index a62123ce6..ee227b475 100644
+--- a/runtime/doc/netbeans.txt
++++ b/runtime/doc/netbeans.txt
+@@ -1,4 +1,4 @@
+-*netbeans.txt*  For Vim version 9.1.  Last change: 2023 Nov 26
++*netbeans.txt*  For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Gordon Prieur et al.
+@@ -77,8 +77,8 @@ Initially just a Java IDE, NetBeans has had C, C++, and Fortran support added
+ in recent releases.
+ 
+ For more information visit the main NetBeans web site http://www.netbeans.org.
+-The External Editor is now, unfortunately, declared obsolete.  See
+- http://externaleditor.netbeans.org.
++The External Editor is now, unfortunately, declared obsolete.  See (link seems
++dead): http://externaleditor.netbeans.org.
+ 
+ Sun Microsystems, Inc. also ships NetBeans under the name Sun ONE Studio.
+ Visit http://www.sun.com for more information regarding the Sun ONE Studio
+@@ -147,8 +147,9 @@ On MS-Windows:
+ The Win32 support is now in beta stage.
+ 
+ To use XPM signs on Win32 (e.g. when using with NetBeans) you can compile
+-XPM by yourself or use precompiled libraries from http://iamphet.nm.ru/misc/
+-(for MS Visual C++) or http://gnuwin32.sourceforge.net (for MinGW).
++XPM by yourself or use precompiled libraries from (link seems dead):
++http://iamphet.nm.ru/misc/ (for MS Visual C++) or
++http://gnuwin32.sourceforge.net (for MinGW).
+ 
+ Enable debugging:
+ -----------------
+@@ -946,7 +947,8 @@ for details on downloading this module if your NetBeans release does not have
+ it.
+ 
+ For C, C++, and Fortran support you will also need the cpp module.  See
+-http://cpp.netbeans.org for information regarding this module.
++http://cpp.netbeans.org (link seems dead) for information regarding this
++module.
+ 
+ You can also download Sun ONE Studio from Sun Microsystems, Inc for a 30 day
+ free trial.  See http://www.sun.com for further details.
+diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
+index 862f31d07..4549c0018 100644
+--- a/runtime/doc/os_vms.txt
++++ b/runtime/doc/os_vms.txt
+@@ -1,4 +1,4 @@
+-*os_vms.txt*    For Vim version 9.1.  Last change: 2023 Dec 14
++*os_vms.txt*    For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL
+@@ -40,7 +40,6 @@ Or use one of the mirrors:
+ 
+ You can download precompiled executables from:
+ 	http://www.polarhome.com/vim/
+-	ftp://ftp.polarhome.com/pub/vim/
+ 
+ To use the precompiled binary version, you need one of these archives:
+ 
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index bbe994008..54c8e91bd 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
+@@ -1,4 +1,4 @@
+-*os_win32.txt*  For Vim version 9.1.  Last change: 2023 Dec 04
++*os_win32.txt*  For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by George Reilly
+@@ -250,8 +250,7 @@ A. Basically what you need is to put a tee program that will copy its input
+    copy of tee (and a number of other GNU tools) at
+    http://gnuwin32.sourceforge.net or http://unxutils.sourceforge.net
+    Alternatively, try the more recent Cygnus version of the GNU tools at
+-   http://www.cygwin.com  Other Unix-style tools for Win32 are listed at
+-   http://directory.google.com/Top/Computers/Software/Operating_Systems/Unix/Win32/
++   http://www.cygwin.com
+    When you do get a copy of tee, you'll need to add >
+ 	:set shellpipe=\|\ tee
+ <  to your _vimrc.
 diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index 2b22105d5..3efc60fcf 100644
+index 3efc60fcf..aeaca0b80 100644
 --- a/runtime/doc/pi_netrw.txt
 +++ b/runtime/doc/pi_netrw.txt
 @@ -1,4 +1,4 @@
--*pi_netrw.txt*  For Vim version 9.1.  Last change: 2023 Jun 19
-+*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 May 08
+-*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 May 08
++*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 May 11
  
  	    ------------------------------------------------
  	    NETRW REFERENCE MANUAL    by Charles E. Campbell
-@@ -449,10 +449,6 @@ settings are described below, in |netrw-browser-options|, and in
- 			      messages don't always seem to show up this
- 			      way, but one doesn't have to quit the window.
- 
-- *g:netrw_win95ftp*	=1 if using Win95, will remove four trailing blank
--			   lines that o/s's ftp "provides" on transfers
--			=0 force normal ftp behavior (no trailing line removal)
+@@ -2033,11 +2033,7 @@ passwords:
+     better way to do that: I can use a regular ssh account which uses a
+     password to access the material without the need to key-in the password
+     each time. It's good for security and convenience. I tried ssh public key
+-    authorization + ssh-agent, implementing this, and it works! Here are two
+-    links with instructions:
 -
-  *g:netrw_cygwin*	=1 assume scp under windows is from cygwin. Also
- 			   permits network browsing to use ls with time and
- 			   size sorting (default if windows)
-@@ -828,8 +824,6 @@ set in the user's <.vimrc> file: (see also |netrw-settings| |netrw-protocol|)
-         g:netrw_uid             Holds current user-id for ftp.
-         g:netrw_use_nt_rcp      =0 don't use WinNT/2K/XP's rcp (default)
-                                 =1 use WinNT/2K/XP's rcp, binary mode
--        g:netrw_win95ftp        =0 use unix-style ftp even if win95/98/ME/etc
--                                =1 use default method to do ftp >
- 	-----------------------------------------------------------------------
- <
- 						*netrw-internal-variables*
-@@ -958,21 +952,8 @@ messages) you may write a NetReadFixup() function:
-     endfunction
- >
- The NetReadFixup() function will be called if it exists and thus allows you to
--customize your reading process.  As a further example, <netrw.vim> contains
--just such a function to handle Windows 95 ftp.  For whatever reason, Windows
--95's ftp dumps four blank lines at the end of a transfer, and so it is
--desirable to automate their removal.  Here's some code taken from <netrw.vim>
--itself:
-->
--    if has("win95") && g:netrw_win95ftp
--     fun! NetReadFixup(method, line1, line2)
--       if method == 3   " ftp (no <.netrc>)
--        let fourblanklines= line2 - 3
--        silent fourblanklines .. "," .. line2 .. "g/^\s*/d"
--       endif
--     endfunction
--    endif
-->
-+customize your reading process.
-+
- (Related topics: |ftp| |netrw-userpass| |netrw-start|)
+-    http://www.ibm.com/developerworks/library/l-keyc2/
+-    http://sial.org/howto/openssh/publickey-auth/
++    authorization + ssh-agent, implementing this, and it works!
+ 
+ 
+     Ssh hints:
+diff --git a/runtime/doc/pi_tar.txt b/runtime/doc/pi_tar.txt
+index 0ab111c28..5b317d608 100644
+--- a/runtime/doc/pi_tar.txt
++++ b/runtime/doc/pi_tar.txt
+@@ -1,4 +1,4 @@
+-*pi_tar.txt*	For Vim version 9.1.  Last change: 2022 Oct 17
++*pi_tar.txt*	For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 		       +====================+
+ 		       | Tar File Interface |
+@@ -164,7 +164,8 @@ Copyright 2005-2017:					*tar-copyright*
+ 	v2			* converted to use Vim7's new autoload feature
+ 				  by Bram Moolenaar
+ 	v1	(original)	* Michael Toren
+-				  (see http://michael.toren.net/code/)
++				  (see http://michael.toren.net/code/
++				   link seems dead)
  
  ==============================================================================
-@@ -3412,16 +3393,7 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	(This section is likely to grow as I get feedback)
- 	(also see |netrw-debug|)
- 								*netrw-p1*
--	P1. I use windows 95, and my ftp dumps four blank lines at the      {{{2
--	    end of every read.
+ vim:tw=78:ts=8:noet:ft=help
+diff --git a/runtime/doc/print.txt b/runtime/doc/print.txt
+index 84fca4406..55a9c37b3 100644
+--- a/runtime/doc/print.txt
++++ b/runtime/doc/print.txt
+@@ -1,4 +1,4 @@
+-*print.txt*     For Vim version 9.1.  Last change: 2022 Oct 01
++*print.txt*     For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -497,10 +497,11 @@ No CJK fonts are supplied with Vim.  There are some free Korean, Japanese, and
+ Traditional Chinese fonts available at:
+ 
+   http://examples.oreilly.com/cjkvinfo/adobe/samples/
++  https://resources.oreilly.com/examples/9781565922242/
+ 
+ You can find descriptions of the various fonts in the read me file at
+ 
+-  http://examples.oreilly.de/english_examples/cjkvinfo/adobe/00README
++  https://resources.oreilly.com/examples/9781565922242/-/blob/master/00README
+ 
+ Please read your printer documentation on how to install new fonts.
+ 
+@@ -591,7 +592,7 @@ There are three available versions:
+ - GNU Ghostscript which is available under the GNU General Public License.  It
+   can be obtained from:
+ 
+-    ftp://mirror.cs.wisc.edu/pub/mirrors/ghost/gnu/
++    https://www.gnu.org/software/ghostscript
+ 
+ - A commercial version for inclusion in commercial products.
+ 
+@@ -616,10 +617,7 @@ X11
+ - Ghostview.  Obtainable from:
+ 
+     http://www.cs.wisc.edu/~ghost/gv/
 -
--		See |netrw-fixup|, and put the following into your
--		<.vimrc> file:
+-- gv.  Derived from Ghostview.  Obtainable from:
 -
--			let g:netrw_win95ftp= 1
+-    http://wwwthep.physik.uni-mainz.de/~plass/gv/
++    https://www.gnu.org/software/gv/
+ 
+   Copies (possibly not the most recent) can be found at:
+ 
+@@ -627,7 +625,8 @@ X11
+ 
+ OpenVMS
+ 
+-- Is apparently supported in the main code now (untested).  See:
++- Is apparently supported in the main code now (untested).
++  See (link seems dead):
+ 
+     http://wwwthep.physik.uni-mainz.de/~plass/gv/
+ 
+@@ -644,12 +643,6 @@ Linux
+ 
+     http://www.cs.wisc.edu/~ghost/gsview/
+ 
+-- BMV.  Different from Ghostview and gv in that it doesn't use X but svgalib.
+-  Obtainable from:
 -
--								*netrw-p2*
--	P2. I use Windows, and my network browsing with ftp doesn't sort by {{{2
-+	P1. I use Windows, and my network browsing with ftp doesn't sort by {{{2
- 	    time or size!  -or-  The remote system is a Windows server; why
- 	    don't I get sorts by time or size?
+-    ftp://sunsite.unc.edu/pub/Linux/apps/graphics/viewers/svga/bmv-1.2.tgz
+-
+-
+ 7.3 PSUtils
  
-@@ -3447,8 +3419,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		modify its listing behavior.
- 
- 
--								*netrw-p3*
--	P3. I tried rcp://user@host/ (or protocol other than ftp) and netrw {{{2
-+								*netrw-p2*
-+	P2. I tried rcp://user@host/ (or protocol other than ftp) and netrw {{{2
- 	    used ssh!  That wasn't what I asked for...
- 
- 		Netrw has two methods for browsing remote directories: ssh
-@@ -3456,8 +3428,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		When it comes time to do download a file (not just a directory
- 		listing), netrw will use the given protocol to do so.
- 
--								*netrw-p4*
--	P4. I would like long listings to be the default.                   {{{2
-+								*netrw-p3*
-+	P3. I would like long listings to be the default.                   {{{2
- 
- 		Put the following statement into your |.vimrc|: >
- 
-@@ -3466,8 +3438,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		Check out |netrw-browser-var| for more customizations that
- 		you can set.
- 
--								*netrw-p5*
--	P5. My times come up oddly in local browsing                        {{{2
-+								*netrw-p4*
-+	P4. My times come up oddly in local browsing                        {{{2
- 
- 		Does your system's strftime() accept the "%c" to yield dates
- 		such as "Sun Apr 27 11:49:23 1997"?  If not, do a
-@@ -3476,16 +3448,16 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 
- 			let g:netrw_timefmt= "%X"  (where X is the option)
- <
--								*netrw-p6*
--	P6. I want my current directory to track my browsing.               {{{2
-+								*netrw-p5*
-+	P5. I want my current directory to track my browsing.               {{{2
- 	    How do I do that?
- 
- 	    Put the following line in your |.vimrc|:
- >
- 		let g:netrw_keepdir= 0
- <
--								*netrw-p7*
--	P7. I use Chinese (or other non-ascii) characters in my filenames,  {{{2
-+								*netrw-p6*
-+	P6. I use Chinese (or other non-ascii) characters in my filenames,  {{{2
- 	    and netrw (Explore, Sexplore, Hexplore, etc) doesn't display them!
- 
- 		(taken from an answer provided by Wu Yongwei on the vim
-@@ -3499,8 +3471,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 
- 		(...it is one more reason to recommend that people use utf-8!)
- 
--								*netrw-p8*
--	P8. I'm getting "ssh is not executable on your system" -- what do I {{{2
-+								*netrw-p7*
-+	P7. I'm getting "ssh is not executable on your system" -- what do I {{{2
- 	    do?
- 
- 		(Dudley Fox) Most people I know use putty for windows ssh.  It
-@@ -3582,8 +3554,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		of the others will use the string in g:netrw_ssh_cmd by
- 		default.
- 
--						*netrw-p9* *netrw-ml_get*
--	P9. I'm browsing, changing directory, and bang!  ml_get errors      {{{2
-+						*netrw-p8* *netrw-ml_get*
-+	P8. I'm browsing, changing directory, and bang!  ml_get errors      {{{2
- 	    appear and I have to kill vim.  Any way around this?
- 
- 		Normally netrw attempts to avoid writing swapfiles for
-@@ -3593,8 +3565,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		in your <.vimrc>: >
- 			let g:netrw_use_noswf= 0
- <
--								*netrw-p10*
--	P10. I'm being pestered with "[something] is a directory" and       {{{2
-+								*netrw-p9*
-+	P9. I'm being pestered with "[something] is a directory" and       {{{2
- 	     "Press ENTER or type command to continue" prompts...
- 
- 		The "[something] is a directory" prompt is issued by Vim,
-@@ -3604,8 +3576,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		I also suggest that you set your |'cmdheight'| to 2 (or more) in
- 		your <.vimrc> file.
- 
--								*netrw-p11*
--	P11. I want to have two windows; a thin one on the left and my      {{{2
-+								*netrw-p10*
-+	P10. I want to have two windows; a thin one on the left and my      {{{2
- 	     editing window on the right.  How may I accomplish this?
- 
- 	     You probably want netrw running as in a side window.  If so, you
-@@ -3630,8 +3602,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		  <middlemouse> to select the file.
+ PSUtils is a collection of utility programs for manipulating PostScript
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index dea3adb87..ab3b12045 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
+@@ -1,4 +1,4 @@
+-*spell.txt*	For Vim version 9.1.  Last change: 2023 May 25
++*spell.txt*	For Vim version 9.1.  Last change: 2024 May 11
  
  
--								*netrw-p12*
--	P12. My directory isn't sorting correctly, or unwanted letters are  {{{2
-+								*netrw-p11*
-+	P11. My directory isn't sorting correctly, or unwanted letters are  {{{2
- 	     appearing in the listed filenames, or things aren't lining
- 	     up properly in the wide listing, ...
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -903,7 +903,7 @@ right encoding.
+ 				*spell-AUTHOR* *spell-EMAIL* *spell-COPYRIGHT*
+ 	NAME		Name of the language
+ 	VERSION		1.0.1  with fixes
+-	HOME		http://www.myhome.eu
++	HOME		<URL>
+ 	AUTHOR		John Doe
+ 	EMAIL		john AT Doe DOT net
+ 	COPYRIGHT	LGPL
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index fbf48c6d7..bbdda4f9d 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 05
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 11
  
-@@ -3640,8 +3612,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	     Multibyte encodings use two (or more) bytes per character.
- 	     You may need to change |g:netrw_sepchr| and/or |g:netrw_xstrlen|.
  
--								*netrw-p13*
--	P13. I'm a Windows + putty + ssh user, and when I attempt to        {{{2
-+								*netrw-p12*
-+	P12. I'm a Windows + putty + ssh user, and when I attempt to        {{{2
- 	     browse, the directories are missing trailing "/"s so netrw treats
- 	     them as file transfers instead of as attempts to browse
- 	     subdirectories.  How may I fix this?
-@@ -3661,8 +3633,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	    "let g:netrw_sftp_cmd = "d:\\dev\\putty\\PSFTP.exe"
- 	    "let g:netrw_scp_cmd = "d:\\dev\\putty\\PSCP.exe"
- <
--								*netrw-p14*
--	P14. I would like to speed up writes using Nwrite and scp/ssh       {{{2
-+								*netrw-p13*
-+	P13. I would like to speed up writes using Nwrite and scp/ssh       {{{2
- 	     style connections.  How?  (Thomer M. Gil)
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1483,9 +1483,9 @@ Two syntax highlighting files exist for Euphoria. One for Euphoria
+ version 3.1.1, which is the default syntax highlighting file, and one for
+ Euphoria version 4.0.5 or later.
  
- 	     Try using ssh's ControlMaster and ControlPath (see the ssh_config
-@@ -3688,8 +3660,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
+-Euphoria version 3.1.1 (http://www.rapideuphoria.com/) is still necessary
+-for developing applications for the DOS platform, which Euphoria version 4
+-(http://www.openeuphoria.org/) does not support.
++Euphoria version 3.1.1 (http://www.rapideuphoria.com/ link seems dead) is
++still necessary for developing applications for the DOS platform, which
++Euphoria version 4 (http://www.openeuphoria.org/) does not support.
  
- 		vim scp://host.domain.com//home/user/.bashrc
- <
--								*netrw-p15*
--	P15. How may I use a double-click instead of netrw's usual single   {{{2
-+								*netrw-p14*
-+	P14. How may I use a double-click instead of netrw's usual single   {{{2
- 	     click to open a file or directory?  (Ben Fritz)
+ The following file extensions are auto-detected as Euphoria file type:
  
- 	     First, disable netrw's mapping with >
-@@ -3701,8 +3673,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	     all netrw's mouse mappings, not just the <leftmouse> one.
- 	     (see |g:netrw_mousemaps|)
+@@ -1542,7 +1542,8 @@ Elixir.
  
--								*netrw-p16*
--	P16. When editing remote files (ex. :e ftp://hostname/path/file),   {{{2
-+								*netrw-p15*
-+	P15. When editing remote files (ex. :e ftp://hostname/path/file),   {{{2
- 	     under Windows I get an |E303| message complaining that its unable
- 	     to open a swap file.
+ FLEXWIKI				*flexwiki.vim* *ft-flexwiki-syntax*
  
-@@ -3710,8 +3682,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	     directory.  Start netrw from your $HOME or other writable
- 	     directory.
+-FlexWiki is an ASP.NET-based wiki package available at http://www.flexwiki.com
++FlexWiki is an ASP.NET-based wiki package which used to be available at
++http://www.flexwiki.com
+ NOTE: This site currently doesn't work, on Wikipedia is mentioned that
+ development stopped in 2009.
  
--								*netrw-p17*
--	P17. Netrw is closing buffers on its own.                           {{{2
-+								*netrw-p16*
-+	P16. Netrw is closing buffers on its own.                           {{{2
- 	     What steps will reproduce the problem?
- 		1. :Explore, navigate directories, open a file
- 		2. :Explore, open another file
-@@ -3724,15 +3696,15 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 	            It appears that the buffers are not exactly closed;
- 		    a ":ls!" will show them (although ":ls" does not).
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index d3d549ab2..7091f835a 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
+@@ -546,7 +546,8 @@ JTags			For Java, in Java.  It can be found at
+ 			http://www.fleiner.com/jtags/.
+ ptags.py		For Python, in Python.  Found in your Python source
+ 			directory at Tools/scripts/ptags.py.
+-ptags			For Perl, in Perl.  It can be found at
++ptags			For Perl, in Perl.  It can be found at (link seems
++			dead):
+ 			http://www.eleves.ens.fr:8080/home/nthiery/Tags/.
+ gnatxref		For Ada.  See http://www.gnuada.org/.  gnatxref is
+ 			part of the gnat package.
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 8712008cf..9b15d001d 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 Mar 28
++*todo.txt*      For Vim version 9.1.  Last change: 2024 May 11
  
--								*netrw-P18*
--	P18. How to locally edit a file that's only available via           {{{2
-+								*netrw-P17*
-+	P17. How to locally edit a file that's only available via           {{{2
- 	     another server accessible via ssh?
- 	     See http://stackoverflow.com/questions/12469645/
- 	     "Using Vim to Remotely Edit A File on ServerB Only
- 	      Accessible From ServerA"
  
--								*netrw-P19*
--	P19. How do I get numbering on in directory listings?               {{{2
-+								*netrw-P18*
-+	P18. How do I get numbering on in directory listings?               {{{2
- 		With |g:netrw_bufsettings|, you can control netrw's buffer
- 		settings; try putting >
- 		  let g:netrw_bufsettings="noma nomod nu nobl nowrap ro nornu"
-@@ -3740,8 +3712,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		instead, try >
- 		  let g:netrw_bufsettings="noma nomod nonu nobl nowrap ro rnu"
- <
--								*netrw-P20*
--	P20. How may I have gvim start up showing a directory listing?      {{{2
-+								*netrw-P19*
-+	P19. How may I have gvim start up showing a directory listing?      {{{2
- 		Try putting the following code snippet into your .vimrc: >
- 		    augroup VimStartup
- 		      au!
-@@ -3753,8 +3725,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
- 		This snippet assumes that you have client-server enabled
- 		(ie. a "huge" vim version).
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1710,7 +1710,8 @@ Also Vundle: https://github.com/gmarik/vundle
+ Or minpac: https://github.com/k-takata/minpac, since it leverages the builtin
+ package feature.
+ Long message about this from ZyX, 2014 Mar 23.  And following replies.
+-Also see http://vim-wiki.mawercer.de/wiki/topic/vim%20plugin%20managment.html
++Also see (link seems dead):
++http://vim-wiki.mawercer.de/wiki/topic/vim%20plugin%20managment.html
+ User view:
+ - Support multiple sources, basically any http:// URL. Or a central place that
+   will work for everybody (github?  redirects from vim.org?).
+@@ -2441,7 +2442,7 @@ Problem with 'ts' set to 9 and 'showbreak' to ">>>". (Matthew Winn, 2007 Oct
+ Would be more consistent when an existing tab is re-used. (Tony Mechelynck)
  
--								*netrw-P21*
--	P21. I've made a directory (or file) with an accented character,    {{{2
-+								*netrw-P20*
-+	P20. I've made a directory (or file) with an accented character,    {{{2
- 		but netrw isn't letting me enter that directory/read that file:
+ Using Aap to build Vim: add remarks about how to set personal preferences.
+-Example on http://www.calmar.ws/tmp/aap.html
++Example on http://www.calmar.ws/tmp/aap.html (link seems dead)
  
- 		Its likely that the shell or o/s is using a different encoding
-@@ -3764,8 +3736,8 @@ Example: Clear netrw's marked file list via a mapping on gu >
+ When 'diffopt' has "context:0" a single deleted line causes two folds to merge
+ and mess up syncing. (Austin Jennings, 2008 Jan 31)
+@@ -2472,7 +2473,7 @@ Asked about latest version: 0.77.1 is on www.vim.org.
+ More AmigaOS4 patches. (Peter Bengtsson, Nov 9)
  
- 			au FileType netrw set enc=latin1
- <
--								*netrw-P22*
--	P22. I get an error message when I try to copy or move a file:      {{{2
-+								*netrw-P21*
-+	P21. I get an error message when I try to copy or move a file:      {{{2
+ Amiga patches with vbcc. (Adrien Destugues, 2010 Aug 30)
+-http://pulkomandy.ath.cx/drop/vim73_vbcc_amiga.diff
++(link seems dead): http://pulkomandy.ath.cx/drop/vim73_vbcc_amiga.diff
  
- 		**error** (netrw) tried using g:netrw_localcopycmd<cp>; it doesn't work!
+ Problem with compound words?  (Bert, 2008 May 6)
+ No warning for when flags are defined after they are used in an affix.
+@@ -2542,8 +2543,9 @@ Win32: Patch for cscope external command. (Mike Williams, 2007 Aug 7)
  
+ Win32: XPM support only works with path without spaces.  Patch by Mathias
+ Michaelis, 2006 Jun 9.  Another patch for more path names, 2006 May 31.
+-New version: http://members.tcnet.ch/michaelis/vim/patches.zip (also for other
+-patches by Mathias, see mail Feb 22)
++New version (link seems dead):
++http://members.tcnet.ch/michaelis/vim/patches.zip
++(also for other patches by Mathias, see mail Feb 22)
+ 
+ Win32: compiling with normal features and OLE fails.  Patch by Mathias
+ Michaelis, 2006 Jun 4.
+@@ -3068,7 +3070,7 @@ Win32 GUI known bugs:
+     the screen.
+ 8   The -P argument doesn't work very well with many MDI applications.
+     The last argument of CreateWindowEx() should be used, see MSDN docs.
+-    Tutorial: http://win32assembly.online.fr/tut32.html
++    Tutorial (link seems dead): http://win32assembly.online.fr/tut32.html
+ 6   Win32 GUI: With "-u NONE -U NONE" and doing "CTRL-W v" "CTRL-W o", the ":"
+     of ":only" is highlighted like the cursor.  (Lipelis)
+ 8   When 'encoding' is "utf-8", should use 'guifont' for both normal and wide
+@@ -3470,7 +3472,7 @@ Macintosh:
+     way to avoid using the builtin termcap.
+ 8   Xterm sends ^[[H for <Home> and ^[[F for <End> in some mode.  Also
+     recognize these keys?  Mostly useful for xterm simulators, like gnometerm.
+-    See http://dickey.his.com/xterm/xterm.faq.html#xterm_pc_style.
++    See https://invisible-island.net/xterm/xterm.faq.html#xterm_pc_style
+ 8   '[ and '] should be set to start/end of line when using a linewise operator
+     (e.g., ":w").
+ 8   CTRL-A can't handle big "long" numbers, they become negative.  Check for
+@@ -3759,8 +3761,8 @@ Spell checking:
+     What does MAXNGRAMSUGS do?
+     Is COMPLEXPREFIXES necessary when we have flags for affixes?
+ -   There is no Finnish spell checking file.  For openoffice Voikko is now
+-    used, which is based on Malaga: http://home.arcor.de/bjoern-beutel/malaga/
+-    (Teemu Likonen)
++    used, which is based on Malaga (link seems dead):
++    http://home.arcor.de/bjoern-beutel/malaga/ (Teemu Likonen)
+ 8   ":mkspell" still takes much too long in Hungarian dictionary from
+     hunspell.  Only solution appears to be to postpone secondary suffixes.
+ 8   Handle postponed prefix with COMPOUNDPERMITFLAG or COMPOUNDFORBIDFLAG.
+@@ -3816,7 +3818,7 @@ Spell checking:
+     syntax items (to add @Spell).
+     Add ":syntax contains {pattern} add=@Spell" command?  A bit like ":syn
+     cluster" but change the contains list directly for matching syntax items.
+--   References: MySpell library (in OpenOffice.org).
++-   References: MySpell library (in OpenOffice.org), (links seem dead):
+ 	http://spellchecker.mozdev.org/source.html
+ 	http://whiteboard.openoffice.org/source/browse/whiteboard/lingucomponent/source/spellcheck/myspell/
+       author: Kevin Hendricks <kevin.hendricks@sympatico.ca>
+@@ -3974,8 +3976,9 @@ Multi-byte characters:
+     could be entered.  E.g., for "f" command.  But not in Normal mode.  Sort
+     of opposite of 'langmap'.  Use ":amap" command?
+ -   When breaking a line, take properties of multibyte characters into
+-    account.  The "linebreak" program from Bruno Haible can do it:
+-    ftp://ftp.ilog.fr/pub/Users/haible/gnu/linebreak-0.1.tar.gz
++    account.  The "linebreak" program from Bruno Haible can do it, this
++    is now part of gnulib module unilbrk:
++    https://www.gnu.org/software/gnulib/MODULES.html
+     But it's very complicated...
+ -   Problem with 'langmap' being used on the rhs of a mapping. (Nikolai
+     Weibull, 2008 May 14).
+@@ -4773,10 +4776,10 @@ Omni completion:
+ 		ctags -f $allTagsFile --fields=+aiKmnsSz --language-force=C++ --C++-kinds=+cefgmnpsut-dlux -u $files
+ 	www.vim.org script 1213 (Java Development Environment) (Fuchuan Wang)
+ 	IComplete: http://www.vim.org/scripts/script.php?script_id=1265
+-	    and http://stud4.tuwien.ac.at/~e0125672/icomplete/
+ 	http://cedet.sourceforge.net/intellisense.shtml (for Emacs)
+ 	Ivan Villanueva has something for Java.
+-	Emacs: http://www.xref-tech.com/xrefactory/more_c_completion.html
++	Emacs (link seems dead):
++	http://www.xref-tech.com/xrefactory/more_c_completion.html
+ 	Completion in .NET framework SharpDevelop: http://www.icsharpcode.net
+ -   Pre-expand abbreviations, show which abbrevs would match?
+ 
+diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
+index fafb242b0..fdf1b5386 100644
+--- a/runtime/doc/usr_01.txt
++++ b/runtime/doc/usr_01.txt
+@@ -1,4 +1,4 @@
+-*usr_01.txt*	For Vim version 9.1.  Last change: 2023 May 12
++*usr_01.txt*	For Vim version 9.1.  Last change: 2024 May 11
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -165,7 +165,7 @@ The Vim user manual and reference manual are Copyright (c) 1988 by Bram
+ Moolenaar.  This material may be distributed only subject to the terms and
+ conditions set forth in the Open Publication License, v1.0 or later.  The
+ latest version is presently available at:
+-	     http://www.opencontent.org/openpub/
++	     https://opencontent.org/openpub/
+ 
+ People who contribute to the manuals must agree with the above copyright
+ notice.
