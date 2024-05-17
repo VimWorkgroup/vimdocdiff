@@ -1,69 +1,36 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index b37170ce7..edc018fe7 100644
+index edc018fe7..1d06e750a 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 07
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 15
+@@ -8993,9 +8993,9 @@ shellescape({string} [, {special}])			*shellescape()*
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8991,11 +8991,12 @@ shellescape({string} [, {special}])			*shellescape()*
- 		Otherwise it will enclose {string} in single quotes and
- 		replace all "'" with "'\''".
- 
--		When the {special} argument is present and it's a non-zero
--		Number or a non-empty String (|non-zero-arg|), then special
--		items such as "!", "%", "#" and "<cword>" will be preceded by
--		a backslash.  This backslash will be removed again by the |:!|
--		command.
-+		The {special} argument adds additional escaping of keywords
-+		used in Vim commands. When it is not omitted and a non-zero
-+		number or a non-empty String (|non-zero-arg|), then special 
-+		items such as "!", "%", "#" and "<cword>" (as listed in 
-+		|expand()|) will be preceded by a backslash. 
-+		This backslash will be removed again by the |:!| command.
+ 		The {special} argument adds additional escaping of keywords
+ 		used in Vim commands. When it is not omitted and a non-zero
+-		number or a non-empty String (|non-zero-arg|), then special 
+-		items such as "!", "%", "#" and "<cword>" (as listed in 
+-		|expand()|) will be preceded by a backslash. 
++		number or a non-empty String (|non-zero-arg|), then special
++		items such as "!", "%", "#" and "<cword>" (as listed in
++		|expand()|) will be preceded by a backslash.
+ 		This backslash will be removed again by the |:!| command.
  
  		The "!" character will be escaped (again with a |non-zero-arg|
- 		{special}) when 'shell' contains "csh" in the tail.  That is
-diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
-index a922604c8..abbc77803 100644
---- a/runtime/doc/tabpage.txt
-+++ b/runtime/doc/tabpage.txt
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index 4aae5fe02..8607cf9da 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
 @@ -1,4 +1,4 @@
--*tabpage.txt*   For Vim version 9.1.  Last change: 2024 Mar 25
-+*tabpage.txt*   For Vim version 9.1.  Last change: 2024 May 15
+-*usr_52.txt*	For Vim version 9.1.  Last change: 2024 May 05
++*usr_52.txt*	For Vim version 9.1.  Last change: 2024 May 16
  
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -225,8 +225,9 @@ gT		Go to the previous tab page.  Wraps around from the first one
- 							*:tabl* *:tablast*
- :tabl[ast]	Go to the last tab page.
- 
--					*g<Tab>* *CTRL-W_g<Tab>* *<C-Tab>*
--g<Tab>		Go to the last accessed tab page.
-+<C-Tab>					*g<Tab>* *CTRL-W_g<Tab>* *<C-Tab>*
-+g<Tab>
-+CTRL-W g<Tab>	Go to the last accessed tab page.
- 
- Other commands:
- 							*:tabs*
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index 1714833c8..3bcee472a 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
-@@ -1,4 +1,4 @@
--*vi_diff.txt*   For Vim version 9.1.  Last change: 2022 Apr 03
-+*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 May 15
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -49,7 +49,7 @@ printed.
- 
- autoprint (ap)		boolean	(default on)		*'autoprint'* *'ap'*
- beautify (bf)		boolean	(default off)		*'beautify'* *'bf'*
--flash (fl)		boolean	(default ??)		*'flash'* *'fl'*
-+flash (fl)		boolean	(default on)		*'flash'* *'fl'*
- graphic (gr)		boolean	(default off)		*'graphic'* *'gr'*
- hardtabs (ht)		number	(default 8)		*'hardtabs'* *'ht'*
- 	number of spaces that a <Tab> moves on the display
+@@ -45,7 +45,7 @@ private function: >
+ 	def GetReply(nr: number): string
+ 	  if nr == 42
+ 	     return 'yes'
+-	  elseif nr = 22
++	  elseif nr == 22
+ 	     return 'maybe'
+ 	  else
+ 	     return 'no'
