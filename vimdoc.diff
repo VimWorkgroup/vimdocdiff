@@ -1,113 +1,114 @@
-diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
-index 8456d08c6..623684152 100644
---- a/runtime/doc/if_pyth.txt
-+++ b/runtime/doc/if_pyth.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 1d06e750a..46819d6b9 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*if_pyth.txt*   For Vim version 9.1.  Last change: 2023 Oct 25
-+*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 May 16
- 
- 
- 		  VIM REFERENCE MANUAL    by Paul Moore
-@@ -343,7 +343,8 @@ In python vim.VIM_SPECIAL_PATH special directory is used as a replacement for
- the list of paths found in 'runtimepath': with this directory in sys.path and
- vim.path_hooks in sys.path_hooks python will try to load module from
- {rtp}/python2 (or python3) and {rtp}/pythonx (for both python versions) for
--each {rtp} found in 'runtimepath'.
-+each {rtp} found in 'runtimepath' (Note: find_module() has been removed from
-+imp module around Python 3.12.0a7).
- 
- Implementation is similar to the following, but written in C: >
- 
-@@ -404,10 +405,12 @@ vim.VIM_SPECIAL_PATH					*python-VIM_SPECIAL_PATH*
- 
- vim.find_module(...)					*python-find_module*
- vim.path_hook(path)					*python-path_hook*
-+vim.find_spec(...)					*python-find_spec*
- 	Methods or objects used to implement path loading as described above.
- 	You should not be using any of these directly except for vim.path_hook
--	in case you need to do something with sys.meta_path. It is not
--	guaranteed that any of the objects will exist in the future vim
-+	in case you need to do something with sys.meta_path, vim.find_spec()
-+	is available starting with Python 3.7.
-+	It is not guaranteed that any of the objects will exist in future vim
- 	versions.
- 
- vim._get_paths						*python-_get_paths*
-diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
-index ab3b12045..809e3a8d3 100644
---- a/runtime/doc/spell.txt
-+++ b/runtime/doc/spell.txt
-@@ -1,4 +1,4 @@
--*spell.txt*	For Vim version 9.1.  Last change: 2024 May 11
-+*spell.txt*	For Vim version 9.1.  Last change: 2024 May 17
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 15
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -62,6 +62,17 @@ To search for the next misspelled word:
- 							*[S*
- [S			Like "]S" but search backwards.
- 
-+							*]r*
-+]r			Move to next "rare" word after the cursor.
-+			A count before the command can be used to repeat.
-+			'wrapscan' applies.
-+
-+							*[r*
-+[r			Like "]r" but search backwards, find the "rare"
-+			word before the cursor.  Doesn't recognize words
-+			split over two lines, thus may stop at words that are
-+			not highlighted as rare.
-+
- 
- To add words to your own word list:
- 
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index 063af9bfc..a9e8fb9c3 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
+@@ -10243,7 +10243,9 @@ tempname()					*tempname()* *temp-file-name*
+ 		is different for at least 26 consecutive calls.  Example: >
+ 			:let tmpfile = tempname()
+ 			:exe "redir > " .. tmpfile
+-<		For Unix, the file will be in a private directory |tempfile|.
++<		For Unix, the file will be in a private directory |tempfile|
++		that is recursively deleted when Vim exits, on other systems
++		temporary files are not cleaned up automatically on exit.
+ 		For MS-Windows forward slashes are used when the 'shellslash'
+ 		option is set, or when 'shellcmdflag' starts with '-' and
+ 		'shell' does not contain powershell or pwsh.
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 16ad114f1..ff995fb1d 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Apr 26
-+*usr_05.txt*	For Vim version 9.1.  Last change: 2024 May 17
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -445,7 +445,8 @@ Load the plugin with this command: >
- This way you can use the plugin with the default key bindings `gc` and similar
- for commenting (which is a well-established mapping in the Vim community).
- 
--After restarting your Vim, the plugin is active and you can read about it at: >
-+If you add this line to your vimrc file, then you need to restart Vim to have
-+the package loaded. Once the package is loaded, read about it at: >
- 	:h comment.txt
- 
- More information about packages can be found here: |packages|.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 192c3ee75..1c5a29f20 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 May 05
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 May 17
+-*change.txt*    For Vim version 9.1.  Last change: 2024 May 05
++*change.txt*    For Vim version 9.1.  Last change: 2024 May 18
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41587,15 +41587,17 @@ Autocommands: ~
+@@ -623,7 +623,8 @@ Vim uses temporary files for filtering, generating diffs and also for
+ tempname().  For Unix, the file will be in a private directory (only
+ accessible by the current user) to avoid security problems (e.g., a symlink
+ attack or other people reading your file).  When Vim exits the directory and
+-all files in it are deleted.  When Vim has the setuid bit set this may cause
++all files in it are deleted (only on Unix, on other systems you will have to
++clean up yourself).  When Vim has the setuid bit set this may cause
+ problems, the temp file is owned by the setuid user but the filter command
+ probably runs as the original user.
+ Directory for temporary files is created in the first of these directories
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 9561c6773..a6f156ada 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 May 07
++*options.txt*	For Vim version 9.1.  Last change: 2024 May 19
  
- Highlighting: ~
  
--|hl-MsgArea|		highlighting of the Command-line and messages area.
-+|hl-MsgArea|		highlighting of the Command-line and messages area
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1915,7 +1915,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			feature}
+ 	A template for a comment.  The "%s" in the value is replaced with the
+ 	comment text.  Currently only used to add markers for folding, see
+-	|fold-marker|.
++	|fold-marker|.  Also used by comment plugins |comment-install|.
  
- Commands: ~
+ 			*'compatible'* *'cp'* *'nocompatible'* *'nocp'*
+ 'compatible' 'cp'	boolean	(default on, off when a |vimrc| or |gvimrc|
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index a1c9d1de3..b8ffa6569 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 May 05
++*starting.txt*  For Vim version 9.1.  Last change: 2024 May 18
  
-+|[r| and |]r|		to move the cursor to previous/next rare word
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1712,7 +1712,8 @@ most of the information will be restored).
+ 			|viminfo-file-name| above).
+ 			If [!] is given, then any information that is
+ 			already set (registers, marks, |v:oldfiles|, etc.)
+-			will be overwritten.
++			will be overwritten.  "E195" may be given, when
++			'viminfofile' has been set to "NONE".
+ 
+ 			*:wv* *:wviminfo* *E137* *E138* *E574* *E886* *E929*
+ :wv[iminfo][!] [file]	Write to viminfo file [file] (default: see
+diff --git a/runtime/doc/usr_21.txt b/runtime/doc/usr_21.txt
+index 95ded58ea..fe3ee3199 100644
+--- a/runtime/doc/usr_21.txt
++++ b/runtime/doc/usr_21.txt
+@@ -1,4 +1,4 @@
+-*usr_21.txt*	For Vim version 9.1.  Last change: 2019 Apr 25
++*usr_21.txt*	For Vim version 9.1.  Last change: 2024 May 17
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -207,6 +207,23 @@ You get the same list of files as with |:oldfiles|.  If you want to edit
+ 
+ Type "2" and press <Enter> to edit the second file.
+ 
++If you know that the filename contains a pattern, you can also |:filter| the
++list of files: >
 +
++	:filter /resume/ :browse oldfiles
++<
++Since there is only one single matching filename, Vim will directly edit that
++file without prompting.  If the filter matches several files, you'll get
++prompted for the list of matching files instead: >
++
++	:filter! /resume/ browse oldfiles
++<	1: ~/.viminfo ~
++	3: /tmp/draft ~
++	Type number and <Enter> (q or empty cancels): ~
++
++Note: this time we filtered out all files NOT matching resume.
++
++
+ More info at |:oldfiles|, |v:oldfiles| and |c_#<|.
  
- Options: ~
  
- 'winfixbuf'		Keep buffer focused in a window
--'t_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420).
-+'t_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420)
- 
- ==============================================================================
- INCOMPATIBLE CHANGES				*incompatible-9.2*
