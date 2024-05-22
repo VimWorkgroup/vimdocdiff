@@ -1,42 +1,21 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 8f4dc1385..c38f9bf95 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index b9dd4d20b..4177a0181 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Apr 18
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 May 21
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 20
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 22
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -889,6 +889,31 @@ The mappings can be disabled with: >
- 	let g:no_vim_maps = 1
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4345,8 +4345,8 @@ getregionpos({pos1}, {pos2} [, {opts}])            *getregionpos()*
+ 		the offset in screen columns from the start of the character.
+ 		E.g., a position within a <Tab> or after the last character.
+ 		If the "off" number of an ending position is non-zero, it is
+-		the character's number of cells included in the selection,
+-		otherwise the whole character is included.
++		the offset of the character's first cell not included in the
++		selection, otherwise all its cells are included.
  
- 
-+ZIG							*ft-zig-plugin*
-+
-+						*g:zig_recommended_style*
-+By default the following indentation options are set, in accordance with Zig's
-+recommended style (https://ziglang.org/documentation/master/): >
-+
-+	setlocal expandtab shiftwidth=4 softtabstop=4 tabstop=8
-+<
-+To disable this behavior, set |g:zig_recommended_style| to 0: >
-+
-+	let g:zig_recommended_style = 0
-+<
-+							*g:zig_std_dir*
-+The path to the Zig standard library. The Zig |ftplugin| reads |g:zig_std_dir|
-+and appends it to the 'path' for Zig files. Where the Zig standard library
-+is located is system and installation method dependent.
-+
-+One can automatically set |g:zig_std_dir| using `zig env`: >
-+
-+	let g:zig_std_dir = json_decode(system('zig env'))['std_dir']
-+<
-+This can, for example, be put in a FileType |:autocmd| or user |ftplugin| to
-+only load when a Zig file is opened.
-+
-+
- ZIMBU							*ft-zimbu-plugin*
- 
- The Zimbu filetype plugin defines mappings to move to the start and end of
+ 		Can also be used as a |method|: >
+ 			getpos('.')->getregionpos(getpos("'a"))
