@@ -1,121 +1,20 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 4177a0181..866fab177 100644
+index 866fab177..751fbc215 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 22
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 24
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 24
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4288,14 +4288,13 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
- 		The optional argument {opts} is a Dict and supports the
- 		following items:
+@@ -4290,7 +4290,8 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
  
--			type		Specify the region's selection type
--					(default: "v"):
--			    "v"		for |characterwise| mode
--			    "V"		for |linewise| mode
--			    "<CTRL-V>"	for |blockwise-visual| mode
-+			type		Specify the region's selection type.
-+					See |getregtype()| for possible values,
-+					except it cannot be an empty string.
-+					(default: "v")
+ 			type		Specify the region's selection type.
+ 					See |getregtype()| for possible values,
+-					except it cannot be an empty string.
++					except that the width can be omitted
++					and an empty string cannot be used.
+ 					(default: "v")
  
  			exclusive	If |TRUE|, use exclusive selection
--					for the end position
-+					for the end position.
- 					(default: follow 'selection')
- 
- 		You can get the last selection type by |visualmode()|.
-@@ -4348,6 +4347,19 @@ getregionpos({pos1}, {pos2} [, {opts}])            *getregionpos()*
- 		the offset of the character's first cell not included in the
- 		selection, otherwise all its cells are included.
- 
-+		Apart from the options supported by |getregion()|, {opts} also
-+		supports the following:
-+
-+			eol		If |TRUE|, indicate positions beyond
-+					the end of a line with "col" values
-+					one more than the length of the line.
-+					If |FALSE|, positions are limited
-+					within their lines, and if a line is
-+					empty or the selection is entirely
-+					beyond the end of a line, a "col"
-+					value of 0 is used for both positions.
-+					(default: |FALSE|)
-+
- 		Can also be used as a |method|: >
- 			getpos('.')->getregionpos(getpos("'a"))
- <
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index c38f9bf95..927b75c3a 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 May 21
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 May 23
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -639,6 +639,12 @@ The mapping can be disabled with: >
- 	let g:no_gprof_maps = 1
- 
- 
-+HARE							*ft-hare*
-+
-+Since the text for this plugin is rather long it has been put in a separate
-+file: |ft_hare.txt|.
-+
-+
- JAVA							*ft-java-plugin*
- 
- Whenever the variable "g:ftplugin_java_source_path" is defined and its value
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index bbdda4f9d..0c2ecaef5 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 11
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3764,6 +3764,19 @@ set "tf_minlines" to the value you desire.  Example: >
- 
- 	:let tf_minlines = your choice
- <
-+TYPESCRIPT				*typescript.vim* *ft-typescript-syntax*
-+				*typescriptreact.vim* *ft-typescriptreact-syntax*
-+
-+There is one option to control the TypeScript syntax highlighting.
-+
-+						*g:typescript_host_keyword*
-+When this variable is set to 1, host-specific APIs such as `addEventListener`
-+are highlighted. To disable set it to zero in your .vimrc: >
-+
-+	let g:typescript_host_keyword = 0
-+<
-+The default value is 1.
-+
- VIM			*vim.vim*		*ft-vim-syntax*
- 			*g:vimsyn_minlines*	*g:vimsyn_maxlines*
- There is a trade-off between more accurate syntax highlighting versus screen
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 0aa5c7431..889ad40ba 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2023 Sep 27
-+*various.txt*   For Vim version 9.1.  Last change: 2024 May 23
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -608,6 +608,7 @@ N  *+X11*		Unix only: can restore window title |X11|
- 			   |:command|    - filter by command name
- 			   |:files|      - filter by file name
- 			   |:highlight|  - filter by highlight group
-+			   |:history|    - filter by history commands
- 			   |:jumps|      - filter by file name
- 			   |:let|        - filter by variable name
- 			   |:list|       - filter whole line
