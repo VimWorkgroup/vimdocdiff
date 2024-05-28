@@ -1,20 +1,20 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 866fab177..751fbc215 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
+index 7109bae54..faa5f3271 100644
+--- a/runtime/doc/help.txt
++++ b/runtime/doc/help.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 24
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 25
+-*help.txt*	For Vim version 9.1.  Last change: 2022 Dec 03
++*help.txt*	For Vim version 9.1.  Last change: 2024 May 27
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4290,7 +4290,8 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
- 
- 			type		Specify the region's selection type.
- 					See |getregtype()| for possible values,
--					except it cannot be an empty string.
-+					except that the width can be omitted
-+					and an empty string cannot be used.
- 					(default: "v")
- 
- 			exclusive	If |TRUE|, use exclusive selection
+ 			VIM - main help file
+ 									 k
+@@ -162,7 +162,8 @@ Programming language support ~
+ |filetype.txt|	settings done specifically for a type of file
+ |quickfix.txt|	commands for a quick edit-compile-fix cycle
+ |ft_ada.txt|	Ada (the programming language) support
+-|ft_context.txt|	Filetype plugin for ConTeXt
++|ft_context.txt|  Filetype plugin for ConTeXt
++|ft_hare.txt|	Filetype plugin for Hare
+ |ft_mp.txt|	Filetype plugin for METAFONT and MetaPost
+ |ft_ps1.txt|	Filetype plugin for Windows PowerShell
+ |ft_raku.txt|	Filetype plugin for Raku
