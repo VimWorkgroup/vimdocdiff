@@ -1,20 +1,172 @@
-diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
-index 7109bae54..faa5f3271 100644
---- a/runtime/doc/help.txt
-+++ b/runtime/doc/help.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index ae93b35b3..18cd2c123 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*help.txt*	For Vim version 9.1.  Last change: 2022 Dec 03
-+*help.txt*	For Vim version 9.1.  Last change: 2024 May 27
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 May 05
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Jun 01
  
- 			VIM - main help file
- 									 k
-@@ -162,7 +162,8 @@ Programming language support ~
- |filetype.txt|	settings done specifically for a type of file
- |quickfix.txt|	commands for a quick edit-compile-fix cycle
- |ft_ada.txt|	Ada (the programming language) support
--|ft_context.txt|	Filetype plugin for ConTeXt
-+|ft_context.txt|  Filetype plugin for ConTeXt
-+|ft_hare.txt|	Filetype plugin for Hare
- |ft_mp.txt|	Filetype plugin for METAFONT and MetaPost
- |ft_ps1.txt|	Filetype plugin for Windows PowerShell
- |ft_raku.txt|	Filetype plugin for Raku
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2727,7 +2727,7 @@ v:vim_did_enter	Zero until most of startup is done.  It is set to one just
+ v:warningmsg	Last given warning message.  It's allowed to set this variable.
+ 
+ 					*v:windowid* *windowid-variable*
+-v:windowid	When any X11 based GUI is running or when running in a
++v:windowid	When any X11/Wayland based GUI is running or when running in a
+ 		terminal and Vim connects to the X server (|-X|) this will be
+ 		set to the window ID.
+ 		When an MS-Windows GUI is running this will be set to the
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index a6f156ada..cae3e5433 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 May 19
++*options.txt*	For Vim version 9.1.  Last change: 2024 Jun 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -7238,8 +7238,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		message;  also for quickfix message (e.g., ":cn")
+ 	  s	don't give "search hit BOTTOM, continuing at TOP" or	*shm-s*
+ 		"search hit TOP, continuing at BOTTOM" messages; when using
+-		the search count do not show "W" after the count message (see
+-		S below)
++		the search count do not show "W" before the count message
++		(see |shm-S| below)
+ 	  t	truncate file message at the start if it is too long	*shm-t*
+ 		to fit on the command-line, "<" will appear in the left most
+ 		column; ignored in Ex mode
+@@ -7261,7 +7261,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		`:silent` was used for the command; note that this also
+ 		affects messages from autocommands and 'autoread' reloading
+ 	  S	do not show search count message when searching, e.g.	*shm-S*
+-		"[1/5]"
++		"[1/5]". When the "S" flag is not present (e.g. search count
++		is shown), the "search hit BOTTOM, continuing at TOP" and
++		"search hit TOP, continuing at BOTTOM" messages are only
++		indicated by a "W" (Mnemonic: Wrapped) letter before the
++		search count statistics.
+ 
+ 	This gives you the opportunity to avoid that a change between buffers
+ 	requires you to hit <Enter>, but still gives as useful a message as
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 0c2ecaef5..9161130a3 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 24
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3048,6 +3048,13 @@ To highlight R code in knitr chunk headers, add to your |vimrc|: >
+ 	let rrst_syn_hl_chunk = 1
+ 
+ 
++RASI					*rasi.vim* *ft-rasi-syntax*
++
++Rasi stands for Rofi Advanced Style Information. It is used by the program
++rofi to style the rendering of the search window. The language is heavily
++inspired by CSS stylesheet. Files with the following extensions are recognized
++as rasi files: .rasi.
++
+ READLINE				*readline.vim* *ft-readline-syntax*
+ 
+ The readline library is primarily used by the BASH shell, which adds quite a
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 9b15d001d..7491b06e0 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -4402,7 +4402,6 @@ Code size:
+     left out.
+ 8   When compiled with a GUI-only version, the termcap entries for terminals
+     can be removed.
+-8   Can the check for libelf in configure.ac be removed?
+ 
+ 
+ Messages:
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index 8607cf9da..553ed88cf 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
+@@ -1,4 +1,4 @@
+-*usr_52.txt*	For Vim version 9.1.  Last change: 2024 May 16
++*usr_52.txt*	For Vim version 9.1.  Last change: 2024 May 31
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -13,6 +13,7 @@ smaller parts.
+ |52.3|	Autoloading without import/export
+ |52.4|	Other mechanisms to use
+ |52.5|	Using a Vim9 script from legacy script
++|52.6|	Vim9 script examples: comment package, highlight-yank plugin
+ 
+      Next chapter: |usr_90.txt|  Installing Vim
+  Previous chapter: |usr_51.txt|  Create a plugin
+@@ -336,6 +337,46 @@ will have to make sure to use a unique name for these global items. Example: >
+ 	call g:NicePluginTest()
+ 
+ ==============================================================================
++*52.6*	Vim9 script examples: comment package, highlight-yank plugin
++
++COMMENT PACKAGE
++
++Vim comes with a comment plugin, written in Vim9 script |comment-install|.
++Have a look at the package located at $VIMRUNTIME/pack/dist/opt/comment/
++
++HIGHLIGHT YANK PLUGIN
++
++Here is an example for highlighting the yanked region. It makes use of the
++|getregionpos()| function, available since Vim 9.1.0446.
++
++Copy the following example into a new file and place it into your plugin directory
++and it will be active next time you start Vim |add-plugin|: >
++
++	vim9script
++
++	def HighlightedYank(hlgroup = 'IncSearch', duration = 300, in_visual = true)
++	  if v:event.operator ==? 'y'
++		  if !in_visual && visualmode() != null_string
++			visualmode(1)
++			return
++		  endif
++		  var [beg, end] = [getpos("'["), getpos("']")]
++		  var type = v:event.regtype ?? 'v'
++		  var pos = getregionpos(beg, end, {type: type})
++		  var end_offset = (type == 'V' || v:event.inclusive) ? 1 : 0
++		  var m = matchaddpos(hlgroup, pos->mapnew((_, v) => {
++			var col_beg = v[0][2] + v[0][3]
++			var col_end = v[1][2] + v[1][3] + end_offset
++			return [v[0][1], col_beg, col_end - col_beg]
++		  }))
++		  var winid = win_getid()
++		  timer_start(duration, (_) => m->matchdelete(winid))
++	  endif
++	enddef
++
++	autocmd TextYankPost * HighlightedYank()
++<
++==============================================================================
+ 
+ Next chapter: |usr_90.txt|  Installing Vim
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 7a49aa082..68e5d997f 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
++*vim9.txt*	For Vim version 9.1.  Last change: 2024 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -67,6 +67,7 @@ rewrite old scripts, they keep working as before.  You may want to use a few
+ 		Note that {cmd} cannot use local variables, since it is parsed
+ 		with legacy expression syntax.
+ 
++See some examples of Vim9 script at |52.6|.
+ ==============================================================================
+ 
+ 2. Differences from legacy Vim script			*vim9-differences*
