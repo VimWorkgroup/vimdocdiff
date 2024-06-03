@@ -1,172 +1,290 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index ae93b35b3..18cd2c123 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 751fbc215..782c42f74 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2024 May 05
-+*eval.txt*	For Vim version 9.1.  Last change: 2024 Jun 01
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 May 25
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2727,7 +2727,7 @@ v:vim_did_enter	Zero until most of startup is done.  It is set to one just
- v:warningmsg	Last given warning message.  It's allowed to set this variable.
+@@ -178,6 +178,8 @@ extendnew({expr1}, {expr2} [, {expr3}])
+ 				List/Dict like |extend()| but creates a new
+ 					List or Dictionary
+ feedkeys({string} [, {mode}])	Number	add key sequence to typeahead buffer
++filecopy({from}, {to})		Number	|TRUE| if copying file {from} to {to}
++					worked
+ filereadable({file})		Number	|TRUE| if {file} is a readable file
+ filewritable({file})		Number	|TRUE| if {file} is a writable file
+ filter({expr1}, {expr2})	List/Dict/Blob/String
+@@ -2757,6 +2759,18 @@ feedkeys({string} [, {mode}])				*feedkeys()*
+ 		Can also be used as a |method|: >
+ 			GetInput()->feedkeys()
  
- 					*v:windowid* *windowid-variable*
--v:windowid	When any X11 based GUI is running or when running in a
-+v:windowid	When any X11/Wayland based GUI is running or when running in a
- 		terminal and Vim connects to the X server (|-X|) this will be
- 		set to the window ID.
- 		When an MS-Windows GUI is running this will be set to the
++filecopy({from}, {to})					*filecopy()*
++		Copy the file pointed to by the name {from} to {to}. The
++		result is a Number, which is |TRUE| if the file was copied
++		successfully, and |FALSE| when it failed.
++		If a file with name {to} already exists, it will fail.
++		Note that it does not handle directories (yet).
++
++		This function is not available in the |sandbox|.
++
++		Can also be used as a |method|: >
++			GetOldName()->filecopy(newname)
++
+ filereadable({file})					*filereadable()*
+ 		The result is a Number, which is |TRUE| when a file with the
+ 		name {file} exists, and can be read.  If {file} doesn't exist,
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a6f156ada..cae3e5433 100644
+index cae3e5433..bc7f68713 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 May 19
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Jun 01
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Jun 01
++*options.txt*	For Vim version 9.1.  Last change: 2024 Jun 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7238,8 +7238,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		message;  also for quickfix message (e.g., ":cn")
- 	  s	don't give "search hit BOTTOM, continuing at TOP" or	*shm-s*
- 		"search hit TOP, continuing at BOTTOM" messages; when using
--		the search count do not show "W" after the count message (see
--		S below)
-+		the search count do not show "W" before the count message
-+		(see |shm-S| below)
- 	  t	truncate file message at the start if it is too long	*shm-t*
- 		to fit on the command-line, "<" will appear in the left most
- 		column; ignored in Ex mode
-@@ -7261,7 +7261,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		`:silent` was used for the command; note that this also
- 		affects messages from autocommands and 'autoread' reloading
- 	  S	do not show search count message when searching, e.g.	*shm-S*
--		"[1/5]"
-+		"[1/5]". When the "S" flag is not present (e.g. search count
-+		is shown), the "search hit BOTTOM, continuing at TOP" and
-+		"search hit TOP, continuing at BOTTOM" messages are only
-+		indicated by a "W" (Mnemonic: Wrapped) letter before the
-+		search count statistics.
+@@ -1909,13 +1909,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	insert a space.
  
- 	This gives you the opportunity to avoid that a change between buffers
- 	requires you to hit <Enter>, but still gives as useful a message as
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 0c2ecaef5..9161130a3 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+ 					*'commentstring'* *'cms'* *E537*
+-'commentstring' 'cms'	string	(default "/*%s*/")
++'commentstring' 'cms'	string	(default "/* %s */")
+ 			local to buffer
+ 			{not available when compiled without the |+folding|
+ 			feature}
+ 	A template for a comment.  The "%s" in the value is replaced with the
+-	comment text.  Currently only used to add markers for folding, see
+-	|fold-marker|.  Also used by comment plugins |comment-install|.
++	comment text, and should be padded with a space when possible.
++	Currently used to add markers for folding, see |fold-marker| also
++	commonly used by commenting plugins (e.g. |comment-install|).
+ 
+ 			*'compatible'* *'cp'* *'nocompatible'* *'nocp'*
+ 'compatible' 'cp'	boolean	(default on, off when a |vimrc| or |gvimrc|
+@@ -2143,6 +2144,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    select one from the menu. Only works in combination with
+ 		    "menu" or "menuone".
+ 
++	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
++		    allows for more flexible and intuitive matching, where
++		    characters can be skipped and matches can be found even
++		    if the exact sequence is not typed.
++
+ 					*'completepopup'* *'cpp'*
+ 'completepopup' 'cpp'	string (default empty)
+ 			global
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index f16e7d2d6..183806a96 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 24
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 May 31
+-*pattern.txt*   For Vim version 9.1.  Last change: 2024 Apr 26
++*pattern.txt*   For Vim version 9.1.  Last change: 2024 Jun 03
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3048,6 +3048,13 @@ To highlight R code in knitr chunk headers, add to your |vimrc|: >
- 	let rrst_syn_hl_chunk = 1
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1513,5 +1513,7 @@ the matching positions and the fuzzy match scores.
  
+ The "f" flag of `:vimgrep` enables fuzzy matching.
  
-+RASI					*rasi.vim* *ft-rasi-syntax*
-+
-+Rasi stands for Rofi Advanced Style Information. It is used by the program
-+rofi to style the rendering of the search window. The language is heavily
-+inspired by CSS stylesheet. Files with the following extensions are recognized
-+as rasi files: .rasi.
-+
- READLINE				*readline.vim* *ft-readline-syntax*
++To enable fuzzy matching for |ins-completion|, add the "fuzzy" value to the
++'completeopt' option.
  
- The readline library is primarily used by the BASH shell, which adds quite a
+  vim:tw=78:ts=8:noet:ft=help:norl:
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 9b15d001d..7491b06e0 100644
+index 7491b06e0..c37a1d4bd 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
-@@ -4402,7 +4402,6 @@ Code size:
-     left out.
- 8   When compiled with a GUI-only version, the termcap entries for terminals
-     can be removed.
--8   Can the check for libelf in configure.ac be removed?
- 
- 
- Messages:
-diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
-index 8607cf9da..553ed88cf 100644
---- a/runtime/doc/usr_52.txt
-+++ b/runtime/doc/usr_52.txt
 @@ -1,4 +1,4 @@
--*usr_52.txt*	For Vim version 9.1.  Last change: 2024 May 16
-+*usr_52.txt*	For Vim version 9.1.  Last change: 2024 May 31
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 May 11
++*todo.txt*      For Vim version 9.1.  Last change: 2024 Jun 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -82,8 +82,6 @@ With 'smoothscroll' set and "lastline" in 'display', moving the cursor to a
+ wrapping line that makes the display scroll up may scroll much more than
+ needed, thus jump-scrolling. (part of issue 12411)
+ 
+-Add filecopy() ?  #12346
+-
+ Implement foreach()  PR  #12166
+ 
+ Errors when running tests with valgrind:
+@@ -4242,7 +4240,6 @@ Vim script language:
+ 	base64enc()		base 64 encoding
+ 	base64dec()		base 64 decoding
+ 	attributes()		return file protection flags "drwxrwxrwx"
+-	filecopy(from, to)	Copy a file
+ 	shorten(fname)		shorten a file name, like home_replace()
+ 	perl(cmd)		call Perl and return string
+ 	inputrl()		like input() but right-to-left
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 26651ebb1..4225d1f62 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 May 07
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Jun 03
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -13,6 +13,7 @@ smaller parts.
- |52.3|	Autoloading without import/export
- |52.4|	Other mechanisms to use
- |52.5|	Using a Vim9 script from legacy script
-+|52.6|	Vim9 script examples: comment package, highlight-yank plugin
+@@ -993,6 +993,7 @@ System functions and manipulation of files:
+ 	readdir()		get a List of file names in a directory
+ 	readdirex()		get a List of file information in a directory
+ 	writefile()		write a List of lines or Blob into a file
++	filecopy()		copy a file {from} to {to}
  
-      Next chapter: |usr_90.txt|  Installing Vim
-  Previous chapter: |usr_51.txt|  Create a plugin
-@@ -336,6 +337,46 @@ will have to make sure to use a unique name for these global items. Example: >
- 	call g:NicePluginTest()
- 
- ==============================================================================
-+*52.6*	Vim9 script examples: comment package, highlight-yank plugin
-+
-+COMMENT PACKAGE
-+
-+Vim comes with a comment plugin, written in Vim9 script |comment-install|.
-+Have a look at the package located at $VIMRUNTIME/pack/dist/opt/comment/
-+
-+HIGHLIGHT YANK PLUGIN
-+
-+Here is an example for highlighting the yanked region. It makes use of the
-+|getregionpos()| function, available since Vim 9.1.0446.
-+
-+Copy the following example into a new file and place it into your plugin directory
-+and it will be active next time you start Vim |add-plugin|: >
-+
-+	vim9script
-+
-+	def HighlightedYank(hlgroup = 'IncSearch', duration = 300, in_visual = true)
-+	  if v:event.operator ==? 'y'
-+		  if !in_visual && visualmode() != null_string
-+			visualmode(1)
-+			return
-+		  endif
-+		  var [beg, end] = [getpos("'["), getpos("']")]
-+		  var type = v:event.regtype ?? 'v'
-+		  var pos = getregionpos(beg, end, {type: type})
-+		  var end_offset = (type == 'V' || v:event.inclusive) ? 1 : 0
-+		  var m = matchaddpos(hlgroup, pos->mapnew((_, v) => {
-+			var col_beg = v[0][2] + v[0][3]
-+			var col_end = v[1][2] + v[1][3] + end_offset
-+			return [v[0][1], col_beg, col_end - col_beg]
-+		  }))
-+		  var winid = win_getid()
-+		  timer_start(duration, (_) => m->matchdelete(winid))
-+	  endif
-+	enddef
-+
-+	autocmd TextYankPost * HighlightedYank()
-+<
-+==============================================================================
- 
- Next chapter: |usr_90.txt|  Installing Vim
- 
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 7a49aa082..68e5d997f 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
+ Date and Time:				*date-functions* *time-functions*
+ 	getftime()		get last modification time of a file
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 1c5a29f20..07c416ae2 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
-+*vim9.txt*	For Vim version 9.1.  Last change: 2024 May 31
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 May 17
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jun 03
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -67,6 +67,7 @@ rewrite old scripts, they keep working as before.  You may want to use a few
- 		Note that {cmd} cannot use local variables, since it is parsed
- 		with legacy expression syntax.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -31711,12 +31711,12 @@ in |vim9-class|.  The following features are supported:
  
-+See some examples of Vim9 script at |52.6|.
+ Support for creating a type alias for an existing type is added.
+ 
+-Virtual text
++Virtual text ~
+ ------------
+ Support for adding |virtual-text| to a buffer is added.  This is useful for
+ language server features (e.g. inlay hints)
+ 
+-Smooth Scroll
++Smooth Scroll ~
+ -------------
+ Support for scrolling text using screen lines instead of file lines is added.
+ Refer to the 'smoothscroll' option.
+@@ -31726,7 +31726,8 @@ The EditorConfig (|editorconfig-install|) and the JSON formatting
+ 
+ OpenVMS x86_64 platform port: http://www.polarhome.com/vim/
+ 
+-Other improvements				*new-other-9.1*
++						*new-other-9.1*
++Other improvements ~
+ ------------------
+ - Support for undercurl (|t_Ce|), double underline (|t_Us|), dotted underline
+   (|t_ds|) and dashed underline (|t_Ds|) termcap entries and
+@@ -31783,7 +31784,8 @@ Other improvements				*new-other-9.1*
+ - xxd: reversing a bit dump (xxd -r).
+ - xxd: customize the variable name used in the C include output (xxd -n).
+ 
+-Changed						*changed-9.1*
++							*changed-9.1*
++Changed ~
+ -------
+ - The features |++builtin_terms|, |+cmdline_info|, |+cmdwin|, |+file_in_path|,
+   |+float|, |+path_extra|, |+textobjects|, |+wildignore| and |+wildmenu| are
+@@ -31815,7 +31817,8 @@ Changed						*changed-9.1*
+ - Migrate to autoconf 2.71.
+ - Start using C99 feature (declare variable in for loops).
+ 
+-Added						*added-9.1*
++						*added-9.1*
++Added ~
+ -----
+ 
+ Various syntax, indent and other plugins were added.
+@@ -41541,40 +41544,44 @@ VERSION 9.2				*version-9.2* *version9.2* *vim-9.2*
+ This section is about improvements made between version 9.1 and 9.2
+ and is a work in progress.
+ 
+-Support for Wayland UI.
+-
+-Support for the XDG Desktop Specification |xdg-base-dir|
+-
+-Vim9 script
++Vim9 script ~
+ -----------
+ Add support for internal builtin functions with vim9 objects, see
+ |builtin-object-methods|
+ 
+ Enum support for Vim9 script |:enum|
+ 
+-Other improvements				*new-other-9.2*
++							*new-other-9.2*
++Other new features ~
+ ------------------
+ The comment plugin |comment-install| is included.
+ 
+-Changed						*changed-9.2*
+--------
++Support for Wayland UI.
++
++Support for the XDG Desktop Specification |xdg-base-dir|
+ 
++							*changed-9.2*
++Changed~
++-------
+ - use 'smoothscroll' logic for CTRL-F and CTRL-B for pagewise scrolling
+ - use 'smoothscroll' logic for CTRL-D and CTRL-U for half-pagewise scrolling
++- the default for 'commentstring' contains whitespace padding to have
++  automatic comments look nicer |comment-install|
+ 
+-Added						*added-9.2*
++							*added-9.2*
++Added ~
+ -----
+-
+ Various syntax, indent and other plugins were added.
+ 
+ Functions: ~
+ 
+ |diff()|		diff two Lists of strings
++|filecopy()|		copy a file {from} to {to}
+ |foreach()|		apply function to List items
+-|matchbufline()|	all the matches of a pattern in a buffer
+-|matchstrlist()|	all the matches of a pattern in a List of strings
+ |getregion()|		get a region of text from a buffer
+ |getregionpos()|	get a list of positions for a region
++|matchbufline()|	all the matches of a pattern in a buffer
++|matchstrlist()|	all the matches of a pattern in a List of strings
+ 
+ 
+ Autocommands: ~
+@@ -41598,30 +41605,31 @@ Options: ~
+ 
+ 'winfixbuf'		Keep buffer focused in a window
+ 't_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420)
++'t_CF'			Support for alternate font highlighting terminal code
+ 
  ==============================================================================
+-INCOMPATIBLE CHANGES				*incompatible-9.2*
++INCOMPATIBLE CHANGES					*incompatible-9.2*
  
- 2. Differences from legacy Vim script			*vim9-differences*
+ Improved/Different MS-Windows mapping support
+ |w32-experimental-keycode-trans-strategy|
+ 
+ ==============================================================================
+-IMPROVEMENTS					*improvements-9.2*
++IMPROVEMENTS						*improvements-9.2*
+ 
+ Support for command-line completion of 'keymap' option values.
+ 
+ Support for compiling all the methods in a Vim9 class using |:defcompile|.
+ 
+-Support for alternate font highlighting using |t_CF| terminal code.
+-
+ Support for Super key mappings in GTK using <D-Key>.
+ 
+ Improved visual highlighting.
+ 
+ Python3 support in OpenVMS.
+ 
++Support |fuzzy-matching| during |ins-completion| with "fuzzy" item for 'completeopt'
++
+ ==============================================================================
+-COMPILE TIME CHANGES				*compile-changes-9.2*
++COMPILE TIME CHANGES					*compile-changes-9.2*
+ 
+ Support for building with Ruby 3.3.
+ 
