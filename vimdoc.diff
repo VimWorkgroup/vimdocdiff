@@ -1,208 +1,148 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 66f1bae13..8f2d132e2 100644
+index 8f2d132e2..862a1dfc6 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 11
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 12
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 12
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1727,33 +1727,30 @@ clearmatches([{win}])					*clearmatches()*
- 
- col({expr} [, {winid}])					*col()*
+@@ -1729,6 +1729,8 @@ col({expr} [, {winid}])					*col()*
  		The result is a Number, which is the byte index of the column
--		position given with {expr}.  The accepted positions are:
--		    .	    the cursor position
--		    $	    the end of the cursor line (the result is the
--			    number of bytes in the cursor line plus one)
--		    'x	    position of mark x (if the mark is not set, 0 is
--			    returned)
--		    v       In Visual mode: the start of the Visual area (the
--			    cursor is the end).  When not in Visual mode
--			    returns the cursor position.  Differs from |'<| in
--			    that it's updated right away.
-+		position given with {expr}.
-+		For accepted positions see |getpos()|.
+ 		position given with {expr}.
+ 		For accepted positions see |getpos()|.
++		When {expr} is "$", it means the end of the cursor line, so
++		the result is the number of bytes in the cursor line plus one.
  		Additionally {expr} can be [lnum, col]: a |List| with the line
  		and column number. Most useful when the column is "$", to get
  		the last column of a specific line.  When "lnum" or "col" is
- 		out of range then col() returns zero.
-+
- 		With the optional {winid} argument the values are obtained for
- 		that window instead of the current window.
-+
- 		To get the line number use |line()|.  To get both use
- 		|getpos()|.
- 		For the screen column position use |virtcol()|.  For the
- 		character position use |charcol()|.
-+
- 		Note that only marks in the current file can be used.
-+
- 		Examples: >
- 			col(".")		column of cursor
- 			col("$")		length of cursor line plus one
- 			col("'t")		column of mark t
- 			col("'" .. markname)	column of mark markname
--<		The first column is 1.  Returns 0 if {expr} is invalid or when
-+<
-+		The first column is 1.  Returns 0 if {expr} is invalid or when
- 		the window with ID {winid} is not found.
- 		For an uppercase mark the column may actually be in another
- 		buffer.
-@@ -4490,9 +4487,34 @@ getpid()							*getpid()*
- 
- 
- getpos({expr})							*getpos()*
--		Get the position for String {expr}.  For possible values of
--		{expr} see |line()|.  For getting the cursor position see
--		|getcurpos()|.
-+		Get the position for String {expr}.
-+		The accepted values for {expr} are:		*E1209*
-+		    .	    The cursor position.
-+		    $	    The last line in the current buffer.
-+		    'x	    Position of mark x (if the mark is not set, 0 is
-+			    returned).
-+		    w0	    First line visible in current window (one if the
-+			    display isn't updated, e.g. in silent Ex mode).
-+		    w$	    Last line visible in current window (this is one
-+			    less than "w0" if no lines are visible).
-+		    v	    When not in Visual mode, returns the cursor
-+			    position.  In Visual mode, returns the other end
-+			    of the Visual area.  A good way to think about
-+			    this is that in Visual mode "v" and "." complement
-+			    each other.  While "." refers to the cursor
-+			    position, "v" refers to where |v_o| would move the
-+			    cursor.  As a result, you can use "v" and "."
-+			    together to work on all of a selection in
-+			    characterwise Visual mode.  If the cursor is at
-+			    the end of a characterwise Visual area, "v" refers
-+			    to the start of the same Visual area.  And if the
-+			    cursor is at the start of a characterwise Visual
-+			    area, "v" refers to the end of the same Visual
-+			    area.  "v" differs from |'<| and |'>| in that it's
-+			    updated right away.
-+		Note that a mark in another file can be used.  The line number
-+		then applies to another buffer.
-+
- 		The result is a |List| with four numbers:
- 		    [bufnum, lnum, col, off]
- 		"bufnum" is zero, unless a mark like '0 or 'A is used, then it
-@@ -4503,19 +4525,24 @@ getpos({expr})							*getpos()*
- 		it is the offset in screen columns from the start of the
- 		character.  E.g., a position within a <Tab> or after the last
- 		character.
--		Note that for '< and '> Visual mode matters: when it is "V"
--		(visual line mode) the column of '< is zero and the column of
--		'> is a large number equal to |v:maxcol|.
-+
-+		For getting the cursor position see |getcurpos()|.
- 		The column number in the returned List is the byte position
- 		within the line. To get the character position in the line,
- 		use |getcharpos()|.
-+
-+		Note that for '< and '> Visual mode matters: when it is "V"
-+		(visual line mode) the column of '< is zero and the column of
-+		'> is a large number equal to |v:maxcol|.
- 		A very large column number equal to |v:maxcol| can be returned,
- 		in which case it means "after the end of the line".
- 		If {expr} is invalid, returns a list with all zeros.
-+
- 		This can be used to save and restore the position of a mark: >
+@@ -4492,7 +4494,7 @@ getpos({expr})							*getpos()*
+ 		    .	    The cursor position.
+ 		    $	    The last line in the current buffer.
+ 		    'x	    Position of mark x (if the mark is not set, 0 is
+-			    returned).
++			    returned for all values).
+ 		    w0	    First line visible in current window (one if the
+ 			    display isn't updated, e.g. in silent Ex mode).
+ 		    w$	    Last line visible in current window (this is one
+@@ -4542,8 +4544,8 @@ getpos({expr})							*getpos()*
  			let save_a_mark = getpos("'a")
  			...
  			call setpos("'a", save_a_mark)
-+
- <		Also see |getcharpos()|, |getcurpos()| and |setpos()|.
+-
+-<		Also see |getcharpos()|, |getcurpos()| and |setpos()|.
++<
++		Also see |getcharpos()|, |getcurpos()| and |setpos()|.
  
  		Can also be used as a |method|: >
-@@ -6182,37 +6209,16 @@ libcallnr({libname}, {funcname}, {argument})
- line({expr} [, {winid}])				*line()*
- 		The result is a Number, which is the line number of the file
- 		position given with {expr}.  The {expr} argument is a string.
--		The accepted positions are:			 *E1209*
--		    .	    the cursor position
--		    $	    the last line in the current buffer
--		    'x	    position of mark x (if the mark is not set, 0 is
--			    returned)
--		    w0	    first line visible in current window (one if the
--			    display isn't updated, e.g. in silent Ex mode)
--		    w$	    last line visible in current window (this is one
--			    less than "w0" if no lines are visible)
--		    v	    When not in Visual mode, returns the cursor
--			    position.  In Visual mode, returns the other end
--			    of the Visual area.  A good way to think about
--			    this is that in Visual mode "v" and "." complement
--			    each other.  While "." refers to the cursor
--			    position, "v" refers to where |v_o| would move the
--			    cursor.  As a result, you can use "v" and "."
--			    together to work on all of a selection in
--			    characterwise visual mode.  If the cursor is at
--			    the end of a characterwise visual area, "v" refers
--			    to the start of the same visual area.  And if the
--			    cursor is at the start of a characterwise visual
--			    area, "v" refers to the end of the same visual
--			    area.  "v" differs from |'<| and |'>| in that it's
--			    updated right away.
--		Note that a mark in another file can be used.  The line number
--		then applies to another buffer.
-+		See |getpos()| for accepted positions.
-+
- 		To get the column number use |col()|.  To get both use
- 		|getpos()|.
-+
- 		With the optional {winid} argument the values are obtained for
- 		that window instead of the current window.
-+
- 		Returns 0 for invalid values of {expr} and {winid}.
-+
- 		Examples: >
- 			line(".")		line number of the cursor
- 			line(".", winid)	idem, in window "winid"
-@@ -11747,7 +11753,7 @@ virtcol({expr} [, {list} [, {winid}]])			*virtcol()*
- 		set to 8, it returns 8. |conceal| is ignored.
+ 			GetMark()->getpos()
+@@ -7327,17 +7329,14 @@ mkdir({name} [, {flags} [, {prot}]])			*mkdir()* *E739*
+ 		When {flags} is present it must be a string.  An empty string
+ 		has no effect.
+ 
+-		If {flags} contains "p" then intermediate directories are
+-		created as necessary.
++		{flags} can contain these character flags:
++		 "p"	intermediate directories will be created as necessary
++		 "D"	{name} will be deleted at the end of the current
++			function, but not recursively |defer|
++		 "R"	{name} will be deleted recursively at the end of the
++			current function |defer|
+ 
+-		If {flags} contains "D" then {name} is deleted at the end of
+-		the current function, as with: >
+-			defer delete({name}, 'd')
+-<
+-		If {flags} contains "R" then {name} is deleted recursively at
+-		the end of the current function, as with: >
+-			defer delete({name}, 'rf')
+-<		Note that when {name} has more than one part and "p" is used
++		Note that when {name} has more than one part and "p" is used
+ 		some directories may already exist.  Only the first one that
+ 		is created and what it contains is scheduled to be deleted.
+ 		E.g. when using: >
+@@ -11754,6 +11753,8 @@ virtcol({expr} [, {list} [, {winid}]])			*virtcol()*
  		For the byte position use |col()|.
  
--		For the use of {expr} see |col()|.
-+		For the use of {expr} see |getpos()| and |col()|.
+ 		For the use of {expr} see |getpos()| and |col()|.
++		When {expr} is "$", it means the end of the cursor line, so
++		the result is the number of cells in the cursor line plus one.
  
  		When 'virtualedit' is used {expr} can be [lnum, col, off],
  		where "off" is the offset in screen columns from the start of
-@@ -11757,18 +11763,6 @@ virtcol({expr} [, {list} [, {winid}]])			*virtcol()*
- 		beyond the end of the line can be returned.  Also see
- 		|'virtualedit'|
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 1d9dd5bd8..f29467955 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1,4 +1,4 @@
+-*channel.txt*      For Vim version 9.1.  Last change: 2024 Jun 06
++*channel.txt*      For Vim version 9.1.  Last change: 2024 Jun 13
  
--		The accepted positions are:
--		    .	    the cursor position
--		    $	    the end of the cursor line (the result is the
--			    number of displayed characters in the cursor line
--			    plus one)
--		    'x	    position of mark x (if the mark is not set, 0 is
--			    returned)
--		    v       In Visual mode: the start of the Visual area (the
--			    cursor is the end).  When not in Visual mode
--			    returns the cursor position.  Differs from |'<| in
--			    that it's updated right away.
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -956,7 +956,7 @@ job_info([{job}])					*job_info()*
+ 		Can also be used as a |method|: >
+ 			GetJob()->job_info()
+ <
+-		Return type: dict<any> or list<any> depending on whether {job}
++		Return type: dict<any> or list<job> depending on whether {job}
+ 		was given
+ 
+ 
+@@ -1031,7 +1031,7 @@ job_start({command} [, {options}])			*job_start()*
+ 		Can also be used as a |method|: >
+ 			BuildCommand()->job_start()
+ <
+-		Return type: |Number|
++		Return type: |job|
+ 
+ 
+ job_status({job})					*job_status()* *E916*
+@@ -1056,7 +1056,7 @@ job_status({job})					*job_status()* *E916*
+ 		Can also be used as a |method|: >
+ 			GetJob()->job_status()
+ <
+-		Return type: |job|
++		Return type: |String|
+ 
+ 
+ job_stop({job} [, {how}])					*job_stop()*
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index eb1dd7856..7ec47bd83 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jun 11
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jun 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5688,7 +5688,6 @@ PmenuThumb	Popup menu: Thumb of the scrollbar.
+ PmenuMatch	Popup menu: Matched text in normal item
+ 							*hl-PmenuMatchSel*
+ PmenuMatchSel	Popup menu: Matched text in selected item
 -
- 		If {list} is present and non-zero then virtcol() returns a
- 		List with the first and last screen position occupied by the
- 		character.
-@@ -11777,6 +11771,7 @@ virtcol({expr} [, {list} [, {winid}]])			*virtcol()*
- 		that window instead of the current window.
+ 							*hl-PopupNotification*
+ PopupNotification
+ 		Popup window created with |popup_notification()|.  If not
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 0f0b42a64..f509ea979 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jun 08
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jun 13
  
- 		Note that only marks in the current file can be used.
-+
- 		Examples: >
- 			" With text "foo^Lbar" and cursor on the "^L":
  
-@@ -11787,7 +11782,9 @@ virtcol({expr} [, {list} [, {winid}]])			*virtcol()*
- 			" With text "	  there", with 't at 'h':
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -647,7 +647,8 @@ term_getcursor({buf})					*term_getcursor()*
+ term_getjob({buf})					*term_getjob()*
+ 		Get the Job associated with terminal window {buf}.
+ 		{buf} is used as with |term_getsize()|.
+-		Returns |v:null| when there is no job.
++		Returns |v:null| when there is no job. In Vim9 script, return
++		null_job when there is no job.
  
- 			virtcol("'t")	" returns 6
--<		The first column is 1.  0 or [0, 0] is returned for an error.
-+<
-+		The first column is 1.  0 or [0, 0] is returned for an error.
-+
- 		A more advanced example that echoes the maximum length of
- 		all lines: >
- 		    echo max(map(range(1, line('$')), "virtcol([v:val, '$'])"))
+ 		Can also be used as a |method|: >
+ 			GetBufnr()->term_getjob()
