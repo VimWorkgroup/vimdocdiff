@@ -1,22 +1,19 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 862a1dfc6..ff7078ea8 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 889ad40ba..d9bcdfa54 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 13
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 14
+-*various.txt*   For Vim version 9.1.  Last change: 2024 May 23
++*various.txt*   For Vim version 9.1.  Last change: 2024 Jun 15
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7332,9 +7332,9 @@ mkdir({name} [, {flags} [, {prot}]])			*mkdir()* *E739*
- 		{flags} can contain these character flags:
- 		 "p"	intermediate directories will be created as necessary
- 		 "D"	{name} will be deleted at the end of the current
--			function, but not recursively |defer|
-+			function, but not recursively |:defer|
- 		 "R"	{name} will be deleted recursively at the end of the
--			current function |defer|
-+			current function |:defer|
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -138,7 +138,7 @@ g8			Print the hex values of the bytes used in the
+ :[range]# [count] [flags]
+ 			synonym for :number.
  
- 		Note that when {name} has more than one part and "p" is used
- 		some directories may already exist.  Only the first one that
+-							*:#!*
++							*:#!* *vim-shebang*
+ :#!{anything}		Ignored, so that you can start a Vim script with: >
+ 				#!vim -S
+ 				echo "this is a Vim script"
