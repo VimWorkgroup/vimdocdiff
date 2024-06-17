@@ -1,19 +1,81 @@
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 889ad40ba..d9bcdfa54 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 7f3654c9b..e2aef24ed 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2024 May 23
-+*various.txt*   For Vim version 9.1.  Last change: 2024 Jun 15
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Jun 09
++*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Jun 16
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -138,7 +138,7 @@ g8			Print the hex values of the bytes used in the
- :[range]# [count] [flags]
- 			synonym for :number.
+@@ -1303,6 +1303,14 @@ g:compiler_gcc_ignore_unmatched_lines
+ 				positives.
  
--							*:#!*
-+							*:#!* *vim-shebang*
- :#!{anything}		Ignored, so that you can start a Vim script with: >
- 				#!vim -S
- 				echo "this is a Vim script"
+ 
++JAVAC							*compiler-javac*
++
++Commonly used compiler options can be added to 'makeprg' by setting the
++g:javac_makeprg_params variable.  For example: >
++
++	let g:javac_makeprg_params = "-Xlint:all -encoding utf-8"
++<
++
+ MANX AZTEC C				*quickfix-manx* *compiler-manx*
+ 
+ To use Vim with Manx's Aztec C compiler on the Amiga you should do the
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index f509ea979..264161189 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jun 13
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jun 17
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1383,8 +1383,8 @@ Put focus on the gdb window to type commands there.  Some common ones are:
+ 						*:Run* *:Arguments*
+ In the window showing the source code these commands can be used to control
+ gdb:
+- :Run [args]	    run the program with [args] or the previous arguments
+- :Arguments {args}  set arguments for the next `:Run`
++ `:Run` [args]	    run the program with [args] or the previous arguments
++ `:Arguments` {args}  set arguments for the next `:Run`
+ 
+  *:Break*	set a breakpoint at the cursor position
+  :Break {position}
+@@ -1430,10 +1430,10 @@ breakpoint, or use the "Clear breakpoint" right-click menu entry.
+ 
+ Inspecting variables ~
+ 					*termdebug-variables* *:Evaluate*
+- :Evaluate	    evaluate the expression under the cursor
+- K		    same (see |termdebug_map_K| to disable)
+- :Evaluate {expr}   evaluate {expr}
+- :'<,'>Evaluate     evaluate the Visually selected text
++ `:Evaluate`	    evaluate the expression under the cursor
++ `K`		    same (see |termdebug_map_K| to disable)
++ `:Evaluate` {expr}   evaluate {expr}
++ `:'<,'>Evaluate`     evaluate the Visually selected text
+ 
+ This is similar to using "print" in the gdb window.
+ You can usually shorten `:Evaluate` to `:Ev`.
+@@ -1441,14 +1441,14 @@ You can usually shorten `:Evaluate` to `:Ev`.
+ 
+ Navigating stack frames ~
+ 				*termdebug-frames* *:Frame* *:Up* *:Down*
+- :Frame [frame]	select frame [frame], which is a frame number,
++ `:Frame` [frame]	select frame [frame], which is a frame number,
+ 			address, or function name (default: current frame)
+- :Up [count]		go up [count] frames (default: 1; the frame that
++ `:Up` [count]		go up [count] frames (default: 1; the frame that
+ 			called the current)
+- +			same (see |termdebug_map_plus| to disable)
+- :Down [count]	go down [count] frames (default: 1; the frame called
++ `+`			same (see |termdebug_map_plus| to disable)
++ `:Down` [count]	go down [count] frames (default: 1; the frame called
+ 			by the current)
+- -			same (see |termdebug_map_minus| to disable)
++ `-`			same (see |termdebug_map_minus| to disable)
+ 
+ 
+ Other commands ~
