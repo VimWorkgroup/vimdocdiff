@@ -1,237 +1,192 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index ff7078ea8..a82453109 100644
+index a82453109..0061e9efc 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
+@@ -153,8 +153,8 @@ diff_filler({lnum})		Number	diff filler lines about {lnum}
+ diff_hlID({lnum}, {col})	Number	diff highlighting at {lnum}/{col}
+ digraph_get({chars})		String	get the |digraph| of {chars}
+ digraph_getlist([{listall}])	List	get all |digraph|s
+-digraph_set({chars}, {digraph})	Boolean	register |digraph|
+-digraph_setlist({digraphlist})	Boolean	register multiple |digraph|s
++digraph_set({chars}, {digraph})	Bool	register |digraph|
++digraph_setlist({digraphlist})	Bool	register multiple |digraph|s
+ echoraw({expr})			none	output {expr} as-is
+ empty({expr})			Number	|TRUE| if {expr} is empty
+ environ()			Dict	return environment variables
+@@ -429,6 +429,7 @@ popup_menu({what}, {options})	Number	create a popup window used as a menu
+ popup_move({id}, {options})	none	set position of popup window {id}
+ popup_notification({what}, {options})
+ 				Number	create a notification popup window
++popup_setbuf({id}, {buf})	Bool	set the buffer for the popup window {id}
+ popup_setoptions({id}, {options})
+ 				none	set options for popup window {id}
+ popup_settext({id}, {text})	none	set the text of popup window {id}
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index 183806a96..4351944df 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 14
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3591,7 +3591,7 @@ get({dict}, {key} [, {default}])
- 		Preferably used as a |method|: >
- 			mydict->get(key)
- <
--		Return type: any, depending on {list}
-+		Return type: any, depending on {dict}
- 
- get({func}, {what})
- 		Get item {what} from Funcref {func}.  Possible values for
-@@ -3755,7 +3755,7 @@ getcellwidths()						*getcellwidths()*
- 		by |setcellwidths()|.  The format is equal to the argument of
- 		|setcellwidths()|.  If no character ranges have their cell
- 		widths overridden, an empty List is returned.
--<
-+
- 		Return type: list<any>
- 
- 
-@@ -4567,7 +4567,7 @@ getqflist([{what}])					*getqflist()*
- 			vcol	|TRUE|: "col" is visual column
- 				|FALSE|: "col" is byte index
- 			nr	error number
--			pattern	search list<number>
-+			pattern	search pattern used to locate the error
- 			text	description of the error
- 			type	type of the error, 'E', '1', etc.
- 			valid	|TRUE|: recognized error message
-@@ -9485,7 +9485,8 @@ setfperm({fname}, {mode})				*setfperm()* *chmod*
- setline({lnum}, {text})					*setline()*
- 		Set line {lnum} of the current buffer to {text}.  To insert
- 		lines use |append()|. To set lines in another buffer use
--		|setbufline()|.  Any text properties in {lnum} are cleared.
-+		|setbufline()|.
-+		Any text properties in {lnum} are cleared |text-prop-cleared|.
- 
- 		{lnum} is used like with |getline()|.
- 		When {lnum} is just below the last line the {text} will be
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index ff995fb1d..50ff4ec99 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
-@@ -1413,6 +1413,8 @@ The next three commands always work on whole lines.
- :[range]m[ove] {address}			*:m* *:mo* *:move* *E134*
- 			Move the lines given by [range] to below the line
- 			given by {address}.
-+			Any text properties in [range] are cleared
-+			|text-prop-cleared|.
- 
- ==============================================================================
- 6. Formatting text					*formatting*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 6849bc3ca..6ec403117 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Jun 11
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Jun 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1915,7 +1915,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			feature}
- 	A template for a comment.  The "%s" in the value is replaced with the
- 	comment text, and should be padded with a space when possible.
--	Currently used to add markers for folding, see |fold-marker| also
-+	Currently used to add markers for folding, see |fold-marker|.  Also
- 	commonly used by commenting plugins (e.g. |comment-install|).
- 
- 			*'compatible'* *'cp'* *'nocompatible'* *'nocp'*
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 7ec47bd83..c07c3a4ea 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jun 13
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jun 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5685,9 +5685,9 @@ PmenuSbar	Popup menu: Scrollbar.
- 							*hl-PmenuThumb*
- PmenuThumb	Popup menu: Thumb of the scrollbar.
- 							*hl-PmenuMatch*
--PmenuMatch	Popup menu: Matched text in normal item
-+PmenuMatch	Popup menu: Matched text in normal item.
- 							*hl-PmenuMatchSel*
--PmenuMatchSel	Popup menu: Matched text in selected item
-+PmenuMatchSel	Popup menu: Matched text in selected item.
- 							*hl-PopupNotification*
- PopupNotification
- 		Popup window created with |popup_notification()|.  If not
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 264161189..e918394a7 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -648,7 +648,7 @@ term_getjob({buf})					*term_getjob()*
- 		Get the Job associated with terminal window {buf}.
- 		{buf} is used as with |term_getsize()|.
- 		Returns |v:null| when there is no job. In Vim9 script, return
--		null_job when there is no job.
-+		|null_job| when there is no job.
- 
- 		Can also be used as a |method|: >
- 			GetBufnr()->term_getjob()
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index f1a7e60bb..ebf562bef 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
-@@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 9.1.  Last change: 2024 Jun 06
-+*testing.txt*	For Vim version 9.1.  Last change: 2024 Jun 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -483,7 +483,7 @@ test_unknown()						*test_unknown()*
- test_void()						*test_void()*
- 		Return a value with void type. Only useful for testing.
- 
--		Return type: unknown
-+		Return type: void
- 
- ==============================================================================
- 3. Assert functions				*assert-functions-details*
-@@ -499,6 +499,7 @@ assert_beeps({cmd})					*assert_beeps()*
- 			GetCmd()->assert_beeps()
- <
- 		Return type: |Number|
-+
- 							*assert_equal()*
- assert_equal({expected}, {actual} [, {msg}])
- 		When {expected} and {actual} are not equal an error message is
-@@ -522,7 +523,7 @@ assert_equal({expected}, {actual} [, {msg}])
- <
- 		Return type: |Number|
- 
--<							*assert_equalfile()*
-+							*assert_equalfile()*
- assert_equalfile({fname-one}, {fname-two} [, {msg}])
- 		When the files {fname-one} and {fname-two} do not contain
- 		exactly the same text an error message is added to |v:errors|.
-@@ -550,6 +551,7 @@ assert_exception({error} [, {msg}])			*assert_exception()*
- 			endtry
- <
- 		Return type: |Number|
-+
- 							*assert_fails()*
- assert_fails({cmd} [, {error} [, {msg} [, {lnum} [, {context}]]]])
- 		Run {cmd} and add an error message to |v:errors| if it does
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index a02a3d567..6b46e06df 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -530,7 +530,7 @@ callback update spelling mistakes in the changed text.  Vim will move the
- properties below the changed text, so that they still highlight the same text,
- thus you don't need to update these.
- 
--
-+							*text-prop-cleared*
- Text property columns are not updated or copied: ~
- 
- - When setting the line with |setline()| or through an interface, such as Lua,
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index d9bcdfa54..1ce892733 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2024 Jun 15
-+*various.txt*   For Vim version 9.1.  Last change: 2024 Jun 17
+-*pattern.txt*   For Vim version 9.1.  Last change: 2024 Jun 03
++*pattern.txt*   For Vim version 9.1.  Last change: 2024 Jun 18
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -141,9 +141,15 @@ g8			Print the hex values of the bytes used in the
- 							*:#!* *vim-shebang*
- :#!{anything}		Ignored, so that you can start a Vim script with: >
- 				#!vim -S
--				echo "this is a Vim script"
--				quit
-+				let mylogbook='$HOME/logbook.md'
-+				exe $':e {mylogbook}'
-+				$
-+				put ='## ' .. strftime('%d. %b %Y')
-+				norm! o
- <
-+			Make that script executable and run it to create a
-+			new diary entry.
+@@ -151,13 +151,17 @@ CTRL-C			Interrupt current (search) command.  Use CTRL-Break on
+ 			executing autocommands |autocmd-searchpat|.
+ 			Same thing for when invoking a user function.
+ 
 +
- 							*:z* *E144*
- :[range]z[+-^.=][count]	Display several lines of text surrounding the line
- 			specified with [range], or around the current line
+ While typing the search pattern the current match will be shown if the
+ 'incsearch' option is on.  Remember that you still have to finish the search
+ command with <CR> to actually position the cursor at the displayed match.  Or
+ use <Esc> to abandon the search.
+ 
++							*nohlsearch-auto*
+ All matches for the last used search pattern will be highlighted if you set
+-the 'hlsearch' option.  This can be suspended with the |:nohlsearch| command.
++the 'hlsearch' option.  This can be suspended with the |:nohlsearch| command
++or auto suspended with nohlsearch plugin.  See |nohlsearch-install|.
++
+ 
+ When 'shortmess' does not include the "S" flag, Vim will automatically show an
+ index, on which the cursor is. This can look like this: >
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index 1ad4fb9f0..b9e992b04 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
+@@ -1,4 +1,4 @@
+-*popup.txt*  For Vim version 9.1.  Last change: 2024 Jun 08
++*popup.txt*  For Vim version 9.1.  Last change: 2024 Jun 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -186,6 +186,7 @@ Manipulating a popup window:
+ 	|popup_move()|		change the position and size of a popup
+ 	|popup_setoptions()|	override options of a popup
+ 	|popup_settext()|	replace the popup buffer contents
++	|popup_setbuf()|	set the buffer for the popup window
+ 
+ Closing popup windows:
+ 	|popup_close()|		close one popup
+@@ -574,6 +575,18 @@ popup_notification({what}, {options})			 *popup_notification()*
+ 		Return type: |Number|
+ 
+ 
++popup_setbuf({id}, {buf})				*popup_setbuf()*
++		Set buffer {buf} to be displayed in popup win {id}.  For the
++		use of {buf}, see |bufname()| function.
++		May change window size or position to adjust for the size
++		of the buffer text.
++
++		Can also be used as a |method|: >
++			GetPopup()->popup_setbuf(bufnr('foobar'))
++<
++		Return type: |vim9-boolean|
++
++
+ popup_setoptions({id}, {options})			*popup_setoptions()*
+ 		Override options in popup {id} with entries in {options}.
+ 		These options can be set:
+@@ -613,9 +626,8 @@ popup_setoptions({id}, {options})			*popup_setoptions()*
+ 
+ 
+ popup_settext({id}, {text})				*popup_settext()*
+-		Set the text of the buffer in popup win {id}. {text} is the
+-		same as supplied to |popup_create()|, except that a buffer
+-		number is not allowed.
++		Set the text of the buffer in popup win {id}. {text} is
++		a string or a list of strings to be displayed in the popup.
+ 		Does not change the window size or position, other than caused
+ 		by the different text.
+ 
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index e918394a7..83c8793e7 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jun 17
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jun 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1524,6 +1524,9 @@ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_use_prompt = 1
+ <
+ Mappings ~
++The termdebug plugin enables a few default mappings.  All those mappings
++are reset to their original values once the termdebug session concludes.
++
+ 					*termdebug_map_K* *termdebug-mappings*
+ The K key is normally mapped to |:Evaluate| unless a buffer local (|:map-local|)
+ mapping to K already exists.  If you do not want this use: >
+diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
+index a9e8fb9c3..5065e4583 100644
+--- a/runtime/doc/usr_05.txt
++++ b/runtime/doc/usr_05.txt
+@@ -1,4 +1,4 @@
+-*usr_05.txt*	For Vim version 9.1.  Last change: 2024 May 17
++*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Jun 18
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -440,7 +440,7 @@ After restarting your Vim, the plugin is active and you can read about it at: >
+ Adding comment package					*comment-install*
+ 
+ Load the plugin with this command: >
+-    packadd comment
++	packadd comment
+ <
+ This way you can use the plugin with the default key bindings `gc` and similar
+ for commenting (which is a well-established mapping in the Vim community).
+@@ -449,6 +449,21 @@ If you add this line to your vimrc file, then you need to restart Vim to have
+ the package loaded. Once the package is loaded, read about it at: >
+ 	:h comment.txt
+ 
++
++Adding nohlsearch package				*nohlsearch-install*
++
++Load the plugin with this command: >
++	packadd nohlsearch
++<
++Automatically execute |:nohlsearch| after 'updatetime' or getting into |Insert| mode.
++Thus assuming default updatetime, hlsearch would be suspended/turned off after
++4 seconds of idle time.
++
++To disable the effect of the plugin after is has been loaded: >
++	au! nohlsearch
++<
++
++
+ More information about packages can be found here: |packages|.
+ 
+ ==============================================================================
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 60d0d1e60..a54a991f1 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1319,6 +1319,7 @@ Popup window:					*popup-window-functions*
+ 	popup_move()		change the position and size of a popup
+ 	popup_setoptions()	override options of a popup
+ 	popup_settext()		replace the popup buffer contents
++	popup_setbuf()		set the popup buffer
+ 	popup_close()		close one popup
+ 	popup_clear()		close all popups
+ 	popup_filter_menu()	select from a list of items
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 28dd7a3ad..5b5bdede1 100644
+index 5b5bdede1..86dfe6da4 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Jun 10
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Jun 17
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Jun 17
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jun 18
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -31694,7 +31694,7 @@ The release 9.1 is dedicated to Vim's Benevolent dictator for life
- This release has hundreds of bug fixes, there are a few new features and there
- are many minor improvements.
+@@ -41586,6 +41586,7 @@ Functions: ~
+ |getregionpos()|	get a list of positions for a region
+ |matchbufline()|	all the matches of a pattern in a buffer
+ |matchstrlist()|	all the matches of a pattern in a List of strings
++|popup_setbuf()|	switch to a different buffer in a popup
  
--Vim9 classes
-+Vim9 classes ~
- ------------
- Support for classes and objects in a Vim9 script are added.  This is described
- in |vim9-class|.  The following features are supported:
-@@ -41560,6 +41560,9 @@ Support for Wayland UI.
  
- Support for the XDG Desktop Specification |xdg-base-dir|
- 
-+Support highlighting the matched text for insert-mode completion and
-+command-line completion in |ins-completion-menu|.
-+
- 							*changed-9.2*
- Changed~
- -------
-@@ -41597,7 +41600,7 @@ Highlighting: ~
- 
- |hl-MsgArea|		highlighting of the Command-line and messages area
- |hl-PmenuMatch|		Popup menu: highlighting of matched text
--|hl-PmenuMatchSel|     	Popup menu: highlighting of matched text in selected
-+|hl-PmenuMatchSel|	Popup menu: highlighting of matched text in selected
- 			line
- 
- Commands: ~
+ Autocommands: ~
