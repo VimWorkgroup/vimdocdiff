@@ -1,123 +1,51 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index e19d6015e..a5dce7db8 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index c0da5e3df..ebd60febc 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jun 21
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jul 07
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 Jul 04
++*starting.txt*  For Vim version 9.1.  Last change: 2024 Jul 08
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -751,9 +751,8 @@ CursorMoved			After the cursor was moved in Normal or Visual
- 				that is slow.
- 							*CursorMovedC*
- CursorMovedC			After the cursor was moved in the command
--				line while the text in the command line hasn't
--				changed.  Be careful not to mess up the
--				command line, it may cause Vim to lock up.
-+				line.  Be careful not to mess up the command
-+				line, it may cause Vim to lock up.
- 				<afile> is set to a single character,
- 				indicating the type of command-line.
- 				|cmdwin-char|
-@@ -915,12 +914,12 @@ FilterWritePre			Before writing a file for a filter command or
- 							*FocusGained*
- FocusGained			When Vim got input focus.  Only for the GUI
- 				version and a few console versions where this
--				can be detected.
-+				can be detected. |xterm-focus-event|
- 							*FocusLost*
- FocusLost			When Vim lost input focus.  Only for the GUI
- 				version and a few console versions where this
--				can be detected.  May also happen when a
--				dialog pops up.
-+				can be detected. |xterm-focus-event|
-+				May also happen when a dialog pops up.
- 							*FuncUndefined*
- FuncUndefined			When a user function is used but it isn't
- 				defined.  Useful for defining a function only
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index d26592a13..226c3b8ab 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
-@@ -1,4 +1,4 @@
--*index.txt*     For Vim version 9.1.  Last change: 2023 Jan 09
-+*index.txt*     For Vim version 9.1.  Last change: 2023 Jul 06
+@@ -1257,7 +1257,7 @@ To change it later, use a ":let" command like this: >
+ In case you need the value of $VIMRUNTIME in a shell (e.g., for a script that
+ greps in the help files) you might be able to use this: >
  
+-	VIMRUNTIME=`vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' `
++	VIMRUNTIME=$(vim -es '+put=$VIMRUNTIME|print|quit!')
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -213,10 +213,12 @@ tag		char	      note action in Normal mode	~
- |<Tab>|		<Tab>		1  go to N newer entry in jump list
- |CTRL-I|	CTRL-I		1  same as <Tab>
- |<NL>|		<NL>		1  same as "j"
-+|<S-NL>|	<S-NL>		1  same as CTRL-F
- |CTRL-J|	CTRL-J		1  same as "j"
- 		CTRL-K		   not used
- |CTRL-L|	CTRL-L		   redraw screen
- |<CR>|		<CR>		1  cursor to the first CHAR N lines lower
-+|<S-CR>|	<S-CR>		1  same as CTRL-F
- |CTRL-M|	CTRL-M		1  same as <CR>
- |CTRL-N|	CTRL-N		1  same as "j"
- |CTRL-O|	CTRL-O		1  go to N older entry in jump list
-@@ -287,9 +289,11 @@ tag		char	      note action in Normal mode	~
- |star|		*		1  search forward for the Nth occurrence of
- 				   the ident under the cursor
- |+|		+		1  same as <CR>
-+|<S-Plus>|	<S-+>		1  same as CTRL-F
- |,|		,		1  repeat latest f, t, F or T in opposite
- 				   direction N times
- |-|		-		1  cursor to the first CHAR N lines higher
-+|<S-Minus>|	<S-->		1  same as CTRL-B
- |.|		.		2  repeat last change with count replaced with
- 				   N
- |/|		/{pattern}<CR>	1  search forward for the Nth occurrence of
-diff --git a/runtime/doc/sign.txt b/runtime/doc/sign.txt
-index 84b297729..679099cfc 100644
---- a/runtime/doc/sign.txt
-+++ b/runtime/doc/sign.txt
-@@ -1,4 +1,4 @@
--*sign.txt*      For Vim version 9.1.  Last change: 2024 Jul 06
-+*sign.txt*      For Vim version 9.1.  Last change: 2024 Jul 07
+ Don't set $VIMRUNTIME to an empty value, some things may stop working.
  
- 
- 		  VIM REFERENCE MANUAL    by Gordon Prieur
-@@ -404,6 +404,7 @@ sign_define({list})
- 		   icon		full path to the bitmap file for the sign.
- 		   linehl	highlight group used for the whole line the
- 				sign is placed in.
-+		   priority	default priority value of the sign
- 		   numhl	highlight group used for the line number where
- 				the sign is placed.
- 		   text		text that is displayed when there is no icon
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index ee8d689e9..acc4783c8 100644
+index acc4783c8..3cb97f38f 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 03
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 06
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 06
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 08
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1221,6 +1221,21 @@ will be classified as tcsh, UNLESS the "filetype_csh" variable exists.  If the
- "filetype_csh" variable exists, the filetype will be set to the value of the
- variable.
+@@ -1223,9 +1223,9 @@ variable.
  
-+CSV							*ft-csv-syntax*
-+
-+If you change the delimiter of the CSV file, the syntax highlighting will be
-+now longer match the changed file content. You will need to unlet the
-+following variable: >
-+
-+	:unlet b:csv_delimiter
-+
-+And afterwards save and reload the file: >
-+
-+	:w
-+	:e
-+
-+Now the syntax engine should determine the newly changed csv delimiter.
-+
+ CSV							*ft-csv-syntax*
+ 
+-If you change the delimiter of the CSV file, the syntax highlighting will be
+-now longer match the changed file content. You will need to unlet the
+-following variable: >
++If you change the delimiter of a CSV file, its syntax highlighting will no
++longer match the changed file content. You will need to unlet the following
++variable: >
+ 
+ 	:unlet b:csv_delimiter
+ 
+@@ -1234,7 +1234,7 @@ And afterwards save and reload the file: >
+ 	:w
+ 	:e
+ 
+-Now the syntax engine should determine the newly changed csv delimiter.
++Now the syntax engine should determine the newly changed CSV delimiter.
+ 
  
  CYNLIB						*cynlib.vim* *ft-cynlib-syntax*
- 
