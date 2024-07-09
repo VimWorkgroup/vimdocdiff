@@ -1,51 +1,250 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index c0da5e3df..ebd60febc 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index a5dce7db8..23f1cbf92 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Jul 04
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Jul 08
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jul 07
++*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jul 09
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1257,7 +1257,7 @@ To change it later, use a ":let" command like this: >
- In case you need the value of $VIMRUNTIME in a shell (e.g., for a script that
- greps in the help files) you might be able to use this: >
+@@ -54,20 +54,20 @@ Recommended use:
+   without the autocommand being repeated.
  
--	VIMRUNTIME=`vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' `
-+	VIMRUNTIME=$(vim -es '+put=$VIMRUNTIME|print|quit!')
+ Example in Vim9 script: >
+-   autocmd_add({replace: true,
++   autocmd_add([{replace: true,
+ 		group:   'DemoGroup',
+ 		event:   'BufEnter',
+ 		pattern: '*.txt',
+ 		cmd:     'call DemoBufEnter()'
+-		})
++		}])
  
- Don't set $VIMRUNTIME to an empty value, some things may stop working.
+ In legacy script: >
+-   call autocmd_add(#{replace: v:true,
++   call autocmd_add([#{replace: v:true,
+ 		    \ group: 'DemoGroup',
+ 		    \ event: 'BufEnter',
+ 		    \ pattern: '*.txt',
+ 		    \ cmd: 'call DemoBufEnter()'
+-		    \ })
++		    \ }])
  
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index acc4783c8..3cb97f38f 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+ ==============================================================================
+ 2. Defining autocommands				*autocmd-define*
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 238b7e43d..9c3d7a91f 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 06
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 08
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jun 23
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jul 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1223,9 +1223,9 @@ variable.
- 
- CSV							*ft-csv-syntax*
- 
--If you change the delimiter of the CSV file, the syntax highlighting will be
--now longer match the changed file content. You will need to unlet the
--following variable: >
-+If you change the delimiter of a CSV file, its syntax highlighting will no
-+longer match the changed file content. You will need to unlet the following
-+variable: >
- 
- 	:unlet b:csv_delimiter
- 
-@@ -1234,7 +1234,7 @@ And afterwards save and reload the file: >
- 	:w
- 	:e
- 
--Now the syntax engine should determine the newly changed csv delimiter.
-+Now the syntax engine should determine the newly changed CSV delimiter.
+@@ -309,6 +309,7 @@ hlget([{name} [, {resolve}]])	List	get highlight group attributes
+ hlset({list})			Number	set highlight group attributes
+ hostname()			String	name of the machine Vim is running on
+ iconv({expr}, {from}, {to})	String	convert encoding of {expr}
++id({item})			String	get address of item as a string
+ indent({lnum})			Number	indent of line {lnum}
+ index({object}, {expr} [, {start} [, {ic}]])
+ 				Number	index in {object} where {expr} appears
+@@ -3574,7 +3575,7 @@ garbagecollect([{atexit}])				*garbagecollect()*
+ 		Return type: |String|
  
  
- CYNLIB						*cynlib.vim* *ft-cynlib-syntax*
+-get({list}, {idx} [, {default}])			*get()*
++get({list}, {idx} [, {default}])			*get()* *get()-list*
+ 		Get item {idx} from |List| {list}.  When this item is not
+ 		available return {default}.  Return zero when {default} is
+ 		omitted.
+@@ -3583,7 +3584,7 @@ get({list}, {idx} [, {default}])			*get()*
+ <
+ 		Return type: any, depending on {list}
+ 
+-get({blob}, {idx} [, {default}])
++get({blob}, {idx} [, {default}])			*get()-blob*
+ 		Get byte {idx} from |Blob| {blob}.  When this byte is not
+ 		available return {default}.  Return -1 when {default} is
+ 		omitted.
+@@ -3592,7 +3593,7 @@ get({blob}, {idx} [, {default}])
+ <
+ 		Return type: |Number|
+ 
+-get({dict}, {key} [, {default}])
++get({dict}, {key} [, {default}])			*get()-dict*
+ 		Get item with key {key} from |Dictionary| {dict}.  When this
+ 		item is not available return {default}.  Return zero when
+ 		{default} is omitted.  Useful example: >
+@@ -3604,18 +3605,32 @@ get({dict}, {key} [, {default}])
+ <
+ 		Return type: any, depending on {dict}
+ 
+-get({func}, {what})
+-		Get item {what} from Funcref {func}.  Possible values for
++get({func}, {what})					*get()-func*
++		Get item {what} from |Funcref| {func}.  Possible values for
+ 		{what} are:
+-			"name"	The function name
+-			"func"	The function
+-			"dict"	The dictionary
+-			"args"	The list with arguments
++		  "name"    The function name
++		  "func"    The function
++		  "dict"    The dictionary
++		  "args"    The list with arguments
++		  "arity"   A dictionary with information about the number of
++			    arguments accepted by the function (minus the
++			    {arglist}) with the following fields:
++				required    the number of positional arguments
++				optional    the number of optional arguments,
++					    in addition to the required ones
++				varargs     |TRUE| if the function accepts a
++					    variable number of arguments |...|
++
++				Note: There is no error, if the {arglist} of
++				the Funcref contains more arguments than the
++				Funcref expects, it's not validated.
++
+ 		Returns zero on error.
++
+ 		Preferably used as a |method|: >
+ 			myfunc->get(what)
+ <
+-		Return type: any, depending on {func}
++		Return type: any, depending on {func} and {what}
+ 
+ 							*getbufinfo()*
+ getbufinfo([{buf}])
+@@ -5604,6 +5619,34 @@ iconv({string}, {from}, {to})				*iconv()*
+ 		Return type: |String|
+ 
+ 
++id({item})							    *id()*
++		The result is a unique String associated with the {item} and
++		not with the {item}'s contents. It is only valid while the
++		{item} exists and is referenced. It is valid only in the
++		instance of vim that produces the result. The whole idea is
++		that `id({item})` does not change if the contents of {item}
++		changes. This is useful as a `key` for creating an identity
++		dictionary, rather than one based on equals.
++
++		This operation does not reference {item} and there is no
++		function to convert the `id` to the {item}. It may be useful to
++		have a map of `id` to {item}. The following >
++		    var referenceMap: dict<any>
++		    var id = item->id()
++		    referenceMap[id] = item
++<		prevents {item} from being garbage collected and provides a
++		way to get the {item} from the `id`.
++
++		{item} may be a List, Dictionary, Object, Job, Channel or
++		Blob. If the item is not a permitted type, or it is a null
++		value, then an empty String is returned.
++
++		Can also be used as a |method|: >
++			GetItem()->id()
++<
++		Return type: |String|
++
++
+ indent({lnum})							*indent()*
+ 		The result is a Number, which is indent of line {lnum} in the
+ 		current buffer.  The indent is counted in spaces, the value
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index e9c94aa8e..e28f185aa 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 06
++*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2151,11 +2151,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    difference how completion candidates are reduced from the
+ 		    list of alternatives, but not how the candidates are
+ 		    collected (using different completion types).
+-	  fuzzycollect
+-		    Enable fuzzy collection for default keyword completion.
+-		    This allows the collection of matches using fuzzy matching
+-		    criteria, providing more comprehensive and flexible
+-		    results. Works in combination with other fuzzy options.
+ 
+ 					*'completepopup'* *'cpp'*
+ 'completepopup' 'cpp'	string (default empty)
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 922e80a05..765eab504 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1408,6 +1408,8 @@ Various:					*various-functions*
+ 
+ 	wordcount()		get byte/word/char count of buffer
+ 
++	id()			get unique string for item to use as a key
++
+ 	luaeval()		evaluate |Lua| expression
+ 	mzeval()		evaluate |MzScheme| expression
+ 	perleval()		evaluate Perl expression (|+perl|)
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 92792b9cd..df56215ea 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 06
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41577,6 +41577,9 @@ Changed~
+ - 'nrformat' accepts the new "blank" suboption, to determine a signed or
+   unsigned number based on whitespace in front of a minus sign.
+ - allow to specify a priority when defining a new sign |:sign-define|
++- provide information about function arguments using the get(func, "arity")
++  function |get()-func|
++- |:bwipe| also wipes jumplist and tagstack data
+ 
+ 							*added-9.2*
+ Added ~
+@@ -41591,6 +41594,8 @@ Functions: ~
+ |foreach()|		apply function to List items
+ |getregion()|		get a region of text from a buffer
+ |getregionpos()|	get a list of positions for a region
++|id()|			get unique identifier for a Dict, List, Object,
++			Channel or Blob variable
+ |matchbufline()|	all the matches of a pattern in a buffer
+ |matchstrlist()|	all the matches of a pattern in a List of strings
+ |popup_setbuf()|	switch to a different buffer in a popup
+@@ -41642,8 +41647,8 @@ Improved visual highlighting.
+ 
+ Python3 support in OpenVMS.
+ 
+-Support for |fuzzy-matching| during |ins-completion| with the "fuzzy" and
+-"fuzzycollect" values of the 'completeopt' setting
++Support for |fuzzy-matching| during |ins-completion| with the "fuzzy"
++values of the 'completeopt' setting
+ 
+ ==============================================================================
+ COMPILE TIME CHANGES					*compile-changes-9.2*
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index e264e5117..d3e5f6785 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.1.  Last change: 2024 Feb 20
++*windows.txt*   For Vim version 9.1.  Last change: 2024 Jul 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1223,7 +1223,8 @@ list of buffers. |unlisted-buffer|
+ :bw[ipeout][!] N1 N2 ...
+ 		Like |:bdelete|, but really delete the buffer.  Everything
+ 		related to the buffer is lost.  All marks in this buffer
+-		become invalid, option settings are lost, etc.  Don't use this
++		become invalid, option settings are lost, the jumplist and
++		tagstack data will be purged, etc.  Don't use this
+ 		unless you know what you are doing. Examples: >
+ 		    :.+,$bwipeout   " wipe out all buffers after the current
+ 				    " one
