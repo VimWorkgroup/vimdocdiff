@@ -1,108 +1,109 @@
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index 226c3b8ab..c595d9d2a 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -1,4 +1,4 @@
+-*index.txt*     For Vim version 9.1.  Last change: 2023 Jul 06
++*index.txt*     For Vim version 9.1.  Last change: 2023 Jul 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -757,7 +757,7 @@ tag		char	      note action in Normal mode	~
+ 				   search pattern and Visually select it
+ |gP|		["x]gP		2  put the text [from register x] before the
+ 				   cursor N times, leave the cursor after it
+-|gQ|		gQ		    switch to "Ex" mode with Vim editing
++|gQ|		gQ		   switch to "Ex" mode with Vim editing
+ |gR|		gR		2  enter Virtual Replace mode
+ |gT|		gT		   go to the previous tab page
+ |gU|		gU{motion}	2  make Nmove text uppercase
 diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 6ebd83e3e..08bf4f327 100644
+index 08bf4f327..0d59a2eda 100644
 --- a/runtime/doc/insert.txt
 +++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Jan 04
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 12
+-*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 12
++*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 13
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1995,11 +1995,6 @@ These two commands will keep on asking for lines, until you type a line
+@@ -1995,8 +1995,25 @@ These two commands will keep on asking for lines, until you type a line
  containing only a ".".  Watch out for lines starting with a backslash, see
  |line-continuation|.
  
--When in Ex mode (see |-e|) a backslash at the end of the line can be used to
--insert a NUL character.  To be able to have a line ending in a backslash use
--two backslashes.  This means that the number of backslashes is halved, but
--only at the end of the line.
--
- NOTE: These commands cannot be used with |:global| or |:vglobal|.
- ":append" and ":insert" don't work properly in between ":if" and
+-NOTE: These commands cannot be used with |:global| or |:vglobal|.
+-":append" and ":insert" don't work properly in between ":if" and
++Text typed after a "|" command separator is used first. So the following
++command in ex mode: >
++	:a|one
++	two
++	.
++	:visual
++<appends the following text, after the cursor line: >
++	one
++	two
++<
++In |Ex-mode|, when these commands are used with |:global| or |:vglobal| then
++the lines are obtained from the text following the command.  Separate lines
++with a NL escaped with a backslash: >
++	:global/abc/insert\
++	one line\
++	another line
++The final "." is not needed then.
++
++NOTE: ":append" and ":insert" don't work properly in between ":if" and
  ":endif", ":for" and ":endfor", ":while" and ":endwhile".
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 8c07fbf53..8b536055a 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
-@@ -351,6 +351,7 @@ gg			Goto line [count], default first line, on the first
  
- 							*:[range]*
- :[range]		Set the cursor on the last line number in [range].
-+			In Ex mode, print the lines in [range].
- 			[range] can also be just one line number, e.g., ":1"
- 			or ":'m".
- 			In contrast with |G| this command does not modify the
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 2dc08e257..5f1a2a074 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -8100,6 +8100,19 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	'S' flag in 'cpoptions'.
- 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
- 
-+						*'tabclose'* *'tcl'*
-+'tabclose' 'tcl'	string	(default "")
-+			global
-+	This option controls the behavior when closing tab pages (e.g., using
-+	|:tabclose|).  When empty Vim goes to the next (right) tab page.
-+
-+	Possible values (comma-separated list):
-+	   left		If included, go to the previous tab page instead of
-+			the next one.
-+	   uselast	If included, go to the previously used tab page if
-+			possible.  This option takes precedence over the
-+			others.
-+
- 						*'tabline'* *'tal'*
- 'tabline' 'tal'		string	(default empty)
- 			global
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 517fa3042..42b5228a8 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -935,6 +935,7 @@ Short explanation of each option:		*option-list*
- 'switchbuf'	  'swb'     sets behavior when switching to another buffer
- 'synmaxcol'	  'smc'     maximum column to find syntax items
- 'syntax'	  'syn'     syntax to be loaded for current buffer
-+'tabclose'	  'tcl'     which tab page to focus when closing a tab
- 'tabline'	  'tal'     custom format for the console tab pages line
- 'tabpagemax'	  'tpm'     maximum number of tab pages for |-p| and "tab all"
- 'tabstop'	  'ts'	    number of spaces that <Tab> in file uses
-diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
-index abbc77803..afc251250 100644
---- a/runtime/doc/tabpage.txt
-+++ b/runtime/doc/tabpage.txt
+ 							*:start* *:startinsert*
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index aeaca0b80..a4dee26fc 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
 @@ -1,4 +1,4 @@
--*tabpage.txt*   For Vim version 9.1.  Last change: 2024 May 15
-+*tabpage.txt*   For Vim version 9.1.  Last change: 2024 Jul 12
+-*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 May 11
++*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Jul 13
  
+ 	    ------------------------------------------------
+ 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
+@@ -15,7 +15,7 @@ Copyright: Copyright (C) 2017 Charles E Campbell    *netrw-copyright*
+ 	merchantability.  No guarantees of suitability for any purpose.  By
+ 	using this plugin, you agree that in no event will the copyright
+ 	holder be liable for any damages resulting from the use of this
+-	software. Use at your own risk!
++	software. Use at your own risk!  For bug reports, see |bugs|.
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -142,7 +142,8 @@ something else.
- 		    :tabclose $	    " close the last tab page
- 		    :tabclose #     " close the last accessed tab page
+ 		*netrw*
+ 		*dav*    *ftp*    *netrw-file*  *rcp*    *scp*
+@@ -3859,12 +3859,7 @@ netrw:
+ 	   thereby making it easier to associate which part of the
+ 	   debugging trace is due to which command.
  
--When a tab is closed the next tab page will become the current one.
-+When a tab is closed the next tab page will become the current one. This
-+behaviour can be customized using the 'tabclose' option.
+-	   Please send that information to <netrw.vim>'s maintainer along
+-	   with the o/s you're using and the vim version that you're using
+-	   (see |:version|)  (remove the embedded NOSPAM first) >
+-
+-		NcampObell@SdrPchip.AorgM-NOSPAM
+-<
++	   For bug reports, please see |bugs|.
+ ==============================================================================
+ 12. History						*netrw-history* {{{1
  
- 							*:tabo* *:tabonly*
- :tabo[nly][!]	Close all other tab pages.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 7a2cbe416..3b719eb9c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 6bc980b43..b6204b22d 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 11
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 12
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 04
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 14
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41632,6 +41632,7 @@ Commands: ~
- Options: ~
- 
- 'winfixbuf'		Keep buffer focused in a window
-+'tabclose'		Which tab page to focus after closing a tab page
- 't_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420)
- 't_CF'			Support for alternate font highlighting terminal code
- 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1253,6 +1253,8 @@ Starting ~
+ 							*termdebug-starting*
+ Load the plugin with this command: >
+ 	packadd termdebug
++<When loading the plugin from the |.vimrc| file, add the "!" attribute: >
++	packadd! termdebug
+ <							*:Termdebug*
+ To start debugging use `:Termdebug` or `:TermdebugCommand` followed by the
+ command name, for example: >
