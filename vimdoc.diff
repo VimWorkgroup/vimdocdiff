@@ -1,109 +1,232 @@
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index 226c3b8ab..c595d9d2a 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 2b4bd189a..52a68c439 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*index.txt*     For Vim version 9.1.  Last change: 2023 Jul 06
-+*index.txt*     For Vim version 9.1.  Last change: 2023 Jul 14
+-*change.txt*    For Vim version 9.1.  Last change: 2024 Jun 23
++*change.txt*    For Vim version 9.1.  Last change: 2024 Jul 14
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -757,7 +757,7 @@ tag		char	      note action in Normal mode	~
- 				   search pattern and Visually select it
- |gP|		["x]gP		2  put the text [from register x] before the
- 				   cursor N times, leave the cursor after it
--|gQ|		gQ		    switch to "Ex" mode with Vim editing
-+|gQ|		gQ		   switch to "Ex" mode with Vim editing
- |gR|		gR		2  enter Virtual Replace mode
- |gT|		gT		   go to the previous tab page
- |gU|		gU{motion}	2  make Nmove text uppercase
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 08bf4f327..0d59a2eda 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 12
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 13
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1995,8 +1995,25 @@ These two commands will keep on asking for lines, until you type a line
- containing only a ".".  Watch out for lines starting with a backslash, see
- |line-continuation|.
- 
--NOTE: These commands cannot be used with |:global| or |:vglobal|.
--":append" and ":insert" don't work properly in between ":if" and
-+Text typed after a "|" command separator is used first. So the following
-+command in ex mode: >
-+	:a|one
-+	two
-+	.
-+	:visual
-+<appends the following text, after the cursor line: >
-+	one
-+	two
-+<
-+In |Ex-mode|, when these commands are used with |:global| or |:vglobal| then
-+the lines are obtained from the text following the command.  Separate lines
-+with a NL escaped with a backslash: >
-+	:global/abc/insert\
-+	one line\
-+	another line
-+The final "." is not needed then.
-+
-+NOTE: ":append" and ":insert" don't work properly in between ":if" and
- ":endif", ":for" and ":endfor", ":while" and ":endwhile".
- 
- 							*:start* *:startinsert*
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index aeaca0b80..a4dee26fc 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
-@@ -1,4 +1,4 @@
--*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 May 11
-+*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Jul 13
- 
- 	    ------------------------------------------------
- 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
-@@ -15,7 +15,7 @@ Copyright: Copyright (C) 2017 Charles E Campbell    *netrw-copyright*
- 	merchantability.  No guarantees of suitability for any purpose.  By
- 	using this plugin, you agree that in no event will the copyright
- 	holder be liable for any damages resulting from the use of this
--	software. Use at your own risk!
-+	software. Use at your own risk!  For bug reports, see |bugs|.
- 
- 		*netrw*
- 		*dav*    *ftp*    *netrw-file*  *rcp*    *scp*
-@@ -3859,12 +3859,7 @@ netrw:
- 	   thereby making it easier to associate which part of the
- 	   debugging trace is due to which command.
- 
--	   Please send that information to <netrw.vim>'s maintainer along
--	   with the o/s you're using and the vim version that you're using
--	   (see |:version|)  (remove the embedded NOSPAM first) >
+@@ -95,13 +95,14 @@ For inserting text see |insert.txt|.
+ These commands delete text.  You can repeat them with the `.` command
+ (except `:d`) and undo them.  Use Visual mode to delete blocks of text.  See
+ |registers| for an explanation of registers.
 -
--		NcampObell@SdrPchip.AorgM-NOSPAM
--<
-+	   For bug reports, please see |bugs|.
- ==============================================================================
- 12. History						*netrw-history* {{{1
++							*d-special*
+ An exception for the d{motion} command: If the motion is not linewise, the
+ start and end of the motion are not in the same line, and there are only
+ blanks before the start and there are no non-blanks after the end of the
+ motion, the delete becomes linewise.  This means that the delete also removes
+ the line of blanks that you might expect to remain. Use the |o_v| operator to
+-force the motion to be characterwise.
++force the motion to be characterwise or remove the "z" flag from 'cpoptions'
++(see |cpo-z|) to disable this peculiarity.
  
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 6bc980b43..b6204b22d 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
+ Trying to delete an empty region of text (e.g., "d0" in the first column)
+ is an error when 'cpoptions' includes the 'E' flag.
+@@ -251,7 +252,7 @@ blank; this is probably a bug, because "dw" deletes all the blanks; use the
+ 
+ If you prefer "cw" to include the space after a word, use this mapping: >
+ 	:map cw dwi
+-Or use "caw" (see |aw|).
++Alternatively use "caw" (see also |aw| and |cpo-z|).
+ 
+ 							*:c* *:ch* *:change*
+ :{range}c[hange][!]	Replace lines of text with some different text.
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 910731aff..a342ba464 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 04
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 14
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 May 23
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Jul 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -886,6 +886,10 @@ You can change the default by defining the variable g:tex_flavor to the format
+ 	let g:tex_flavor = "latex"
+ Currently no other formats are recognized.
+ 
++TYPST							*ft-typst-plugin*
++
++							*g:typst_conceal*
++When |TRUE| the Typst filetype plugin will set the 'conceallevel' option to 2.
+ 
+ VIM							*ft-vim-plugin*
+ 
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 8b536055a..3e45884be 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1,4 +1,4 @@
+-*motion.txt*    For Vim version 9.1.  Last change: 2023 Dec 27
++*motion.txt*    For Vim version 9.1.  Last change: 2024 Jul 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -434,7 +434,7 @@ WORD before the fold.
+ 
+ Special case: "cw" and "cW" are treated like "ce" and "cE" if the cursor is
+ on a non-blank.  This is because "cw" is interpreted as change-word, and a
+-word does not include the following white space.
++word does not include the following white space (see also |cw|).
+ 
+ Another special case: When using the "w" motion in combination with an
+ operator and the last word moved over is at the end of a line, the end of
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 5f1a2a074..b211dcb8f 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 11
++*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1253,6 +1253,8 @@ Starting ~
- 							*termdebug-starting*
- Load the plugin with this command: >
- 	packadd termdebug
-+<When loading the plugin from the |.vimrc| file, add the "!" attribute: >
-+	packadd! termdebug
- <							*:Termdebug*
- To start debugging use `:Termdebug` or `:TermdebugCommand` followed by the
- command name, for example: >
+@@ -1476,7 +1476,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			    applying 'breakindent', even if the resulting
+ 			    text should normally be narrower. This prevents
+ 			    text indented almost to the right window border
+-			    occupying lot of vertical space when broken.
++			    occupying lots of vertical space when broken.
+ 			    (default: 20)
+ 		shift:{n}   After applying 'breakindent', the wrapped line's
+ 			    beginning will be shifted by the given number of
+@@ -2486,6 +2486,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 								*cpo-Z*
+ 		Z	When using "w!" while the 'readonly' option is set,
+ 			don't reset 'readonly'.
++								*cpo-z*
++		z	Special casing the "cw" and "d" command (see |cw| and
++			|d-special|).
+ 								*cpo-!*
+ 		!	When redoing a filter command, use the last used
+ 			external command, whatever it was.  Otherwise the last
+@@ -4727,7 +4730,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	in Insert mode as specified with the 'indentkeys' option.
+ 	When this option is not empty, it overrules the 'cindent' and
+ 	'smartindent' indenting.  When 'lisp' is set, this option is
+-	is only used when 'lispoptions' contains "expr:1".
++	only used when 'lispoptions' contains "expr:1".
+ 	When 'paste' is set this option is not used for indenting.
+ 	The expression is evaluated with |v:lnum| set to the line number for
+ 	which the indent is to be computed.  The cursor is also in this line
+@@ -5090,7 +5093,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	part can be in one of two forms:
+ 	1.  A list of pairs.  Each pair is a "from" character immediately
+ 	    followed by the "to" character.  Examples: "aA", "aAbBcC".
+-	2.  A list of "from" characters, a semi-colon and a list of "to"
++	2.  A list of "from" characters, a semicolon and a list of "to"
+ 	    characters.  Example: "abc;ABC"
+ 	Example: "aA,fgh;FGH,cCdDeE"
+ 	Special characters need to be preceded with a backslash.  These are
+@@ -5172,7 +5175,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	update use |:redraw|.
+ 	This may occasionally cause display errors.  It is only meant to be set
+ 	temporarily when performing an operation where redrawing may cause
+-	flickering or cause a slow down.
++	flickering or cause a slowdown.
+ 
+ 			*'linebreak'* *'lbr'* *'nolinebreak'* *'nolbr'*
+ 'linebreak' 'lbr'	boolean	(default off)
+@@ -6174,7 +6177,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		:set path+=
+ <	To use an environment variable, you probably need to replace the
+ 	separator.  Here is an example to append $INCL, in which directory
+-	names are separated with a semi-colon: >
++	names are separated with a semicolon: >
+ 		:let &path = &path .. "," .. substitute($INCL, ';', ',', 'g')
+ <	Replace the ';' with a ':' or whatever separator is used.  Note that
+ 	this doesn't work when $INCL contains a comma or white space.
+@@ -7241,7 +7244,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 							POSIX default: "AS")
+ 			global					*E1336*
+ 	This option helps to avoid all the |hit-enter| prompts caused by file
+-	messages, for example  with CTRL-G, and to avoid some other messages.
++	messages, for example with CTRL-G, and to avoid some other messages.
+ 	It is a list of flags:
+ 	 flag	meaning when present	~
+ 	  f	use "(3 of 5)" instead of "(file 3 of 5)"		*shm-f*
+@@ -7698,7 +7701,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			minus two.
+ 
+ 	timeout:{millisec}   Limit the time searching for suggestions to
+-			{millisec} milli seconds.  Applies to the following
++			{millisec} milliseconds.  Applies to the following
+ 			methods.  When omitted the limit is 5000. When
+ 			negative there is no limit.  {only works when built
+ 			with the |+reltime| feature}
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index e2aef24ed..ed9997807 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1,4 +1,4 @@
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Jun 16
++*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Jul 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1414,6 +1414,17 @@ shells and OSes and also does not allow to use other available TeX options,
+ if any.  If your TeX doesn't support "-interaction=nonstopmode", please
+ report it with different means to express \nonstopmode from the command line.
+ 
++TYPST COMPILER						*compiler-typst*
++
++Vim includes a compiler plugin for Typst files. This compiler is enabled
++automatically in Typst buffers by the Typst filetype plugin |ft-typst-plugin|.
++Run |:make| to compile the current Typst file.
++
++							*g:typst_cmd*
++By default Vim will use "typst" as the command to run the Typst compiler. This
++can be changed by setting the |g:typst_cmd| variable: >
++	let g:typst_cmd = "/path/to/other/command"
++
+ =============================================================================
+ 7. The error format					*error-file-format*
+ 
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 3cb97f38f..d96cc67cb 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 08
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3810,6 +3810,15 @@ are highlighted. To disable set it to zero in your .vimrc: >
+ <
+ The default value is 1.
+ 
++TYPST						    *ft-typst-syntax*
++
++						*g:typst_embedded_languages*
++Typst files can embed syntax highlighting for other languages by setting the
++|g:typst_embedded_languages| variable. This variable is a list of language
++names whose syntax definitions will be included in Typst files. Example: >
++
++    let g:typst_embedded_languages = ['python', 'r']
++
+ VIM			*vim.vim*		*ft-vim-syntax*
+ 			*g:vimsyn_minlines*	*g:vimsyn_maxlines*
+ There is a trade-off between more accurate syntax highlighting versus screen
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 3b719eb9c..26df6f2e5 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 12
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41586,6 +41586,8 @@ Changed~
+ - allow to complete directories from 'cdpath' for |:cd| and similar commands,
+   add the "cd_in_path" completion type for e.g. |:command-complete| and
+   |getcompletion()|
++- add 'cpoptions' flag "z" |cpo-z|, to disable some (traditional) vi
++  behaviour/inconsistency (see |d-special| and |cw|).
+ 
+ 							*added-9.2*
+ Added ~
