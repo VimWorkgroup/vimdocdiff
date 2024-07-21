@@ -1,78 +1,63 @@
-diff --git a/runtime/doc/testing.txt b/runtime/doc/testing.txt
-index 47ae85afb..7d0402c1b 100644
---- a/runtime/doc/testing.txt
-+++ b/runtime/doc/testing.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index b6204b22d..6f98cba44 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*testing.txt*	For Vim version 9.1.  Last change: 2024 Jul 17
-+*testing.txt*	For Vim version 9.1.  Last change: 2024 Jul 18
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 14
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -506,8 +506,8 @@ assert_equal({expected}, {actual} [, {msg}])
- 		added to |v:errors| and 1 is returned.  Otherwise zero is
- 		returned. |assert-return|
- 		The error is in the form "Expected {expected} but got
--		{actual}".  When {msg} is present it is prefixed to that, along
--		with the location of the assert when run from a script.
-+		{actual}".  When {msg} is present it is prefixed to that,
-+		along with the location of the assert when run from a script.
+@@ -1530,9 +1530,9 @@ in a buffer with 'buftype' set to "prompt".  This works slightly differently:
  
- 		There is no automatic conversion, the String "4" is different
- 		from the Number 4.  And the number 4 is different from the
-@@ -562,19 +562,19 @@ assert_fails({cmd} [, {error} [, {msg} [, {lnum} [, {context}]]]])
- 		When {error} is a string it must be found literally in the
- 		first reported error. Most often this will be the error code,
- 		including the colon, e.g. "E123:". >
--			assert_fails('bad cmd', 'E987:')
-+			call assert_fails('bad cmd', 'E987:')
+ 						*termdebug_use_prompt*
+ Prompt mode can be used even when the |+terminal| feature is present with: >
+-	let g:termdebug_config['use_prompt'] = 1
++	let g:termdebug_config['use_prompt'] = v:true
+ If there is no g:termdebug_config you can use: >
+-	let g:termdebug_use_prompt = 1
++	let g:termdebug_use_prompt = v:true
+ 
  <
- 		When {error} is a |List| with one or two strings, these are
- 		used as patterns.  The first pattern is matched against the
- 		first reported error: >
--			assert_fails('cmd', ['E987:.*expected bool'])
-+			call assert_fails('cmd', ['E987:.*expected bool'])
- <		The second pattern, if present, is matched against the last
- 		reported error.
- 		If there is only one error then both patterns must match. This
- 		can be used to check that there is only one error.
- 		To only match the last error use an empty string for the first
- 		error: >
--			assert_fails('cmd', ['', 'E987:'])
-+			call assert_fails('cmd', ['', 'E987:'])
+ However, the latter form will be deprecated in future releases.
+@@ -1544,26 +1544,26 @@ are reset to their original values once the termdebug session concludes.
+ 					*termdebug_map_K* *termdebug-mappings*
+ The K key is normally mapped to |:Evaluate| unless a buffer local (|:map-local|)
+ mapping to K already exists.  If you do not want this use: >
+-	let g:termdebug_config['map_K'] = 0
++	let g:termdebug_config['map_K'] = v:false
+ If there is no g:termdebug_config you can use: >
+-	let g:termdebug_map_K = 0
++	let g:termdebug_map_K = v:false
  <
- 		If {msg} is empty then it is not used.  Do this to get the
- 		default message when passing the {lnum} argument.
-@@ -600,8 +600,8 @@ assert_false({actual} [, {msg}])			*assert_false()*
- 		When {actual} is not false an error message is added to
- 		|v:errors|, like with |assert_equal()|.
- 		The error is in the form "Expected False but got {actual}".
--		When {msg} is present it is prepended to that, along
--		with the location of the assert when run from a script.
-+		When {msg} is present it is prefixed to that, along with the
-+		location of the assert when run from a script.
- 		Also see |assert-return|.
+ However, the latter form will be deprecated in future releases.
  
- 		A value is false when it is zero. When {actual} is not a
-@@ -639,9 +639,9 @@ assert_match({pattern}, {actual} [, {msg}])
- 		Use both to match the whole text.
- 
- 		Example: >
--			assert_match('^f.*o$', 'foobar')
-+			call assert_match('^f.*o$', 'foobar')
- <		Will result in a string to be added to |v:errors|:
--	test.vim line 12: Pattern '^f.*o$' does not match 'foobar' ~
-+			test.vim line 12: Pattern '^f.*o$' does not match 'foobar' ~
- 
- 		Can also be used as a |method|: >
- 			getFile()->assert_match('foo.*')
-@@ -696,8 +696,8 @@ assert_true({actual} [, {msg}])				*assert_true()*
- 		Also see |assert-return|.
- 		A value is TRUE when it is a non-zero number.  When {actual}
- 		is not a number the assert fails.
--		When {msg} is given it precedes the default message, along
--		with the location of the assert when run from a script.
-+		When {msg} is given it is prefixed to the default message,
-+		along with the location of the assert when run from a script.
- 
- 		Can also be used as a |method|: >
- 			GetResult()->assert_true()
+ 						*termdebug_map_minus*
+ The - key is normally mapped to |:Down| unless a buffer local mapping to the -
+ key already exists.  If you do not want this use: >
+-	let g:termdebug_config['map_minus'] = 0
++	let g:termdebug_config['map_minus'] = v:false
+ <
+ 						*termdebug_map_plus*
+ The + key is normally mapped to |:Up| unless a buffer local mapping to the +
+ key already exists.  If you do not want this use: >
+-	let g:termdebug_config['map_plus'] = 0
++	let g:termdebug_config['map_plus'] = v:false
+ <
+ 						*termdebug_disasm_window*
+ If you want the Asm window shown by default, set the "disasm_window" flag to
+ 1.  The "disasm_window_height" entry can be used to set the window height: >
+-	let g:termdebug_config['disasm_window'] = 1
++	let g:termdebug_config['disasm_window'] = v:true
+ 	let g:termdebug_config['disasm_window_height'] = 15
+ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_disasm_window = 15
+@@ -1579,7 +1579,7 @@ the height option won't be used).
+ If you want the Var window shown by default, set the "variables_window" flag
+ to 1.  The "variables_window_height" entry can be used to set the window
+ height: >
+-	let g:termdebug_config['variables_window'] = 1
++	let g:termdebug_config['variables_window'] = v:true
+ 	let g:termdebug_config['variables_window_height'] = 15
+ If there is no g:termdebug_config you can use: >
+ 	let g:termdebug_variables_window = 15
