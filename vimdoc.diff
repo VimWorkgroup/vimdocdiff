@@ -1,63 +1,62 @@
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index b6204b22d..6f98cba44 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 30214014d..52714da2d 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 14
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 20
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 16
++*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1530,9 +1530,9 @@ in a buffer with 'buftype' set to "prompt".  This works slightly differently:
+@@ -76,7 +76,8 @@ achieve special effects.  These options come in three forms:
+ :se[t] {option}:{value}
+ 			Set string or number option to {value}.
+ 			For numeric options the value can be given in decimal,
+-			hex (preceded with 0x) or octal (preceded with '0').
++			hex (preceded with 0x) or octal (preceded with '0' or
++			'0o').
+ 			The old value can be inserted by typing 'wildchar' (by
+ 			default this is a <Tab> or CTRL-E if 'compatible' is
+ 			set). Many string options with fixed syntax and names
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 2dfc5b628..f84308218 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 16
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 23
  
- 						*termdebug_use_prompt*
- Prompt mode can be used even when the |+terminal| feature is present with: >
--	let g:termdebug_config['use_prompt'] = 1
-+	let g:termdebug_config['use_prompt'] = v:true
- If there is no g:termdebug_config you can use: >
--	let g:termdebug_use_prompt = 1
-+	let g:termdebug_use_prompt = v:true
  
- <
- However, the latter form will be deprecated in future releases.
-@@ -1544,26 +1544,26 @@ are reset to their original values once the termdebug session concludes.
- 					*termdebug_map_K* *termdebug-mappings*
- The K key is normally mapped to |:Evaluate| unless a buffer local (|:map-local|)
- mapping to K already exists.  If you do not want this use: >
--	let g:termdebug_config['map_K'] = 0
-+	let g:termdebug_config['map_K'] = v:false
- If there is no g:termdebug_config you can use: >
--	let g:termdebug_map_K = 0
-+	let g:termdebug_map_K = v:false
- <
- However, the latter form will be deprecated in future releases.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2046,11 +2046,11 @@ use the following: >
+ 	:let java_highlight_java_io=1
+ Check the javaid.vim file for a list of all the packages that are supported.
  
- 						*termdebug_map_minus*
- The - key is normally mapped to |:Down| unless a buffer local mapping to the -
- key already exists.  If you do not want this use: >
--	let g:termdebug_config['map_minus'] = 0
-+	let g:termdebug_config['map_minus'] = v:false
- <
- 						*termdebug_map_plus*
- The + key is normally mapped to |:Up| unless a buffer local mapping to the +
- key already exists.  If you do not want this use: >
--	let g:termdebug_config['map_plus'] = 0
-+	let g:termdebug_config['map_plus'] = v:false
- <
- 						*termdebug_disasm_window*
- If you want the Asm window shown by default, set the "disasm_window" flag to
- 1.  The "disasm_window_height" entry can be used to set the window height: >
--	let g:termdebug_config['disasm_window'] = 1
-+	let g:termdebug_config['disasm_window'] = v:true
- 	let g:termdebug_config['disasm_window_height'] = 15
- If there is no g:termdebug_config you can use: >
- 	let g:termdebug_disasm_window = 15
-@@ -1579,7 +1579,7 @@ the height option won't be used).
- If you want the Var window shown by default, set the "variables_window" flag
- to 1.  The "variables_window_height" entry can be used to set the window
- height: >
--	let g:termdebug_config['variables_window'] = 1
-+	let g:termdebug_config['variables_window'] = v:true
- 	let g:termdebug_config['variables_window_height'] = 15
- If there is no g:termdebug_config you can use: >
- 	let g:termdebug_variables_window = 15
+-Function names are not highlighted, as the way to find functions depends on
+-how you write Java code.  The syntax file knows two possible ways to highlight
+-headers of function declarations:
++Headers of indented function declarations can be highlighted (along with parts
++of lambda expressions and method reference expressions), but it depends on how
++you write Java code.  Two formats are recognized:
+ 
+-If you write function declarations that are consistently indented by either
++1) If you write function declarations that are consistently indented by either
+ a tab, or a space . . . or eight space character(s), you may want to set >
+ 	:let java_highlight_functions="indent"
+ 	:let java_highlight_functions="indent1"
+@@ -2062,10 +2062,12 @@ a tab, or a space . . . or eight space character(s), you may want to set >
+ 	:let java_highlight_functions="indent7"
+ 	:let java_highlight_functions="indent8"
+ Note that in terms of 'shiftwidth', this is the leftmost step of indentation.
+-However, if you follow the Java guidelines about how functions and classes are
+-supposed to be named (with respect to upper- and lowercase) and there is any
+-amount of indentation, you may want to set >
++
++2) However, if you follow the Java guidelines about how functions and types
++are supposed to be named (with respect to upper- and lowercase) and there is
++any amount of indentation, you may want to set >
+ 	:let java_highlight_functions="style"
++
+ In addition, you can combine any value of "java_highlight_functions" with >
+ 	:let java_highlight_signature=1
+ to have the name of a function with its parameter list parens distinctly
