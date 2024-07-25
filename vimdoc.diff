@@ -1,62 +1,78 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 30214014d..52714da2d 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 0d59a2eda..e85f341c8 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 16
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 24
+-*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 13
++*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 25
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -76,7 +76,8 @@ achieve special effects.  These options come in three forms:
- :se[t] {option}:{value}
- 			Set string or number option to {value}.
- 			For numeric options the value can be given in decimal,
--			hex (preceded with 0x) or octal (preceded with '0').
-+			hex (preceded with 0x) or octal (preceded with '0' or
-+			'0o').
- 			The old value can be inserted by typing 'wildchar' (by
- 			default this is a <Tab> or CTRL-E if 'compatible' is
- 			set). Many string options with fixed syntax and names
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1183,6 +1183,12 @@ items:
+ 	user_data	custom data which is associated with the item and
+ 			available in |v:completed_item|; it can be any type;
+ 			defaults to an empty string
++	hl_group	allows specifying an additional highlight group to
++			apply extra attributes to completion items in the
++			popupmenu. Is combined with |hl-PmenuSel| and
++			|hl-Pmenu| highlighting attributes to apply cterm and
++			gui properties, such as strikethrough to the
++			completion items.
+ 
+ All of these except "icase", "equal", "dup" and "empty" must be a string.  If
+ an item does not meet these requirements then an error message is given and
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 2dfc5b628..f84308218 100644
+index f84308218..2f8d9505c 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 16
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 23
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 23
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2046,11 +2046,11 @@ use the following: >
- 	:let java_highlight_java_io=1
- Check the javaid.vim file for a list of all the packages that are supported.
+@@ -2278,7 +2278,7 @@ By default mail.vim synchronises syntax to 100 lines before the first
+ displayed line.  If you have a slow machine, and generally deal with emails
+ with short headers, you can change this to a smaller value: >
  
--Function names are not highlighted, as the way to find functions depends on
--how you write Java code.  The syntax file knows two possible ways to highlight
--headers of function declarations:
-+Headers of indented function declarations can be highlighted (along with parts
-+of lambda expressions and method reference expressions), but it depends on how
-+you write Java code.  Two formats are recognized:
+-    :let mail_minlines = 30
++	:let mail_minlines = 30
  
--If you write function declarations that are consistently indented by either
-+1) If you write function declarations that are consistently indented by either
- a tab, or a space . . . or eight space character(s), you may want to set >
- 	:let java_highlight_functions="indent"
- 	:let java_highlight_functions="indent1"
-@@ -2062,10 +2062,12 @@ a tab, or a space . . . or eight space character(s), you may want to set >
- 	:let java_highlight_functions="indent7"
- 	:let java_highlight_functions="indent8"
- Note that in terms of 'shiftwidth', this is the leftmost step of indentation.
--However, if you follow the Java guidelines about how functions and classes are
--supposed to be named (with respect to upper- and lowercase) and there is any
--amount of indentation, you may want to set >
+ 
+ MAKE						*make.vim* *ft-make-syntax*
+@@ -2289,6 +2289,16 @@ feature off by using: >
+ 
+ 	:let make_no_commands = 1
+ 
++Comments are also highlighted by default.  You can turn this off by using: >
 +
-+2) However, if you follow the Java guidelines about how functions and types
-+are supposed to be named (with respect to upper- and lowercase) and there is
-+any amount of indentation, you may want to set >
- 	:let java_highlight_functions="style"
++	:let make_no_comments = 1
 +
- In addition, you can combine any value of "java_highlight_functions" with >
- 	:let java_highlight_signature=1
- to have the name of a function with its parameter list parens distinctly
++Microsoft Makefile handles variable expansion and comments differently
++(backslashes are not used for escape).  If you see any wrong highlights
++because of this, you can try this: >
++
++	:let make_microsoft = 1
++
+ 
+ MAPLE						*maple.vim* *ft-maple-syntax*
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 26df6f2e5..5f91af62a 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 15
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41588,6 +41588,8 @@ Changed~
+   |getcompletion()|
+ - add 'cpoptions' flag "z" |cpo-z|, to disable some (traditional) vi
+   behaviour/inconsistency (see |d-special| and |cw|).
++- allow to specify additional attributes in the completion menu (allows to
++  mark deprecated attributes from LSP server) |complete-items|
+ 
+ 							*added-9.2*
+ Added ~
