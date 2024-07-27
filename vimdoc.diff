@@ -1,78 +1,29 @@
 diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 0d59a2eda..e85f341c8 100644
+index e85f341c8..e80fea8c2 100644
 --- a/runtime/doc/insert.txt
 +++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 13
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 25
+-*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 25
++*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 27
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1183,6 +1183,12 @@ items:
+@@ -1183,12 +1183,12 @@ items:
  	user_data	custom data which is associated with the item and
  			available in |v:completed_item|; it can be any type;
  			defaults to an empty string
-+	hl_group	allows specifying an additional highlight group to
-+			apply extra attributes to completion items in the
-+			popupmenu. Is combined with |hl-PmenuSel| and
-+			|hl-Pmenu| highlighting attributes to apply cterm and
-+			gui properties, such as strikethrough to the
-+			completion items.
+-	hl_group	allows specifying an additional highlight group to
+-			apply extra attributes to completion items in the
+-			popupmenu. Is combined with |hl-PmenuSel| and
+-			|hl-Pmenu| highlighting attributes to apply cterm and
+-			gui properties, such as strikethrough to the
+-			completion items.
++	hl_group	an additional highlight group whose attributes are
++			combined with |hl-PmenuSel| and |hl-Pmenu| or
++			|hl-PmenuMatchSel| and |hl-PmenuMatch| highlight
++			attributes in the popup menu to apply cterm and gui
++			properties (with higher priority) like strikethrough
++			to the completion items
  
  All of these except "icase", "equal", "dup" and "empty" must be a string.  If
  an item does not meet these requirements then an error message is given and
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index f84308218..2f8d9505c 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 23
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2278,7 +2278,7 @@ By default mail.vim synchronises syntax to 100 lines before the first
- displayed line.  If you have a slow machine, and generally deal with emails
- with short headers, you can change this to a smaller value: >
- 
--    :let mail_minlines = 30
-+	:let mail_minlines = 30
- 
- 
- MAKE						*make.vim* *ft-make-syntax*
-@@ -2289,6 +2289,16 @@ feature off by using: >
- 
- 	:let make_no_commands = 1
- 
-+Comments are also highlighted by default.  You can turn this off by using: >
-+
-+	:let make_no_comments = 1
-+
-+Microsoft Makefile handles variable expansion and comments differently
-+(backslashes are not used for escape).  If you see any wrong highlights
-+because of this, you can try this: >
-+
-+	:let make_microsoft = 1
-+
- 
- MAPLE						*maple.vim* *ft-maple-syntax*
- 
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 26df6f2e5..5f91af62a 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 15
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 25
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41588,6 +41588,8 @@ Changed~
-   |getcompletion()|
- - add 'cpoptions' flag "z" |cpo-z|, to disable some (traditional) vi
-   behaviour/inconsistency (see |d-special| and |cw|).
-+- allow to specify additional attributes in the completion menu (allows to
-+  mark deprecated attributes from LSP server) |complete-items|
- 
- 							*added-9.2*
- Added ~
