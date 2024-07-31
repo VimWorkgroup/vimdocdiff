@@ -1,212 +1,40 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c4e7d36a4..fe940ca46 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 2f8d9505c..9449b7577 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jul 17
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Jul 28
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 25
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Jul 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -279,8 +279,7 @@ gettabvar({nr}, {varname} [, {def}])
- gettabwinvar({tabnr}, {winnr}, {name} [, {def}])
- 				any	{name} in {winnr} in tab page {tabnr}
- gettagstack([{nr}])		Dict	get the tag stack of window {nr}
--gettext({text} [, {package}])
--				String	lookup translation of {text}
-+gettext({text} [, {package}])	String	lookup translation of {text}
- getwininfo([{winid}])		List	list of info about each window
- getwinpos([{timeout}])		List	X and Y coord in pixels of Vim window
- getwinposx()			Number	X coord in pixels of the Vim window
-@@ -1226,7 +1225,7 @@ bindtextdomain({package}, {path})			*bindtextdomain()*
- 		Bind a specific {package} to a {path} so that the
- 		|gettext()| function can be used to get language-specific
- 		translations for a package.  {path} is the directory name
--		for the translations. See |package-translation|.
-+		for the translations.  See |package-translation|.
+@@ -1908,6 +1908,10 @@ You can also disable this rendering by adding the following line to your
+ vimrc file: >
+ 	:let html_no_rendering=1
  
- 		Returns v:true on success and v:false on failure (out of
- 		memory).
-@@ -8142,7 +8141,7 @@ pyxeval({expr})						*pyxeval()*
- 		See also: |pyeval()|, |py3eval()|
- 
- 		Can also be used as a |method|: >
--	<		GetExpr()->pyxeval()
-+			GetExpr()->pyxeval()
- <
- 		Return type: any, depending on {expr}
- 
-@@ -9550,7 +9549,8 @@ setline({lnum}, {text})					*setline()*
- 		Set line {lnum} of the current buffer to {text}.  To insert
- 		lines use |append()|. To set lines in another buffer use
- 		|setbufline()|.
--		Any text properties in {lnum} are cleared |text-prop-cleared|.
-+		Any text properties in {lnum} are cleared.  See
-+		|text-prop-cleared|
- 
- 		{lnum} is used like with |getline()|.
- 		When {lnum} is just below the last line the {text} will be
-@@ -11103,7 +11103,7 @@ synconcealed({lnum}, {col})				*synconcealed()*
- 		Note: Doesn't consider |matchadd()| highlighting items,
- 		since syntax and matching highlighting are two different
- 		mechanisms |syntax-vs-match|.
--<
-+
- 		Return type: list<any>
- 
- 
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 52a68c439..2304712c3 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
-@@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.1.  Last change: 2024 Jul 14
-+*change.txt*    For Vim version 9.1.  Last change: 2024 Jul 28
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1414,7 +1414,7 @@ The next three commands always work on whole lines.
- :[range]m[ove] {address}			*:m* *:mo* *:move* *E134*
- 			Move the lines given by [range] to below the line
- 			given by {address}.
--			Any text properties in [range] are cleared
-+			Any text properties in [range] are cleared.  See
- 			|text-prop-cleared|.
- 
- ==============================================================================
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index b921cb54a..e2c6967b5 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2024 Jul 17
-+*eval.txt*	For Vim version 9.1.  Last change: 2024 Jul 28
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3125,7 +3125,7 @@ text...
- 				let lconst[1][0] = 'b'  " OK
- <							*E995*
- 			It is an error to specify an existing variable with
--			:const. >
-+			|:const|. >
- 				:let x = 1
- 				:const x = 1  " Error!
- <							*E996*
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index e80fea8c2..2dd3e0399 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 27
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 28
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -2007,7 +2007,7 @@ command in ex mode: >
- 	two
- 	.
- 	:visual
--<appends the following text, after the cursor line: >
-+appends the following text, after the cursor line: >
- 	one
- 	two
- <
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 52714da2d..8f8f70a74 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 24
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 28
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5919,17 +5919,17 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    Using CTRL-X on "0" or CTRL-A on "18446744073709551615"
- 		    (2^64 - 1) has no effect, overflow is prevented.
- 	blank	If included, treat numbers as signed or unsigned based on
--		preceding whitespace. If a number with a leading dash has its
-+		preceding whitespace.  If a number with a leading dash has its
- 		dash immediately preceded by a non-whitespace character (i.e.,
- 		not a tab or a " "), the negative sign won't be considered as
- 		part of the number.  For example:
- 		    Using CTRL-A on "14" in "Carbon-14" results in "Carbon-15"
- 		    (without "blank" it would become "Carbon-13").
- 		    Using CTRL-X on "8" in "Carbon -8" results in "Carbon -9"
--		    (because -8 is preceded by whitespace. If "unsigned" was
-+		    (because -8 is preceded by whitespace.  If "unsigned" was
- 		    set, it would result in "Carbon -7").
- 		If this format is included, overflow is prevented as if
--		"unsigned" were set. If both this format and "unsigned" are
-+		"unsigned" were set.  If both this format and "unsigned" are
- 		included, "unsigned" will take precedence.
- 
- 	Numbers which simply begin with a digit in the range 1-9 are always
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 6f98cba44..5020ed5b4 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 20
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 28
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1253,7 +1253,7 @@ Starting ~
- 							*termdebug-starting*
- Load the plugin with this command: >
- 	packadd termdebug
--<When loading the plugin from the |.vimrc| file, add the "!" attribute: >
-+When loading the plugin from the |.vimrc| file, add the "!" attribute: >
- 	packadd! termdebug
- <							*:Termdebug*
- To start debugging use `:Termdebug` or `:TermdebugCommand` followed by the
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index d9222594c..21629e3ca 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
-@@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Jun 19
-+*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Jun 28
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -455,7 +455,8 @@ Adding nohlsearch package				*nohlsearch-install*
- Load the plugin with this command: >
- 	packadd nohlsearch
- <
--Automatically execute |:nohlsearch| after 'updatetime' or getting into |Insert| mode.
-+Automatically execute |:nohlsearch| after 'updatetime' or getting into
-+|Insert| mode.
- Thus assuming default updatetime, hlsearch would be suspended/turned off after
- 4 seconds of idle time.
- 
++By default Vim synchronises the syntax to 250 lines before the first displayed
++line.  This can be configured using: >
++	:let html_minlines = 500
++<
+ HTML comments are rather special (see an HTML reference document for the
+ details), and the syntax coloring scheme will highlight all errors.
+ However, if you prefer to use the wrong style (starts with <!-- and
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 5f91af62a..e8e9194dc 100644
+index e8e9194dc..73e54a1cf 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 25
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 28
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 28
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Jul 30
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41581,7 +41581,7 @@ Changed~
-   function |get()-func|
- - |:bwipe| also wipes jumplist and tagstack data
- - moving in the buffer list using |:bnext| and similar commands, behaves as
--  documented and skips help buffers (if not run from a help buffer, else 
-+  documented and skips help buffers (if not run from a help buffer, else
-   moves to the next/previous help buffer).
- - allow to complete directories from 'cdpath' for |:cd| and similar commands,
-   add the "cd_in_path" completion type for e.g. |:command-complete| and
-@@ -41614,7 +41614,7 @@ Functions: ~
- Autocommands: ~
+@@ -41590,6 +41590,8 @@ Changed~
+   behaviour/inconsistency (see |d-special| and |cw|).
+ - allow to specify additional attributes in the completion menu (allows to
+   mark deprecated attributes from LSP server) |complete-items|
++- the regex engines match correctly case-insensitive multi-byte characters
++  (and apply proper case folding)
  
- |CursorMovedC|		after the cursor was moved in the comamnd-line
--|KeyInputPre|		process any Key event in any mode
-+|KeyInputPre|		before processing any key event in any mode
- |SessionWritePost|	after writing the session file |:mksession|
- |TermResponseAll|	after the terminal response to |t_RV| and others is
- 			received
+ 							*added-9.2*
+ Added ~
