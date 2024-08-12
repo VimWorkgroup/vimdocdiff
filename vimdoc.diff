@@ -1,23 +1,60 @@
 diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 0461c0454..f6d32db39 100644
+index f6d32db39..9c4e87013 100644
 --- a/runtime/doc/autocmd.txt
 +++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Jul 17
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Aug 10
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Aug 10
++*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Aug 12
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1427,8 +1427,10 @@ WinLeave			Before leaving a window.  If the window to be
- 							*WinNewPre*
+@@ -1428,8 +1428,8 @@ WinLeave			Before leaving a window.  If the window to be
  WinNewPre			Before creating a new window. Triggered
  				before commands that modify window layout by
--				creating a split or new tab page. Not done for
--				the first window, when Vim has just started.
-+				creating a split.
-+				Not done for creating tabs or for the first
-+				window, as the window structure is not
-+				initialized yet and so is generally not safe.
+ 				creating a split.
+-				Not done for creating tabs or for the first
+-				window, as the window structure is not
++				Not done when creating tab pages and for the
++				first window, as the window structure is not
+ 				initialized yet and so is generally not safe.
  				It is not allowed to modify window layout
  				while executing commands for the WinNewPre
- 				event.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 8f8f70a74..3ec8a3a80 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Jul 28
++*options.txt*	For Vim version 9.1.  Last change: 2024 Aug 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2260,7 +2260,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'cpoptions'* *'cpo'* *cpo*
+ 'cpoptions' 'cpo'	string	(Vim default: "aABceFsz",
+ 				 Vi default:  all flags, except "#{|&/\."
+-                                 |$VIM_POSIX|:  all flags)
++				 |$VIM_POSIX|:  all flags)
+ 			global
+ 	A sequence of single character flags.  When a character is present
+ 	this indicates Vi-compatible behavior.  This is used for things where
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index f2ba03f90..726aec369 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*    For Vim version 9.1.  Last change: 2024 Jul 11
++*repeat.txt*    For Vim version 9.1.  Last change: 2024 Aug 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -793,7 +793,8 @@ messages: >
+ 	:echo gettext("Hello", "foobar")
+ <
+ Where:
+-  "Hello"	the message "Hello" to be translated into the user's language |:lang|
++  "Hello"	the message "Hello" to be translated into the user's language
++		|:lang|
+   "foobar"	the package identifier, which was previously defined using the
+ 		|bindtextdomain()| function.
+ 
