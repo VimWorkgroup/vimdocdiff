@@ -1,30 +1,73 @@
+diff --git a/runtime/doc/sponsor.txt b/runtime/doc/sponsor.txt
+index 169816896..6df14ebe3 100644
+--- a/runtime/doc/sponsor.txt
++++ b/runtime/doc/sponsor.txt
+@@ -1,4 +1,4 @@
+-*sponsor.txt*   For Vim version 9.1.  Last change: 2024 Apr 22
++*sponsor.txt*   For Vim version 9.1.  Last change: 2024 Aug 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -76,16 +76,14 @@ How much money should I send?
+ 
+ That is up to you.  The more you give, the more children will be helped.
+ An indication for individuals that use Vim at home: 10 Euro per year.  For
+-professional use: 30 Euro per year per person.  Send at least 10 euro to be
+-able to vote for features.
++professional use: 30 Euro per year per person.
+ 
+ 
+ How do I become a Vim sponsor or registered Vim user?
+ 
+ Send money, as explained above |send-money| and include your e-mail address.
+ When the money has been received you will receive a unique registration key.
+-This key can be used on the Vim website to activate voting on your Vim
+-account.  You will then get an extra page where you can vote for features and
++This key can be used on the Vim website to get an extra page where you can
+ choose whether others will be able to see that you donated.  There is a link
+ to this page on your "My Account" page.
+ 
+@@ -127,8 +125,7 @@ the developer |maillist|, for reporting bugs see |bugs|.
+ How about Charityware?
+ 
+ Currently the Vim donations go to |uganda| anyway.  Thus it doesn't matter if
+-you sponsor Vim or ICCF.  Except that Vim sponsoring will allow you to vote
+-for features.
++you sponsor Vim or ICCF.
+ 
+ 
+ I donated $$$, now please add feature XYZ!
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index f1490c523..8e33d0244 100644
+index 8e33d0244..68ea21ea9 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
+@@ -2376,7 +2376,7 @@ have the following in your .vimrc: >
+ 
+ MEDIAWIKI					*ft-mediawiki-syntax*
+ 
+-Be default, syntax highlighting includes basic HTML tags like style and
++By default, syntax highlighting includes basic HTML tags like style and
+ headers |html.vim|. For strict Mediawiki syntax highlighting: >
+ 
+ 	let g:html_no_rendering = 1
+diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
+index 513759f60..17590e5cb 100644
+--- a/runtime/doc/uganda.txt
++++ b/runtime/doc/uganda.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 03
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 13
+-*uganda.txt*    For Vim version 9.1.  Last change: 2024 Apr 22
++*uganda.txt*    For Vim version 9.1.  Last change: 2024 Aug 14
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2157,7 +2157,8 @@ displayed line.  The default value is 10.  The disadvantage of using a larger
- number is that redrawing can become slow.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -15,8 +15,8 @@ below or visit the ICCF web site, available at these URLs:
+ 	https://www.vim.org/iccf/
+ 	https://www.iccf.nl/
  
+-You can also sponsor the development of Vim.  Vim sponsors can vote for
+-features.  See |sponsor|.  The money goes to Uganda anyway.
++You can also sponsor the development of Vim, see |sponsor|.  The money goes to
++Uganda anyway.
  
--JSON						*json.vim* *ft-json-syntax*
-+JSON			*json.vim* *ft-json-syntax* *g:vim_json_conceal*
-+					       *g:vim_json_warnings*
- 
- The json syntax file provides syntax highlighting with conceal support by
- default. To disable concealment: >
-@@ -2347,7 +2348,8 @@ $VIMRUNTIME/syntax/syntax.vim).
-   mv_finance	 mv_logic	mv_powseries
- 
- 
--MARKDOWN						*ft-markdown-syntax*
-+MARKDOWN			*ft-markdown-syntax* *g:markdown_minlines*
-+		 *g:markdown_fenced_languages* *g:markdown_syntax_conceal*
- 
- If you have long regions there might be wrong highlighting.  At the cost of
- slowing down displaying, you can have the engine look further back to sync on
+ The Open Publication License applies to the Vim documentation, see
+ |manual-copyright|.
