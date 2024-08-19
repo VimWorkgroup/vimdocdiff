@@ -1,19 +1,22 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 404e54de8..5248ff329 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 9c4e87013..f200a30e5 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*   For Vim version 9.1.  Last change: 2024 Aug 15
-+*cmdline.txt*   For Vim version 9.1.  Last change: 2024 Aug 16
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Aug 12
++*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Aug 18
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -379,7 +379,7 @@ terminals)
- 
- :keepp[atterns] {command}			*:keepp* *:keeppatterns*
- 		Execute {command}, without adding anything to the search
--		history or modifying the last substitute pattern.
-+		history or modifying the last substitute string for |:&|.
- 
- ==============================================================================
- 2. Command-line completion				*cmdline-completion*
+@@ -992,7 +992,10 @@ KeyInputPre			Just before a key is processed after mappings
+ 				character is used.
+ 				The following values of |v:event| are set:
+ 				   typed	The key is typed or not.
+-				   typedchar	The (actual) typed key.
++				   typedchar	The (actual) typed key since
++						the last |KeyInputPre| call.
++				Note: "typedchar" may be empty if successive
++				|KeyInputPre| autocmds are processed.
+ 				It is not allowed to change the text
+ 				|textlock| or the current mode.
+ 				{only with the +eval feature}
