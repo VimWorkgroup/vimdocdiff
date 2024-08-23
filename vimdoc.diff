@@ -1,36 +1,25 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 6c706b177..a7ed92880 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 68ea21ea9..736e66466 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Jul 16
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Aug 21
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 13
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 22
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -753,9 +753,13 @@ Global mapping:
- 			nmap <F1> <Plug>ManPreGetPage
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2135,6 +2135,14 @@ Note that these three variables are maintained in the HTML syntax file.
+ Numbers and strings can be recognized in non-Javadoc comments with >
+ 	:let g:java_comment_strings = 1
  
- Local mappings:
-+<Plug>ManBS
-+<LocalLeader>h	Clear backspace <BS> characters from the buffer
- CTRL-]		Jump to the manual page for the word under the cursor.
- CTRL-T		Jump back to the previous manual page.
--q		Same as the |:quit| command.
++When 'foldmethod' is set to "syntax", blocks of code and multi-line comments
++will be folded.  No text is usually written in the first line of a multi-line
++comment, making folded contents of Javadoc comments less informative with the
++default 'foldtext' value; you may opt for showing the contents of a second
++line for any comments written in this way, and showing the contents of a first
++line otherwise, with >
++	:let g:java_foldtext_show_first_or_second_line = 1
 +
-+The mappings can be disabled with: >
-+	let g:no_man_maps = 1
- 
- To use a vertical split instead of horizontal: >
- 	let g:ft_man_open_mode = 'vert'
-@@ -764,8 +768,8 @@ To use a new tab: >
- 
- To enable |folding|, use this: >
- 	let g:ft_man_folding_enable = 1
--If you do not like the default folding, use an |autocommand| to add your desired
--folding style instead.  For example: >
-+If you do not like the default folding, use an |autocommand| to add your
-+desired folding style instead.  For example: >
- 	autocmd FileType man setlocal foldmethod=indent foldenable
- 
- If you would like :Man {number} {name} to behave like man {number} {name} by
+ Trailing whitespace characters or a run of space characters before a tab
+ character can be marked as an error with >
+ 	:let g:java_space_errors = 1
