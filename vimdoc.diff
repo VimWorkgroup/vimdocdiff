@@ -1,25 +1,42 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 68ea21ea9..736e66466 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 2dd3e0399..286c6d4c2 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 13
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 22
+-*insert.txt*    For Vim version 9.1.  Last change: 2024 Jul 28
++*insert.txt*    For Vim version 9.1.  Last change: 2024 Aug 23
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2135,6 +2135,14 @@ Note that these three variables are maintained in the HTML syntax file.
- Numbers and strings can be recognized in non-Javadoc comments with >
- 	:let g:java_comment_strings = 1
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1189,6 +1189,11 @@ items:
+ 			attributes in the popup menu to apply cterm and gui
+ 			properties (with higher priority) like strikethrough
+ 			to the completion items
++	kind_hlgroup	an additional highlight group specifically for setting
++			the highlight attributes of the completion kind. When
++			this field is present, it will override the |hl-PmenuKind|
++			highlight group, allowing for the customization of
++			ctermfd and guifg properties for the completion kind
  
-+When 'foldmethod' is set to "syntax", blocks of code and multi-line comments
-+will be folded.  No text is usually written in the first line of a multi-line
-+comment, making folded contents of Javadoc comments less informative with the
-+default 'foldtext' value; you may opt for showing the contents of a second
-+line for any comments written in this way, and showing the contents of a first
-+line otherwise, with >
-+	:let g:java_foldtext_show_first_or_second_line = 1
+ All of these except "icase", "equal", "dup" and "empty" must be a string.  If
+ an item does not meet these requirements then an error message is given and
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 3729590fa..fc07dc443 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Aug 15
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Aug 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41563,6 +41563,9 @@ Support for the XDG Desktop Specification |xdg-base-dir|
+ Support highlighting the matched text for insert-mode completion and
+ command-line completion in |ins-completion-menu|.
+ 
++Support highlighting the completion kind in |ins-completion-menu|, see
++|complete-items|.
 +
- Trailing whitespace characters or a run of space characters before a tab
- character can be marked as an error with >
- 	:let g:java_space_errors = 1
+ Support for translating messages in Vim script plugins using the |gettext()|
+ and |bindtextdomain()| functions.
+ 
