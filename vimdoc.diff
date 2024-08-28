@@ -1,24 +1,33 @@
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 286c6d4c2..3894e5c74 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 736e66466..5d67ba622 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Aug 23
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Aug 25
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 22
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 26
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1191,9 +1191,10 @@ items:
- 			to the completion items
- 	kind_hlgroup	an additional highlight group specifically for setting
- 			the highlight attributes of the completion kind. When
--			this field is present, it will override the |hl-PmenuKind|
--			highlight group, allowing for the customization of
--			ctermfd and guifg properties for the completion kind
-+			this field is present, it will override the
-+			|hl-PmenuKind| highlight group, allowing for the
-+			customization of ctermfg and guifg properties for the
-+			completion kind
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2164,6 +2164,22 @@ This will make the syntax synchronization start 50 lines before the first
+ displayed line.  The default value is 10.  The disadvantage of using a larger
+ number is that redrawing can become slow.
  
- All of these except "icase", "equal", "dup" and "empty" must be a string.  If
- an item does not meet these requirements then an error message is given and
++Significant changes to the Java platform are gradually introduced in the form
++of JDK Enhancement Proposals (JEPs) that can be implemented for a release and
++offered as its preview features.  It may take several JEPs and a few release
++cycles for such a feature to become either integrated into the platform or
++withdrawn from this effort.  To cater for early adopters, there is optional
++support in Vim for syntax related preview features that are implemented.  You
++can request it by specifying a list of preview feature numbers as follows: >
++	:let g:java_syntax_previews = [430]
++
++The supported JEP numbers are to be drawn from this table:
++	`430`: String Templates [JDK 21]
++
++Note that as soon as the particular preview feature will have been integrated
++into the Java platform, its entry will be removed from the table and related
++optionality will be discontinued.
++
+ 
+ JSON			*json.vim* *ft-json-syntax* *g:vim_json_conceal*
+ 					       *g:vim_json_warnings*
