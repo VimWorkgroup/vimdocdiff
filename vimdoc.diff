@@ -1,33 +1,27 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 736e66466..5d67ba622 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 3e45884be..62947c0af 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 22
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 26
+-*motion.txt*    For Vim version 9.1.  Last change: 2024 Jul 14
++*motion.txt*    For Vim version 9.1.  Last change: 2024 Aug 28
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2164,6 +2164,22 @@ This will make the syntax synchronization start 50 lines before the first
- displayed line.  The default value is 10.  The disadvantage of using a larger
- number is that redrawing can become slow.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -364,11 +364,11 @@ gg			Goto line [count], default first line, on the first
+ 			See also 'startofline' option.
  
-+Significant changes to the Java platform are gradually introduced in the form
-+of JDK Enhancement Proposals (JEPs) that can be implemented for a release and
-+offered as its preview features.  It may take several JEPs and a few release
-+cycles for such a feature to become either integrated into the platform or
-+withdrawn from this effort.  To cater for early adopters, there is optional
-+support in Vim for syntax related preview features that are implemented.  You
-+can request it by specifying a list of preview feature numbers as follows: >
-+	:let g:java_syntax_previews = [430]
-+
-+The supported JEP numbers are to be drawn from this table:
-+	`430`: String Templates [JDK 21]
-+
-+Note that as soon as the particular preview feature will have been integrated
-+into the Java platform, its entry will be removed from the table and related
-+optionality will be discontinued.
-+
- 
- JSON			*json.vim* *ft-json-syntax* *g:vim_json_conceal*
- 					       *g:vim_json_warnings*
+ :[range]go[to] [count]					*:go* *:goto* *go*
+-[count]go		Go to [count] byte in the buffer.  Default [count] is
+-			one, start of the file.  When giving [range], the
+-			last number in it used as the byte count.  End-of-line
+-			characters are counted depending on the current
+-			'fileformat' setting.
++[count]go		Go to [count] byte in the buffer.  |exclusive| motion.
++			Default [count] is one, start of the file.  When
++			giving [range], the last number in it used as the byte
++			count.  End-of-line characters are counted depending
++			on the current 'fileformat' setting.
+ 			Also see the |line2byte()| function, and the 'o'
+ 			option in 'statusline'.
+ 			{not available when compiled without the
