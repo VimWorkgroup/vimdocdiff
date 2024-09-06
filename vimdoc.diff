@@ -1,64 +1,62 @@
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 432a98671..c38292604 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index cdc0f16a9..02885e6c5 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*map.txt*       For Vim version 9.1.  Last change: 2024 Jul 11
-+*map.txt*       For Vim version 9.1.  Last change: 2024 Aug 31
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 Aug 03
++*starting.txt*  For Vim version 9.1.  Last change: 2024 Sep 05
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1624,12 +1624,14 @@ completion can be enabled:
+@@ -828,8 +828,8 @@ accordingly.  Vim proceeds in this order:
+ 	easy to copy it to another system.
  
- 	-complete=arglist	file names in argument list
- 	-complete=augroup	autocmd groups
-+	-complete=behave	|:behave| suboptions
-+	-complete=breakpoint	|:breakadd| suboptions
- 	-complete=buffer	buffer names
--	-complete=behave	:behave suboptions
- 	-complete=color		color schemes
- 	-complete=command	Ex command (and arguments)
- 	-complete=compiler	compilers
- 	-complete=cscope	|:cscope| suboptions
-+	-complete=diff_buffer	diff buffer names
- 	-complete=dir		directory names
- 	-complete=dir_in_path	directory names in |'cdpath'|
- 	-complete=environment	environment variable names
-@@ -1641,7 +1643,7 @@ completion can be enabled:
- 	-complete=function	function name
- 	-complete=help		help subjects
- 	-complete=highlight	highlight groups
--	-complete=history	:history suboptions
-+	-complete=history	|:history| suboptions
- 	-complete=keymap	keyboard mappings
- 	-complete=locale	locale names (as output of locale -a)
- 	-complete=mapclear	buffer argument
-@@ -1650,6 +1652,8 @@ completion can be enabled:
- 	-complete=messages	|:messages| suboptions
- 	-complete=option	options
- 	-complete=packadd	optional package |pack-add| names
-+	-complete=runtime	file and directory names in |'runtimepath'|
-+	-complete=scriptnames	sourced script names
- 	-complete=shellcmd	Shell command
- 	-complete=sign		|:sign| suboptions
- 	-complete=syntax	syntax file names |'syntax'|
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 5d67ba622..910aee5a1 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 26
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 31
+ 	If Vim was started with "-u filename", the file "filename" is used.
+-	All following initializations until 4. are skipped. $MYVIMRC is not
+-	set.
++	All following initializations until 4. are skipped. $MYVIMRC and
++	$MYVIMDIR are not set.
+ 	"vim -u NORC" can be used to skip these initializations without
+ 	reading a file.  "vim -u NONE" also skips loading plugins.  |-u|
+ 
+@@ -847,11 +847,13 @@ accordingly.  Vim proceeds in this order:
+ 	'compatible' is only done later.  Add a ":set nocp" command if you
+ 	like.  For the Macintosh the $VIMRUNTIME/macmap.vim is read.
+ 
+-	  *VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc* *$MYVIMRC*
++	  *VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc* *$MYVIMRC* *$MYVIMDIR*
+      c. Five places are searched for initializations.  The first that exists
+ 	is used, the others are ignored.  The $MYVIMRC environment variable is
+ 	set to the file that was first found, unless $MYVIMRC was already set
+-	and when using VIMINIT.
++	and when using VIMINIT.  The $MYVIMDIR environment variable is
++	set to the personal 'rtp' directory, however it is not verified
++	that the directory actually exists.
+ 	I   The environment variable VIMINIT (see also |compatible-default|) (*)
+ 	    The value of $VIMINIT is used as an Ex command line.
+ 	II  The user vimrc file(s):
+@@ -971,7 +973,8 @@ accordingly.  Vim proceeds in this order:
+ 	The |VimEnter| autocommands are executed.
+ 
+ The $MYVIMRC or $MYGVIMRC file will be set to the first found vimrc and/or
+-gvimrc file.
++gvimrc file while $MYVIMDIR is set to the users personal runtime directory
++'rtp' (typically the first entry in 'runtimepath').
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -179,8 +179,7 @@ add a few items or change the highlighting, follow these steps:
- 1. Create your user directory from 'runtimepath', see above.
+ Some hints on using initializations ~
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index fc07dc443..03c8d6c78 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -41668,6 +41668,10 @@ Python3 support in OpenVMS.
+ Support for |fuzzy-matching| during |ins-completion| with the "fuzzy"
+ values of the 'completeopt' setting
  
- 2. Create a directory in there called "after/syntax".  For Unix: >
--	mkdir ~/.vim/after
--	mkdir ~/.vim/after/syntax
-+	mkdir -p ~/.vim/after/syntax
++The environment variable |$MYVIMDIR| is set to the users personal runtime
++directory ($HOME/.vim or $HOME/.config/vim on Linux, $HOME/vimfiles
++on Windows)
++
+ ==============================================================================
+ COMPILE TIME CHANGES					*compile-changes-9.2*
  
- 3. Write a Vim script that contains the commands you want to use.  For
-    example, to change the colors for the C syntax: >
