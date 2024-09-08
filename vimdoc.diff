@@ -1,62 +1,73 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index cdc0f16a9..02885e6c5 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 3ec8a3a80..50c25f7b2 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Aug 03
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Sep 05
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Aug 12
++*options.txt*	For Vim version 9.1.  Last change: 2024 Sep 07
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1491,9 +1491,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		list:{n}    Adds an additional indent for lines that match a
+ 			    numbered or bulleted list (using the
+ 			    'formatlistpat' setting).
+-		list:-1	    Uses the length of a match with 'formatlistpat'
+-			    for indentation.
+ 			    (default: 0)
++		list:-1	    Uses the width of a match with 'formatlistpat' for
++			    indentation.
+ 		column:{n}  Indent at column {n}. Will overrule the other
+ 			    sub-options. Note: an additional indent may be
+ 			    added for the 'showbreak' setting.
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index d3e5f6785..46b75bdff 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.1.  Last change: 2024 Jul 09
++*windows.txt*   For Vim version 9.1.  Last change: 2024 Sep 07
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -828,8 +828,8 @@ accordingly.  Vim proceeds in this order:
- 	easy to copy it to another system.
+@@ -67,11 +67,17 @@ active		  yes		 yes		  'a'
+ hidden		  no		 yes		  'h'
+ inactive	  no		 no		  ' '
  
- 	If Vim was started with "-u filename", the file "filename" is used.
--	All following initializations until 4. are skipped. $MYVIMRC is not
--	set.
-+	All following initializations until 4. are skipped. $MYVIMRC and
-+	$MYVIMDIR are not set.
- 	"vim -u NORC" can be used to skip these initializations without
- 	reading a file.  "vim -u NONE" also skips loading plugins.  |-u|
+-Note: All CTRL-W commands can also be executed with |:wincmd|, for those
+-places where a Normal mode command can't be used or is inconvenient.
++							*buffer-reuse*
++Each buffer has a unique number and the number will not change within a Vim
++session.  The |bufnr()| and |bufname()| functions can be used to convert
++between a buffer name and the buffer number.  There is one exception: if a new
++empty buffer is created and it is not modified, the buffer will be re-used
++when loading another file into that buffer. This also means the buffer number
++will not change.
  
-@@ -847,11 +847,13 @@ accordingly.  Vim proceeds in this order:
- 	'compatible' is only done later.  Add a ":set nocp" command if you
- 	like.  For the Macintosh the $VIMRUNTIME/macmap.vim is read.
+ The main Vim window can hold several split windows.  There are also tab pages
+ |tab-page|, each of which can hold multiple windows.
++
+ 					*window-ID* *winid* *windowid*
+ Each window has a unique identifier called the window ID.  This identifier
+ will not change within a Vim session. The |win_getid()| and |win_id2tabwin()|
+@@ -83,9 +89,6 @@ across tabs.  For most functions that take a window ID or a window number, the
+ window number only applies to the current tab, while the window ID can refer
+ to a window in any tab.
  
--	  *VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc* *$MYVIMRC*
-+	  *VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc* *$MYVIMRC* *$MYVIMDIR*
-      c. Five places are searched for initializations.  The first that exists
- 	is used, the others are ignored.  The $MYVIMRC environment variable is
- 	set to the file that was first found, unless $MYVIMRC was already set
--	and when using VIMINIT.
-+	and when using VIMINIT.  The $MYVIMDIR environment variable is
-+	set to the personal 'rtp' directory, however it is not verified
-+	that the directory actually exists.
- 	I   The environment variable VIMINIT (see also |compatible-default|) (*)
- 	    The value of $VIMINIT is used as an Ex command line.
- 	II  The user vimrc file(s):
-@@ -971,7 +973,8 @@ accordingly.  Vim proceeds in this order:
- 	The |VimEnter| autocommands are executed.
+-Each buffer has a unique number and the number will not change within a Vim
+-session.  The |bufnr()| and |bufname()| functions can be used to convert
+-between a buffer name and the buffer number.
  
- The $MYVIMRC or $MYGVIMRC file will be set to the first found vimrc and/or
--gvimrc file.
-+gvimrc file while $MYVIMDIR is set to the users personal runtime directory
-+'rtp' (typically the first entry in 'runtimepath').
+ ==============================================================================
+ 2. Starting Vim						*windows-starting*
+@@ -485,6 +488,10 @@ These commands can also be executed with ":wincmd":
+ 			:exe nr .. "wincmd w"
+ <		This goes to window "nr".
  
- 
- Some hints on using initializations ~
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index fc07dc443..03c8d6c78 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -41668,6 +41668,10 @@ Python3 support in OpenVMS.
- Support for |fuzzy-matching| during |ins-completion| with the "fuzzy"
- values of the 'completeopt' setting
- 
-+The environment variable |$MYVIMDIR| is set to the users personal runtime
-+directory ($HOME/.vim or $HOME/.config/vim on Linux, $HOME/vimfiles
-+on Windows)
++Note: All CTRL-W commands can also be executed with |:wincmd|, for those
++places where a Normal mode command can't be used or is inconvenient (e.g.
++in a browser-based terminal).
 +
  ==============================================================================
- COMPILE TIME CHANGES					*compile-changes-9.2*
+ 5. Moving windows around				*window-moving*
  
