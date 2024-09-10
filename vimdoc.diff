@@ -1,154 +1,39 @@
-diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
-index e86932c35..7d1781198 100644
---- a/runtime/doc/pi_getscript.txt
-+++ b/runtime/doc/pi_getscript.txt
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index e44c5d5ee..6942a584b 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*pi_getscript.txt*  For Vim version 9.1.  Last change: 2017 Aug 01
-+*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Sep 08
- >
- 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
- <
-@@ -20,7 +20,7 @@ Copyright: (c) 2004-2012 by Charles E. Campbell	*glvs-copyright*
- Getscript is a plugin that simplifies retrieval of the latest versions of the
- scripts that you yourself use!  Typing |:GLVS| will invoke getscript; it will
- then use the <GetLatestVimScripts.dat> (see |GetLatestVimScripts_dat|) file to
--get the latest versions of scripts listed therein from http://vim.sf.net/.
-+get the latest versions of scripts listed therein from https://www.vim.org/.
- 
- ==============================================================================
- 1. Contents				*glvs-contents* *glvs* *getscript*
-@@ -59,9 +59,9 @@ the "important" part of it is the first two lines.
- 
- Your computer needs to have wget or curl for GetLatestVimScripts to do its work.
- 
--	1. if compressed:  gunzip getscript.vba.gz
-+	1. if compressed:  gunzip getscript.vmb.gz
- 	2. Unix:
--		vim getscript.vba
-+		vim getscript.vmb
- 		:so %
- 		:q
- 		cd ~/.vim/GetLatest
-@@ -70,7 +70,7 @@ Your computer needs to have wget or curl for GetLatestVimScripts to do its work.
- 		list of desired plugins -- see |GetLatestVimScripts_dat|)
- 
- 	3. Windows:
--		vim getscript.vba
-+		vim getscript.vmb
- 		:so %
- 		:q
- 		cd **path-to-vimfiles**/GetLatest
-@@ -281,11 +281,14 @@ With :AutoInstall: enabled, as it is by default, files which end with
- 
- 	---.tar.bz2  : decompressed & untarred in .vim/ directory
- 	---.vba.bz2  : decompressed in .vim/ directory, then vimball handles it
-+	---.vmb.bz2  : decompressed in .vim/ directory, then vimball handles it
- 	---.vim.bz2  : decompressed & moved into .vim/plugin directory
- 	---.tar.gz   : decompressed & untarred in .vim/ directory
- 	---.vba.gz   : decompressed in .vim/ directory, then vimball handles it
-+	---.vmb.gz   : decompressed in .vim/ directory, then vimball handles it
- 	---.vim.gz   : decompressed & moved into .vim/plugin directory
--	---.vba      : unzipped in .vim/ directory
-+	---.vba      : moved to .vim/ directory, then vimball handles it
-+	---.vmb      : moved to .vim/ directory, then vimball handles it
- 	---.vim      : moved to .vim/plugin directory
- 	---.zip      : unzipped in .vim/ directory
- 
-@@ -300,7 +303,7 @@ When is a script not auto-installable?  Let me give an example:
- The <blockhl.vim> script provides block highlighting for C/C++ programs; it is
- available at:
- 
--	http://vim.sourceforge.net/scripts/script.php?script_id=104
-+	https://www.vim.org/scripts/script.php?script_id=104
- 
- Currently, vim's after/syntax only supports by-filetype scripts (in
- blockhl.vim's case, that's after/syntax/c.vim).  Hence, auto-install would
-@@ -309,7 +312,7 @@ possibly overwrite the current user's after/syntax/c.vim file.
- In my own case, I use <aftersyntax.vim> (renamed to after/syntax/c.vim) to
- allow a after/syntax/c/ directory:
- 
--	http://vim.sourceforge.net/scripts/script.php?script_id=1023
-+	https://www.vim.org/scripts/script.php?script_id=1023
- 
- The script allows multiple syntax files to exist separately in the
- after/syntax/c subdirectory.  I can't bundle aftersyntax.vim in and build an
-@@ -345,17 +348,22 @@ after/syntax/c.vim contained in it to overwrite a user's c.vim.
- 		Doesn't override vimball installation.
- >
- 	g:GetLatestVimScripts_scriptaddr
--<       default='http://vim.sourceforge.net/script.php?script_id='
-+<        default='https://www.vim.org/scripts/script.php?script_id='
- 		Override this if your system needs
--	  ...  ='http://vim.sourceforge.net/script/script.php?script_id='
--
-+	  ...  ='http://vim.sourceforge.net/script.php?script_id='
-+>
-+	g:GetLatestVimScripts_downloadaddr
-+<        default='https://www.vim.org/scripts/download_script.php?src_id='
-+		Override this if your system needs
-+	  ...  ='http://vim.sourceforge.net/scripts/download_script.php?src_id='
-+>
- ==============================================================================
- 8. GetLatestVimScripts Algorithm		*glvs-algorithm* *glvs-alg*
- 
- The Vim sourceforge page dynamically creates a page by keying off of the
- so-called script-id.  Within the webpage of
- 
--	http://vim.sourceforge.net/scripts/script.php?script_id=40
-+	https://www.vim.org/scripts/script.php?script_id=40
- 
- is a line specifying the latest source-id (src_id).  The source identifier
- numbers are always increasing, hence if the src_id is greater than the one
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 6b46e06df..0a04abbdb 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -1,4 +1,4 @@
--*textprop.txt*  For Vim version 9.1.  Last change: 2024 Jun 08
-+*textprop.txt*  For Vim version 9.1.  Last change: 2024 Sep 08
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Aug 20
++*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Sep 09
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -140,10 +140,10 @@ prop_add({lnum}, {col}, {props})
- 		   bufnr	buffer to add the property to; when omitted
- 				the current buffer is used
- 		   id		user defined ID for the property; must be a
--				number, should be positive; when using "text"
--				then "id" must not be present and will be set
--				automatically to a negative number; otherwise
--				zero is used
-+				number, should be positive |E1510|;
-+				when using "text" then "id" must not be
-+				present and will be set automatically to a
-+				negative number; otherwise zero is used
- 							*E1305*
- 		   text		text to be displayed before {col}, or
- 				above/below the line if {col} is zero; prepend
-@@ -271,7 +271,7 @@ prop_add_list({props}, [{item}, ...])			*prop_add_list()*
- 			call prop_add_list(#{type: 'MyProp', id: 2},
- 					\ [[1, 4, 1, 7],
- 					\  [1, 15, 1, 20],
--					\  [2, 30, 3, 30]]
-+					\  [2, 30, 3, 30]])
- <
- 		Can also be used as a |method|: >
- 			GetProp()->prop_add_list([[1, 1, 1, 2], [1, 4, 1, 8]])
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 46b75bdff..915db37e9 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
-@@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.1.  Last change: 2024 Sep 07
-+*windows.txt*   For Vim version 9.1.  Last change: 2024 Sep 08
+@@ -1335,6 +1335,18 @@ If Vim was started from the compiler, the :sh and some :!  commands will not
+ work, because Vim is then running in the same process as the compiler and
+ stdin (standard input) will not be interactive.
  
++GROFF					*quickfix-groff* *compiler-groff*
++
++The GROFF compiler plugin uses the mom macro set (documented in the groff_mom
++manpage) as input and expects that the output file type extension is passed to
++make, say :make html or :make pdf.
++
++Additional arguments can be passed to groff by setting them in
++`b:groff_compiler_args` or `g:groff_compiler_args`. The `language` argument
++passed to groff is set using 'spelllang'; it can be overridden by setting
++`b:groff_compiler_lang`. The default enconding is `UTF-8` and can be changed
++by setting `b:groff_compiler_encoding` or `g:groff_compiler_encoding`.
++
+ PANDOC					*quickfix-pandoc* *compiler-pandoc*
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -394,7 +394,7 @@ CTRL-W CTRL-C						*CTRL-W_CTRL-C*
- 		to the buffer are not written and won't get lost, so this is a
- 		"safe" command.
+ The Pandoc compiler plugin expects that an output file type extension is
+@@ -1347,8 +1359,7 @@ Additional arguments can be passed to pandoc:
  
--:hid[e] {cmd}	Execute {cmd} with 'hidden' is set.  The previous value of
-+:hid[e] {cmd}	Execute {cmd} with 'hidden' set.  The previous value of
- 		'hidden' is restored after {cmd} has been executed.
- 		Example: >
- 		    :hide edit Makefile
+ The `--from` argument is an educated guess using the buffer file type;
+ it can be overridden by setting `b:pandoc_compiler_from`.
+-Likewise the `--metadata lang` argument is set using `&spelllang`;
+-it can be overridden by setting `b:pandoc_compiler_lang`.
++The `--metadata lang` argument is set using 'spelllang';
+ If `--from=markdown` is assumed and no title set in a title header or
+ YAML block, then the filename (without extension) is used as the title.
+ 
