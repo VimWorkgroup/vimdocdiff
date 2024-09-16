@@ -1,89 +1,47 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 4192b81ca..af918d1a9 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 02885e6c5..84bf30f0c 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Aug 08
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Sep 10
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8963,6 +8963,9 @@ search({pattern} [, {flags} [, {stopline} [, {timeout} [, {skip}]]]])
- 		{timeout} is 500 the search stops after half a second.
- 		The value must not be negative.  A zero value is like not
- 		giving the argument.
-+
-+		Note: the timeout is only considered when searching, not
-+		while evaluating the {skip} expression.
- 		{only available when compiled with the |+reltime| feature}
- 
- 		If the {skip} expression is given it is evaluated with the
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 50c25f7b2..26779ad8e 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Sep 07
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Sep 10
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2148,10 +2148,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
- 		    allows for more flexible and intuitive matching, where
- 		    characters can be skipped and matches can be found even
--		    if the exact sequence is not typed.  Only makes a
--		    difference how completion candidates are reduced from the
--		    list of alternatives, but not how the candidates are
--		    collected (using different completion types).
-+		    if the exact sequence is not typed.
- 
- 					*'completepopup'* *'cpp'*
- 'completepopup' 'cpp'	string (default empty)
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 6942a584b..ea5f01d25 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Sep 09
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Sep 10
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 Sep 05
++*starting.txt*  For Vim version 9.1.  Last change: 2024 Sep 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1276,6 +1276,7 @@ not "b:current_compiler".  What the command actually does is the following:
+@@ -1077,9 +1077,10 @@ This should work well for new Vim users.  If you create your own .vimrc, it is
+ recommended to add these lines somewhere near the top: >
+ 	unlet! skip_defaults_vim
+ 	source $VIMRUNTIME/defaults.vim
+-Then Vim works like before you had a .vimrc. Copying $VIMRUNTIME/vimrc_example
+-is way to do this.  Alternatively, you can copy defaults.vim to your .vimrc
+-and modify it (but then you won't get updates when it changes).
++Then Vim works like before you had a .vimrc.
++Copying $VIMRUNTIME/vimrc_example.vim to your .vimrc is another way to do
++this. Alternatively, you can copy defaults.vim to your .vimrc and modify it
++(but then you won't get updates when it changes).
  
- For writing a compiler plugin, see |write-compiler-plugin|.
+ If you don't like some of the defaults, you can still source defaults.vim and
+ revert individual settings.  See the defaults.vim file for hints on how to
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 910aee5a1..7650433b7 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Aug 31
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Sep 11
  
-+Use the |compiler-make| plugin to undo the effect of a compiler plugin.
  
- DOTNET							*compiler-dotnet*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2155,6 +2155,12 @@ In order to highlight nested parens with different colors, define colors for
+ or >
+ 	:hi javaParen ctermfg=blue guifg=#0000ff
  
-@@ -1291,7 +1292,6 @@ Example: limit output to only display errors, and suppress the project name: >
- 	let dotnet_show_project_file = v:false
- 	compiler dotnet
- <
--
- GCC					*quickfix-gcc*	*compiler-gcc*
- 
- There's one variable you can set for the GCC compiler:
-@@ -1302,7 +1302,6 @@ g:compiler_gcc_ignore_unmatched_lines
- 				commands run from make are generating false
- 				positives.
- 
--
- JAVAC							*compiler-javac*
- 
- Commonly used compiler options can be added to 'makeprg' by setting the
-@@ -1310,6 +1309,12 @@ g:javac_makeprg_params variable.  For example: >
- 
- 	let g:javac_makeprg_params = "-Xlint:all -encoding utf-8"
- <
-+GNU MAKE						*compiler-make*
++Certain modifiers are incompatible with each other, e.g. `abstract` and
++`final`: >
++	:syn list javaConceptKind
++and can be differently highlighted as a group than other modifiers with >
++	:hi link javaConceptKind NonText
 +
-+Since the default make program is "make", the compiler plugin for make,
-+:compiler make, will reset the 'makeprg' and 'errorformat' option to
-+the default values and unlet any variables that may have been set by a
-+previous compiler plugin.
- 
- MANX AZTEC C				*quickfix-manx* *compiler-manx*
- 
+ If you notice highlighting errors while scrolling backwards, which are fixed
+ when redrawing with CTRL-L, try setting the "g:java_minlines" variable to
+ a larger number: >
