@@ -1,123 +1,21 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index af918d1a9..fe0b9aa33 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/os_dos.txt b/runtime/doc/os_dos.txt
+index 1b738f43a..96ef39d6f 100644
+--- a/runtime/doc/os_dos.txt
++++ b/runtime/doc/os_dos.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Sep 10
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Sep 23
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -232,8 +232,9 @@ getcharsearch()			Dict	last character search
- getcharstr([{expr}])		String	get one character from the user
- getcmdcompltype()		String	return the type of the current
- 					command-line completion
--getcmdline()			String	return the current command-line
-+getcmdline()			String	return the current command-line input
- getcmdpos()			Number	return cursor position in command-line
-+getcmdprompt()			String	return the current command-line prompt
- getcmdscreenpos()		Number	return cursor screen position in
- 					command-line
- getcmdtype()			String	return current command-line type
-@@ -3978,21 +3979,21 @@ getcmdcompltype()					*getcmdcompltype()*
- 		Only works when the command line is being edited, thus
- 		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
- 		See |:command-completion| for the return string.
--		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()| and
--		|setcmdline()|.
-+		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
-+		|getcmdprompt()| and |setcmdline()|.
- 		Returns an empty string when completion is not defined.
- 
- 		Return type: |String|
- 
- 
- getcmdline()						*getcmdline()*
--		Return the current command-line.  Only works when the command
--		line is being edited, thus requires use of |c_CTRL-\_e| or
--		|c_CTRL-R_=|.
-+		Return the current command-line input.  Only works when the
-+		command line is being edited, thus requires use of
-+		|c_CTRL-\_e| or |c_CTRL-R_=|.
- 		Example: >
- 			:cmap <F7> <C-\>eescape(getcmdline(), ' \')<CR>
--<		Also see |getcmdtype()|, |getcmdpos()|, |setcmdpos()| and
--		|setcmdline()|.
-+<		Also see |getcmdtype()|, |getcmdpos()|, |setcmdpos()|,
-+		|getcmdprompt()| and |setcmdline()|.
- 		Returns an empty string when entering a password or using
- 		|inputsecret()|.
- 
-@@ -4005,12 +4006,23 @@ getcmdpos()						*getcmdpos()*
- 		Only works when editing the command line, thus requires use of
- 		|c_CTRL-\_e| or |c_CTRL-R_=| or an expression mapping.
- 		Returns 0 otherwise.
--		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()| and
--		|setcmdline()|.
-+		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
-+		|getcmdprompt()| and |setcmdline()|.
- 
- 		Return type: |Number|
- 
- 
-+getcmdprompt()						*getcmdprompt()*
-+		Return the current command-line prompt when using functions
-+		like |input()| or |confirm()|.
-+		Only works when the command line is being edited, thus
-+		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
-+		Also see |getcmdtype()|, |getcmdline()|, |getcmdpos()|,
-+		|setcmdpos()| and |setcmdline()|.
-+
-+		Return type: |String|
-+
-+
- getcmdscreenpos()					*getcmdscreenpos()*
- 		Return the screen position of the cursor in the command line
- 		as a byte count.  The first column is 1.
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 765eab504..27df85ac7 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Jun 09
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Sep 23
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -1070,7 +1070,8 @@ Buffers, windows and the argument list:
- Command line:					*command-line-functions*
- 	getcmdcompltype()	get the type of the current command line
- 				completion
--	getcmdline()		get the current command line
-+	getcmdline()		get the current command line input
-+	getcmdprompt()		get the current command line prompt
- 	getcmdpos()		get position of the cursor in the command line
- 	getcmdscreenpos()	get screen position of the cursor in the
- 				command line
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 03c8d6c78..94e662d6d 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Aug 23
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Sep 23
+-*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Apr 25
++*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Sep 24
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41577,7 +41577,7 @@ Changed~
- - the default for 'commentstring' contains whitespace padding to have
-   automatic comments look nicer |comment-install|
- - 'completeopt' is now a |global-local| option.
--- 'nrformat' accepts the new "blank" suboption, to determine a signed or
-+- 'nrformats' accepts the new "blank" suboption, to determine a signed or
-   unsigned number based on whitespace in front of a minus sign.
- - allow to specify a priority when defining a new sign |:sign-define|
- - provide information about function arguments using the get(func, "arity")
-@@ -41608,6 +41608,7 @@ Functions: ~
- |diff()|		diff two Lists of strings
- |filecopy()|		copy a file {from} to {to}
- |foreach()|		apply function to List items
-+|getcmdprompt()|        get prompt for input()/confirm()
- |getregion()|		get a region of text from a buffer
- |getregionpos()|	get a list of positions for a region
- |id()|			get unique identifier for a Dict, List, Object,
+@@ -195,8 +195,8 @@ The defaults for the various highlight modes are:
+ 	t_so	 31	 standout mode: White (15) text on DarkBlue (16)
+ 	t_se	  0	 standout mode end (revert to default)
+ 
+-	t_czh	225	 italic mode: DarkBlue text (1) on Yellow (224)
+-	t_czr	  0	 italic mode end (revert to default)
++	t_ZH	225	 italic mode: DarkBlue text (1) on Yellow (224)
++	t_ZR	  0	 italic mode end (revert to default)
+ 
+ 	t_us	 67	 underline mode: DarkCyan text (3) on DarkRed (64)
+ 	t_ue	  0	 underline mode end (revert to default)
