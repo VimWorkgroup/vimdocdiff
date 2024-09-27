@@ -1,21 +1,129 @@
-diff --git a/runtime/doc/os_dos.txt b/runtime/doc/os_dos.txt
-index 1b738f43a..96ef39d6f 100644
---- a/runtime/doc/os_dos.txt
-+++ b/runtime/doc/os_dos.txt
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index c38292604..ec944354e 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Apr 25
-+*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Sep 24
+-*map.txt*       For Vim version 9.1.  Last change: 2024 Aug 31
++*map.txt*       For Vim version 9.1.  Last change: 2024 Sep 26
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -195,8 +195,8 @@ The defaults for the various highlight modes are:
- 	t_so	 31	 standout mode: White (15) text on DarkBlue (16)
- 	t_se	  0	 standout mode end (revert to default)
+@@ -1832,7 +1832,7 @@ The valid escape sequences are
+ 		nothing. Supported modifiers are |:aboveleft|, |:belowright|,
+ 		|:botright|, |:browse|, |:confirm|, |:hide|, |:horizontal|,
+ 		|:keepalt|, |:keepjumps|, |:keepmarks|, |:keeppatterns|,
+-		|:leftabove|, |:lockmarks|, |:noautocmd|, |:noswapfile|
++		|:leftabove|, |:lockmarks|, |:noautocmd|, |:noswapfile|,
+ 		|:rightbelow|, |:sandbox|, |:silent|, |:tab|, |:topleft|,
+ 		|:unsilent|, |:verbose|, and |:vertical|.
+ 		Note that |:filter| is not supported.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 26779ad8e..94671d17c 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Sep 10
++*options.txt*	For Vim version 9.1.  Last change: 2024 Sep 26
  
--	t_czh	225	 italic mode: DarkBlue text (1) on Yellow (224)
--	t_czr	  0	 italic mode end (revert to default)
-+	t_ZH	225	 italic mode: DarkBlue text (1) on Yellow (224)
-+	t_ZR	  0	 italic mode end (revert to default)
  
- 	t_us	 67	 underline mode: DarkCyan text (3) on DarkRed (64)
- 	t_ue	  0	 underline mode end (revert to default)
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -396,13 +396,14 @@ between string and number-based options.
+ 			options which are different from the default.
+ 
+ For buffer-local and window-local options:
+-	Command		 global value	    local value ~
+-      :set option=value	     set		set
+- :setlocal option=value	      -			set
+-:setglobal option=value	     set		 -
+-      :set option?	      -		       display
+- :setlocal option?	      -		       display
+-:setglobal option?	    display		 -
++	Command		 global value	  local value	       condition ~
++      :set option=value	     set	      set
++ :setlocal option=value	      -		      set
++:setglobal option=value	     set	       -
++      :set option?	      -		     display	 local value is set
++      :set option?	    display	       -	 local value is not set
++ :setlocal option?	      -		     display
++:setglobal option?	    display	       -
+ 
+ 
+ Global options with a local value			*global-local*
+diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
+index 7d1781198..642487a49 100644
+--- a/runtime/doc/pi_getscript.txt
++++ b/runtime/doc/pi_getscript.txt
+@@ -1,8 +1,8 @@
+-*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Sep 08
++*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Sep 26
+ >
+ 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
+ <
+-Author:  Charles E. Campbell  <NcampObell@SdrPchip.AorgM-NOSPAM>
++Original Author:  Charles E. Campbell  <NcampObell@SdrPchip.AorgM-NOSPAM>
+ 	 (remove NOSPAM from the email address)
+ 						*GetLatestVimScripts-copyright*
+ Copyright: (c) 2004-2012 by Charles E. Campbell	*glvs-copyright*
+@@ -357,6 +357,35 @@ after/syntax/c.vim contained in it to overwrite a user's c.vim.
+ 		Override this if your system needs
+ 	  ...  ='http://vim.sourceforge.net/scripts/download_script.php?src_id='
+ >
++	g:GetLatestVimScripts_bunzip2
++<        default= bunzip2
++		This variable holds the name of the command to decompress .bz2
++		files
++>
++	g:GetLatestVimScripts_gunzip
++<        default= gunzip
++		This variable holds the name of the command to decompress .gz
++		files
++>
++	g:GetLatestVimScripts_unxz
++<        default= unxz
++		This variable holds the name of the command to decompress .xz
++		files
++>
++	g:GetLatestVimScripts_unzip
++<        default= unzip
++		This variable holds the name of the command to decompress .zip
++		files
++
++Note: The variables associated with decompression commands help workaround
++      crossplatform issues. For example, on Windows is possible to delegate this
++      calls into `wsl` by doing: >
++
++	let g:GetLatestVimScripts_bunzip2= "wsl -e bunzip2"
++	let g:GetLatestVimScripts_gunzip= "wsl -e gunzip"
++	let g:GetLatestVimScripts_unxz= "wsl -e unxz"
++	let g:GetLatestVimScripts_unzip= "wsl -e unzip"
++<
+ ==============================================================================
+ 8. GetLatestVimScripts Algorithm		*glvs-algorithm* *glvs-alg*
+ 
+@@ -393,6 +422,11 @@ The AutoInstall process will:
+ ==============================================================================
+ 9. GetLatestVimScripts History		*getscript-history* *glvs-hist* {{{1
+ 
++v37 Sep 23, 2024 : * Support for the new vimball's .vmb extension (old .vba
++		     extension conflicted with visual basic).
++		   * Support for |glvs-autoinstal| in ftplugins and packages.
++		   * Allow platform driven customization of decompressing
++		     commands.
+ v36 Apr 22, 2013 : * (glts) suggested use of plugin/**/*.vim instead of
+ 		     plugin/*.vim in globpath() call.
+ 		   * (Andy Wokula) got warning message when setting
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index e0ebe7eed..3cfe59ae7 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -86,8 +86,8 @@ Implement foreach()  PR  #12166
+ 
+ Errors when running tests with valgrind:
+ - test_codestyle.vim:  e.g.:
+-    command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 6: keycode_check.vim: space before tab: Expected 0 but got 7
+-    command line..script /home/mool/vim/vim90/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 10: setup.vim: trailing white space: Expected 0 but got 23
++    command line..script /home/mool/vim/vim91/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 6: keycode_check.vim: space before tab: Expected 0 but got 7
++    command line..script /home/mool/vim/vim91/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 10: setup.vim: trailing white space: Expected 0 but got 23
+ - test_gui.vim:
+     Found errors in Test_gui_mouse_event():
+ 
