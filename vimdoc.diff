@@ -1,182 +1,75 @@
-diff --git a/runtime/doc/ft_ada.txt b/runtime/doc/ft_ada.txt
-index 35dd534bb..9d07afd61 100644
---- a/runtime/doc/ft_ada.txt
-+++ b/runtime/doc/ft_ada.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index a7ed92880..0dfdff89c 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*ft_ada.txt*	For Vim version 9.1.  Last change: 2022 Mar 13
-+*ft_ada.txt*	For Vim version 9.1.  Last change: 2024 Sep 29
- 
- 
- 		    ADA FILE TYPE PLUG-INS REFERENCE MANUAL~
-@@ -48,14 +48,12 @@ ctermfg=White often shows well).
- There are several options you can select in this Ada mode. See |ft-ada-options|
- for a complete list.
- 
--To enable them, assign a value to the option.  For example, to turn one on:
-- >
--    > let g:ada_standard_types = 1
-->
--To disable them use ":unlet".  Example:
-->
--    > unlet g:ada_standard_types
--
-+To enable them, assign a value to the option.  For example, to turn one on: >
-+	let g:ada_standard_types = 1
-+<
-+To disable them use ":unlet".  Example: >
-+	unlet g:ada_standard_types
-+<
- You can just use ":" and type these into the command line to set these
- temporarily before loading an Ada file.  You can make these option settings
- permanent by adding the "let" command(s), without a colon, to your "~/.vimrc"
-@@ -158,10 +156,9 @@ several versions available which differ in the licence terms used.
- 
- The GNAT compiler plug-in will perform a compile on pressing <F7> and then
- immediately shows the result. You can set the project file to be used by
--setting:
-- >
-- > call g:gnat.Set_Project_File ('my_project.gpr')
--
-+setting: >
-+		call g:gnat.Set_Project_File ('my_project.gpr')
-+<
- Setting a project file will also create a Vim session (|views-sessions|) so -
- like with the GPS - opened files, window positions etc. will be remembered
- separately for all projects.
-diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
-index 642487a49..5f86384c6 100644
---- a/runtime/doc/pi_getscript.txt
-+++ b/runtime/doc/pi_getscript.txt
-@@ -1,4 +1,4 @@
--*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Sep 26
-+*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Sep 27
- >
- 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
- <
-@@ -424,7 +424,7 @@ The AutoInstall process will:
- 
- v37 Sep 23, 2024 : * Support for the new vimball's .vmb extension (old .vba
- 		     extension conflicted with visual basic).
--		   * Support for |glvs-autoinstal| in ftplugins and packages.
-+		   * Support for |glvs-autoinstall| in ftplugins and packages.
- 		   * Allow platform driven customization of decompressing
- 		     commands.
- v36 Apr 22, 2013 : * (glts) suggested use of plugin/**/*.vim instead of
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index a4dee26fc..1271bb689 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
-@@ -3868,7 +3868,7 @@ netrw:
- 				  netrw-safe guioptions
- 		Nov 15, 2021	* removed netrw_localrm and netrw_localrmdir
- 				  references
--		Aug 18, 2022	* (Miguel Barro) improving compatability with
-+		Aug 18, 2022	* (Miguel Barro) improving compatibility with
- 				  powershell
- 	v171:	Oct 09, 2020	* included code in s:NetrwOptionsSafe()
- 				  to allow |'bh'| to be set to delete when
-@@ -4099,7 +4099,7 @@ netrw:
- 				  The "<nowait>" modifier has been included
- 				  with most of netrw's mappings to avoid that
- 				  delay.
--		Jun 26, 2015	* |netrw-gn| mapping implemted
-+		Jun 26, 2015	* |netrw-gn| mapping implemented
- 				* :Ntree NotADir resulted in having
- 				  the tree listing expand in the error messages
- 				  window.  Fixed.
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index ea5f01d25..dc0516692 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1349,7 +1349,7 @@ make, say :make html or :make pdf.
- Additional arguments can be passed to groff by setting them in
- `b:groff_compiler_args` or `g:groff_compiler_args`. The `language` argument
- passed to groff is set using 'spelllang'; it can be overridden by setting
--`b:groff_compiler_lang`. The default enconding is `UTF-8` and can be changed
-+`b:groff_compiler_lang`. The default encoding is `UTF-8` and can be changed
- by setting `b:groff_compiler_encoding` or `g:groff_compiler_encoding`.
- 
- PANDOC					*quickfix-pandoc* *compiler-pandoc*
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 3cfe59ae7..530b05dd3 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2024 Jul 11
-+*todo.txt*      For Vim version 9.1.  Last change: 2024 Sep 29
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -38,9 +38,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
- 
--FILETYPE_FILE is defined to the same value in multiple places.
--Only use the one in feature.h.  Others too.
--
- Mapping with modifier is not recognized after a partial mapping.  Probably
- because the typeahead was simplified when looking for a matching mapping.
- Need to somehow undo the simplification.  #12002
-diff --git a/runtime/doc/undo.txt b/runtime/doc/undo.txt
-index 40edf2fdf..7a83e776e 100644
---- a/runtime/doc/undo.txt
-+++ b/runtime/doc/undo.txt
-@@ -1,4 +1,4 @@
--*undo.txt*      For Vim version 9.1.  Last change: 2022 Jun 02
-+*undo.txt*      For Vim version 9.1.  Last change: 2024 Sep 29
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 Aug 21
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Sep 29
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -164,13 +164,13 @@ This is explained in the user manual: |usr_32.txt|.
- g-			Go to older text state.  With a count repeat that many
- 			times.
- 							*:ea* *:earlier*
--:earlier {count}	Go to older text state {count} times.
--:earlier {N}s		Go to older text state about {N} seconds before.
--:earlier {N}m		Go to older text state about {N} minutes before.
--:earlier {N}h		Go to older text state about {N} hours before.
--:earlier {N}d		Go to older text state about {N} days before.
-+:ea[rlier] {count}	Go to older text state {count} times.
-+:ea[rlier] {N}s		Go to older text state about {N} seconds before.
-+:ea[rlier] {N}m		Go to older text state about {N} minutes before.
-+:ea[rlier] {N}h		Go to older text state about {N} hours before.
-+:ea[rlier] {N}d		Go to older text state about {N} days before.
+@@ -698,6 +698,28 @@ Remember to manually trigger the |FileType| event from a buffer with a Java
+ file loaded in it each time after assigning a new value to the variable: >
+ 	doautocmd FileType
+ <
++Markdown documentation comments may contain common runs of vertical leading
++whitespace following the comment marks (`///`) for aesthetic reasons; however,
++some horizontal runs of leading whitespace are significant in Markdown because
++they denote code blocks etc.  For convenience, a 'formatexpr' function is
++provided for the |gq| operator.  As long as neither "g:java_ignore_javadoc"
++nor "g:java_ignore_markdown" is defined, the reformatting of Markdown comments
++can be enabled on demand with: >
++	setlocal formatexpr=g:javaformat#RemoveCommonMarkdownWhitespace()
++<
++Or for Vim versions less than `7.4.265`, with: >
++	setlocal formatexpr=javaformat#RemoveCommonMarkdownWhitespace()
++<
++This function accepts a range of lines, removes a common run of vertical
++leading whitespace, and rewrites the lines of the range.  Depending on the
++author's layout style and the comment contents, which lines to select for
++reformatting can vary from the whole comment to only some portion of it.
++
++To enable the recognition of Markdown comments each time after removing
++"g:java_ignore_markdown" or "g:java_ignore_javadoc", remember to manually
++re-source "javaformat.vim" for Vim versions greater than `8.2.1397`: >
++	runtime autoload/javaformat.vim
++<
  
--:earlier {N}f		Go to older text state {N} file writes before.
-+:ea[rlier] {N}f		Go to older text state {N} file writes before.
- 			When changes were made since the last write
- 			":earlier 1f" will revert the text to the state when
- 			it was written.  Otherwise it will go to the write
-@@ -183,13 +183,13 @@ g-			Go to older text state.  With a count repeat that many
- g+			Go to newer text state.  With a count repeat that many
- 			times.
- 							*:lat* *:later*
--:later {count}		Go to newer text state {count} times.
--:later {N}s		Go to newer text state about {N} seconds later.
--:later {N}m		Go to newer text state about {N} minutes later.
--:later {N}h		Go to newer text state about {N} hours later.
--:later {N}d		Go to newer text state about {N} days later.
-+:lat[er] {count}		Go to newer text state {count} times.
-+:lat[er] {N}s		Go to newer text state about {N} seconds later.
-+:lat[er] {N}m		Go to newer text state about {N} minutes later.
-+:lat[er] {N}h		Go to newer text state about {N} hours later.
-+:lat[er] {N}d		Go to newer text state about {N} days later.
+ JSON-FORMAT						*ft-json-plugin*
  
--:later {N}f		Go to newer text state {N} file writes later.
-+:lat[er] {N}f		Go to newer text state {N} file writes later.
- 			When at the state of the last file write, ":later 1f"
- 			will go to the newest text state.
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 4a5b07c90..ff8093617 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Sep 19
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Sep 28
  
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 94e662d6d..147f34526 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -41620,7 +41620,7 @@ Functions: ~
  
- Autocommands: ~
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2106,7 +2106,8 @@ respectively.
+ Javadoc is a program that takes special comments out of Java program files and
+ creates HTML pages.  The standard configuration will highlight this HTML code
+ similarly to HTML files (see |html.vim|).  You can even add JavaScript and CSS
+-inside this code (see below).  The HTML rendering diverges as follows:
++inside this code (see below).  The HTML rendering and the Markdown rendering
++diverge as follows:
+   1. The first sentence (all characters up to the first period `.`, which is
+      followed by a whitespace character or a line terminator, or up to the
+      first block tag, e.g. `@param`, `@return`) is colored as
+@@ -2119,8 +2120,14 @@ inside this code (see below).  The HTML rendering diverges as follows:
+ 	*Special	special symbols
+      and some of their arguments are colored as
+ 	*Function	function names.
+-To turn this feature off, add the following line to your startup file: >
++To turn this feature off for both HTML and Markdown, add the following line to
++your startup file: >
+ 	:let g:java_ignore_javadoc = 1
++Alternatively, only suppress HTML comments or Markdown comments: >
++	:let g:java_ignore_html = 1
++	:let g:java_ignore_markdown = 1
++
++See |ft-java-plugin| for additional support available for Markdown comments.
  
--|CursorMovedC|		after the cursor was moved in the comamnd-line
-+|CursorMovedC|		after the cursor was moved in the command-line
- |KeyInputPre|		before processing any key event in any mode
- |SessionWritePost|	after writing the session file |:mksession|
- |TermResponseAll|	after the terminal response to |t_RV| and others is
+ If you use the special Javadoc comment highlighting described above, you can
+ also turn on special highlighting for JavaScript, Visual Basic scripts, and
