@@ -1,802 +1,98 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index d1ef7ba42..a50fc74e5 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -1,4 +1,4 @@
--*cmdline.txt*   For Vim version 9.1.  Last change: 2024 Aug 20
-+*cmdline.txt*   For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -481,13 +481,13 @@ The 'wildignorecase' option can be set to ignore case in filenames.  For
- completing other texts (e.g. command names), the 'ignorecase' option is used
- instead (fuzzy matching always ignores case, however).
- 
--If you like tcsh's autolist completion, you can use this mapping:
-+If you like tcsh's autolist completion, you can use this mapping: >
- 	:cnoremap X <C-L><C-D>
- (Where X is the command key to use, <C-L> is CTRL-L and <C-D> is CTRL-D)
- This will find the longest match and then list all matching files.
- 
- If you like tcsh's autolist completion, you can use the 'wildmode' option to
--emulate it.  For example, this mimics autolist=ambiguous:
-+emulate it.  For example, this mimics autolist=ambiguous: >
- 	:set wildmode=longest,list
- This will find the longest match with the first 'wildchar', then list all
- matching files with the next.
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 0dfdff89c..252551c35 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Sep 29
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -776,7 +776,7 @@ Global mapping:
- 
- Local mappings:
- <Plug>ManBS
--<LocalLeader>h	Clear backspace <BS> characters from the buffer
-+<LocalLeader>h	Clear backspace <BS> characters from the buffer.
- CTRL-]		Jump to the manual page for the word under the cursor.
- CTRL-T		Jump back to the previous manual page.
- 
-diff --git a/runtime/doc/if_tcl.txt b/runtime/doc/if_tcl.txt
-index 4ed789a0a..1589178a8 100644
---- a/runtime/doc/if_tcl.txt
-+++ b/runtime/doc/if_tcl.txt
-@@ -1,4 +1,4 @@
--*if_tcl.txt*    For Vim version 9.1.  Last change: 2022 Jan 08
-+*if_tcl.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Ingo Wilken
-@@ -461,14 +461,14 @@ Input from stdin is currently not supported.
- Here are a few small (and maybe useful) Tcl scripts.
- 
- This script sorts the lines of the entire buffer (assume it contains a list
--of names or something similar):
-+of names or something similar): >
- 	set buf $::vim::current(buffer)
- 	set lines [$buf get top bottom]
- 	set lines [lsort -dictionary $lines]
- 	$buf set top bottom $lines
- 
- This script reverses the lines in the buffer.  Note the use of "::vim::lbase"
--and "$buf last" to work with any line number setting.
-+and "$buf last" to work with any line number setting: >
- 	set buf $::vim::current(buffer)
- 	set t $::vim::lbase
- 	set b [$buf last]
-@@ -481,7 +481,7 @@ and "$buf last" to work with any line number setting.
- 		incr b -1
- 	}
- 
--This script adds a consecutive number to each line in the current range:
-+This script adds a consecutive number to each line in the current range: >
- 	set buf $::vim::current(buffer)
- 	set i $::vim::range(start)
- 	set n 1
-@@ -491,17 +491,17 @@ This script adds a consecutive number to each line in the current range:
- 		incr i ; incr n
- 	}
- 
--The same can also be done quickly with two Ex commands, using ":tcldo":
-+The same can also be done quickly with two Ex commands, using ":tcldo": >
- 	:tcl set n 1
- 	:[range]tcldo set line "$n\t$line" ; incr n
- 
--This procedure runs an Ex command on each buffer (idea stolen from Ron Aaron):
-+This procedure runs an Ex command on each buffer (idea stolen from Ron Aaron): >
- 	proc eachbuf { cmd } {
- 		foreach b [::vim::buffer list] {
- 			$b command $cmd
- 		}
- 	}
--Use it like this:
-+Use it like this: >
- 	:tcl eachbuf %s/foo/bar/g
- Be careful with Tcl's string and backslash substitution, tough.  If in doubt,
- surround the Ex command with curly braces.
-@@ -509,7 +509,7 @@ surround the Ex command with curly braces.
- 
- If you want to add some Tcl procedures permanently to vim, just place them in
- a file (e.g. "~/.vimrc.tcl" on Unix machines), and add these lines to your
--startup file (usually "~/.vimrc" on Unix):
-+startup file (usually "~/.vimrc" on Unix): >
- 	if has("tcl")
- 		tclfile ~/.vimrc.tcl
- 	endif
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 2e57423fb..9266f3a40 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
-@@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 9.1.  Last change: 2024 Feb 29
-+*indent.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -117,7 +117,7 @@ If you really want to reindent when you type 'o', 'O', 'e', '0', '<', '>',
- "<!>", respectively, for those keys.
- 
- For an emacs-style indent mode where lines aren't indented every time you
--press <Enter> but only if you press <Tab>, I suggest:
-+press <Enter> but only if you press <Tab>, I suggest: >
- 	:set cinkeys=0{,0},:,0#,!<Tab>,!^F
- You might also want to switch off 'autoindent' then.
- 
-diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
-index 12808a5b5..b39f3314f 100644
---- a/runtime/doc/intro.txt
-+++ b/runtime/doc/intro.txt
-@@ -1,4 +1,4 @@
--*intro.txt*     For Vim version 9.1.  Last change: 2024 Apr 11
-+*intro.txt*     For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -825,7 +825,7 @@ The current mode is "-- INSERT --" or "-- REPLACE --", see |'showmode'|.  The
- command characters are those that you typed but were not used yet.
- 
- If you have a slow terminal you can switch off the status messages to speed
--up editing:
-+up editing: >
- 	:set nosc noru nosm
- 
- If there is an error, an error message will be shown for at least one second
 diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 62947c0af..99fd3e24b 100644
+index 99fd3e24b..2637480ae 100644
 --- a/runtime/doc/motion.txt
 +++ b/runtime/doc/motion.txt
 @@ -1,4 +1,4 @@
--*motion.txt*    For Vim version 9.1.  Last change: 2024 Aug 28
-+*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
+-*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
++*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 06
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -169,9 +169,9 @@ h		or					*h*
- CTRL-H		or					*CTRL-H* *<BS>*
- <BS>			[count] characters to the left.  |exclusive| motion.
- 			Note: If you prefer <BS> to delete a character, use
--			the mapping:
-+			the mapping: >
- 				:map CTRL-V<BS>		X
--			(to enter "CTRL-V<BS>" type the CTRL-V key, followed
-+<			(to enter "CTRL-V<BS>" type the CTRL-V key, followed
- 			by the <BS> key)
- 			See |:fixdel| if the <BS> key does not do what you
- 			want.
-diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
-index 5f86384c6..869314cad 100644
---- a/runtime/doc/pi_getscript.txt
-+++ b/runtime/doc/pi_getscript.txt
+@@ -68,10 +68,12 @@ When doubling the operator it operates on a line.  When using a count, before
+ or after the first character, that many lines are operated upon.  Thus `3dd`
+ deletes three lines. A count before and after the first character is
+ multiplied, thus `2y3y` yanks six lines.
+-
++						*operator-resulting-pos*
+ After applying the operator the cursor is mostly left at the start of the text
+ that was operated upon.  For example, "yfe" doesn't move the cursor, but "yFe"
+ moves the cursor leftwards to the "e" where the yank started.
++The 'startofline' option applies only to the "d", "<<", "==" and ">>" linewise
++operations.
+ 
+ 						*linewise* *characterwise*
+ The operator either affects whole lines, or the characters between the start
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 10a06804d..f0844e21b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Sep 27
-+*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
- >
- 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
- <
-@@ -281,14 +281,14 @@ With :AutoInstall: enabled, as it is by default, files which end with
- 
- 	---.tar.bz2  : decompressed & untarred in .vim/ directory
- 	---.vba.bz2  : decompressed in .vim/ directory, then vimball handles it
--	---.vmb.bz2  : decompressed in .vim/ directory, then vimball handles it
-+	---.vmb.bz2  : idem
- 	---.vim.bz2  : decompressed & moved into .vim/plugin directory
- 	---.tar.gz   : decompressed & untarred in .vim/ directory
- 	---.vba.gz   : decompressed in .vim/ directory, then vimball handles it
--	---.vmb.gz   : decompressed in .vim/ directory, then vimball handles it
-+	---.vmb.gz   : idem
- 	---.vim.gz   : decompressed & moved into .vim/plugin directory
- 	---.vba      : moved to .vim/ directory, then vimball handles it
--	---.vmb      : moved to .vim/ directory, then vimball handles it
-+	---.vmb      : idem
- 	---.vim      : moved to .vim/plugin directory
- 	---.zip      : unzipped in .vim/ directory
- 
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index dc0516692..e7536446b 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Sep 10
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1278,6 +1278,32 @@ For writing a compiler plugin, see |write-compiler-plugin|.
- 
- Use the |compiler-make| plugin to undo the effect of a compiler plugin.
- 
-+CPPCHECK			*quickfix-cppcheck* *compiler-cppcheck*
-+
-+Use g/b:`c_cppcheck_params` to set cppcheck parameters. The global
-+settings by default include
-+
-+- `--verbose`: Enables verbose output.
-+- `--force`: Forces checking of all configurations.
-+- `--inline-suppr`: Allows inline suppressions.
-+- `--enable=...`: Enables specific checks like warnings, style, performance,
-+  portability, information, and missing includes.
-+- `-j`: Utilizes multiple processors if available, determined by the
-+  `getconf` command if available (requires omitting the unusedFunction check)
-+
-+For C++ files (`filetype == 'cpp'`), the `--language=c++` option is added to
-+ensure Cppcheck treats the file as C++.
-+
-+If compile_commands.json is present in the current directory, it is added as a
-+`--project` parameter to the command line. Otherwise, by default the
-+directories in &path are passed as include directories. These can be set by
-+g/b:`c_cppcheck_includes` as a list of `-I` flags. Tim Pope's vim-apathy
-+plug-in [0] can expand &path. To also append the folders in a git repo use >
-+
-+  let &l:path = join(systemlist('git ls-tree -d --name-only -r HEAD'), ',')
-+
-+[0] https://github.com/tpope/vim-apathy
-+
- DOTNET							*compiler-dotnet*
- 
- The .NET CLI compiler outputs both errors and warnings by default. The output
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index 726aec369..73d6458d5 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
-@@ -1,4 +1,4 @@
--*repeat.txt*    For Vim version 9.1.  Last change: 2024 Aug 12
-+*repeat.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -105,9 +105,9 @@ where the cursor was before the global command).
- 
- The global command sets both the last used search pattern and the last used
- substitute pattern (this is vi compatible).  This makes it easy to globally
--replace a string:
-+replace a string: >
- 	:g/pat/s//PAT/g
--This replaces all occurrences of "pat" with "PAT".  The same can be done with:
-+This replaces all occurrences of "pat" with "PAT".  The same can be done with: >
- 	:%s/pat/PAT/g
- Which is two characters shorter!
- 
-@@ -526,7 +526,7 @@ Example: the lines >
- 		     \:%,
- 		     \n:>,
- 		     \fb:-
--are interpreted as if they were given in one line:
-+are interpreted as if they were given in one line: >
- 	:set comments=sr:/*,mb:*,el:*/,://,b:#,:%,n:>,fb:-
- 
- All leading whitespace characters in the line before a backslash are ignored.
-@@ -611,7 +611,7 @@ advantages over normal plugins:
- Using a package and loading automatically ~
- 
- Let's assume your Vim files are in the "~/.vim" directory and you want to add a
--package from a zip archive "/tmp/foopack.zip":
-+package from a zip archive "/tmp/foopack.zip": >
- 	% mkdir -p ~/.vim/pack/foo
- 	% cd ~/.vim/pack/foo
- 	% unzip /tmp/foopack.zip
-@@ -661,7 +661,7 @@ If the package has an "after" directory, that directory is added to the end of
- Using a single plugin and loading it automatically ~
- 
- If you don't have a package but a single plugin, you need to create the extra
--directory level:
-+directory level: >
- 	% mkdir -p ~/.vim/pack/foo/start/foobar
- 	% cd ~/.vim/pack/foo/start/foobar
- 	% unzip /tmp/someplugin.zip
-@@ -978,13 +978,13 @@ will put the MO files in the "lang/" directory of the Vim editor.
- Type the following commands:
- >
- 	cd /d f:\forkvim\src\po
-- (the following command must be entered in one line, here it is separated for example)
-- For Russian:
-+< (the following command must be entered in one line, here it is separated for example)
-+ For Russian: >
- 	nmake.exe -f Make_mvc.mak "PLUGPACKAGE=aap"
- 	"PO_PLUGPACKAGE=e:\project\translate\plugins\ru.po"
- 	"MO_PLUGPACKAGE_PATH=d:\Programs\vim\vim91\lang\ru\LC_MESSAGES"
- 	aap.mo
-- For German:
-+< For German: >
- 	nmake.exe -f Make_mvc.mak "PLUGPACKAGE=aap"
- 	"PO_PLUGPACKAGE=e:\project\translate\plugins\de.po"
- 	"MO_PLUGPACKAGE_PATH=d:\Programs\vim\vim91\lang\de\LC_MESSAGES"
-diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
-index 809e3a8d3..e3acb6eed 100644
---- a/runtime/doc/spell.txt
-+++ b/runtime/doc/spell.txt
-@@ -1,4 +1,4 @@
--*spell.txt*	For Vim version 9.1.  Last change: 2024 May 17
-+*spell.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 02
++*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -792,7 +792,7 @@ them before the Vim word list is made.  The tools for this can be found in the
- The format for the affix and word list files is based on what Myspell uses
- (the spell checker of Mozilla and OpenOffice.org).  A description can be found
- here:
--	http://lingucomponent.openoffice.org/affix.readme ~
-+	http://lingucomponent.openoffice.org/affix.readme
- Note that affixes are case sensitive, this isn't obvious from the description.
- 
- Vim supports quite a few extras.  They are described below |spell-affix-vim|.
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 84bf30f0c..7ce4d6f16 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Sep 15
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -847,7 +847,8 @@ accordingly.  Vim proceeds in this order:
- 	'compatible' is only done later.  Add a ":set nocp" command if you
- 	like.  For the Macintosh the $VIMRUNTIME/macmap.vim is read.
- 
--	  *VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc* *$MYVIMRC* *$MYVIMDIR*
-+			*VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc*
-+			*$MYVIMRC* *$MYVIMDIR*
-      c. Five places are searched for initializations.  The first that exists
- 	is used, the others are ignored.  The $MYVIMRC environment variable is
- 	set to the file that was first found, unless $MYVIMRC was already set
-@@ -972,9 +973,9 @@ accordingly.  Vim proceeds in this order:
- 	The |v:vim_did_enter| variable is set to 1.
- 	The |VimEnter| autocommands are executed.
- 
--The $MYVIMRC or $MYGVIMRC file will be set to the first found vimrc and/or
--gvimrc file while $MYVIMDIR is set to the users personal runtime directory
--'rtp' (typically the first entry in 'runtimepath').
-+The $MYVIMRC or $MYGVIMRC environment variable will be set to the first found
-+vimrc and/or gvimrc file while $MYVIMDIR is set to the users personal runtime
-+directory 'rtp' (typically the first entry in 'runtimepath').
- 
- 
- Some hints on using initializations ~
+@@ -7789,7 +7789,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	non-blank of the line.  When off the cursor is kept in the same column
+ 	(if possible).  This applies to the commands:
+ 	- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", "gg"
+-	- "d", "<<" and ">>" with a linewise operator
++	- "d", "<<", "==" and ">>" with a linewise operator
++	  (|operator-resulting-pos|)
+ 	- "%" with a count
+ 	- buffer changing commands (CTRL-^, :bnext, :bNext, etc.)
+ 	- Ex commands that only has a line number, e.g., ":25" or ":+".
+@@ -8432,8 +8433,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			local to window
+ 	The key that starts a CTRL-W command in a terminal window.  Other keys
+ 	are sent to the job running in the window.
+-	The <> notation can be used, e.g.: >
+-		:set termwinkey=<C-L>
++	The key can be specified as a single character, a |key-notation| (e.g.
++	<Up>, <C-F>) or a letter preceded with a caret (e.g. `^F` is CTRL-F): >
++		:set twk=X
++		:set twk=^I
++		:set twk=<C-L>
+ <	The string must be one key stroke but can be multiple bytes.
+ 	When not set CTRL-W is used, so that CTRL-W : gets you to the command
+ 	line.  If 'termwinkey' is set to CTRL-L then CTRL-L : gets you to the
+@@ -9330,7 +9334,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Some keys will not work, such as CTRL-C, <CR> and Enter.
+ 	<Esc> can be used, but hitting it twice in a row will still exit
+ 	command-line as a failsafe measure.
+-	Although 'wc' is a number option, you can set it to a special key: >
++	Although 'wc' is a number option, it can be specified as a number, a
++	single character, a |key-notation| (e.g. <Up>, <C-F>) or a letter
++	preceded with a caret (e.g. `^F` is CTRL-F): >
++		:set wc=27
++		:set wc=X
++		:set wc=^I
+ 		:set wc=<Tab>
+ <	NOTE: This option is set to the Vi default value when 'compatible' is
+ 	set and to the Vim default value when 'compatible' is reset.
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index ff8093617..286dcbbfb 100644
+index 286dcbbfb..6b7dbf908 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Sep 28
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2196,7 +2196,7 @@ optionality will be discontinued.
- 
- 
- JSON			*json.vim* *ft-json-syntax* *g:vim_json_conceal*
--					       *g:vim_json_warnings*
-+						*g:vim_json_warnings*
- 
- The json syntax file provides syntax highlighting with conceal support by
- default. To disable concealment: >
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index da6156c7b..d930dd33e 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.1.  Last change: 2024 May 05
-+*term.txt*      For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -292,11 +292,11 @@ entry in /etc/termcap and everything should work.
- On some systems (at least on FreeBSD with XFree86 3.1.2) the codes that the
- <End> and <Home> keys send contain a <Nul> character.  To make these keys send
- the proper key code, add these lines to your ~/.Xdefaults file:
--
--*VT100.Translations:		#override \n\
--		<Key>Home: string("0x1b") string("[7~") \n\
--		<Key>End: string("0x1b") string("[8~")
--
-+>
-+	*VT100.Translations:		#override \n\
-+			<Key>Home: string("0x1b") string("[7~") \n\
-+			<Key>End: string("0x1b") string("[8~")
-+<
- 						*xterm-8bit* *xterm-8-bit*
- Xterm can be run in a mode where it uses 8-bit escape sequences.  The CSI code
- is used instead of <Esc>[.  The advantage is that an <Esc> can quickly be
-@@ -719,9 +719,9 @@ If this feature is enabled by the 't_fe' sequence, special key sequences are
- sent from the terminal to Vim every time the terminal gains or loses focus.
- Vim fires focus events (|FocusGained|/|FocusLost|) by handling them accordingly.
- Focus event tracking is disabled by a 't_fd' sequence when exiting "raw" mode.
--If you would like to disable this feature, add the following to your .vimrc:
--	`set t_fd=`
--	`set t_fe=`
-+If you would like to disable this feature, add the following to your .vimrc: >
-+	set t_fd=
-+	set t_fe=
- If your terminal does support this but Vim does not recognize the terminal,
- you may have to set the options yourself: >
- 	let &t_fe = "\<Esc>[?1004h"
-@@ -810,13 +810,13 @@ region.  It should be set to an empty string otherwise.
- Note for xterm users: The shifted cursor keys normally don't work.  You can
- 	make them work with the xmodmap command and some mappings in Vim.
- 
--	Give these commands in the xterm:
-+	Give these commands in the xterm: >
- 		xmodmap -e "keysym Up = Up F13"
- 		xmodmap -e "keysym Down = Down F16"
- 		xmodmap -e "keysym Left = Left F18"
- 		xmodmap -e "keysym Right = Right F19"
--
--	And use these mappings in Vim:
-+<
-+	And use these mappings in Vim: >
- 		:map <t_F3> <S-Up>
- 		:map! <t_F3> <S-Up>
- 		:map <t_F6> <S-Down>
-diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
-index 486426ed7..70d24d3dd 100644
---- a/runtime/doc/usr_02.txt
-+++ b/runtime/doc/usr_02.txt
-@@ -1,4 +1,4 @@
--*usr_02.txt*	For Vim version 9.1.  Last change: 2021 Apr 24
-+*usr_02.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -32,7 +32,7 @@ To start Vim, enter this command: >
- In UNIX you can type this at any command prompt.  If you are running Microsoft
- Windows, open a Command Prompt and enter the command.
-    In either case, Vim starts editing a file called file.txt.  Because this
--is a new file, you get a blank window. This is what your screen will look
-+is a new file, you get a blank window.  This is what your screen will look
- like:
- 
- 	+---------------------------------------+
-@@ -322,7 +322,7 @@ the "a" (append) command.
- to
- 	and that's not saying much for the turtle!!! ~
- 
--move the cursor over to the dot at the end of the line. Then type "x" to
-+move the cursor over to the dot at the end of the line.  Then type "x" to
- delete the period.  The cursor is now positioned at the end of the line on the
- e in turtle.  Now type >
- 
-@@ -535,7 +535,7 @@ Summary:					*help-summary*  >
- <   And for the 'guioptions' flags: >
- 	:help go-<letter>
- 
--4) Normal mode commands do not have a prefix. To go to the help page for the
-+4) Normal mode commands do not have a prefix.  To go to the help page for the
-    "gt" command: >
- 	:help gt
- 
-@@ -585,7 +585,7 @@ Summary:					*help-summary*  >
-     at: >
- 	:help pattern.txt
- 
--12) Registers always start with "quote". To find out about the special ":"
-+12) Registers always start with "quote".  To find out about the special ":"
-     register: >
- 	:help quote:
- 
-@@ -604,7 +604,7 @@ Summary:					*help-summary*  >
- <    talks about the append Vim script function rather than how to append text
-     in the current buffer.
- 
--14) Mappings are talked about in the help page :h |map.txt|. Use >
-+14) Mappings are talked about in the help page :h |map.txt|.  Use >
- 	:help mapmode-i
- <    to find out about the |:imap| command.  Also use :map-topic
-     to find out about certain subtopics particular for mappings.  e.g: >
-@@ -640,7 +640,7 @@ Summary:					*help-summary*  >
-     friendly way.  Start at |usr_toc.txt| to find the table of content (as you
-     might have guessed): >
- 	:help usr_toc.txt
--<    Skim over the contents to find interesting topics. The "Digraphs" and
-+<    Skim over the contents to find interesting topics.  The "Digraphs" and
-     "Entering special characters" items are in chapter 24, so to go to that
-     particular help page: >
- 	:help usr_24.txt
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index 21629e3ca..ca6b91075 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
-@@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Jun 28
-+*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -446,7 +446,7 @@ This way you can use the plugin with the default key bindings `gc` and similar
- for commenting (which is a well-established mapping in the Vim community).
- 
- If you add this line to your vimrc file, then you need to restart Vim to have
--the package loaded. Once the package is loaded, read about it at: >
-+the package loaded.  Once the package is loaded, read about it at: >
- 	:h comment.txt
- 
- 
-diff --git a/runtime/doc/usr_06.txt b/runtime/doc/usr_06.txt
-index 6d76c53e1..9acd63e9b 100644
---- a/runtime/doc/usr_06.txt
-+++ b/runtime/doc/usr_06.txt
-@@ -1,4 +1,4 @@
--*usr_06.txt*	For Vim version 9.1.  Last change: 2021 Nov 07
-+*usr_06.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -184,7 +184,7 @@ this command: >
- 	:runtime syntax/colortest.vim
- 
- You will see text in various color combinations.  You can check which ones are
--readable and look nice. These aren't the only colors available to you though.
-+readable and look nice.  These aren't the only colors available to you though.
- You can specify #rrggbb hex colors and you can define new names for hex
- colors in |v:colornames| like so: >
- 
-@@ -196,7 +196,7 @@ to define these colors only when they do not exist: >
- 	call extend(v:colornames, {'mine_red': '#aa0000'}, 'keep')
- 
- This allows users of the color scheme to override the precise definition of
--that color prior to loading your color scheme. For example, in a |.vimrc|
-+that color prior to loading your color scheme.  For example, in a |.vimrc|
- file: >
- 
- 	runtime colors/lists/css_colors.vim
-@@ -204,7 +204,7 @@ file: >
- 	colorscheme yourscheme
- 
- As a color scheme author, you should be able to rely on some color names for
--GUI colors. These are defined in `colors/lists/default.vim`. All such files
-+GUI colors.  These are defined in `colors/lists/default.vim`.  All such files
- found on the |'runtimepath'| are loaded each time the colorscheme command is
- run. A canonical list is provided by the vim distribution, which should
- include all X11 colors (previously defined in rgb.txt).
-diff --git a/runtime/doc/usr_22.txt b/runtime/doc/usr_22.txt
-index 57862edaa..0220893a7 100644
---- a/runtime/doc/usr_22.txt
-+++ b/runtime/doc/usr_22.txt
-@@ -1,4 +1,4 @@
--*usr_22.txt*	For Vim version 9.1.  Last change: 2020 Mar 28
-+*usr_22.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -41,8 +41,8 @@ check/ ~
- Makefile ~
- autocmd.txt ~
- change.txt ~
--eval.txt~ ~
--filetype.txt~ ~
-+eval.txt ~
-+filetype.txt ~
- help.txt.info ~
- 
- You can see these items:
-@@ -214,11 +214,11 @@ directory, it will go back to using the shared directory.
- TAB LOCAL DIRECTORY
- 
- When you open a new tab page, it uses the directory of the window in the
--previous tab page from which the new tab page was opened. You can change the
--directory of the current tab page using the `:tcd` command. All the windows in
-+previous tab page from which the new tab page was opened.  You can change the
-+directory of the current tab page using the `:tcd` command.  All the windows in
- a tab page share this directory except for windows with a window-local
--directory. Any new windows opened in this tab page will use this directory as
--the current working directory. Using a `:cd` command in a tab page will not
-+directory.  Any new windows opened in this tab page will use this directory as
-+the current working directory.  Using a `:cd` command in a tab page will not
- change the working directory of tab pages which have a tab local directory.
- When the global working directory is changed using the `:cd` command in a tab
- page, it will also change the current tab page working directory.
-diff --git a/runtime/doc/usr_29.txt b/runtime/doc/usr_29.txt
-index a534c6f1c..1e4446720 100644
---- a/runtime/doc/usr_29.txt
-+++ b/runtime/doc/usr_29.txt
-@@ -1,4 +1,4 @@
--*usr_29.txt*	For Vim version 9.1.  Last change: 2022 Mar 13
-+*usr_29.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -34,8 +34,8 @@ following command: >
- 
- "ctags" is a separate program.  Most Unix systems already have it installed.
- If you do not have it yet, you can find Universal/Exuberant ctags at:
--	http://ctags.io ~
--	http://ctags.sf.net ~
-+	http://ctags.io
-+	http://ctags.sf.net
- 
- Universal ctags is preferred, Exuberant ctags is no longer being developed.
- 
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 27df85ac7..123dcbb68 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Sep 23
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -30,13 +30,13 @@ Table of contents: |usr_toc.txt|
- *41.1*	Introduction				*vim-script-intro* *script*
- 
- Let's start with some nomenclature. A Vim script is any file that Vim can
--interpret and execute. This includes files written in Vim's scripting language
-+interpret and execute.  This includes files written in Vim's scripting language
- like for example .vim files or configuration files like .vimrc and .gvimrc.
- These scripts may define functions, commands and settings that Vim uses to
- customize and extend its behavior.
- 
- With a slight abuse of nomenclature, we will use "Vim script" to refer to the
--Vim scripting language throughout this documentation. This shorthand helps to
-+Vim scripting language throughout this documentation.  This shorthand helps to
- streamline explanations and discussions about scripting with Vim.
- 
- A Vim plugin is a collection of one or more Vim scripts, along with additional
-diff --git a/runtime/doc/usr_43.txt b/runtime/doc/usr_43.txt
-index 41b08de18..82baffa5b 100644
---- a/runtime/doc/usr_43.txt
-+++ b/runtime/doc/usr_43.txt
-@@ -1,4 +1,4 @@
--*usr_43.txt*	For Vim version 9.1.  Last change: 2015 Oct 23
-+*usr_43.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -63,7 +63,7 @@ buffer.  This works with any mapping command: ":map!", ":vmap", etc.  The
- 
- The line to set b:undo_ftplugin is for when the filetype is set to another
- value.  In that case you will want to undo your preferences.  The
--b:undo_ftplugin variable is executed as a command. Watch out for characters
-+b:undo_ftplugin variable is executed as a command.  Watch out for characters
- with a special meaning inside a string, such as a backslash.
- 
- You can find examples for filetype plugins in this directory: >
-diff --git a/runtime/doc/usr_45.txt b/runtime/doc/usr_45.txt
-index 4a3684e5a..1c4dbb564 100644
---- a/runtime/doc/usr_45.txt
-+++ b/runtime/doc/usr_45.txt
-@@ -1,4 +1,4 @@
--*usr_45.txt*	For Vim version 9.1.  Last change: 2022 May 13
-+*usr_45.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -177,7 +177,7 @@ example is for the X Window System.  This font is in a package that is used to
- enhance xterm with Unicode support.  If you don't have this font, you might
- find it here:
- 
--	http://www.cl.cam.ac.uk/~mgk25/download/ucs-fonts.tar.gz ~
-+	http://www.cl.cam.ac.uk/~mgk25/download/ucs-fonts.tar.gz
- 
- For MS-Windows, some fonts have a limited number of Unicode characters.  Try
- using the "Courier New" font.  You can use the Edit/Select Font... menu to
-@@ -189,7 +189,7 @@ though.  Example: >
- If it doesn't work well, try getting a fontpack.  If Microsoft didn't move it,
- you can find it here:
- 
--	http://www.microsoft.com/typography/fonts/default.aspx ~
-+	http://www.microsoft.com/typography/fonts/default.aspx
- 
- Now you have told Vim to use Unicode internally and display text with a
- Unicode font.  Typed characters still arrive in the encoding of your original
-diff --git a/runtime/doc/usr_90.txt b/runtime/doc/usr_90.txt
-index 418f1f0dc..9d7598957 100644
---- a/runtime/doc/usr_90.txt
-+++ b/runtime/doc/usr_90.txt
-@@ -1,4 +1,4 @@
--*usr_90.txt*	For Vim version 9.1.  Last change: 2022 May 13
-+*usr_90.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -36,7 +36,7 @@ FROM A PACKAGE
- You can get precompiled binaries for many different UNIX systems.  There is a
- long list with links on this page:
- 
--	http://www.vim.org/binaries.html ~
-+	http://www.vim.org/binaries.html
- 
- Volunteers maintain the binaries, so they are often out of date.  It is a
- good idea to compile your own UNIX version from the source.  Also, creating
-@@ -59,7 +59,7 @@ To compile and install Vim, you will need the following:
- To get the Vim archives, look in this file for a mirror near you, this should
- provide the fastest download:
- 
--	ftp://ftp.vim.org/pub/vim/MIRRORS ~
-+	ftp://ftp.vim.org/pub/vim/MIRRORS
- 
- Or use the home site ftp.vim.org, if you think it's fast enough.  Go to the
- "unix" directory and you'll find a list of files there.  The version number is
-@@ -213,7 +213,7 @@ one, you will need:
- To get the Vim archives, look in this file for a mirror near you, this should
- provide the fastest download:
- 
--	ftp://ftp.vim.org/pub/vim/MIRRORS ~
-+	ftp://ftp.vim.org/pub/vim/MIRRORS
- 
- Or use the home site ftp.vim.org, if you think it's fast enough.  Go to the
- "pc" directory and you'll find a list of files there.  The version number is
-diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
-index c70c945cf..3da7698d3 100644
---- a/runtime/doc/usr_toc.txt
-+++ b/runtime/doc/usr_toc.txt
-@@ -1,8 +1,8 @@
--*usr_toc.txt*	For Vim version 9.1.  Last change: 2024 Oct 01
-+*usr_toc.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
--			      Table Of Contents		       *user-manual* *usr*
-+			      Table Of Contents		*user-manual* *usr*
- 
- ==============================================================================
- Overview ~
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index acd79914d..4c267941d 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2024 Jul 17
-+*various.txt*   For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -71,7 +71,7 @@ ga			Print the ascii value of the character under the
- 			If the character can be inserted as a digraph, also
- 			output the two characters that can be used to create
- 			the character:
--			    <ö> 246, Hex 00f6, Oct 366, Digr o: ~
-+				<ö> 246, Hex 00f6, Oct 366, Digr o: ~
- 			This shows you can type CTRL-K o : to insert ö.
- 
- 							*g8*
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index d684b4905..56bb7e21d 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 01
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41608,7 +41608,7 @@ Functions: ~
- |diff()|		diff two Lists of strings
- |filecopy()|		copy a file {from} to {to}
- |foreach()|		apply function to List items
--|getcmdprompt()|        get prompt for input()/confirm()
-+|getcmdprompt()|	get prompt for input()/confirm()
- |getregion()|		get a region of text from a buffer
- |getregionpos()|	get a list of positions for a region
- |id()|			get unique identifier for a Dict, List, Object,
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index 3bcee472a..58bce5e53 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
-@@ -1,4 +1,4 @@
--*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 May 15
-+*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 Oct 05
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -119,11 +119,11 @@ Vi compatibility.					|'compatible'|
- 	considered to be a bug, or at least need improvement.  But still, Vim
- 	starts in a mode which behaves like the "real" Vi as much as possible.
- 	To make Vim behave a little bit better, try resetting the 'compatible'
--	option:
-+	option: >
- 		:set nocompatible
--	Or start Vim with the "-N" argument:
-+<	Or start Vim with the "-N" argument: >
- 		vim -N
--	Vim starts with 'nocompatible' automatically if you have a .vimrc
-+<	Vim starts with 'nocompatible' automatically if you have a .vimrc
- 	file.  See |startup|.
- 	The 'cpoptions' option can be used to set Vi compatibility on/off for
- 	a number of specific items.
+@@ -3956,10 +3956,13 @@ mzscheme and embedded perl).
+ Some folding is now supported with when 'foldmethod' is set to "syntax": >
+ 
+    g:vimsyn_folding == 0 or doesn't exist: no syntax-based folding
+-   g:vimsyn_folding =~ 'a' : augroups
++   g:vimsyn_folding =~ 'a' : fold augroups
++   g:vimsyn_folding =~ 'c' : fold Vim9 classes
++   g:vimsyn_folding =~ 'e' : fold Vim9 enums
+    g:vimsyn_folding =~ 'f' : fold functions
+    g:vimsyn_folding =~ 'h' : fold heredocs
+-   g:vimsyn_folding =~ 'H' : fold Vim9-script legacy headers
++   g:vimsyn_folding =~ 'i' : fold Vim9 interfaces
++   g:vimsyn_folding =~ 'H' : fold Vim9 legacy headers
+    g:vimsyn_folding =~ 'l' : fold Lua      script
+    g:vimsyn_folding =~ 'm' : fold MzScheme script
+    g:vimsyn_folding =~ 'p' : fold Perl     script
