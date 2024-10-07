@@ -1,98 +1,85 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 99fd3e24b..2637480ae 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 2304712c3..785f4acca 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
-+*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 06
+-*change.txt*    For Vim version 9.1.  Last change: 2024 Jul 28
++*change.txt*    For Vim version 9.1.  Last change: 2024 Oct 07
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -68,10 +68,12 @@ When doubling the operator it operates on a line.  When using a count, before
- or after the first character, that many lines are operated upon.  Thus `3dd`
- deletes three lines. A count before and after the first character is
- multiplied, thus `2y3y` yanks six lines.
--
-+						*operator-resulting-pos*
- After applying the operator the cursor is mostly left at the start of the text
- that was operated upon.  For example, "yfe" doesn't move the cursor, but "yFe"
- moves the cursor leftwards to the "e" where the yank started.
-+The 'startofline' option applies only to the "d", "<<", "==" and ">>" linewise
-+operations.
+@@ -1283,8 +1283,7 @@ mapped.  E.g. |%| is mapped by the matchit plugin.
+    With each successive deletion or change, Vim shifts the previous contents
+ of register 1 into register 2, 2 into 3, and so forth, losing the previous
+ contents of register 9.
+-{Vi: numbered register contents are lost when changing files; register 0 does
+-not exist}
++{Vi: register 0 does not exist}
  
- 						*linewise* *characterwise*
- The operator either affects whole lines, or the characters between the start
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 10a06804d..f0844e21b 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+ 3. Small delete register "-				*quote_-* *quote-*
+ This register contains text from commands that delete less than one line,
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index ec944354e..2773140c5 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 02
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 06
+-*map.txt*       For Vim version 9.1.  Last change: 2024 Sep 26
++*map.txt*       For Vim version 9.1.  Last change: 2024 Oct 07
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7789,7 +7789,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	non-blank of the line.  When off the cursor is kept in the same column
- 	(if possible).  This applies to the commands:
- 	- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", "gg"
--	- "d", "<<" and ">>" with a linewise operator
-+	- "d", "<<", "==" and ">>" with a linewise operator
-+	  (|operator-resulting-pos|)
- 	- "%" with a count
- 	- buffer changing commands (CTRL-^, :bnext, :bNext, etc.)
- 	- Ex commands that only has a line number, e.g., ":25" or ":+".
-@@ -8432,8 +8433,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			local to window
- 	The key that starts a CTRL-W command in a terminal window.  Other keys
- 	are sent to the job running in the window.
--	The <> notation can be used, e.g.: >
--		:set termwinkey=<C-L>
-+	The key can be specified as a single character, a |key-notation| (e.g.
-+	<Up>, <C-F>) or a letter preceded with a caret (e.g. `^F` is CTRL-F): >
-+		:set twk=X
-+		:set twk=^I
-+		:set twk=<C-L>
- <	The string must be one key stroke but can be multiple bytes.
- 	When not set CTRL-W is used, so that CTRL-W : gets you to the command
- 	line.  If 'termwinkey' is set to CTRL-L then CTRL-L : gets you to the
-@@ -9330,7 +9334,12 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Some keys will not work, such as CTRL-C, <CR> and Enter.
- 	<Esc> can be used, but hitting it twice in a row will still exit
- 	command-line as a failsafe measure.
--	Although 'wc' is a number option, you can set it to a special key: >
-+	Although 'wc' is a number option, it can be specified as a number, a
-+	single character, a |key-notation| (e.g. <Up>, <C-F>) or a letter
-+	preceded with a caret (e.g. `^F` is CTRL-F): >
-+		:set wc=27
-+		:set wc=X
-+		:set wc=^I
- 		:set wc=<Tab>
- <	NOTE: This option is set to the Vi default value when 'compatible' is
- 	set and to the Vim default value when 'compatible' is reset.
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 286dcbbfb..6b7dbf908 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -84,6 +84,8 @@ modes.
+ 			where the map command applies.  Disallow mapping of
+ 			{rhs}, to avoid nested and recursive mappings.  Often
+ 			used to redefine a command.
++			Note: Keys in {rhs} also won't trigger abbreviation,
++			with the exception of |i_CTRL-]| and |c_CTRL-]|.
+ 			Note: When <Plug> appears in the {rhs} this part is
+ 			always applied even if remapping is disallowed.
+ 
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index d5062e2e3..dbfd31983 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 06
+-*usr_52.txt*	For Vim version 9.1.  Last change: 2024 Jun 09
++*usr_52.txt*	For Vim version 9.1.  Last change: 2024 Oct 07
  
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3956,10 +3956,13 @@ mzscheme and embedded perl).
- Some folding is now supported with when 'foldmethod' is set to "syntax": >
+@@ -13,7 +13,7 @@ smaller parts.
+ |52.3|	Autoloading without import/export
+ |52.4|	Other mechanisms to use
+ |52.5|	Using a Vim9 script from legacy script
+-|52.6|	Vim9 script examples: comment package, highlight-yank plugin
++|52.6|	Vim9 examples: comment and highlight-yank plugin
  
-    g:vimsyn_folding == 0 or doesn't exist: no syntax-based folding
--   g:vimsyn_folding =~ 'a' : augroups
-+   g:vimsyn_folding =~ 'a' : fold augroups
-+   g:vimsyn_folding =~ 'c' : fold Vim9 classes
-+   g:vimsyn_folding =~ 'e' : fold Vim9 enums
-    g:vimsyn_folding =~ 'f' : fold functions
-    g:vimsyn_folding =~ 'h' : fold heredocs
--   g:vimsyn_folding =~ 'H' : fold Vim9-script legacy headers
-+   g:vimsyn_folding =~ 'i' : fold Vim9 interfaces
-+   g:vimsyn_folding =~ 'H' : fold Vim9 legacy headers
-    g:vimsyn_folding =~ 'l' : fold Lua      script
-    g:vimsyn_folding =~ 'm' : fold MzScheme script
-    g:vimsyn_folding =~ 'p' : fold Perl     script
+      Next chapter: |usr_90.txt|  Installing Vim
+  Previous chapter: |usr_51.txt|  Create a plugin
+@@ -337,7 +337,7 @@ will have to make sure to use a unique name for these global items. Example: >
+ 	call g:NicePluginTest()
+ 
+ ==============================================================================
+-*52.6*	Vim9 script examples: comment package, highlight-yank plugin
++*52.6*	Vim9 examples: comment and highlight-yank plugin
+ 
+ COMMENT PACKAGE
+ 
+diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
+index 3da7698d3..22f71e09b 100644
+--- a/runtime/doc/usr_toc.txt
++++ b/runtime/doc/usr_toc.txt
+@@ -1,4 +1,4 @@
+-*usr_toc.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
++*usr_toc.txt*	For Vim version 9.1.  Last change: 2024 Oct 07
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -360,6 +360,7 @@ Writing Vim script ~
+ 		|52.3|	Autoloading without import/export
+ 		|52.4|	Other mechanisms to use
+ 		|52.5|	Using a Vim9 script from legacy script
++		|52.6|	Vim9 examples: comment and highlight-yank plugin
+ 
+ ==============================================================================
+ Making Vim Run ~
