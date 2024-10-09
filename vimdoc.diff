@@ -1,85 +1,138 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 2304712c3..785f4acca 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index fe0b9aa33..880dfcd78 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.1.  Last change: 2024 Jul 28
-+*change.txt*    For Vim version 9.1.  Last change: 2024 Oct 07
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Sep 23
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 08
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -230,6 +230,8 @@ getcharmod()			Number	modifiers for the last typed character
+ getcharpos({expr})		List	position of cursor, mark, etc.
+ getcharsearch()			Dict	last character search
+ getcharstr([{expr}])		String	get one character from the user
++getcmdcomplpat()		String	return the completion pattern of the
++					current command-line completion
+ getcmdcompltype()		String	return the type of the current
+ 					command-line completion
+ getcmdline()			String	return the current command-line input
+@@ -3973,6 +3975,16 @@ getcharstr([{expr}])					*getcharstr()*
+ 
+ 		Return type: |String|
+ 
++getcmdcomplpat()					*getcmdcomplpat()*
++		Return completion pattern of the current command-line.
++		Only works when the command line is being edited, thus
++		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
++		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
++		|getcmdprompt()|, |getcmdcompltype()| and |setcmdline()|.
++		Returns an empty string when completion is not defined.
++
++		Return type: |String|
++
+ 
+ getcmdcompltype()					*getcmdcompltype()*
+ 		Return the type of the current command-line completion.
+@@ -3980,7 +3992,7 @@ getcmdcompltype()					*getcmdcompltype()*
+ 		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
+ 		See |:command-completion| for the return string.
+ 		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
+-		|getcmdprompt()| and |setcmdline()|.
++		|getcmdprompt()|, |getcmdcomplpat()| and |setcmdline()|.
+ 		Returns an empty string when completion is not defined.
+ 
+ 		Return type: |String|
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 3894e5c74..839d17a64 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -1,4 +1,4 @@
+-*insert.txt*    For Vim version 9.1.  Last change: 2024 Aug 25
++*insert.txt*    For Vim version 9.1.  Last change: 2024 Oct 08
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1283,8 +1283,7 @@ mapped.  E.g. |%| is mapped by the matchit plugin.
-    With each successive deletion or change, Vim shifts the previous contents
- of register 1 into register 2, 2 into 3, and so forth, losing the previous
- contents of register 9.
--{Vi: numbered register contents are lost when changing files; register 0 does
--not exist}
-+{Vi: register 0 does not exist}
- 
- 3. Small delete register "-				*quote_-* *quote-*
- This register contains text from commands that delete less than one line,
+@@ -51,7 +51,7 @@ char		action	~
+ 		abbreviation.
+ 		Note: If your <Esc> key is hard to hit on your keyboard, train
+ 		yourself to use CTRL-[.
+-		If Esc doesn't work and you are using a Mac, try CTRL-Esc.
++		If Esc doesn't work and you are using a Mac, try CTRL-<Esc>.
+ 		Or disable Listening under Accessibility preferences.
+ 						*i_CTRL-C*
+ CTRL-C		Quit insert mode, go back to Normal mode.  Do not check for
+@@ -1183,12 +1183,12 @@ items:
+ 	user_data	custom data which is associated with the item and
+ 			available in |v:completed_item|; it can be any type;
+ 			defaults to an empty string
+-	hl_group	an additional highlight group whose attributes are
++	abbr_hlgroup	an additional highlight group whose attributes are
+ 			combined with |hl-PmenuSel| and |hl-Pmenu| or
+ 			|hl-PmenuMatchSel| and |hl-PmenuMatch| highlight
+ 			attributes in the popup menu to apply cterm and gui
+ 			properties (with higher priority) like strikethrough
+-			to the completion items
++			to the completion items abbreviation
+ 	kind_hlgroup	an additional highlight group specifically for setting
+ 			the highlight attributes of the completion kind. When
+ 			this field is present, it will override the
 diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index ec944354e..2773140c5 100644
+index 2773140c5..899b24bac 100644
 --- a/runtime/doc/map.txt
 +++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*map.txt*       For Vim version 9.1.  Last change: 2024 Sep 26
-+*map.txt*       For Vim version 9.1.  Last change: 2024 Oct 07
+-*map.txt*       For Vim version 9.1.  Last change: 2024 Oct 07
++*map.txt*       For Vim version 9.1.  Last change: 2024 Oct 08
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -84,6 +84,8 @@ modes.
- 			where the map command applies.  Disallow mapping of
- 			{rhs}, to avoid nested and recursive mappings.  Often
- 			used to redefine a command.
-+			Note: Keys in {rhs} also won't trigger abbreviation,
-+			with the exception of |i_CTRL-]| and |c_CTRL-]|.
- 			Note: When <Plug> appears in the {rhs} this part is
- 			always applied even if remapping is disallowed.
+@@ -1657,6 +1657,8 @@ completion can be enabled:
+ 	-complete=runtime	file and directory names in |'runtimepath'|
+ 	-complete=scriptnames	sourced script names
+ 	-complete=shellcmd	Shell command
++	-complete=shellcmdline	First is a shell command and subsequent ones
++				are filenames. The same behavior as |:!cmd|
+ 	-complete=sign		|:sign| suboptions
+ 	-complete=syntax	syntax file names |'syntax'|
+ 	-complete=syntime	|:syntime| suboptions
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 123dcbb68..af67429ec 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1068,6 +1068,8 @@ Buffers, windows and the argument list:
+ 	swapname()		get the swap file path of a buffer
  
-diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
-index d5062e2e3..dbfd31983 100644
---- a/runtime/doc/usr_52.txt
-+++ b/runtime/doc/usr_52.txt
+ Command line:					*command-line-functions*
++	getcmdcomplpat()	get completion pattern of the current command
++				line
+ 	getcmdcompltype()	get the type of the current command line
+ 				completion
+ 	getcmdline()		get the current command line input
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 56bb7e21d..a9434335c 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*usr_52.txt*	For Vim version 9.1.  Last change: 2024 Jun 09
-+*usr_52.txt*	For Vim version 9.1.  Last change: 2024 Oct 07
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 08
  
- 		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -13,7 +13,7 @@ smaller parts.
- |52.3|	Autoloading without import/export
- |52.4|	Other mechanisms to use
- |52.5|	Using a Vim9 script from legacy script
--|52.6|	Vim9 script examples: comment package, highlight-yank plugin
-+|52.6|	Vim9 examples: comment and highlight-yank plugin
- 
-      Next chapter: |usr_90.txt|  Installing Vim
-  Previous chapter: |usr_51.txt|  Create a plugin
-@@ -337,7 +337,7 @@ will have to make sure to use a unique name for these global items. Example: >
- 	call g:NicePluginTest()
- 
- ==============================================================================
--*52.6*	Vim9 script examples: comment package, highlight-yank plugin
-+*52.6*	Vim9 examples: comment and highlight-yank plugin
- 
- COMMENT PACKAGE
- 
-diff --git a/runtime/doc/usr_toc.txt b/runtime/doc/usr_toc.txt
-index 3da7698d3..22f71e09b 100644
---- a/runtime/doc/usr_toc.txt
-+++ b/runtime/doc/usr_toc.txt
-@@ -1,4 +1,4 @@
--*usr_toc.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
-+*usr_toc.txt*	For Vim version 9.1.  Last change: 2024 Oct 07
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -360,6 +360,7 @@ Writing Vim script ~
- 		|52.3|	Autoloading without import/export
- 		|52.4|	Other mechanisms to use
- 		|52.5|	Using a Vim9 script from legacy script
-+		|52.6|	Vim9 examples: comment and highlight-yank plugin
- 
- ==============================================================================
- Making Vim Run ~
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41589,6 +41589,8 @@ Changed~
+ - allow to complete directories from 'cdpath' for |:cd| and similar commands,
+   add the "cd_in_path" completion type for e.g. |:command-complete| and
+   |getcompletion()|
++- allow to complete shell commands and files using the new shellcmdline
++  completion type using |:command-complete| and |getcmdcomplpat()|
+ - add 'cpoptions' flag "z" |cpo-z|, to disable some (traditional) vi
+   behaviour/inconsistency (see |d-special| and |cw|).
+ - allow to specify additional attributes in the completion menu (allows to
+@@ -41608,6 +41610,7 @@ Functions: ~
+ |diff()|		diff two Lists of strings
+ |filecopy()|		copy a file {from} to {to}
+ |foreach()|		apply function to List items
++|getcmdcomplpat()|	Shell command line completion
+ |getcmdprompt()|	get prompt for input()/confirm()
+ |getregion()|		get a region of text from a buffer
+ |getregionpos()|	get a list of positions for a region
