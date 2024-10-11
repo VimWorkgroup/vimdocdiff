@@ -1,138 +1,27 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index fe0b9aa33..880dfcd78 100644
+index 880dfcd78..44e9ee019 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Sep 23
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 08
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 08
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -230,6 +230,8 @@ getcharmod()			Number	modifiers for the last typed character
- getcharpos({expr})		List	position of cursor, mark, etc.
- getcharsearch()			Dict	last character search
- getcharstr([{expr}])		String	get one character from the user
-+getcmdcomplpat()		String	return the completion pattern of the
-+					current command-line completion
- getcmdcompltype()		String	return the type of the current
- 					command-line completion
- getcmdline()			String	return the current command-line input
-@@ -3973,6 +3975,16 @@ getcharstr([{expr}])					*getcharstr()*
- 
- 		Return type: |String|
- 
-+getcmdcomplpat()					*getcmdcomplpat()*
-+		Return completion pattern of the current command-line.
-+		Only works when the command line is being edited, thus
-+		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
-+		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
-+		|getcmdprompt()|, |getcmdcompltype()| and |setcmdline()|.
-+		Returns an empty string when completion is not defined.
-+
-+		Return type: |String|
-+
- 
- getcmdcompltype()					*getcmdcompltype()*
- 		Return the type of the current command-line completion.
-@@ -3980,7 +3992,7 @@ getcmdcompltype()					*getcmdcompltype()*
- 		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
- 		See |:command-completion| for the return string.
- 		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
--		|getcmdprompt()| and |setcmdline()|.
-+		|getcmdprompt()|, |getcmdcomplpat()| and |setcmdline()|.
- 		Returns an empty string when completion is not defined.
- 
- 		Return type: |String|
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 3894e5c74..839d17a64 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Aug 25
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Oct 08
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -51,7 +51,7 @@ char		action	~
- 		abbreviation.
- 		Note: If your <Esc> key is hard to hit on your keyboard, train
- 		yourself to use CTRL-[.
--		If Esc doesn't work and you are using a Mac, try CTRL-Esc.
-+		If Esc doesn't work and you are using a Mac, try CTRL-<Esc>.
- 		Or disable Listening under Accessibility preferences.
- 						*i_CTRL-C*
- CTRL-C		Quit insert mode, go back to Normal mode.  Do not check for
-@@ -1183,12 +1183,12 @@ items:
- 	user_data	custom data which is associated with the item and
- 			available in |v:completed_item|; it can be any type;
- 			defaults to an empty string
--	hl_group	an additional highlight group whose attributes are
-+	abbr_hlgroup	an additional highlight group whose attributes are
- 			combined with |hl-PmenuSel| and |hl-Pmenu| or
- 			|hl-PmenuMatchSel| and |hl-PmenuMatch| highlight
- 			attributes in the popup menu to apply cterm and gui
- 			properties (with higher priority) like strikethrough
--			to the completion items
-+			to the completion items abbreviation
- 	kind_hlgroup	an additional highlight group specifically for setting
- 			the highlight attributes of the completion kind. When
- 			this field is present, it will override the
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 2773140c5..899b24bac 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
-@@ -1,4 +1,4 @@
--*map.txt*       For Vim version 9.1.  Last change: 2024 Oct 07
-+*map.txt*       For Vim version 9.1.  Last change: 2024 Oct 08
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1657,6 +1657,8 @@ completion can be enabled:
- 	-complete=runtime	file and directory names in |'runtimepath'|
- 	-complete=scriptnames	sourced script names
- 	-complete=shellcmd	Shell command
-+	-complete=shellcmdline	First is a shell command and subsequent ones
-+				are filenames. The same behavior as |:!cmd|
- 	-complete=sign		|:sign| suboptions
- 	-complete=syntax	syntax file names |'syntax'|
- 	-complete=syntime	|:syntime| suboptions
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 123dcbb68..af67429ec 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1068,6 +1068,8 @@ Buffers, windows and the argument list:
- 	swapname()		get the swap file path of a buffer
- 
- Command line:					*command-line-functions*
-+	getcmdcomplpat()	get completion pattern of the current command
-+				line
- 	getcmdcompltype()	get the type of the current command line
- 				completion
- 	getcmdline()		get the current command line input
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 56bb7e21d..a9434335c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 08
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41589,6 +41589,8 @@ Changed~
- - allow to complete directories from 'cdpath' for |:cd| and similar commands,
-   add the "cd_in_path" completion type for e.g. |:command-complete| and
-   |getcompletion()|
-+- allow to complete shell commands and files using the new shellcmdline
-+  completion type using |:command-complete| and |getcmdcomplpat()|
- - add 'cpoptions' flag "z" |cpo-z|, to disable some (traditional) vi
-   behaviour/inconsistency (see |d-special| and |cw|).
- - allow to specify additional attributes in the completion menu (allows to
-@@ -41608,6 +41610,7 @@ Functions: ~
- |diff()|		diff two Lists of strings
- |filecopy()|		copy a file {from} to {to}
- |foreach()|		apply function to List items
-+|getcmdcomplpat()|	Shell command line completion
- |getcmdprompt()|	get prompt for input()/confirm()
- |getregion()|		get a region of text from a buffer
- |getregionpos()|	get a list of positions for a region
+@@ -4091,7 +4091,7 @@ getcompletion({pat}, {type} [, {filtered}])		*getcompletion()*
+ 		cscope		|:cscope| suboptions
+ 		custom,{func}	custom completion, defined via {func}
+ 		customlist,{func} custom completion, defined via {func}
+-		diff_buffer     |:diffget| and |:diffput| completion
++		diff_buffer	|:diffget| and |:diffput| completion
+ 		dir		directory names
+ 		dir_in_path	directory names in |'cdpath'|
+ 		environment	environment variable names
+@@ -4115,6 +4115,7 @@ getcompletion({pat}, {type} [, {filtered}])		*getcompletion()*
+ 		runtime		|:runtime| completion
+ 		scriptnames	sourced script names |:scriptnames|
+ 		shellcmd	Shell command
++		shellcmdline	Shell command line with filename arguments
+ 		sign		|:sign| suboptions
+ 		syntax		syntax file names |'syntax'|
+ 		syntime		|:syntime| suboptions
