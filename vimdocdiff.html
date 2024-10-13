@@ -47,8 +47,8 @@
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
       </svg>      <a href="#d2h-229033" class="d2h-file-name">runtime/doc/builtin.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+3</span>
-          <span class="d2h-lines-deleted">-2</span>
+          <span class="d2h-lines-added">+5</span>
+          <span class="d2h-lines-deleted">-5</span>
       </span>
     </span>
 </li>
@@ -83,7 +83,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct <del>08</del></span>
+            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct <del>09</del></span>
         </div>
     </td>
 </tr><tr>
@@ -119,151 +119,106 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -4091,7 +4091,7 @@ getcompletion({pat}, {type} [, {filtered}])		*getcompletion()*</div>
+        <div class="d2h-code-side-line">@@ -8529,10 +8529,10 @@ remote_expr({server}, {string} [, {idvar} [, {timeout}]])</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4091
+      8529
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		cscope		|:cscope| suboptions</span>
+            <span class="d2h-code-line-ctn">		string, also see |{server}|.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4092
+      8530
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		custom,{func}	custom completion, defined via {func}</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4093
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		customlist,{func} custom completion, defined via {func}</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      4094
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">		diff_buffer<del>     </del>|:diffget| and |:diffput| completion</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4095
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		dir		directory names</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4096
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		dir_in_path	directory names in |&#x27;cdpath&#x27;|</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4097
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		environment	environment variable names</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -4115,6 +4115,7 @@ getcompletion({pat}, {type} [, {filtered}])		*getcompletion()*</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4115
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		runtime		|:runtime| completion</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4116
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		scriptnames	sourced script names |:scriptnames|</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4117
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		shellcmd	Shell command</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
             <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4118
+      8531
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		sign		|:sign| suboptions</span>
+            <span class="d2h-code-line-ctn">		The string is sent as an expression and the result is returned</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8532
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		after evaluation.  The result must be a String or a |List<del>|.  A</del></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8533
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		<del>|List|</del> <del>is</del> <del>turned</del> <del>into</del> <del>a</del> String <del>by</del> <del>joining</del> <del>the items with a</del></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8534
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		<del>line</del> <del>break</del> <del>in</del> <del>between</del> <del>(not</del> <del>at </del>the <del>end),</del> <del>like </del>with <del>join(expr,</del></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8535
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		&quot;\n&quot;).</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4119
+      8536
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		syntax		syntax file names |&#x27;syntax&#x27;|</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4120
+      8537
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		syntime		|:syntime| suboptions</span>
+            <span class="d2h-code-line-ctn">		If {idvar} is present and not empty, it is taken as the name</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8538
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		of a variable and a {serverid} for later use with</span>
         </div>
     </td>
 </tr>
@@ -287,7 +242,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct <ins>09</ins></span>
+            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct <ins>12</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -327,147 +282,102 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4091
+      8529
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		cscope		|:cscope| suboptions</span>
+            <span class="d2h-code-line-ctn">		string, also see |{server}|.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4092
+      8530
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		custom,{func}	custom completion, defined via {func}</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4093
+      8531
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		customlist,{func} custom completion, defined via {func}</span>
+            <span class="d2h-code-line-ctn">		The string is sent as an expression and the result is returned</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      4094
+      8532
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		diff_buffer<ins>	</ins>|:diffget| and |:diffput| completion</span>
+            <span class="d2h-code-line-ctn">		after evaluation.  The result must be a String or a |List<ins>|</ins></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4095
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      8533
     </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		dir		directory names</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4096
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		dir_in_path	directory names in |&#x27;cdpath&#x27;|</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4097
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		environment	environment variable names</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line"></div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4115
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		runtime		|:runtime| completion</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4116
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		scriptnames	sourced script names |:scriptnames|</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4117
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		shellcmd	Shell command</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      4118
-    </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		shellcmdline	Shell command line with filename arguments</span>
+            <span class="d2h-code-line-ctn">		<ins>other</ins> <ins>types</ins> <ins>will</ins> <ins>be</ins> <ins>converted</ins> <ins>to </ins>String<ins>.  A</ins> <ins>|List|</ins> <ins>is</ins> <ins>turned</ins></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      8534
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">		<ins>into</ins> <ins>a</ins> <ins>String</ins> <ins>by</ins> <ins>joining</ins> the <ins>items</ins> with <ins>a line break in</ins></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      8535
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">		<ins>between (not at the end), like with join(expr, </ins>&quot;\n&quot;).</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4119
+      8536
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		sign		|:sign| suboptions</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4120
+      8537
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		syntax		syntax file names |&#x27;syntax&#x27;|</span>
+            <span class="d2h-code-line-ctn">		If {idvar} is present and not empty, it is taken as the name</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      4121
+      8538
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		syntime		|:syntime| suboptions</span>
+            <span class="d2h-code-line-ctn">		of a variable and a {serverid} for later use with</span>
         </div>
     </td>
 </tr>
