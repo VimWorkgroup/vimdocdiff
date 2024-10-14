@@ -1,25 +1,79 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 44e9ee019..15de27db5 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index 4d477cff8..6f004bb25 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 09
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 12
+-*editing.txt*   For Vim version 9.1.  Last change: 2024 Jul 10
++*editing.txt*   For Vim version 9.1.  Last change: 2024 Oct 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1325,7 +1325,7 @@ used (Motif only offers one pattern, but you can edit it).
+ For example, to have only Vim files in the dialog, you could use the following
+ command: >
+ 
+-     let g:browsefilter = "Vim Scripts\t*.vim\nVim Startup Files\t*vimrc\n"
++     let g:browsefilter = "Vim scripts\t*.vim\nVim Startup Files\t*vimrc\n"
+ 
+ You can override the filter setting on a per-buffer basis by setting the
+ b:browsefilter variable.  You would most likely set b:browsefilter in a
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 6b7dbf908..1c66042cc 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 06
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8529,10 +8529,10 @@ remote_expr({server}, {string} [, {idvar} [, {timeout}]])
- 		string, also see |{server}|.
+@@ -2223,6 +2223,20 @@ define the vim variable 'lace_case_insensitive' in your startup file: >
+ 	:let lace_case_insensitive=1
  
- 		The string is sent as an expression and the result is returned
--		after evaluation.  The result must be a String or a |List|.  A
--		|List| is turned into a String by joining the items with a
--		line break in between (not at the end), like with join(expr,
--		"\n").
-+		after evaluation.  The result must be a String or a |List|
-+		other types will be converted to String.  A |List| is turned
-+		into a String by joining the items with a line break in
-+		between (not at the end), like with join(expr, "\n").
  
- 		If {idvar} is present and not empty, it is taken as the name
- 		of a variable and a {serverid} for later use with
++LF (LFRC)		*lf.vim* *ft-lf-syntax* *g:lf_shell_syntax*
++						*b:lf_shell_syntax*
++
++For the lf file manager configuration files (lfrc) the shell commands
++syntax highlighting can be changed globally and per buffer by setting
++a different 'include' command search pattern using these variables:
++	let g:lf_shell_syntax = "syntax/dosbatch.vim"
++	let b:lf_shell_syntax = "syntax/zsh.vim"
++
++These variables are unset by default.
++
++The default 'include' command search pattern is 'syntax/sh.vim'.
++
++
+ LEX						*lex.vim* *ft-lex-syntax*
+ 
+ Lex uses brute-force synchronizing as the "^%%$" section delimiter
+@@ -2524,6 +2538,12 @@ set "msql_minlines" to the value you desire.  Example: >
+ 	:let msql_minlines = 200
+ 
+ 
++NEOMUTT			*neomutt.vim* *ft-neomuttrc-syntax* *ft-neomuttlog-syntax*
++
++To disable the default NeoMutt log colors >
++
++	:let g:neolog_disable_default_colors = 1
++
+ N1QL						*n1ql.vim* *ft-n1ql-syntax*
+ 
+ N1QL is a SQL-like declarative language for manipulating JSON documents in
+diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
+index b0bf79224..a74795e46 100644
+--- a/runtime/doc/usr_51.txt
++++ b/runtime/doc/usr_51.txt
+@@ -352,8 +352,9 @@ was called from a mapping defined with ":noremap".
+ DOCUMENTATION						*write-local-help*
+ 
+ It's a good idea to also write some documentation for your plugin.  Especially
+-when its behavior can be changed by the user.  See |add-local-help| for how
+-they are installed.
++when its behavior can be changed by the user.  See |help-writing| for the
++syntax used by the help files and |add-local-help| for how local help files
++are installed.
+ 
+ Here is a simple example for a plugin help file, called "typecorrect.txt": >
+ 
