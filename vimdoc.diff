@@ -1,99 +1,63 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 15de27db5..32167d67f 100644
+index 32167d67f..5d9a43668 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 12
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 14
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 14
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 16
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9766,6 +9766,8 @@ setqflist({list} [, {action} [, {what}]])		*setqflist()*
- 			clear the list: >
- 				:call setqflist([], 'r')
+@@ -11954,7 +11954,7 @@ wildmenumode()					*wildmenumode()*
+ 		For example to make <c-j> work like <down> in wildmode, use: >
+     :cnoremap <expr> <C-j> wildmenumode() ? "\<Down>\<Tab>" : "\<c-j>"
  <
-+		'u'	Like 'r', but tries to preserve the current selection
-+			in the quickfix list.
- 		'f'	All the quickfix lists in the quickfix stack are
- 			freed.
+-		(Note, this needs the 'wildcharm' option set appropriately).
++		(Note: this needs the 'wildcharm' option set appropriately).
  
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index 6f004bb25..a70515d6f 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -1,4 +1,4 @@
--*editing.txt*   For Vim version 9.1.  Last change: 2024 Oct 13
-+*editing.txt*   For Vim version 9.1.  Last change: 2024 Oct 14
+ 		Return type: |Number|
  
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1058,6 +1058,15 @@ explanation of when the copy is made and when the file is renamed.
- If the creation of a backup file fails, the write is not done.  If you want
- to write anyway add a '!' to the command.
- 
-+							*file-watcher*
-+When you notice issues with programs, that act upon when a buffer is written
-+(like inotify, entr or fswatch) or when external applications execute Vim to
-+edit the file (like git) and those programs do not seem to notice that the
-+original file has been changed, you may want to consider switching the
-+'backupcopy' option value to "yes".  This makes sure, Vim writes to the same
-+file, that those watcher programs expect, without creating a new file (which
-+prevents them from detecting that the file has changed).  See also |crontab|
-+
- 							*write-permissions*
- When writing a new file the permissions are read-write.  For unix the mask is
- 0o666 with additionally umask applied.  When writing a file that was read Vim
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f0844e21b..40dc139b0 100644
+index 40dc139b0..075d3ee5e 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 06
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 14
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 14
++*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 16
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1151,12 +1151,13 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	useful for example in source trees where all the files are symbolic or
- 	hard links and any changes should stay in the local source tree, not
- 	be propagated back to the original source.
--							*crontab*
-+								*crontab*
- 	One situation where "no" and "auto" will cause problems: A program
- 	that opens a file, invokes Vim to edit that file, and then tests if
- 	the open file was changed (through the file descriptor) will check the
- 	backup file instead of the newly created file.  "crontab -e" is an
--	example.
-+	example, as are several |file-watcher| daemons like inotify.  In that
-+	case you probably want to switch this option.
+@@ -8705,7 +8705,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	be restored if possible, see |X11|.
  
- 	When a copy is made, the original file is truncated and then filled
- 	with the new text.  This means that protection bits, owner and
-@@ -7969,7 +7970,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	When this option contains printf-style '%' items, they will be
+-	expanded according to the rules used for 'statusline'.
++	expanded according to the rules used for 'statusline'.  If it contains
++	an invalid '%' format, the value is used as-is and no error or warning
++	will be given when the value is set.
+ 	This option cannot be set in a modeline when 'modelineexpr' is off.
  
- 	Examples:
- 	Emulate standard status line with 'ruler' set >
--	  :set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
-+	  :set statusline=%<%f\ %h%w%m%r%=%-14.(%l,%c%V%)\ %P
- <	Similar, but add ASCII value of char under the cursor (like "ga") >
- 	  :set statusline=%<%f%h%m%r%=%b\ 0x%B\ \ %l,%c%V\ %P
- <	Display byte count and byte value, modified flag in red. >
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a9434335c..400ccd74a 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+ 	Example: >
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 73d6458d5..d85e580f5 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 08
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 14
+-*repeat.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
++*repeat.txt*    For Vim version 9.1.  Last change: 2024 Oct 16
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41598,6 +41598,8 @@ Changed~
- - the regex engines match correctly case-insensitive multi-byte characters
-   (and apply proper case folding)
- - |:keeppatterns| preserves the last substitute pattern when used with |:s|
-+- |setqflist()| and |setloclist()| can optionally try to preserve the current
-+  selection in the quickfix list with the "u" action.
+@@ -1398,9 +1398,9 @@ For example, to profile the one_script.vim script file: >
+ 		clear the profiling statistics and start profiling again.
  
- 							*added-9.2*
- Added ~
+ :prof[ile] pause
+-		Don't profile until the following `:profile continue`.  Can be
+-		used when doing something that should not be counted (e.g., an
+-		external command).  Does not nest.
++		Stop profiling until the next `:profile continue` command.
++		Can be used when doing something that should not be counted
++		(e.g., an external command).  Does not nest.
+ 
+ :prof[ile] continue
+ 		Continue profiling after `:profile pause`.
