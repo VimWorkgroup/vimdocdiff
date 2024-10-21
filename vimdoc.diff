@@ -1,63 +1,28 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 32167d67f..5d9a43668 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 1c66042cc..496093d11 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 14
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Oct 16
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 13
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -11954,7 +11954,7 @@ wildmenumode()					*wildmenumode()*
- 		For example to make <c-j> work like <down> in wildmode, use: >
-     :cnoremap <expr> <C-j> wildmenumode() ? "\<Down>\<Tab>" : "\<c-j>"
- <
--		(Note, this needs the 'wildcharm' option set appropriately).
-+		(Note: this needs the 'wildcharm' option set appropriately).
+@@ -5309,12 +5309,15 @@ of colors by using the `:colorscheme` command, for example: >
+ 			This is basically the same as >
+ 				:echo g:colors_name
+ <			In case g:colors_name has not been defined :colo will
+-			output "default".  When compiled without the |+eval|
+-			feature it will output "unknown".
++			output "default". Its palette is defined in the file
++			"$VIMRUNTIME/syntax/syncolor.vim" and is based on
++			legacy versions of peachpuff and desert. When compiled
++			without the |+eval| feature it will output "unknown".
  
- 		Return type: |Number|
+ :colo[rscheme] {name}	Load color scheme {name}.  This searches 'runtimepath'
+ 			for the file "colors/{name}.vim".  The first one that
+ 			is found is loaded.
++			Use `:colo default` to load the default colorscheme.
+ 			Also searches all plugins in 'packpath', first below
+ 			"start" and then under "opt".
  
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 40dc139b0..075d3ee5e 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 14
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 16
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8705,7 +8705,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	be restored if possible, see |X11|.
- 
- 	When this option contains printf-style '%' items, they will be
--	expanded according to the rules used for 'statusline'.
-+	expanded according to the rules used for 'statusline'.  If it contains
-+	an invalid '%' format, the value is used as-is and no error or warning
-+	will be given when the value is set.
- 	This option cannot be set in a modeline when 'modelineexpr' is off.
- 
- 	Example: >
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index 73d6458d5..d85e580f5 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
-@@ -1,4 +1,4 @@
--*repeat.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
-+*repeat.txt*    For Vim version 9.1.  Last change: 2024 Oct 16
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1398,9 +1398,9 @@ For example, to profile the one_script.vim script file: >
- 		clear the profiling statistics and start profiling again.
- 
- :prof[ile] pause
--		Don't profile until the following `:profile continue`.  Can be
--		used when doing something that should not be counted (e.g., an
--		external command).  Does not nest.
-+		Stop profiling until the next `:profile continue` command.
-+		Can be used when doing something that should not be counted
-+		(e.g., an external command).  Does not nest.
- 
- :prof[ile] continue
- 		Continue profiling after `:profile pause`.
