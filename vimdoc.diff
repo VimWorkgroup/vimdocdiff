@@ -1,355 +1,53 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index f200a30e5..6ca00a6e1 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 80ccce8f6..027cf08c5 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Aug 18
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2024 Oct 27
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1254,10 +1254,19 @@ TerminalWinOpen			Just after a terminal buffer was created, with
- TermResponse			After the response to |t_RV| is received from
- 				the terminal.  The value of |v:termresponse|
- 				can be used to do things depending on the
--				terminal version.  Note that this event may be
--				triggered halfway executing another event,
--				especially if file I/O, a shell command or
--				anything else that takes time is involved.
-+				terminal version.
-+				This is used in |defaults.vim| to detect
-+				putty terminal and set a dark background: >
-+
-+				au TermResponse *
-+				\ if v:termresponse == "\e[>0;136;0c"
-+				\    set bg=dark
-+				\ endif
-+<
-+				Note: that this event may be triggered halfway
-+				executing another event, especially if file
-+				I/O, a shell command or anything else that
-+				takes time is involved.
- 							*TermResponseAll*
- TermResponseAll			After the response to |t_RV|, |t_RC|, |t_RS|,
- 				|t_RB|, |t_RF|, or |t_u7| are received from
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index dd73ed263..a9564374f 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
-@@ -1,4 +1,4 @@
--*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Oct 21
-+*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Oct 27
- 
- 	    ------------------------------------------------
- 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
-@@ -8,7 +8,7 @@ Author:  Charles E. Campbell  <NcampObell@SdrPchip.AorgM-NOSPAM>
- 
- Copyright: Copyright (C) 2017 Charles E Campbell    *netrw-copyright*
- 	The VIM LICENSE applies to the files in this package, including
--	netrw.vim, pi_netrw.txt, netrwFileHandlers.vim, netrwSettings.vim, and
-+        netrw.vim, pi_netrw.txt, netrwSettings.vim, and
- 	syntax/netrw.vim.  Like anything else that's free, netrw.vim and its
- 	associated files are provided *as is* and comes with no warranty of
- 	any kind, either expressed or implied.  No guarantees of
-@@ -1469,42 +1469,93 @@ With either form of the command, netrw will first ask for confirmation
- that the removal is in fact what you want to do.  If netrw doesn't have
- permission to remove a file, it will issue an error message.
- 
--						*netrw-gx*
-+                                                *netrw-gx* *Open* *Launch*
- CUSTOMIZING BROWSING WITH A SPECIAL HANDLER	*netrw-x* *netrw-handler* {{{2
- 
- Certain files, such as html, gif, jpeg, (word/office) doc, etc, files, are
- best seen with a special handler (ie. a tool provided with your computer's
--operating system).  Netrw allows one to invoke such special handlers by: >
-+operating system).  Netrw allows one to invoke such special handlers by:
- 
--	* when Exploring, hit the "x" key
--	* when editing, hit gx with the cursor atop the special filename
--<	  (latter not available if the |g:netrw_nogx| variable exists)
-+        * hitting gx with the cursor atop the file path or alternatively x
-+          in a netrw buffer; the former can be disabled by defining the
-+          |g:netrw_nogx| variable
-+        * when in command line, typing :Open <path>
- 
--Netrw determines which special handler by the following method:
-+One may also use visual mode (see |visual-start|) to select the text that the
-+special handler will use.  Normally gx checks for a close-by URL or file name
-+to pick up the text under the cursor; one may change what |expand()| uses via the
-+|g:netrw_gx| variable (options include "<cword>", "<cWORD>").  Note that
-+expand("<cfile>") depends on the |'isfname'| setting.  Alternatively, one may
-+select the text to be used by gx by making a visual selection (see
-+|visual-block|) and then pressing gx.
- 
--  * if |g:netrw_browsex_viewer| exists, then it will be used to attempt to
--    view files.  Examples of useful settings (place into your <.vimrc>): >
-+The selection function can be adapted for each filetype by adding a function
-+Netrw_get_URL_<filetype>, where <filetype> is given by &filetype.
-+The function should return the URL or file name to be used by gx, and will
-+fall back to the default behavior if it returns an empty string.
-+For example, special handlers for links Markdown and HTML are
-+>
-+" make gx work on concealed links regardless of exact cursor position
-+function Netrw_get_URL_markdown()
-+  " markdown URL such as [link text](http://ya.ru 'yandex search')
-+  try
-+    let save_view = winsaveview()
-+    if searchpair('\[.\{-}\](', '', ')\zs', 'cbW', '', line('.')) > 0
-+      return matchstr(getline('.')[col('.')-1:], '\[.\{-}\](\zs' .. g:netrw_regex_url .. '\ze\(\s\+.\{-}\)\?)')
-+    endif
-+  finally
-+    call winrestview(save_view)
-+    return ''
-+  endtry
-+endfunction
-+
-+function Netrw_get_URL_html()
-+  " HTML URL such as <a href='http://www.python.org'>Python is here</a>
-+  "                  <a href="http://www.python.org"/>
-+  try
-+    let save_view = winsaveview()
-+    if searchpair('<a\s\+href=', '', '\%(</a>\|/>\)\zs', 'cbW', '', line('.')) > 0
-+      return matchstr(getline('.')[col('.') - 1 : ],
-+            \ 'href=["'.."'"..']\?\zs\S\{-}\ze["'.."'"..']\?/\?>')
-+    endif
-+  finally
-+    call winrestview(save_view)
-+    return ''
-+  endtry
-+endfunction
-+<
- 
--	:let g:netrw_browsex_viewer= "kfmclient exec"
--<   or >
--	:let g:netrw_browsex_viewer= "xdg-open"
-+Other than a file path, the text under the cursor may be a URL.  Netrw uses
-+by default the following regular expression to determine if the text under the
-+cursor is a URL:
-+>
-+	g:netrw_regex_url = '\%(\%(http\|ftp\|irc\)s\?\|file\)://\S\{-}'
- <
-+
-+Netrw determines which special handler by the following method:
-+
-+  * if |g:netrw_browsex_viewer| exists, then it will be used to attempt to
-+    view files.  Examples of useful settings (place into your <.vimrc>):
-     If the viewer you wish to use does not support handling of a remote URL
-     directory, set |g:netrw_browsex_support_remote| to 0.
--  * for Windows 32 or 64, the URL and FileProtocolHandler dlls are used.
--  * for Gnome (with gnome-open): gnome-open is used.
--  * for KDE (with kfmclient)   : kfmclient is used
--  * for Mac OS X               : open is used.
-+  * otherwise:
- 
--The gx mapping extends to all buffers; apply "gx" while atop a word and netrw
--will apply a special handler to it (like "x" works when in a netrw buffer).
--One may also use visual mode (see |visual-start|) to select the text that the
--special handler will use.  Normally gx uses expand("<cfile>") to pick up the
--text under the cursor; one may change what |expand()| uses via the
--|g:netrw_gx| variable (options include "<cword>", "<cWORD>").  Note that
--expand("<cfile>") depends on the |'isfname'| setting.  Alternatively, one may
--select the text to be used by gx by making a visual selection (see
--|visual-block|) and then pressing gx.
-+    * for Windows			: explorer.exe is used
-+    * for Mac OS X			: open is used.
-+    * for Linux				: xdg-open is used.
-+
-+To open a file <filepath> by the appropriate handler, type
-+
-+	:Open <filepath>
-+
-+No escaping, neither for the shell, nor for Vim's command-line is needed.
-+
-+To launch a specific application <app> <args>, often <args> being <filepath>,
-+
-+	:Launch <app> <args>.
-+
-+Since <args> can be arbitrarily complex, in particular contain many file
-+paths, the escaping is left to the user.
- 
- Associated setting variables:
- 	|g:netrw_gx|	control how gx picks up the text under the cursor
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 5020ed5b4..6b53e0223 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Jul 28
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Oct 27
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Oct 22
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Oct 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1537,6 +1537,7 @@ If there is no g:termdebug_config you can use: >
- <
- However, the latter form will be deprecated in future releases.
- 
+@@ -2026,6 +2026,11 @@ v:cmdbang	Set like v:cmdarg for a file read/write command.  When a "!"
+ 		was used the value is 1, otherwise it is 0.  Note that this
+ 		can only be used in autocommands.  For user commands |<bang>|
+ 		can be used.
 +
- Mappings ~
- The termdebug plugin enables a few default mappings.  All those mappings
- are reset to their original values once the termdebug session concludes.
-@@ -1591,6 +1592,7 @@ If the current window has enough horizontal space, it will be vertically split
- and the Var window will be shown side by side with the source code window (and
- the height options won't be used).
- 
++					*v:cmdcomplete* *cmdcomplete-variable*
++v:cmdcomplete	When evaluating 'findexpr': if 'findexpr' is used for cmdline
++		completion the value is |v:true|, otherwise it is |v:false|.
 +
- Communication ~
- 						*termdebug-communication*
- There is another, hidden, buffer, which is used for Vim to communicate with
-@@ -1675,10 +1677,11 @@ If there is no g:termdebug_config you can use: >
- 
- However, the latter form will be deprecated in future releases.
- 
-+
- Change default signs ~
- 							*termdebug_signs*
- Termdebug uses the hex number of the breakpoint ID in the signcolumn to
--represent breakpoints. if it is greater than "0xFF", then it will be displayed
-+represent breakpoints. If it is greater than "0xFF", then it will be displayed
- as "F+", due to we really only have two screen cells for the sign.
- 
- If you want to customize the breakpoint signs: >
-@@ -1716,4 +1719,18 @@ Set the wide value to 1 to use a vertical split without ever changing
- 'columns'.  This is useful when the terminal can't be resized by Vim.
- 
- 
-+Evaluate in Popup Window at Cursor ~
-+						*termdebug_evaluate_in_popup*
-+By default |:Evaluate| will simply echo its output. For larger entities this
-+might become difficult to read or even truncated.
-+Alternatively, the evaluation result may be output into a popup window at the
-+current cursor position: >
-+	let g:termdebug_config['evaluate_in_popup'] = v:true
-+This can also be used in a "one-shot" manner: >
-+	func OnCursorHold()
-+	  let g:termdebug_config['evaluate_in_popup'] = v:true
-+	  :Evaluate
-+	  let g:termdebug_config['evaluate_in_popup'] = v:false
-+	endfunc
-+<
-  vim:tw=78:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 530b05dd3..2f1865482 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+ 						*v:collate* *collate-variable*
+ v:collate	The current locale setting for collation order of the runtime
+ 		environment.  This allows Vim scripts to be aware of the
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 229ce13fd..e221fe3e2 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2024 Sep 29
-+*todo.txt*      For Vim version 9.1.  Last change: 2024 Oct 27
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 22
++*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -55,32 +55,17 @@ When a help item can't be found, then open 'helpfile'.  Search for the tag in
- that file and gtive E149 only when not found.  Helps for a tiny Vim installed
- without all the help files.
+@@ -3567,6 +3567,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The expression is evaluated only once per |:find| command invocation.
+ 	The expression can process all the directories specified in 'path'.
  
--SpellCap highlight not updated - PR #12428
--
- Virtual text problems:
---  If 'list' is on, 'below' virtual text which includes 1 or 2 characters are
--   gone (Issue #12028)
- -  Virtual text aligned "above": Wrong indentation when using tabs  (Issue
-    #12232)
---  Virtual text to the right of the line that isn't visible doesn't cause the
--   'extends' character to show in 'list' mode.  #12478
---  Virtual text to the right of the line that fits exactly on screen causes
--   that line and all lines below it not to be displayed (Issue #12213)
---  Window screen gets wrong when a virtual text is placed on 'above' or
--   'below' on an empty line (Issue #11959)
- -  truncated Virtual text below an empty line causes display error #12493
++	The expression may be evaluated for command-line completion as well,
++	in which case the |v:cmdcomplete| variable will be set to |v:true|,
++	otherwise it will be set to |v:false|.
++
+ 	If a match is found, the expression should return a |List| containing
+ 	one or more file names.  If a match is not found, the expression
+ 	should return an empty List.
+@@ -3586,7 +3590,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ >
+ 	    " Use glob()
+ 	    func FindExprGlob()
+-		return glob(v:fname, v:false, v:true)
++		let pat = v:cmdcomplete ? $'{v:fname}*' : v:fname
++		return glob(pat, v:false, v:true)
+ 	    endfunc
+ 	    set findexpr=FindExprGlob()
  
- When 'virtualedit' is "all" and 'cursorcolumn' is set, the wrong column may be
- highlighted. (van-de-bugger, 2018 Jan 23, #2576)
- 
--Improve profiling by caching matching functions:  PR  #12192
--
- With 'smoothscroll' set and "lastline" in 'display', moving the cursor to a
- wrapping line that makes the display scroll up may scroll much more than
- needed, thus jump-scrolling. (part of issue 12411)
--
--Implement foreach()  PR  #12166
--
- Errors when running tests with valgrind:
- - test_codestyle.vim:  e.g.:
-     command line..script /home/mool/vim/vim91/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 6: keycode_check.vim: space before tab: Expected 0 but got 7
-@@ -117,7 +102,6 @@ Upcoming larger works:
- 
- Further Vim9 improvements:
- - Classes and Interfaces. See |vim9-classes|
--  - Cannot use class type of itself in the method (Issue #12369)
-   - Getting member of variable with "any" type should be handled at runtime.
-     Remove temporary solution from #12096 / patch 9.0.1375.
-   - "obj.Method()" does not always work in a compiled function, assumes "obj"
-@@ -127,9 +111,6 @@ Further Vim9 improvements:
-     Possibly issue #11981 can be fixed at the same time (has two examples).
-   - Forward declaration of a class?  E.g. for Clone() function.
- 	Email lifepillar 2023 Mar 26
--  - When "Meta" is a class, is "const MetaAlias = Meta" allowed?  It should
--    either work or given an error. Possibly give an error now and implement it
--    later (using a typedef).  #12006
-   - how about lock/unlock?
-   - For chaining, allow using the class name as type for function return
-     value.
-@@ -147,7 +128,7 @@ Further Vim9 improvements:
-     has(featureName), len(someString)
- - Implement as part of an expression: ++expr, --expr, expr++, expr--.
- - The use of the literal value "null" and the type specific "null_xxx"
--  values is confusing (#13458, #11770).
-+  values is confusing (#13433, #11770).
- 
- Information missing in terminfo:
- - Codes used for focus gained and lost termcodes are hard-coded in
-@@ -225,8 +206,6 @@ Popup windows:
-   positioned?  PopupNew?  Could be used to set some options or move it out of
-   the way. (#5737)
-   However, it may also cause trouble, changing the popup of another plugin.
--- Width is not computed correctly when minwidth and maxwidth are &columns
--  and padding and a scrollbar are used.  (#6676)
- - Should popup_getoptions() also return the mask?  #7774
- - Add a way to use popup_menu() synchronously: instead of invoking the
-   callback, return the choice. (Ben Jackson, #6534)
-@@ -296,8 +275,6 @@ Terminal emulator window:
- - Use CTRL-W CTRL-K to enter a digraph? #5371
- - When Vim runs in the terminal and changes the title, the statusline needs to
-   be redrawn.
--- GUI: When using ":set go+=!" a system() call causes the hit-enter prompt.
--  (#3327)
- - Allow for specifying the directory, with ++cwd={dir}.
- - When pasting should call vterm_keyboard_start_paste(), e.g. when using
-   K_MIDDLEMOUSE, calling insert_reg().
-@@ -323,9 +300,6 @@ Cursor is after the end of the line:  #12137.
- 
- Crash when a variable is removed while listing variables (Issue #11435)
- 
--Autoconf: must use autoconf 2.69, later version generates lots of warnings
--- try using autoconf 2.71 and fix all "obsolete" warnings  #11322
--
- Problem with Visual highlight when 'linebreak' and 'showbreak' are set.
- #11272
- 
-@@ -343,8 +317,6 @@ Support dark mode for MS-Windows: #12282
- Remote command escapes single quote with backslash, should be doubling the
- single quote in vim_strsave_escaped_ext()  #12202.
- 
--PR to add custom and customlist completion types.  #12228
--
- Can deref_func_name() and deref_function_name() be merged?
- 
- Using :global with a pattern containing \zs doesn't use the line where \zs
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index af180a223..2a3846669 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 22
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 27
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41600,6 +41600,8 @@ Changed~
- - |:keeppatterns| preserves the last substitute pattern when used with |:s|
- - |setqflist()| and |setloclist()| can optionally try to preserve the current
-   selection in the quickfix list with the "u" action.
-+- the putty terminal is detected using an |TermResponse| autocommand in
-+  |defaults.vim| and Vim switches to a dark background
- 
- 							*added-9.2*
- Added ~
