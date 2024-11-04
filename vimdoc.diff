@@ -1,272 +1,80 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 027cf08c5..6b2647504 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2024 Oct 28
-+*eval.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2027,10 +2027,6 @@ v:cmdbang	Set like v:cmdarg for a file read/write command.  When a "!"
- 		can only be used in autocommands.  For user commands |<bang>|
- 		can be used.
- 
--					*v:cmdcomplete* *cmdcomplete-variable*
--v:cmdcomplete	When evaluating 'findexpr': if 'findexpr' is used for cmdline
--		completion the value is |v:true|, otherwise it is |v:false|.
--
- 						*v:collate* *collate-variable*
- v:collate	The current locale setting for collation order of the runtime
- 		environment.  This allows Vim scripts to be aware of the
-@@ -2228,8 +2224,7 @@ v:fcs_choice	What should happen after a |FileChangedShell| event was
- 
- 					*v:fname* *fname-variable*
- v:fname		When evaluating 'includeexpr': the file name that was
--		detected.  When evaluating 'findexpr': the argument passed to
--		the |:find| command.  Empty otherwise.
-+		detected.  Empty otherwise.
- 
- 					*v:fname_in* *fname_in-variable*
- v:fname_in	The name of the input file.  Valid while evaluating:
 diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 40039e391..86c4775fd 100644
+index 86c4775fd..8ade446e6 100644
 --- a/runtime/doc/helphelp.txt
 +++ b/runtime/doc/helphelp.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Apr 10
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
+-*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
++*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 03
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -246,6 +246,61 @@ command: >
- 			To rebuild the help tags in the runtime directory
- 			(requires write permission there): >
- 				:helptags $VIMRUNTIME/doc
-+<
-+						*help-TOC* *help-toc-install*
-+
-+If you want to access an interactive table of contents, from any position in
-+the file, you can use the helptoc plugin.  Load the plugin with: >
-+
-+    packadd helptoc
-+
-+Then you can use the `:HelpToc` command to open a popup menu.
-+The latter supports the following normal commands: >
-+
-+	key | effect
-+	----+---------------------------------------------------------
-+	j   | select next entry
-+	k   | select previous entry
-+	J   | same as j, and jump to corresponding line in main buffer
-+	K   | same as k, and jump to corresponding line in main buffer
-+	c   | select nearest entry from cursor position in main buffer
-+	g   | select first entry
-+	G   | select last entry
-+	H   | collapse one level
-+	L   | expand one level
-+	p   | print current entry on command-line
-+
-+	P   | same as p but automatically, whenever selection changes
-+	    | press multiple times to toggle feature on/off
-+
-+	q   | quit menu
-+	z   | redraw menu with current entry at center
-+	+   | increase width of popup menu
-+	-   | decrease width of popup menu
-+	?   | show/hide a help window
-+
-+	<C-D>      | scroll down half a page
-+	<C-U>      | scroll up half a page
-+	<PageUp>   | scroll down a whole page
-+	<PageDown> | scroll up a whole page
-+	<Home>     | select first entry
-+	<End>      | select last entry
-+
-+The plugin can also provide a table of contents in man pages, markdown files,
-+and terminal buffers.  In the latter, the entries will be the past executed
-+shell commands.  To find those, the following regex is used: >
-+
-+	^\w\+@\w\+:\f\+\$\s
-+
-+This is meant to match a default bash prompt.  If it doesn't match your prompt,
-+you can change the regex with the `shell_prompt` key from the `g:helptoc`
-+dictionary variable: >
-+
-+	let g:helptoc = {'shell_prompt': 'regex matching your shell prompt'}
-+
-+Tip: After inserting a pattern to look for with the `/` command, if you press
-+<Esc> instead of <CR>, you can then get more context for each remaining entry
-+by pressing `J` or `K`.
+@@ -278,6 +278,7 @@ The latter supports the following normal commands: >
+ 	+   | increase width of popup menu
+ 	-   | decrease width of popup menu
+ 	?   | show/hide a help window
++	/   | search for pattern
  
+ 	<C-D>      | scroll down half a page
+ 	<C-U>      | scroll up half a page
+@@ -288,7 +289,7 @@ The latter supports the following normal commands: >
+ 
+ The plugin can also provide a table of contents in man pages, markdown files,
+ and terminal buffers.  In the latter, the entries will be the past executed
+-shell commands.  To find those, the following regex is used: >
++shell commands.  To find those, the following pattern is used: >
+ 
+ 	^\w\+@\w\+:\f\+\$\s
+ 
+diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
+index fdf1b5386..604e26bfe 100644
+--- a/runtime/doc/usr_01.txt
++++ b/runtime/doc/usr_01.txt
+@@ -1,4 +1,4 @@
+-*usr_01.txt*	For Vim version 9.1.  Last change: 2024 May 11
++*usr_01.txt*	For Vim version 9.1.  Last change: 2024 Nov 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -107,6 +107,8 @@ For more info see |vimrc| and |compatible-default|.
  ==============================================================================
- 2. Translated help files				*help-translated*
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e221fe3e2..7a554dbb2 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Oct 28
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
+ *01.3*	Using the Vim tutor				*tutor* *vimtutor*
  
++For the interactive tutor, see |vim-tutor-mode|
++
+ Instead of reading the text (boring!) you can use the vimtutor to learn your
+ first Vim commands.  This is a 30-minute tutorial that teaches the most basic
+ Vim functionality hands-on.
+@@ -118,8 +120,11 @@ On Unix, if Vim has been properly installed, you can start it from the shell:
+ On MS-Windows you can find it in the Program/Vim menu.  Or execute
+ vimtutor.bat in the $VIMRUNTIME directory.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -439,10 +439,11 @@ Note: In the future more global options can be made |global-local|.  Using
- ":setlocal" on a global option might work differently then.
+-This will make a copy of the tutor file, so that you can edit it without
+-the risk of damaging the original.
++This will make a copy of chapter 1 tutor file, so that you can edit it without
++the risk of damaging the original.  To continue with chapter 2, you can use
++the following command: >
++	vimtutor -c 2
++<
+    There are a few translated versions of the tutor.  To find out if yours is
+ available, use the two-letter language code.  For French: >
  
- 						*option-value-function*
--Some options ('completefunc', 'imactivatefunc', 'imstatusfunc', 'omnifunc',
--'operatorfunc', 'quickfixtextfunc', 'tagfunc' and 'thesaurusfunc') are set to
--a function name or a function reference or a lambda function.  When using a
--lambda it will be converted to the name, e.g. "<lambda>123".  Examples:
-+Some options ('completefunc', 'findfunc', 'imactivatefunc', 'imstatusfunc',
-+'omnifunc', 'operatorfunc', 'quickfixtextfunc', 'tagfunc' and 'thesaurusfunc')
-+are set to a function name or a function reference or a lambda function.  When
-+using a lambda it will be converted to the name, e.g. "<lambda>123".
-+Examples:
- >
- 	set opfunc=MyOpFunc
- 	set opfunc=function('MyOpFunc')
-@@ -3552,36 +3553,36 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  eob		EndOfBuffer		|hl-EndOfBuffer|
- 	  lastline	NonText			|hl-NonText|
- 
--						*'findexpr'* *'fexpr'* *E1514*
--'findexpr' 'fexpr'	string	(default "")
-+						*'findfunc'* *'ffu'* *E1514*
-+'findfunc' 'ffu'	string	(default empty)
- 			global or local to buffer |global-local|
- 			{not available when compiled without the |+eval|
- 			feature}
--	Expression that is evaluated to obtain the filename(s) for the |:find|
-+	Function that is called to obtain the filename(s) for the |:find|
- 	command.  When this option is empty, the internal |file-searching|
- 	mechanism is used.
- 
--	While evaluating the expression, the |v:fname| variable is set to the
--	argument of the |:find| command.
-+	The value can be the name of a function, a |lambda| or a |Funcref|.
-+	See |option-value-function| for more information.
- 
--	The expression is evaluated only once per |:find| command invocation.
--	The expression can process all the directories specified in 'path'.
-+	The function is called with two arguments.  The first argument is a
-+	|String| and is the |:find| command argument.  The second argument is
-+	a |Boolean| and is set to |v:true| when the function is called to get
-+	a List of command-line completion matches for the |:find| command.
-+	The function should return a List of strings.
- 
--	The expression may be evaluated for command-line completion as well,
--	in which case the |v:cmdcomplete| variable will be set to |v:true|,
--	otherwise it will be set to |v:false|.
-+	The function is called only once per |:find| command invocation.
-+	The function can process all the directories specified in 'path'.
- 
--	If a match is found, the expression should return a |List| containing
--	one or more file names.  If a match is not found, the expression
-+	If a match is found, the function should return a |List| containing
-+	one or more file names.  If a match is not found, the function
- 	should return an empty List.
- 
--	If any errors are encountered during the expression evaluation, an
-+	If any errors are encountered during the function invocation, an
- 	empty List is used as the return value.
- 
--	Using a function call without arguments is faster |expr-option-function|
--
- 	It is not allowed to change text or jump to another window while
--	evaluating 'findexpr' |textlock|.
-+	executing the 'findfunc' |textlock|.
- 
- 	This option cannot be set from a |modeline| or in the |sandbox|, for
- 	security reasons.
-@@ -3589,18 +3590,18 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Examples:
- >
- 	    " Use glob()
--	    func FindExprGlob()
--		let pat = v:cmdcomplete ? $'{v:fname}*' : v:fname
-+	    func FindFuncGlob(cmdarg, cmdcomplete)
-+		let pat = a:cmdcomplete ? $'{a:cmdarg}*' : a:cmdarg
- 		return glob(pat, v:false, v:true)
- 	    endfunc
--	    set findexpr=FindExprGlob()
-+	    set findfunc=FindFuncGlob
- 
- 	    " Use the 'git ls-files' output
--	    func FindGitFiles()
-+	    func FindGitFiles(cmdarg, cmdcomplete)
- 		let fnames = systemlist('git ls-files')
--		return fnames->filter('v:val =~? v:fname')
-+		return fnames->filter('v:val =~? a:cmdarg')
- 	    endfunc
--	    set findexpr=FindGitFiles()
-+	    set findfunc=FindGitFiles
- <
- 		*'fixendofline'* *'fixeol'* *'nofixendofline'* *'nofixeol'*
- 'fixendofline' 'fixeol'	boolean	(default on)
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index dc95a5405..6b4c5e06d 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
-@@ -1,4 +1,4 @@
--*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 01
-+*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 02
- 
- 	    ------------------------------------------------
- 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
-@@ -1542,7 +1542,7 @@ OPENING FILES AND LAUNCHING APPS                 *netrw-gx* *:Open* *:Launch* {{
- Netrw determines which special handler by the following method:
- 
-   * if |g:netrw_browsex_viewer| exists, then it will be used to attempt to
--    view files.  Examples of useful settings (place into your <.vimrc>):
-+    view files.
-     If the viewer you wish to use does not support handling of a remote URL
-     directory, set |g:netrw_browsex_support_remote| to 0.
-   * otherwise:
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 0f7453a9e..a43d28f1e 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -1,4 +1,4 @@
--*quickref.txt*  For Vim version 9.1.  Last change: 2024 Oct 22
-+*quickref.txt*  For Vim version 9.1.  Last change: 2024 Nov 02
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -707,7 +707,7 @@ Short explanation of each option:		*option-list*
- 'fileignorecase'  'fic'     ignore case when using file names
- 'filetype'	  'ft'	    type of file, used for autocommands
- 'fillchars'	  'fcs'     characters to use for displaying special items
--'findexpr'	  'fexpr'   expression to evaluate for |:find|
-+'findfunc'	  'ffu'     function to be called for the |:find| command
- 'fixendofline'	  'fixeol'  make sure last line in file has <EOL>
- 'fkmap'		  'fk'	    obsolete option for Farsi
- 'foldclose'	  'fcl'     close a fold when the cursor leaves it
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 2a3846669..5f9250348 100644
+index 5f9250348..999a09cfc 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Oct 27
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 02
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 02
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 03
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41602,6 +41602,7 @@ Changed~
-   selection in the quickfix list with the "u" action.
+@@ -41603,6 +41603,9 @@ Changed~
  - the putty terminal is detected using an |TermResponse| autocommand in
    |defaults.vim| and Vim switches to a dark background
-+- the |help-TOC| package is included to ease navigating the documentation.
+ - the |help-TOC| package is included to ease navigating the documentation.
++- an interactive tutor plugin has been included |vim-tutor-mode|, can be
++  started via |:Tutor|
++- improve the |vimtutor| and add a second chapter for more advanced tips
  
  							*added-9.2*
  Added ~
-@@ -41651,7 +41652,7 @@ Options: ~
- 
- 'completeitemalign'	Order of |complete-items| in Insert mode completion
- 			popup
--'findexpr'		Vim expression to obtain the results for a |:find|
-+'findfunc'		Vim function to obtain the results for a |:find|
- 			command
- 'winfixbuf'		Keep buffer focused in a window
- 'tabclose'		Which tab page to focus after closing a tab page
