@@ -1,80 +1,84 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 86c4775fd..8ade446e6 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
+diff --git a/runtime/doc/pi_paren.txt b/runtime/doc/pi_paren.txt
+index 719353fa9..049889699 100644
+--- a/runtime/doc/pi_paren.txt
++++ b/runtime/doc/pi_paren.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 03
+-*pi_paren.txt*  For Vim version 9.1.  Last change: 2013 May 08
++*pi_paren.txt*  For Vim version 9.1.  Last change: 2024 Nov 04
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -278,6 +278,7 @@ The latter supports the following normal commands: >
- 	+   | increase width of popup menu
- 	-   | decrease width of popup menu
- 	?   | show/hide a help window
-+	/   | search for pattern
+@@ -10,6 +10,7 @@ The functionality mentioned here is a |standard-plugin|.
+ This plugin is only available if 'compatible' is not set.
  
- 	<C-D>      | scroll down half a page
- 	<C-U>      | scroll up half a page
-@@ -288,7 +289,7 @@ The latter supports the following normal commands: >
- 
- The plugin can also provide a table of contents in man pages, markdown files,
- and terminal buffers.  In the latter, the entries will be the past executed
--shell commands.  To find those, the following regex is used: >
-+shell commands.  To find those, the following pattern is used: >
- 
- 	^\w\+@\w\+:\f\+\$\s
- 
-diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
-index fdf1b5386..604e26bfe 100644
---- a/runtime/doc/usr_01.txt
-+++ b/runtime/doc/usr_01.txt
-@@ -1,4 +1,4 @@
--*usr_01.txt*	For Vim version 9.1.  Last change: 2024 May 11
-+*usr_01.txt*	For Vim version 9.1.  Last change: 2024 Nov 03
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -107,6 +107,8 @@ For more info see |vimrc| and |compatible-default|.
- ==============================================================================
- *01.3*	Using the Vim tutor				*tutor* *vimtutor*
- 
-+For the interactive tutor, see |vim-tutor-mode|
+ You can avoid loading this plugin by setting the "loaded_matchparen" variable: >
 +
- Instead of reading the text (boring!) you can use the vimtutor to learn your
- first Vim commands.  This is a 30-minute tutorial that teaches the most basic
- Vim functionality hands-on.
-@@ -118,8 +120,11 @@ On Unix, if Vim has been properly installed, you can start it from the shell:
- On MS-Windows you can find it in the Program/Vim menu.  Or execute
- vimtutor.bat in the $VIMRUNTIME directory.
+ 	:let loaded_matchparen = 1
  
--This will make a copy of the tutor file, so that you can edit it without
--the risk of damaging the original.
-+This will make a copy of chapter 1 tutor file, so that you can edit it without
-+the risk of damaging the original.  To continue with chapter 2, you can use
-+the following command: >
-+	vimtutor -c 2
-+<
-    There are a few translated versions of the tutor.  To find out if yours is
- available, use the two-letter language code.  For French: >
+ The plugin installs CursorMoved, CursorMovedI and WinEnter autocommands to
+@@ -29,6 +30,16 @@ the ":highlight" command.  Example: >
  
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 5f9250348..999a09cfc 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 02
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 03
+ 	:hi MatchParen ctermbg=blue guibg=lightblue
  
++By default the plugin will highlight both the paren under the cursor and the
++matching one using the |hl-MatchParen| highlighting group.  This may result in
++the cursor briefly disappearing from the screen as the MatchParen colors take
++over the cursor highlight.  To prevent this from happening and have the plugin
++only highlight the matching paren and not the one under the cursor
++(effectively leaving the cursor style unchanged), you can set the
++"matchparen_disable_cursor_hl" variable: >
++
++	:let matchparen_disable_cursor_hl = 1
++
+ The characters to be matched come from the 'matchpairs' option.  You can
+ change the value to highlight different matches.  Note that not everything is
+ possible.  For example, you can't highlight single or double quotes, because
+@@ -46,10 +57,10 @@ are:
+   closed folds.
+ - 'synmaxcol' times 2 bytes before or after the cursor to avoid a delay
+   in a long line with syntax highlighting.
+-- A timeout of 300 msec (60 msec in Insert mode). This can be changed with the
+-  g:matchparen_timeout and g:matchparen_insert_timeout variables and their
+-  buffer-local equivalents b:matchparen_timeout and
+-  b:matchparen_insert_timeout.
++- A timeout of 300 msec (60 msec in Insert mode).  This can be changed with
++  the "g:matchparen_timeout" and "g:matchparen_insert_timeout" variables and
++  their buffer-local equivalents "b:matchparen_timeout" and
++  "b:matchparen_insert_timeout".
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41603,6 +41603,9 @@ Changed~
- - the putty terminal is detected using an |TermResponse| autocommand in
-   |defaults.vim| and Vim switches to a dark background
- - the |help-TOC| package is included to ease navigating the documentation.
-+- an interactive tutor plugin has been included |vim-tutor-mode|, can be
-+  started via |:Tutor|
-+- improve the |vimtutor| and add a second chapter for more advanced tips
+ If you would like the |%| command to work better, the matchit plugin can be
+ used, see |matchit-install|.  This plugin also helps to skip matches in
+diff --git a/runtime/doc/pi_tutor.txt b/runtime/doc/pi_tutor.txt
+index 7aaafd19a..0f8479e88 100644
+--- a/runtime/doc/pi_tutor.txt
++++ b/runtime/doc/pi_tutor.txt
+@@ -1,11 +1,11 @@
+-*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 02
++*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 03
  
- 							*added-9.2*
- Added ~
+ INTERACTIVE TUTORIALS FOR VIM			 *vim-tutor-mode*
+ 
+ vim-tutor-mode provides a system to follow and create interactive tutorials
+ for vim and third party plugins. It replaces the venerable `vimtutor` system.
+ 
+-==============================================================================
++=============================================================================
+ 1. Usage                                                      *vim-tutor-usage*
+ 
+ vim-tutor-mode tutorials are hypertext documents, they have rich text and
+@@ -40,7 +40,7 @@ to be detected by the :Tutor command.
+ It is recommended to use a less formal style when writing tutorials than in
+ regular documentation (unless the content requires it).
+ 
+-============================================================================
++=============================================================================
+ 3. Contributing
+ 
+ Development of the plugin is done over at github [1].  Feel free to report
+@@ -48,4 +48,5 @@ issues and make suggestions.
+ 
+ [1]: https://github.com/fmoralesc/vim-tutor-mode
+ 
+-" vim: set ft=help :
++=============================================================================
++ vim:tw=78:ts=8:noet:ft=help:norl:
