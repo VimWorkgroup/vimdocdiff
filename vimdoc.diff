@@ -1,139 +1,62 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index edc425a5a..70d6f47a5 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
+index faa5f3271..77ea273ec 100644
+--- a/runtime/doc/help.txt
++++ b/runtime/doc/help.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 01
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 06
+-*help.txt*	For Vim version 9.1.  Last change: 2024 May 27
++*help.txt*	For Vim version 9.1.  Last change: 2024 Nov 07
  
+ 			VIM - main help file
+ 									 k
+@@ -232,6 +232,7 @@ Standard plugins ~
+ |pi_paren.txt|     Highlight matching parens
+ |pi_spec.txt|      Filetype plugin to work with rpm spec files
+ |pi_tar.txt|       Tar file explorer
++|pi_tutor.txt|     Interactive tutorial for Vim
+ |pi_vimball.txt|   Create a self-installing Vim script
+ |pi_zip.txt|       Zip archive explorer
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -467,9 +467,9 @@ prop_type_get({name} [, {props}])
- prop_type_list([{props}])	List	get list of property types
- pum_getpos()			Dict	position and size of pum if visible
- pumvisible()			Number	whether popup menu is visible
--py3eval({expr})			any	evaluate |python3| expression
--pyeval({expr})			any	evaluate |Python| expression
--pyxeval({expr})			any	evaluate |python_x| expression
-+py3eval({expr}[, {locals}])	any	evaluate |python3| expression
-+pyeval({expr}[, {locals}])	any	evaluate |Python| expression
-+pyxeval({expr}[, {locals}])	any	evaluate |python_x| expression
- rand([{expr}])			Number	get pseudo-random number
- range({expr} [, {max} [, {stride}]])
- 				List	items from {expr} to {max}
-@@ -8127,9 +8127,14 @@ pumvisible()						*pumvisible()*
- 		Return type: |Number|
- 
- 
--py3eval({expr})						*py3eval()*
-+py3eval({expr}[, {locals}])				*py3eval()*
- 		Evaluate Python expression {expr} and return its result
- 		converted to Vim data structures.
-+		If a {locals} |Dictionary| is given, it defines set of local
-+		variables available in the expression. The keys are variable
-+		names and the values are the variable values. |Dictionary| and
-+		|List| values are referenced, and may be updated by the
-+		expression (as if |python-bindeval| was used).
- 		Numbers and strings are returned as they are (strings are
- 		copied though, Unicode strings are additionally converted to
- 		'encoding').
-@@ -8141,15 +8146,17 @@ py3eval({expr})						*py3eval()*
- 
- 		Can also be used as a |method|: >
- 			GetExpr()->py3eval()
-+			'b",".join(l)'->py3eval({'l': ['a', 'b', 'c']})
- <
- 		Return type: any, depending on {expr}
- 
- 		{only available when compiled with the |+python3| feature}
- 
- 							*E858* *E859*
--pyeval({expr})						*pyeval()*
-+pyeval({expr}[, {locals}])				*pyeval()*
- 		Evaluate Python expression {expr} and return its result
- 		converted to Vim data structures.
-+		For {locals} see |py3eval()|.
- 		Numbers and strings are returned as they are (strings are
- 		copied though).
- 		Lists are represented as Vim |List| type.
-@@ -8165,9 +8172,10 @@ pyeval({expr})						*pyeval()*
- 
- 		{only available when compiled with the |+python| feature}
- 
--pyxeval({expr})						*pyxeval()*
-+pyxeval({expr}[, {locals}])				*pyxeval()*
- 		Evaluate Python expression {expr} and return its result
- 		converted to Vim data structures.
-+		For {locals} see |py3eval()|.
- 		Uses Python 2 or 3, see |python_x| and 'pyxversion'.
- 		See also: |pyeval()|, |py3eval()|
- 
-diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
-index 623684152..0b6140f25 100644
---- a/runtime/doc/if_pyth.txt
-+++ b/runtime/doc/if_pyth.txt
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index e7536446b..37f0a181d 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 May 16
-+*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 Nov 06
- 
- 
- 		  VIM REFERENCE MANUAL    by Paul Moore
-@@ -201,6 +201,10 @@ vim.eval(str)						*python-eval*
- 	[{'cmd': '/^eval_expr(arg, nextcmd)$/', 'static': 0, 'name': ~
- 	'eval_expr', 'kind': 'f', 'filename': './src/eval.c'}] ~
- 
-+	NOTE: In vim9script, local variables in def functions are not visible
-+	to to python evaluations. To pass local variables to python evaluations,
-+	use the {locals} dict when calling |py3eval()| and friends.
-+
- vim.bindeval(str)					*python-bindeval*
- 	Like |python-eval|, but returns special objects described in
- 	|python-bindeval-objects|. These python objects let you modify (|List|
-@@ -741,6 +745,10 @@ To facilitate bi-directional interface, you can use |pyeval()| and |py3eval()|
- functions to evaluate Python expressions and pass their values to Vim script.
- |pyxeval()| is also available.
- 
-+You can inject local variables into the evaluation using the optional {locals}
-+dict. This can be particularly useful in vim9script where vim.eval
-+|python-eval| will not find locals in a def func.
-+
- The Python value "None" is converted to v:none.
- 
- ==============================================================================
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7a554dbb2..f9189e59a 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 06
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3515,7 +3515,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Only alphanumeric characters, '-' and '_' can be used.
- 
- 						*'fillchars'* *'fcs'*
--'fillchars' 'fcs'	string	(default "vert:|,fold:-,eob:~")
-+'fillchars' 'fcs'	string	(default "vert:|,fold:-,eob:~,lastline:@")
- 			global or local to window |global-local|
- 	Characters to fill the statuslines, vertical separators and special
- 	lines in the window.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 999a09cfc..c4022d888 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 03
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 06
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
++*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 07
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41606,6 +41606,7 @@ Changed~
- - an interactive tutor plugin has been included |vim-tutor-mode|, can be
-   started via |:Tutor|
- - improve the |vimtutor| and add a second chapter for more advanced tips
-+- allow to pass local Vim script variables to python interpreter |py3eval()|
+@@ -1405,6 +1405,33 @@ being checked.  To disable this set g:perl_compiler_force_warnings to a zero
+ value.  For example: >
+ 	let g:perl_compiler_force_warnings = 0
  
- 							*added-9.2*
- Added ~
++MYPY TYPE CHECKER					*compiler-mypy*
++
++Commonly used compiler options can be added to 'makeprg' by setting the
++b/g:mypy_makeprg_params variable.  For example: >
++
++	let b:mypy_makeprg_params = "--warn-unused-ignores"
++
++The global default is "--strict --ignore-missing-imports".
++
++RUFF LINTER						*compiler-ruff*
++
++Commonly used compiler options can be added to 'makeprg' by setting the
++b/g:ruff_makeprg_params variable.  For example: >
++
++	let b:ruff_makeprg_params = "--max-line-length"..&textwidth
++
++The global default is "--preview".
++
++PYLINT LINTER						*compiler-pylint*
++
++Commonly used compiler options can be added to 'makeprg' by setting the
++b/g:pylint_makeprg_params variable.  For example: >
++
++	let b:pylint_makeprg_params = "--max-line-length"..&textwidth
++
++The global default is "--jobs=n" where n is the number of cores as reported
++by getconf, if executable. Otherwise it defaults to "".
+ 
+ PYUNIT COMPILER						*compiler-pyunit*
+ 
