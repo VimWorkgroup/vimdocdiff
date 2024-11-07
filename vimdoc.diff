@@ -1,84 +1,139 @@
-diff --git a/runtime/doc/pi_paren.txt b/runtime/doc/pi_paren.txt
-index 719353fa9..049889699 100644
---- a/runtime/doc/pi_paren.txt
-+++ b/runtime/doc/pi_paren.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index edc425a5a..70d6f47a5 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*pi_paren.txt*  For Vim version 9.1.  Last change: 2013 May 08
-+*pi_paren.txt*  For Vim version 9.1.  Last change: 2024 Nov 04
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 01
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -467,9 +467,9 @@ prop_type_get({name} [, {props}])
+ prop_type_list([{props}])	List	get list of property types
+ pum_getpos()			Dict	position and size of pum if visible
+ pumvisible()			Number	whether popup menu is visible
+-py3eval({expr})			any	evaluate |python3| expression
+-pyeval({expr})			any	evaluate |Python| expression
+-pyxeval({expr})			any	evaluate |python_x| expression
++py3eval({expr}[, {locals}])	any	evaluate |python3| expression
++pyeval({expr}[, {locals}])	any	evaluate |Python| expression
++pyxeval({expr}[, {locals}])	any	evaluate |python_x| expression
+ rand([{expr}])			Number	get pseudo-random number
+ range({expr} [, {max} [, {stride}]])
+ 				List	items from {expr} to {max}
+@@ -8127,9 +8127,14 @@ pumvisible()						*pumvisible()*
+ 		Return type: |Number|
+ 
+ 
+-py3eval({expr})						*py3eval()*
++py3eval({expr}[, {locals}])				*py3eval()*
+ 		Evaluate Python expression {expr} and return its result
+ 		converted to Vim data structures.
++		If a {locals} |Dictionary| is given, it defines set of local
++		variables available in the expression. The keys are variable
++		names and the values are the variable values. |Dictionary| and
++		|List| values are referenced, and may be updated by the
++		expression (as if |python-bindeval| was used).
+ 		Numbers and strings are returned as they are (strings are
+ 		copied though, Unicode strings are additionally converted to
+ 		'encoding').
+@@ -8141,15 +8146,17 @@ py3eval({expr})						*py3eval()*
+ 
+ 		Can also be used as a |method|: >
+ 			GetExpr()->py3eval()
++			'b",".join(l)'->py3eval({'l': ['a', 'b', 'c']})
+ <
+ 		Return type: any, depending on {expr}
+ 
+ 		{only available when compiled with the |+python3| feature}
+ 
+ 							*E858* *E859*
+-pyeval({expr})						*pyeval()*
++pyeval({expr}[, {locals}])				*pyeval()*
+ 		Evaluate Python expression {expr} and return its result
+ 		converted to Vim data structures.
++		For {locals} see |py3eval()|.
+ 		Numbers and strings are returned as they are (strings are
+ 		copied though).
+ 		Lists are represented as Vim |List| type.
+@@ -8165,9 +8172,10 @@ pyeval({expr})						*pyeval()*
+ 
+ 		{only available when compiled with the |+python| feature}
+ 
+-pyxeval({expr})						*pyxeval()*
++pyxeval({expr}[, {locals}])				*pyxeval()*
+ 		Evaluate Python expression {expr} and return its result
+ 		converted to Vim data structures.
++		For {locals} see |py3eval()|.
+ 		Uses Python 2 or 3, see |python_x| and 'pyxversion'.
+ 		See also: |pyeval()|, |py3eval()|
+ 
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index 623684152..0b6140f25 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
+@@ -1,4 +1,4 @@
+-*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 May 16
++*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 Nov 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Paul Moore
+@@ -201,6 +201,10 @@ vim.eval(str)						*python-eval*
+ 	[{'cmd': '/^eval_expr(arg, nextcmd)$/', 'static': 0, 'name': ~
+ 	'eval_expr', 'kind': 'f', 'filename': './src/eval.c'}] ~
+ 
++	NOTE: In vim9script, local variables in def functions are not visible
++	to to python evaluations. To pass local variables to python evaluations,
++	use the {locals} dict when calling |py3eval()| and friends.
++
+ vim.bindeval(str)					*python-bindeval*
+ 	Like |python-eval|, but returns special objects described in
+ 	|python-bindeval-objects|. These python objects let you modify (|List|
+@@ -741,6 +745,10 @@ To facilitate bi-directional interface, you can use |pyeval()| and |py3eval()|
+ functions to evaluate Python expressions and pass their values to Vim script.
+ |pyxeval()| is also available.
+ 
++You can inject local variables into the evaluation using the optional {locals}
++dict. This can be particularly useful in vim9script where vim.eval
++|python-eval| will not find locals in a def func.
++
+ The Python value "None" is converted to v:none.
+ 
+ ==============================================================================
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 7a554dbb2..f9189e59a 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
++*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 06
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3515,7 +3515,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Only alphanumeric characters, '-' and '_' can be used.
+ 
+ 						*'fillchars'* *'fcs'*
+-'fillchars' 'fcs'	string	(default "vert:|,fold:-,eob:~")
++'fillchars' 'fcs'	string	(default "vert:|,fold:-,eob:~,lastline:@")
+ 			global or local to window |global-local|
+ 	Characters to fill the statuslines, vertical separators and special
+ 	lines in the window.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 999a09cfc..c4022d888 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 03
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 06
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -10,6 +10,7 @@ The functionality mentioned here is a |standard-plugin|.
- This plugin is only available if 'compatible' is not set.
+@@ -41606,6 +41606,7 @@ Changed~
+ - an interactive tutor plugin has been included |vim-tutor-mode|, can be
+   started via |:Tutor|
+ - improve the |vimtutor| and add a second chapter for more advanced tips
++- allow to pass local Vim script variables to python interpreter |py3eval()|
  
- You can avoid loading this plugin by setting the "loaded_matchparen" variable: >
-+
- 	:let loaded_matchparen = 1
- 
- The plugin installs CursorMoved, CursorMovedI and WinEnter autocommands to
-@@ -29,6 +30,16 @@ the ":highlight" command.  Example: >
- 
- 	:hi MatchParen ctermbg=blue guibg=lightblue
- 
-+By default the plugin will highlight both the paren under the cursor and the
-+matching one using the |hl-MatchParen| highlighting group.  This may result in
-+the cursor briefly disappearing from the screen as the MatchParen colors take
-+over the cursor highlight.  To prevent this from happening and have the plugin
-+only highlight the matching paren and not the one under the cursor
-+(effectively leaving the cursor style unchanged), you can set the
-+"matchparen_disable_cursor_hl" variable: >
-+
-+	:let matchparen_disable_cursor_hl = 1
-+
- The characters to be matched come from the 'matchpairs' option.  You can
- change the value to highlight different matches.  Note that not everything is
- possible.  For example, you can't highlight single or double quotes, because
-@@ -46,10 +57,10 @@ are:
-   closed folds.
- - 'synmaxcol' times 2 bytes before or after the cursor to avoid a delay
-   in a long line with syntax highlighting.
--- A timeout of 300 msec (60 msec in Insert mode). This can be changed with the
--  g:matchparen_timeout and g:matchparen_insert_timeout variables and their
--  buffer-local equivalents b:matchparen_timeout and
--  b:matchparen_insert_timeout.
-+- A timeout of 300 msec (60 msec in Insert mode).  This can be changed with
-+  the "g:matchparen_timeout" and "g:matchparen_insert_timeout" variables and
-+  their buffer-local equivalents "b:matchparen_timeout" and
-+  "b:matchparen_insert_timeout".
- 
- If you would like the |%| command to work better, the matchit plugin can be
- used, see |matchit-install|.  This plugin also helps to skip matches in
-diff --git a/runtime/doc/pi_tutor.txt b/runtime/doc/pi_tutor.txt
-index 7aaafd19a..0f8479e88 100644
---- a/runtime/doc/pi_tutor.txt
-+++ b/runtime/doc/pi_tutor.txt
-@@ -1,11 +1,11 @@
--*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 02
-+*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 03
- 
- INTERACTIVE TUTORIALS FOR VIM			 *vim-tutor-mode*
- 
- vim-tutor-mode provides a system to follow and create interactive tutorials
- for vim and third party plugins. It replaces the venerable `vimtutor` system.
- 
--==============================================================================
-+=============================================================================
- 1. Usage                                                      *vim-tutor-usage*
- 
- vim-tutor-mode tutorials are hypertext documents, they have rich text and
-@@ -40,7 +40,7 @@ to be detected by the :Tutor command.
- It is recommended to use a less formal style when writing tutorials than in
- regular documentation (unless the content requires it).
- 
--============================================================================
-+=============================================================================
- 3. Contributing
- 
- Development of the plugin is done over at github [1].  Feel free to report
-@@ -48,4 +48,5 @@ issues and make suggestions.
- 
- [1]: https://github.com/fmoralesc/vim-tutor-mode
- 
--" vim: set ft=help :
-+=============================================================================
-+ vim:tw=78:ts=8:noet:ft=help:norl:
+ 							*added-9.2*
+ Added ~
