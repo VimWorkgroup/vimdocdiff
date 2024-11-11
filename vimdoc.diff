@@ -1,441 +1,176 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 70d6f47a5..d32c09d2f 100644
+index d32c09d2f..67f447d7d 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 06
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5203,7 +5203,7 @@ glob({expr} [, {nosuf} [, {list} [, {alllinks}]]])		*glob()*
- 		on {list}
+@@ -467,9 +467,9 @@ prop_type_get({name} [, {props}])
+ prop_type_list([{props}])	List	get list of property types
+ pum_getpos()			Dict	position and size of pum if visible
+ pumvisible()			Number	whether popup menu is visible
+-py3eval({expr}[, {locals}])	any	evaluate |python3| expression
+-pyeval({expr}[, {locals}])	any	evaluate |Python| expression
+-pyxeval({expr}[, {locals}])	any	evaluate |python_x| expression
++py3eval({expr} [, {locals}])	any	evaluate |python3| expression
++pyeval({expr} [, {locals}])	any	evaluate |Python| expression
++pyxeval({expr} [, {locals}])	any	evaluate |python_x| expression
+ rand([{expr}])			Number	get pseudo-random number
+ range({expr} [, {max} [, {stride}]])
+ 				List	items from {expr} to {max}
+@@ -8127,7 +8127,7 @@ pumvisible()						*pumvisible()*
+ 		Return type: |Number|
  
  
--glob2regpat({string})					 *glob2regpat()*
-+glob2regpat({string})					*glob2regpat()*
- 		Convert a file pattern, as used by glob(), into a search
- 		pattern.  The result can be used to match with a string that
- 		is a file name.  E.g. >
-@@ -5656,7 +5656,7 @@ iconv({string}, {from}, {to})				*iconv()*
- 		Return type: |String|
+-py3eval({expr}[, {locals}])				*py3eval()*
++py3eval({expr} [, {locals}])				*py3eval()*
+ 		Evaluate Python expression {expr} and return its result
+ 		converted to Vim data structures.
+ 		If a {locals} |Dictionary| is given, it defines set of local
+@@ -8153,7 +8153,7 @@ py3eval({expr}[, {locals}])				*py3eval()*
+ 		{only available when compiled with the |+python3| feature}
  
+ 							*E858* *E859*
+-pyeval({expr}[, {locals}])				*pyeval()*
++pyeval({expr} [, {locals}])				*pyeval()*
+ 		Evaluate Python expression {expr} and return its result
+ 		converted to Vim data structures.
+ 		For {locals} see |py3eval()|.
+@@ -8172,7 +8172,7 @@ pyeval({expr}[, {locals}])				*pyeval()*
  
--id({item})							    *id()*
-+id({item})							*id()*
- 		The result is a unique String associated with the {item} and
- 		not with the {item}'s contents. It is only valid while the
- 		{item} exists and is referenced. It is valid only in the
-@@ -7081,7 +7081,7 @@ matchbufline({buf}, {pat}, {lnum}, {end}, [, {dict}])
- 		Return type: list<dict<any>> or list<any>
+ 		{only available when compiled with the |+python| feature}
  
- 
--matchdelete({id} [, {win})		       *matchdelete()* *E802* *E803*
-+matchdelete({id} [, {win})			*matchdelete()* *E802* *E803*
- 		Deletes a match with ID {id} previously defined by |matchadd()|
- 		or one of the |:match| commands.  Returns 0 if successful,
- 		otherwise -1.  See example for |matchadd()|.  All matches can
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index be3ba021d..88ec43f1d 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+-pyxeval({expr}[, {locals}])				*pyxeval()*
++pyxeval({expr} [, {locals}])				*pyxeval()*
+ 		Evaluate Python expression {expr} and return its result
+ 		converted to Vim data structures.
+ 		For {locals} see |py3eval()|.
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 37f0a181d..48f192a7b 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Oct 21
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 07
++*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 10
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -946,8 +946,8 @@ To enable: >
- 	let g:typst_folding = 1
+@@ -361,7 +361,7 @@ processing a quickfix or location list command, it will be aborted.
+ 			Example: >
+     :g/mypattern/caddexpr expand("%") .. ":" .. line(".") ..  ":" .. getline(".")
  <
- 							*g:typst_foldnested*
--When |TRUE| the Typst filetype plugin will fold nested heading under their parents
--(default: |TRUE|)
-+When |TRUE| the Typst filetype plugin will fold nested heading under their
-+parents. (default: |TRUE|)
+-						*:lad* *:addd* *:laddexpr*
++						*:lad* *:ladd* *:laddexpr*
+ :lad[dexpr] {expr}	Same as ":caddexpr", except the location list for the
+ 			current window is used instead of the quickfix list.
  
- To disable: >
- 	let g:typst_foldnested = 0
-diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
-index 0b6140f25..480ff02c2 100644
---- a/runtime/doc/if_pyth.txt
-+++ b/runtime/doc/if_pyth.txt
-@@ -1,4 +1,4 @@
--*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 Nov 06
-+*if_pyth.txt*   For Vim version 9.1.  Last change: 2024 Nov 09
- 
- 
- 		  VIM REFERENCE MANUAL    by Paul Moore
-@@ -201,8 +201,8 @@ vim.eval(str)						*python-eval*
- 	[{'cmd': '/^eval_expr(arg, nextcmd)$/', 'static': 0, 'name': ~
- 	'eval_expr', 'kind': 'f', 'filename': './src/eval.c'}] ~
- 
--	NOTE: In vim9script, local variables in def functions are not visible
--	to to python evaluations. To pass local variables to python evaluations,
-+	NOTE: In Vim9 script, local variables in def functions are not visible
-+	to python evaluations. To pass local variables to python evaluations,
- 	use the {locals} dict when calling |py3eval()| and friends.
- 
- vim.bindeval(str)					*python-bindeval*
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 4351944df..6ebef9e44 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -1,4 +1,4 @@
--*pattern.txt*   For Vim version 9.1.  Last change: 2024 Jun 18
-+*pattern.txt*   For Vim version 9.1.  Last change: 2024 Nov 09
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -164,7 +164,7 @@ or auto suspended with nohlsearch plugin.  See |nohlsearch-install|.
- 
- 
- When 'shortmess' does not include the "S" flag, Vim will automatically show an
--index, on which the cursor is. This can look like this: >
-+index, on which the cursor is.  This can look like this: >
- 
-   [1/5]		Cursor is on first of 5 matches.
-   [1/>99]	Cursor is on first of more than 99 matches.
-@@ -757,7 +757,7 @@ overview.
- 	\([a-z]\+\)\zs,\1		",abc" in "abc,abc"
- 
- \@123<=
--	Like "\@<=" but only look back 123 bytes. This avoids trying lots
-+	Like "\@<=" but only look back 123 bytes.  This avoids trying lots
- 	of matches that are known to fail and make executing the pattern very
- 	slow.  Example, check if there is a "<" just before "span":
- 		/<\@1<=span
-@@ -783,7 +783,7 @@ overview.
- 	\(\/\/.*\)\@<!in	"in" which is not after "//"
- 
- \@123<!
--	Like "\@<!" but only look back 123 bytes. This avoids trying lots of
-+	Like "\@<!" but only look back 123 bytes.  This avoids trying lots of
- 	matches that are known to fail and make executing the pattern very
- 	slow.
- 
-@@ -907,7 +907,7 @@ $	At end of pattern or in front of "\|", "\)" or "\n" ('magic' on):
- 	inside the Visual area put it at the start and just before the end of
- 	the pattern, e.g.: >
- 		/\%Vfoo.*ba\%Vr
--<	This also works if only "foo bar" was Visually selected. This: >
-+<	This also works if only "foo bar" was Visually selected.  This: >
- 		/\%Vfoo.*bar\%V
- <	would match "foo bar" if the Visual selection continues after the "r".
- 	Only works for the current buffer.
-@@ -1014,7 +1014,7 @@ $	At end of pattern or in front of "\|", "\)" or "\n" ('magic' on):
- <	To match all characters after the current virtual column (where the
- 	cursor is): >
- 		/\%>.v.*
--<	Column 17 is not included, because this is a |/zero-width| match. To
-+<	Column 17 is not included, because this is a |/zero-width| match.  To
- 	include the column use: >
- 		/^.*\%17v.
- <	This command does the same thing, but also matches when there is no
-@@ -1138,11 +1138,11 @@ x	A single character, with no special meaning, matches itself
- 	in the collection: "[^xyz]" matches anything but 'x', 'y' and 'z'.
- 	- If two characters in the sequence are separated by '-', this is
- 	  shorthand for the full list of ASCII characters between them.  E.g.,
--	  "[0-9]" matches any decimal digit. If the starting character exceeds
--	  the ending character, e.g. [c-a], E944 occurs. Non-ASCII characters
-+	  "[0-9]" matches any decimal digit.  If the starting character exceeds
-+	  the ending character, e.g. [c-a], E944 occurs.  Non-ASCII characters
- 	  can be used, but the character values must not be more than 256 apart
--	  in the old regexp engine. For example, searching by [\u3000-\u4000]
--	  after setting re=1 emits a E945 error. Prepending \%#=2 will fix it.
-+	  in the old regexp engine.  For example, searching by [\u3000-\u4000]
-+	  after setting re=1 emits a E945 error.  Prepending \%#=2 will fix it.
- 	- A character class expression is evaluated to the set of characters
- 	  belonging to that character class.  The following character classes
- 	  are supported:
-@@ -1208,7 +1208,7 @@ x	A single character, with no special meaning, matches itself
- 	  any character that's not in "^]-\bdertnoUux".  "[\xyz]" matches '\',
- 	  'x', 'y' and 'z'.  It's better to use "\\" though, future expansions
- 	  may use other characters after '\'.
--	- Omitting the trailing ] is not considered an error. "[]" works like
-+	- Omitting the trailing ] is not considered an error.  "[]" works like
- 	  "[]]", it matches the ']' character.
- 	- The following translations are accepted when the 'l' flag is not
- 	  included in 'cpoptions':
-@@ -1444,14 +1444,14 @@ Finally, these constructs are unique to Perl:
- 		display you may get unexpected results.  That is because Vim
- 		looks for a match in the line where redrawing starts.
- 
--		Also see |matcharg()| and |getmatches()|. The former returns
-+		Also see |matcharg()| and |getmatches()|.  The former returns
- 		the highlight group and pattern of a previous |:match|
- 		command.  The latter returns a list with highlight groups and
- 		patterns defined by both |matchadd()| and |:match|.
- 
- 		Highlighting matches using |:match| are limited to three
- 		matches (aside from |:match|, |:2match| and |:3match| are
--		available). |matchadd()| does not have this limitation and in
-+		available).  |matchadd()| does not have this limitation and in
- 		addition makes it possible to prioritize matches.
- 
- 		Another example, which highlights all characters in virtual
-@@ -1480,7 +1480,7 @@ Finally, these constructs are unique to Perl:
- 		with the lowest number has priority if several match at the
- 		same position.  It uses the match id 3.
- 		The ":3match" command is used by (Vim < 9.0.2054) |matchparen|
--		plugin. You are suggested to use ":match" for manual matching
-+		plugin.  You are suggested to use ":match" for manual matching
- 		and ":2match" for another plugin or even better make use of
- 		the more flexible |matchadd()| (and similar) functions instead.
- 
-@@ -1489,10 +1489,10 @@ Finally, these constructs are unique to Perl:
- 
- Fuzzy matching refers to matching strings using a non-exact search string.
- Fuzzy matching will match a string, if all the characters in the search string
--are present anywhere in the string in the same order. Case is ignored.  In a
-+are present anywhere in the string in the same order.  Case is ignored.  In a
- matched string, other characters can be present between two consecutive
--characters in the search string. If the search string has multiple words, then
--each word is matched separately. So the words in the search string can be
-+characters in the search string.  If the search string has multiple words, then
-+each word is matched separately.  So the words in the search string can be
- present in any order in a string.
- 
- Fuzzy matching assigns a score for each matched string based on the following
-@@ -1511,8 +1511,8 @@ will match the strings "GetPattern", "PatternGet", "getPattern", "patGetter",
- "getSomePattern", "MatchpatternGet" etc.
- 
- The functions |matchfuzzy()| and |matchfuzzypos()| can be used to fuzzy search
--a string in a List of strings. The matchfuzzy() function returns a List of
--matching strings. The matchfuzzypos() functions returns the List of matches,
-+a string in a List of strings.  The matchfuzzy() function returns a List of
-+matching strings.  The matchfuzzypos() functions returns the List of matches,
- the matching positions and the fuzzy match scores.
- 
- The "f" flag of `:vimgrep` enables fuzzy matching.
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index 6b4c5e06d..c82a1bdee 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
-@@ -1,4 +1,4 @@
--*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 02
-+*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 09
- 
- 	    ------------------------------------------------
- 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
-@@ -1537,7 +1537,7 @@ Associated setting variables:
- 	|g:netrw_nogx|	prevent gx map while editing
- 	|g:netrw_suppress_gx_mesg| controls gx's suppression of browser messages
- 
--OPENING FILES AND LAUNCHING APPS                 *netrw-gx* *:Open* *:Launch* {{{2
-+OPENING FILES AND LAUNCHING APPS	*netrw-gx* *:Open* *:Launch* {{{2
- 
- Netrw determines which special handler by the following method:
- 
-diff --git a/runtime/doc/pi_tutor.txt b/runtime/doc/pi_tutor.txt
-index 0f8479e88..618fe745a 100644
---- a/runtime/doc/pi_tutor.txt
-+++ b/runtime/doc/pi_tutor.txt
-@@ -1,26 +1,26 @@
--*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 03
-+*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 09
- 
- INTERACTIVE TUTORIALS FOR VIM			 *vim-tutor-mode*
- 
- vim-tutor-mode provides a system to follow and create interactive tutorials
--for vim and third party plugins. It replaces the venerable `vimtutor` system.
-+for vim and third party plugins.  It replaces the venerable `vimtutor` system.
- 
- =============================================================================
- 1. Usage                                                      *vim-tutor-usage*
- 
- vim-tutor-mode tutorials are hypertext documents, they have rich text and
--contain links. To stand out from the rest of the text, links are underlined.
-+contain links.  To stand out from the rest of the text, links are underlined.
- You can follow them by placing the cursor over them and pressing <Enter>, or
- by double-clicking them.
- 
- 1.1 Commands
- ------------
- 								      *:Tutor*
--:Tutor {tutorial}	Opens a tutorial. Command-line completion for
-+:Tutor {tutorial}	Opens a tutorial.  Command-line completion for
- 			{tutorial} is provided, the candidates are a list of
- 			'.tutor' files found in the 'tutor/'  folder in
--			the 'runtimepath'. Tutorials prefixed with 'vim-' will
--			always be shown first.
-+			the 'runtimepath'.  Tutorials prefixed with 'vim-'
-+			will always be shown first.
- 
- 			If no {tutorial} is provided, the command starts the
- 			'vim-01-beginner' tutorial, which is equivalent to
-@@ -29,7 +29,7 @@ by double-clicking them.
- =============================================================================
- 2. Creating tutorials                                        *vim-tutor-create*
- 
--Writing vim-tutor-mode tutorials is easy. For an overview of the format used,
-+Writing vim-tutor-mode tutorials is easy.  For an overview of the format used,
- please consult the 'tutor.tutor' file: >
- 
-     :Tutor tutor
 diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index be62c43b8..eff99f763 100644
+index eff99f763..b0c77db1d 100644
 --- a/runtime/doc/syntax.txt
 +++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Oct 22
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1679,20 +1679,20 @@ on" command in your .vimrc file.
- When you edit an existing Fortran file, the syntax script will assume free
- source form if the fortran_free_source variable has been set, and assumes
- fixed source form if the fortran_fixed_source variable has been set.  Suppose
--neither of these variables have been set. In that case, the syntax script attempts to
--determine which source form has been used by examining the file extension
--using conventions common to the ifort, gfortran, Cray, NAG, and PathScale
--compilers (.f, .for, .f77 for fixed-source, .f90, .f95, .f03, .f08 for
--free-source). No default is used for the .fpp and .ftn file extensions because
--different compilers treat them differently. If none of this works, then the
--script examines the first five columns of the first 500 lines of your file. If
--no signs of free source form are detected, then the file is assumed to be in
--fixed source form.  The algorithm should work in the vast majority of cases.
--In some cases, such as a file that begins with 500 or more full-line comments,
--the script may incorrectly decide that the code is in fixed form.  If that
--happens, just add a non-comment statement beginning anywhere in the first five
--columns of the first twenty-five lines, save (:w), and then reload (:e!) the
--file.
-+neither of these variables have been set. In that case, the syntax script
-+attempts to determine which source form has been used by examining the file
-+extension using conventions common to the ifort, gfortran, Cray, NAG, and
-+PathScale compilers (.f, .for, .f77 for fixed-source, .f90, .f95, .f03, .f08
-+for free-source).  No default is used for the .fpp and .ftn file extensions
-+because different compilers treat them differently. If none of this works,
-+then the script examines the first five columns of the first 500 lines of your
-+file. If no signs of free source form are detected, then the file is assumed
-+to be in fixed source form.  The algorithm should work in the vast majority of
-+cases.  In some cases, such as a file that begins with 500 or more full-line
-+comments, the script may incorrectly decide that the code is in fixed form.
-+If that happens, just add a non-comment statement beginning anywhere in the
-+first five columns of the first twenty-five lines, save (:w), and then reload
-+(:e!) the file.
+@@ -2670,7 +2670,7 @@ To specify elements that should not be concealed, set the following variable: >
  
- Vendor extensions ~
- Fixed-form Fortran requires a maximum line length of 72 characters but the
-@@ -2226,9 +2226,9 @@ define the vim variable 'lace_case_insensitive' in your startup file: >
- LF (LFRC)		*lf.vim* *ft-lf-syntax* *g:lf_shell_syntax*
- 						*b:lf_shell_syntax*
+ 	:let g:pandoc#syntax#conceal#blacklist = []
  
--For the lf file manager configuration files (lfrc) the shell commands
--syntax highlighting can be changed globally and per buffer by setting
--a different 'include' command search pattern using these variables:
-+For the lf file manager configuration files (lfrc) the shell commands syntax
-+highlighting can be changed globally and per buffer by setting a different
-+'include' command search pattern using these variables: >
- 	let g:lf_shell_syntax = "syntax/dosbatch.vim"
- 	let b:lf_shell_syntax = "syntax/zsh.vim"
+-This is a list of the rules wich can be used here:
++This is a list of the rules which can be used here:
  
-@@ -2538,9 +2538,10 @@ set "msql_minlines" to the value you desire.  Example: >
- 	:let msql_minlines = 200
- 
- 
--NEOMUTT			*neomutt.vim* *ft-neomuttrc-syntax* *ft-neomuttlog-syntax*
-+NEOMUTT					*neomutt.vim* *ft-neomuttrc-syntax*
-+					*ft-neomuttlog-syntax*
- 
--To disable the default NeoMutt log colors >
-+To disable the default NeoMutt log colors: >
- 
- 	:let g:neolog_disable_default_colors = 1
- 
-@@ -2710,9 +2711,9 @@ specified. Default = 1 >
- 
- 	:let g:pandoc#syntax#codeblocks#embeds#use = 1
- 
--For specify what languages and using what syntax files to highlight embeds. This is a
--list of language names. When the language pandoc and vim use don't match, you
--can use the "PANDOC=VIM" syntax. For example: >
-+For specify what languages and using what syntax files to highlight embeds.
-+This is a list of language names. When the language pandoc and vim use don't
-+match, you can use the "PANDOC=VIM" syntax. For example: >
- 
- 	:let g:pandoc#syntax#codeblocks#embeds#langs = ["ruby", "bash=sh"]
- 
-@@ -3922,7 +3923,7 @@ set "tf_minlines" to the value you desire.  Example: >
- 	:let tf_minlines = your choice
- <
- TYPESCRIPT				*typescript.vim* *ft-typescript-syntax*
--				*typescriptreact.vim* *ft-typescriptreact-syntax*
-+			    *typescriptreact.vim* *ft-typescriptreact-syntax*
- 
- There is one option to control the TypeScript syntax highlighting.
- 
-@@ -5309,9 +5310,9 @@ of colors by using the `:colorscheme` command, for example: >
- 			This is basically the same as >
- 				:echo g:colors_name
- <			In case g:colors_name has not been defined :colo will
--			output "default". Its palette is defined in the file
-+			output "default".  Its palette is defined in the file
- 			"$VIMRUNTIME/syntax/syncolor.vim" and is based on
--			legacy versions of peachpuff and desert. When compiled
-+			legacy versions of peachpuff and desert.  When compiled
- 			without the |+eval| feature it will output "unknown".
- 
- :colo[rscheme] {name}	Load color scheme {name}.  This searches 'runtimepath'
-@@ -5721,8 +5722,8 @@ guisp={color-name}					*highlight-guisp*
- 	    :highlight Comment guifg=#11f0c3 guibg=#ff00ff
- <
- 	If you are authoring a color scheme and use the same hexadecimal value
--	repeatedly, you can define a (lower case) name for it in |v:colornames|.
--	For example: >
-+	repeatedly, you can define a (lower case) name for it in
-+	|v:colornames|.  For example: >
- 
- 	    # provide a default value for this color but allow the user to
- 	    # override it.
+   - titleblock
+   - image
 diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 6b53e0223..7027b3fef 100644
+index 7027b3fef..637277ab5 100644
 --- a/runtime/doc/terminal.txt
 +++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Oct 27
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1683,13 +1683,17 @@ Change default signs ~
- Termdebug uses the hex number of the breakpoint ID in the signcolumn to
- represent breakpoints. If it is greater than "0xFF", then it will be displayed
- as "F+", due to we really only have two screen cells for the sign.
-+You may also use decimal breakpoint signs instead, in which case IDs greater
-+than 99 will be displayed as "9+".
- 
--If you want to customize the breakpoint signs: >
-+If you want to customize the breakpoint signs to show `>>` in the signcolumn: >
+@@ -1690,7 +1690,7 @@ If you want to customize the breakpoint signs to show `>>` in the signcolumn: >
  	let g:termdebug_config['sign'] = '>>'
-+If you would like to use decimal (base 10) breakpoint signs: >
-+	let g:termdebug_config['sign_decimal'] = 1
- If there is no g:terminal_config yet you can use: >
+ If you would like to use decimal (base 10) breakpoint signs: >
+ 	let g:termdebug_config['sign_decimal'] = 1
+-If there is no g:terminal_config yet you can use: >
++If the variable g:termdebug_config does not yet exist, you can use: >
  	let g:termdebug_config = {'sign': '>>'}
--
--After this, breakpoints will be displayed as `>>` in the signcolumn.
-+Likewise, to enable decimal signs: >
-+	let g:termdebug_config = {'sign_decimal': 1}
- 
- 
- Window toolbar ~
-diff --git a/runtime/doc/undo.txt b/runtime/doc/undo.txt
-index 7a83e776e..1d6a481c6 100644
---- a/runtime/doc/undo.txt
-+++ b/runtime/doc/undo.txt
+ Likewise, to enable decimal signs: >
+ 	let g:termdebug_config = {'sign_decimal': 1}
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index c4022d888..daba9848c 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -31790,7 +31790,7 @@ Changed ~
+ - The features |++builtin_terms|, |+cmdline_info|, |+cmdwin|, |+file_in_path|,
+   |+float|, |+path_extra|, |+textobjects|, |+wildignore| and |+wildmenu| are
+   available in all the builds.
+-- Support for Windows-XP is dropped.
++- Support for Windows-XP is dropped (starting with v9.0.0496)
+ - Support for VisVim is removed.
+ - The "small" and "big" builds are dropped in favor of "tiny" and "huge"
+   builds.
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index 58bce5e53..b96f77907 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
 @@ -1,4 +1,4 @@
--*undo.txt*      For Vim version 9.1.  Last change: 2024 Sep 29
-+*undo.txt*      For Vim version 9.1.  Last change: 2024 Nov 09
+-*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 Oct 05
++*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 Nov 10
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -183,7 +183,7 @@ g-			Go to older text state.  With a count repeat that many
- g+			Go to newer text state.  With a count repeat that many
- 			times.
- 							*:lat* *:later*
--:lat[er] {count}		Go to newer text state {count} times.
-+:lat[er] {count}	Go to newer text state {count} times.
- :lat[er] {N}s		Go to newer text state about {N} seconds later.
- :lat[er] {N}m		Go to newer text state about {N} minutes later.
- :lat[er] {N}h		Go to newer text state about {N} hours later.
+@@ -21,6 +21,7 @@ is missing something or because Posix is beside the mark).
+ 6. Supported Vi features		|vi-features|
+ 7. Command-line arguments		|cmdline-arguments|
+ 8. POSIX compliance			|posix-compliance|
++9. Supported Operating Systems		|os-support|
+ 
+ ==============================================================================
+ 1. Simulated command					*simulated-command*
+@@ -1361,5 +1362,37 @@ These are remarks about running the POSIX test suite:
+   1 instead of 2.
+ - ex test 534 fails because .exrc isn't read in silent mode.
+ 
++==============================================================================
++9. Supported Operating systems					*os-support*
++
++Vim tries to support some old operating systems, however support for older
++operating systems might be dropped if maintenance becomes a burden or can no
++longer be verified.
++
++Here is the status of some operating systems. Note fully supported means,
++support is verified as part of the CI test suite.
++
++System				| Status:~
++--------------------------------+-----------------------------------------
++Amiga (OS4, AROS & MorphOS):	| still supported (?)
++Haiku:				| still supported (?)
++Linux:				| fully supported (on maintained versions)
++Mac OS:				| fully supported up until v10.6 (?)
++MS-Windows 7, 8, 10, 11:	| fully supported
++UNIX:				| supported (on maintained versions)
++OpenVMS:			| supported
++QNX:				| still supported (?)
++zOS/OS390:			| still supported (?)
++
++The following operating systems are no longer supported:
++
++System				| Status:~
++--------------------------------+-----------------------------------------
++Atari MiNT			| support was dropped with v8.2.1215
++BeOS:				| support was dropped with v8.2.0849
++MS-DOS:				| support was dropped with v7.4.1399
++MS-Windows XP and Vista:	| support was dropped with v9.0.0496
++OS/2				| support was dropped with v7.4.1008
++RISC OS:			| support was dropped with v7.3.0187
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
