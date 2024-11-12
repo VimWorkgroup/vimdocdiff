@@ -1,176 +1,187 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index d32c09d2f..67f447d7d 100644
+index 67f447d7d..1c7814fe6 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 11
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -467,9 +467,9 @@ prop_type_get({name} [, {props}])
- prop_type_list([{props}])	List	get list of property types
- pum_getpos()			Dict	position and size of pum if visible
- pumvisible()			Number	whether popup menu is visible
--py3eval({expr}[, {locals}])	any	evaluate |python3| expression
--pyeval({expr}[, {locals}])	any	evaluate |Python| expression
--pyxeval({expr}[, {locals}])	any	evaluate |python_x| expression
-+py3eval({expr} [, {locals}])	any	evaluate |python3| expression
-+pyeval({expr} [, {locals}])	any	evaluate |Python| expression
-+pyxeval({expr} [, {locals}])	any	evaluate |python_x| expression
- rand([{expr}])			Number	get pseudo-random number
- range({expr} [, {max} [, {stride}]])
- 				List	items from {expr} to {max}
-@@ -8127,7 +8127,7 @@ pumvisible()						*pumvisible()*
- 		Return type: |Number|
+@@ -222,6 +222,7 @@ getbufline({buf}, {lnum} [, {end}])
+ getbufoneline({buf}, {lnum})	String	line {lnum} of buffer {buf}
+ getbufvar({buf}, {varname} [, {def}])
+ 				any	variable {varname} in buffer {buf}
++getcellpixels()			List	get character cell pixel size
+ getcellwidths()			List	get character cell width overrides
+ getchangelist([{buf}])		List	list of change list items
+ getchar([{expr}])		Number or String
+@@ -3786,6 +3787,15 @@ getbufvar({buf}, {varname} [, {def}])				*getbufvar()*
+ 		Return type: any, depending on {varname}
  
  
--py3eval({expr}[, {locals}])				*py3eval()*
-+py3eval({expr} [, {locals}])				*py3eval()*
- 		Evaluate Python expression {expr} and return its result
- 		converted to Vim data structures.
- 		If a {locals} |Dictionary| is given, it defines set of local
-@@ -8153,7 +8153,7 @@ py3eval({expr}[, {locals}])				*py3eval()*
- 		{only available when compiled with the |+python3| feature}
- 
- 							*E858* *E859*
--pyeval({expr}[, {locals}])				*pyeval()*
-+pyeval({expr} [, {locals}])				*pyeval()*
- 		Evaluate Python expression {expr} and return its result
- 		converted to Vim data structures.
- 		For {locals} see |py3eval()|.
-@@ -8172,7 +8172,7 @@ pyeval({expr}[, {locals}])				*pyeval()*
- 
- 		{only available when compiled with the |+python| feature}
- 
--pyxeval({expr}[, {locals}])				*pyxeval()*
-+pyxeval({expr} [, {locals}])				*pyxeval()*
- 		Evaluate Python expression {expr} and return its result
- 		converted to Vim data structures.
- 		For {locals} see |py3eval()|.
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 37f0a181d..48f192a7b 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
++getcellpixels()						*getcellpixels()*
++		Returns a |List| of terminal cell pixel size.
++		List format is [xpixels, ypixels].
++		Only works on Unix. For gVim and on other systems,
++		returns [-1, -1].
++
++		Return type: list<Number>
++
++
+ getcellwidths()						*getcellwidths()*
+ 		Returns a |List| of cell widths of character ranges overridden
+ 		by |setcellwidths()|.  The format is equal to the argument of
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index dd8b94d91..84aa53dc8 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
 @@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 07
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 10
+-*develop.txt*   For Vim version 9.1.  Last change: 2024 Oct 31
++*develop.txt*   For Vim version 9.1.  Last change: 2024 Nov 11
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -361,7 +361,7 @@ processing a quickfix or location list command, it will be aborted.
- 			Example: >
-     :g/mypattern/caddexpr expand("%") .. ":" .. line(".") ..  ":" .. getline(".")
- <
--						*:lad* *:addd* *:laddexpr*
-+						*:lad* *:ladd* *:laddexpr*
- :lad[dexpr] {expr}	Same as ":caddexpr", except the location list for the
- 			current window is used instead of the quickfix list.
+@@ -166,6 +166,10 @@ stick to these rules, to keep the sources readable and maintainable.
  
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index eff99f763..b0c77db1d 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+ This list is not complete.  Look in the source code for more examples.
+ 
++The code repository contains an editorconfig file, that can be used together
++with the distributed editorconfig plugin |editorconfig-install| to ensure the
++recommended style is followed.
++
+ 
+ MAKING CHANGES						*style-changes*
+ 
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 071de9c4b..4fdfc0f05 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
+-*gui.txt*       For Vim version 9.1.  Last change: 2024 Jul 17
++*gui.txt*       For Vim version 9.1.  Last change: 2024 Nov 07
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2670,7 +2670,7 @@ To specify elements that should not be concealed, set the following variable: >
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -474,6 +474,8 @@ When the "unnamed" string is included in the 'clipboard' option, the unnamed
+ register is the same as the "* register.  Thus you can yank to and paste the
+ selection without prepending "* to commands.
  
- 	:let g:pandoc#syntax#conceal#blacklist = []
++See also |W23|.
++
+ ==============================================================================
+ 5. Menus						*menus*
  
--This is a list of the rules wich can be used here:
-+This is a list of the rules which can be used here:
- 
-   - titleblock
-   - image
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 7027b3fef..637277ab5 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index dbd4b1084..0658bfab9 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
+-*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Apr 22
++*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Nov 11
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1690,7 +1690,7 @@ If you want to customize the breakpoint signs to show `>>` in the signcolumn: >
- 	let g:termdebug_config['sign'] = '>>'
- If you would like to use decimal (base 10) breakpoint signs: >
- 	let g:termdebug_config['sign_decimal'] = 1
--If there is no g:terminal_config yet you can use: >
-+If the variable g:termdebug_config does not yet exist, you can use: >
- 	let g:termdebug_config = {'sign': '>>'}
- Likewise, to enable decimal signs: >
- 	let g:termdebug_config = {'sign_decimal': 1}
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -708,6 +708,14 @@ Examples: (assuming the default option values)
+ Note that the text in the "+ register remains available when making a Visual
+ selection, which makes other text available in the "* register.  That allows
+ overwriting selected text.
++
++								*W23*
++When you are yanking into the "* or "+ register and Vim cannot establish a
++connection to the X11 selection (or clipboard), it will use register 0 and
++output a warning:
++
++  Warning: Clipboard register not available, using register 0 ~
++
+ 							*x11-cut-buffer*
+ There are, by default, 8 cut-buffers: CUT_BUFFER0 to CUT_BUFFER7.  Vim only
+ uses CUT_BUFFER0, which is the one that xterm uses by default.
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index af67429ec..36907d249 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Nov 11
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -778,6 +778,7 @@ String manipulation:					*string-functions*
+ 	strdisplaywidth()	size of string when displayed, deals with tabs
+ 	setcellwidths()		set character cell width overrides
+ 	getcellwidths()		get character cell width overrides
++	getcellpixels()		get character cell pixel size
+ 	reverse()		reverse the order of characters in a string
+ 	substitute()		substitute a pattern match with a string
+ 	submatch()		get a specific match in ":s" and substitute()
+@@ -1394,6 +1395,7 @@ Various:					*various-functions*
+ 	did_filetype()		check if a FileType autocommand was used
+ 	diff()			diff two Lists of strings
+ 	eventhandler()		check if invoked by an event handler
++	getcellpixels()		get List of cell pixel size
+ 	getpid()		get process ID of Vim
+ 	getscriptinfo()		get list of sourced vim scripts
+ 	getimstatus()		check if IME status is active
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index c4022d888..daba9848c 100644
+index daba9848c..ac0700ed7 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -31790,7 +31790,7 @@ Changed ~
- - The features |++builtin_terms|, |+cmdline_info|, |+cmdwin|, |+file_in_path|,
-   |+float|, |+path_extra|, |+textobjects|, |+wildignore| and |+wildmenu| are
-   available in all the builds.
--- Support for Windows-XP is dropped.
-+- Support for Windows-XP is dropped (starting with v9.0.0496)
- - Support for VisVim is removed.
- - The "small" and "big" builds are dropped in favor of "tiny" and "huge"
-   builds.
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index 58bce5e53..b96f77907 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
 @@ -1,4 +1,4 @@
--*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 Oct 05
-+*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 Nov 10
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 06
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 11
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -21,6 +21,7 @@ is missing something or because Posix is beside the mark).
- 6. Supported Vi features		|vi-features|
- 7. Command-line arguments		|cmdline-arguments|
- 8. POSIX compliance			|posix-compliance|
-+9. Supported Operating Systems		|os-support|
+@@ -41621,6 +41621,7 @@ Functions: ~
+ |foreach()|		apply function to List items
+ |getcmdcomplpat()|	Shell command line completion
+ |getcmdprompt()|	get prompt for input()/confirm()
++|getcellpixels()|	get List of terminal cell pixel size
+ |getregion()|		get a region of text from a buffer
+ |getregionpos()|	get a list of positions for a region
+ |id()|			get unique identifier for a Dict, List, Object,
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index ef96aa907..a06c2c6e0 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Apr 13
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Nov 11
  
- ==============================================================================
- 1. Simulated command					*simulated-command*
-@@ -1361,5 +1362,37 @@ These are remarks about running the POSIX test suite:
-   1 instead of 2.
- - ex test 534 fails because .exrc isn't read in silent mode.
  
-+==============================================================================
-+9. Supported Operating systems					*os-support*
-+
-+Vim tries to support some old operating systems, however support for older
-+operating systems might be dropped if maintenance becomes a burden or can no
-+longer be verified.
-+
-+Here is the status of some operating systems. Note fully supported means,
-+support is verified as part of the CI test suite.
-+
-+System				| Status:~
-+--------------------------------+-----------------------------------------
-+Amiga (OS4, AROS & MorphOS):	| still supported (?)
-+Haiku:				| still supported (?)
-+Linux:				| fully supported (on maintained versions)
-+Mac OS:				| fully supported up until v10.6 (?)
-+MS-Windows 7, 8, 10, 11:	| fully supported
-+UNIX:				| supported (on maintained versions)
-+OpenVMS:			| supported
-+QNX:				| still supported (?)
-+zOS/OS390:			| still supported (?)
-+
-+The following operating systems are no longer supported:
-+
-+System				| Status:~
-+--------------------------------+-----------------------------------------
-+Atari MiNT			| support was dropped with v8.2.1215
-+BeOS:				| support was dropped with v8.2.0849
-+MS-DOS:				| support was dropped with v7.4.1399
-+MS-Windows XP and Vista:	| support was dropped with v9.0.0496
-+OS/2				| support was dropped with v7.4.1008
-+RISC OS:			| support was dropped with v7.3.0187
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -873,6 +873,33 @@ Note that the method name must start with "new".  If there is no method called
+ "new()" then the default constructor is added, even though there are other
+ constructor methods.
  
-  vim:tw=78:ts=8:noet:ft=help:norl:
++Using variable type "any" for an Object~
++							*obj-var-type-any*
++You can use a variable declared with type "any" to hold an object.  e.g.
++>
++    vim9script
++    class A
++	var n = 10
++	def Get(): number
++	    return this.n
++	enddef
++    endclass
++
++    def Fn(o: any)
++	echo o.n
++	echo o.Get()
++    enddef
++
++    var a = A.new()
++    Fn(a)
++<
++In this example, Vim cannot determine the type of the parameter "o" for
++function Fn() at compile time.  It can be either a |Dict| or an |Object|
++value.  Therefore, at runtime, when the type is known, the object member
++variable and method are looked up.  This process is not efficient, so it is
++recommended to use a more specific type whenever possible for better
++efficiency.
++
+ Compiling methods in a Class ~
+ 							*class-compile*
+ The |:defcompile| command can be used to compile all the class and object
