@@ -1,172 +1,51 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 785f4acca..e4366551d 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index c82a1bdee..a783fe9ac 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
 @@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.1.  Last change: 2024 Oct 07
-+*change.txt*    For Vim version 9.1.  Last change: 2024 Nov 12
+-*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 09
++*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 12
  
+ 	    ------------------------------------------------
+ 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
+@@ -1505,9 +1505,9 @@ For example, special handlers for links Markdown and HTML are
+         return matchstr(getline('.')[col('.')-1:],
+           \ '\[.\{-}\](\zs' .. g:netrw_regex_url .. '\ze\(\s\+.\{-}\)\?)')
+       endif
++      return ''
+     finally
+       call winrestview(save_view)
+-      return ''
+     endtry
+   endfunction
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -586,6 +586,8 @@ comment (starting with '"') after the `:!` command.
- 			program {filter} (for {Visual} see |Visual-mode|).
- 
- :{range}![!]{filter} [!][arg]				*:range!*
-+			For executing external commands see |:!|
-+
- 			Filter {range} lines through the external program
- 			{filter}.  Vim replaces the optional bangs with the
- 			latest given command and appends the optional [arg].
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 88ec43f1d..8b4e25e17 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+@@ -1520,9 +1520,9 @@ For example, special handlers for links Markdown and HTML are
+         return matchstr(getline('.')[col('.') - 1 : ],
+           \ 'href=["'.."'"..']\?\zs\S\{-}\ze["'.."'"..']\?/\?>')
+       endif
++      return ''
+     finally
+       call winrestview(save_view)
+-      return ''
+     endtry
+   endfunction
+ <
+diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
+index a74795e46..a6e547b9d 100644
+--- a/runtime/doc/usr_51.txt
++++ b/runtime/doc/usr_51.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Nov 09
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Nov 12
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -667,6 +667,19 @@ HARE							*ft-hare*
- Since the text for this plugin is rather long it has been put in a separate
- file: |ft_hare.txt|.
- 
-+IDRIS2							*ft-idris2-plugin*
-+
-+By default the following options are set: >
-+
-+	setlocal shiftwidth=2 tabstop=2 expandtab
-+	setlocal comments=s1:{-,mb:-,ex:-},:\|\|\|,:--
-+	setlocal commentstring=--\ %s
-+	setlocal wildignore+=*.ibc
-+
-+To use tabs instead of spaces for indentation, set the following variable
-+in your vimrc: >
-+
-+	let g:idris2#allow_tabchar = 1
- 
- JAVA							*ft-java-plugin*
- 
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 9266f3a40..8f347d7d9 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
-@@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 9.1.  Last change: 2024 Oct 05
-+*indent.txt*    For Vim version 9.1.  Last change: 2024 Nov 12
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -813,6 +813,38 @@ Detail:
- 	       : GetCSSIndent()	    else
-       <!-- --> : -1
- 
-+IDRIS2							*ft-idris2-indent*
-+
-+Idris 2 indentation can be configured with several variables that control the
-+indentation level for different language constructs:
-+
-+The "g:idris2_indent_if" variable controls the indentation of `then` and `else`
-+blocks after `if` statements. Defaults to 3.
-+
-+The "g:idris2_indent_case" variable controls the indentation of patterns in
-+`case` expressions. Defaults to 5.
-+
-+The "g:idris2_indent_let" variable controls the indentation after `let`
-+bindings. Defaults to 4.
-+
-+The "g:idris2_indent_rewrite" variable controls the indentation after `rewrite`
-+expressions. Defaults to 8.
-+
-+The "g:idris2_indent_where" variable controls the indentation of `where`
-+blocks. Defaults to 6.
-+
-+The "g:idris2_indent_do" variable controls the indentation in `do` blocks.
-+Defaults to 3.
-+
-+Example configuration: >
-+
-+	let g:idris2_indent_if = 2
-+	let g:idris2_indent_case = 4
-+	let g:idris2_indent_let = 4
-+	let g:idris2_indent_rewrite = 8
-+	let g:idris2_indent_where = 6
-+	let g:idris2_indent_do = 3
-+<
- 
- MATLAB			*ft-matlab-indent* *matlab-indent* *matlab-indenting*
- 
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 48f192a7b..671630d66 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 10
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 12
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1419,7 +1419,7 @@ RUFF LINTER						*compiler-ruff*
- Commonly used compiler options can be added to 'makeprg' by setting the
- b/g:ruff_makeprg_params variable.  For example: >
- 
--	let b:ruff_makeprg_params = "--max-line-length"..&textwidth
-+	let b:ruff_makeprg_params = "--max-line-length "..&textwidth
- 
- The global default is "--preview".
- 
-@@ -1428,10 +1428,9 @@ PYLINT LINTER						*compiler-pylint*
- Commonly used compiler options can be added to 'makeprg' by setting the
- b/g:pylint_makeprg_params variable.  For example: >
- 
--	let b:pylint_makeprg_params = "--max-line-length"..&textwidth
-+	let b:pylint_makeprg_params = "--max-line-length "..&textwidth
- 
--The global default is "--jobs=n" where n is the number of cores as reported
--by getconf, if executable. Otherwise it defaults to "".
-+The global default is "--jobs=0" to use (almost) all cores.
- 
- PYUNIT COMPILER						*compiler-pyunit*
- 
-diff --git a/runtime/doc/usr_10.txt b/runtime/doc/usr_10.txt
-index 4ffd23556..29ccd9f88 100644
---- a/runtime/doc/usr_10.txt
-+++ b/runtime/doc/usr_10.txt
-@@ -1,4 +1,4 @@
--*usr_10.txt*	For Vim version 9.1.  Last change: 2019 Nov 22
-+*usr_10.txt*	For Vim version 9.1.  Last change: 2024 Nov 12
+-*usr_51.txt*	For Vim version 9.1.  Last change: 2024 Apr 04
++*usr_51.txt*	For Vim version 9.1.  Last change: 2024 Nov 13
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -736,6 +736,11 @@ The "!!" command filters the current line through a filter.  In Unix the "date"
- command prints the current time and date.  "!!date<Enter>" replaces the current
- line with the output of "date".  This is useful to add a timestamp to a file.
+@@ -656,6 +656,8 @@ an example: >
+   CompilerSet errorformat&		" use the default 'errorformat'
+   CompilerSet makeprg=nmake
  
-+Note: There is a difference between "!cmd" (e.g. using it without any file
-+range) and "{range}!cmd".  While the former will simply execute the external
-+command and Vim will show the output, the latter will filter {range}lines
-+through the filter and replace that range by the result of the filter command.
-+See |:!| and |:range!| for details.
- 
- WHEN IT DOESN'T WORK
- 
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 4c267941d..5f0ad0635 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2024 Oct 05
-+*various.txt*   For Vim version 9.1.  Last change: 2024 Nov 12
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -254,7 +254,8 @@ g8			Print the hex values of the bytes used in the
- 
- 							*:!cmd* *:!*
- :!{cmd}			Execute {cmd} with the shell.  See also the 'shell'
--			and 'shelltype' option.
-+			and 'shelltype' option.  For the filter command, see
-+			|:range!|.
- 							*E34*
- 			Any '!' in {cmd} is replaced with the previous
- 			external command (see also 'cpoptions').  But not when
++Note: arguments need to be escaped according to |option-backslash|.
++
+ When you write a compiler plugin for the Vim distribution or for a system-wide
+ runtime directory, use the mechanism mentioned above.  When
+ "current_compiler" was already set by a user plugin nothing will be done.
