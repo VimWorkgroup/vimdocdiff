@@ -1,152 +1,55 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 1c7814fe6..ab6368198 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 4fdfc0f05..76d851dc5 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 11
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3790,10 +3790,10 @@ getbufvar({buf}, {varname} [, {def}])				*getbufvar()*
- getcellpixels()						*getcellpixels()*
- 		Returns a |List| of terminal cell pixel size.
- 		List format is [xpixels, ypixels].
--		Only works on Unix. For gVim and on other systems,
--		returns [-1, -1].
-+		Only works on (terminal) Unix.  For gVim, on other systems and
-+		on failure returns [].
- 
--		Return type: list<Number>
-+		Return type: list<any>
- 
- 
- getcellwidths()						*getcellwidths()*
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 8b4e25e17..06fc82923 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2024 Nov 12
-+*filetype.txt*	For Vim version 9.1.  Last change: 2024 Nov 14
+-*gui.txt*       For Vim version 9.1.  Last change: 2024 Nov 07
++*gui.txt*       For Vim version 9.1.  Last change: 2024 Nov 17
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -843,6 +843,12 @@ To enable folding use this: >
- 	let g:markdown_recommended_style = 0
+@@ -474,7 +474,7 @@ When the "unnamed" string is included in the 'clipboard' option, the unnamed
+ register is the same as the "* register.  Thus you can yank to and paste the
+ selection without prepending "* to commands.
  
- 
-+ORG							*ft-org-plugin*
-+
-+To enable folding use this: >
-+	let g:org_folding = 1
-+<
-+
- PDF							*ft-pdf-plugin*
- 
- Two maps, <C-]> and <C-T>, are provided to simulate a tag stack for navigating
-diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
-index 6453b95fa..69d8bc7c6 100644
---- a/runtime/doc/message.txt
-+++ b/runtime/doc/message.txt
-@@ -1,4 +1,4 @@
--*message.txt*   For Vim version 9.1.  Last change: 2024 Mar 13
-+*message.txt*   For Vim version 9.1.  Last change: 2024 Nov 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -29,7 +29,7 @@ depends on the 'shortmess' option.
- 				Clear messages, keeping only the {count} most
- 				recent ones.
- 
--The number of remembered messages is fixed at 200.
-+The number of remembered messages is determined by the 'msghistory' option.
- 
- 								*g<*
- The "g<" command can be used to see the last page of previous command output.
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f9189e59a..1aa5cccf7 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 06
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4440,7 +4440,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			global
- 	A history of ":" commands, and a history of previous search patterns
- 	is remembered.  This option decides how many entries may be stored in
--	each of these histories (see |cmdline-editing|).
-+	each of these histories (see |cmdline-editing| and 'msghistory' for
-+	the number of messages to remember).
- 	The maximum value is 10000.
- 	NOTE: This option is set to the Vi default value when 'compatible' is
- 	set and to the Vim default value when 'compatible' is reset.
-@@ -5917,6 +5918,12 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	time in msec between two mouse clicks for the second click to be
- 	recognized as a multi click.
- 
-+						*'msghistory'* *'mhi'*
-+'msghistory' 'mhi'	number	(default 500)
-+			global
-+	Determines how many entries are remembered in the |:messages| history.
-+	The maximum value is 10000.
-+
- 						    *'mzquantum'* *'mzq'*
- 'mzquantum' 'mzq'	number	(default 100)
- 			global
-@@ -9430,7 +9437,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	happens when there are special characters.
- 
- 				*'wildmenu'* *'wmnu'* *'nowildmenu'* *'nowmnu'*
--'wildmenu' 'wmnu'	boolean	(default off, set in |defaults.vim|)
-+'wildmenu' 'wmnu'	boolean	(default on)
- 			global
- 	When 'wildmenu' is on, command-line completion operates in an enhanced
- 	mode.  On pressing 'wildchar' (usually <Tab>) to invoke completion,
-diff --git a/runtime/doc/os_mac.txt b/runtime/doc/os_mac.txt
-index 0421fb7b1..0bf197d6d 100644
---- a/runtime/doc/os_mac.txt
-+++ b/runtime/doc/os_mac.txt
-@@ -1,4 +1,4 @@
--*os_mac.txt*    For Vim version 9.1.  Last change: 2019 Apr 21
-+*os_mac.txt*    For Vim version 9.1.  Last change: 2024 Nov 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar et al.
-@@ -118,9 +118,13 @@ Shift-Control-2.
- 
- When reporting any Mac specific bug or feature change, please use the vim-mac
- maillist |vim-mac|.  However, you need to be subscribed.  An alternative is to
--send a message to the current MacVim maintainers:
-+report issues either directly at the Vim github repository:
- 
--	mac@vim.org
-+https://github.com/vim/vim/issues
-+
-+or for MacVim specific issues, you may report those over here:
-+
-+https://github.com/macvim-dev/macvim/issues
+-See also |W23|.
++See also |W23| and |W24|.
  
  ==============================================================================
- 7. Compiling Vim					*mac-compile*
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index ac0700ed7..10e13f846 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+ 5. Menus						*menus*
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 0658bfab9..4a0d04c88 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 11
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 14
+-*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Nov 11
++*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Nov 17
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41659,6 +41659,7 @@ Options: ~
- 			popup
- 'findfunc'		Vim function to obtain the results for a |:find|
- 			command
-+'msghistory'		Max number of messages to remember
- 'winfixbuf'		Keep buffer focused in a window
- 'tabclose'		Which tab page to focus after closing a tab page
- 't_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420)
+@@ -716,6 +716,25 @@ output a warning:
+ 
+   Warning: Clipboard register not available, using register 0 ~
+ 
++								*W24*
++Vim comes in different flavors, from a tiny build, that just tries to be
++compatible to original Vi, to enhanced builds which include many improvements
++(like a GUI).  However, on servers and embedded systems, Vim is typically
++compiled without clipboard support, since this feature requires X11 libraries
++to be present.  Check the ":version" output for the flag |+clipboard| or
++-clipboard.  The former means clipboard support is present while the latter
++means your Vim does not contain clipboard support.
++
++In the case when you are trying to access the "* or "+ register and Vim has
++no clipboard support, you will see this warning:
++
++  Warning: Clipboard register not available. See :h W24~
++
++If you have a vim with no clipboard support but would like to use the
++clipboard, try to install a more enhanced Vim package like vim-enhanced or
++vim-gtk3 (the gui packages usually also come with a terminal Vim that has
++clipboard support included).
++
+ 							*x11-cut-buffer*
+ There are, by default, 8 cut-buffers: CUT_BUFFER0 to CUT_BUFFER7.  Vim only
+ uses CUT_BUFFER0, which is the one that xterm uses by default.
