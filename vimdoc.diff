@@ -1,55 +1,26 @@
-diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
-index 4fdfc0f05..76d851dc5 100644
---- a/runtime/doc/gui.txt
-+++ b/runtime/doc/gui.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index ab6368198..e763da065 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*gui.txt*       For Vim version 9.1.  Last change: 2024 Nov 07
-+*gui.txt*       For Vim version 9.1.  Last change: 2024 Nov 17
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 14
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 18
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -474,7 +474,7 @@ When the "unnamed" string is included in the 'clipboard' option, the unnamed
- register is the same as the "* register.  Thus you can yank to and paste the
- selection without prepending "* to commands.
- 
--See also |W23|.
-+See also |W23| and |W24|.
- 
- ==============================================================================
- 5. Menus						*menus*
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 0658bfab9..4a0d04c88 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
-@@ -1,4 +1,4 @@
--*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Nov 11
-+*gui_x11.txt*   For Vim version 9.1.  Last change: 2024 Nov 17
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -716,6 +716,25 @@ output a warning:
- 
-   Warning: Clipboard register not available, using register 0 ~
- 
-+								*W24*
-+Vim comes in different flavors, from a tiny build, that just tries to be
-+compatible to original Vi, to enhanced builds which include many improvements
-+(like a GUI).  However, on servers and embedded systems, Vim is typically
-+compiled without clipboard support, since this feature requires X11 libraries
-+to be present.  Check the ":version" output for the flag |+clipboard| or
-+-clipboard.  The former means clipboard support is present while the latter
-+means your Vim does not contain clipboard support.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3790,8 +3790,13 @@ getbufvar({buf}, {varname} [, {def}])				*getbufvar()*
+ getcellpixels()						*getcellpixels()*
+ 		Returns a |List| of terminal cell pixel size.
+ 		List format is [xpixels, ypixels].
+-		Only works on (terminal) Unix.  For gVim, on other systems and
+-		on failure returns [].
 +
-+In the case when you are trying to access the "* or "+ register and Vim has
-+no clipboard support, you will see this warning:
-+
-+  Warning: Clipboard register not available. See :h W24~
-+
-+If you have a vim with no clipboard support but would like to use the
-+clipboard, try to install a more enhanced Vim package like vim-enhanced or
-+vim-gtk3 (the gui packages usually also come with a terminal Vim that has
-+clipboard support included).
-+
- 							*x11-cut-buffer*
- There are, by default, 8 cut-buffers: CUT_BUFFER0 to CUT_BUFFER7.  Vim only
- uses CUT_BUFFER0, which is the one that xterm uses by default.
++		Only works on Unix (terminal and gVim) and Windows (gVim only).
++		Returns [] on other systems or on failure.
++		Note that there could be variations across different terminals.
++		On macOS, system Terminal.app returns sizes in points (before
++		Retina scaling), whereas third-party terminals return raw pixel
++		sizes (post Retina scaling).
+ 
+ 		Return type: list<any>
+ 
