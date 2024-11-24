@@ -1,53 +1,137 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 8ade446e6..3da38ecc5 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
-@@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 03
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 19
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index a783fe9ac..c22aad354 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -1,10 +1,9 @@
+-*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 12
++*pi_netrw.txt*  For Vim version 9.1.  Last change: 2024 Nov 23
  
+ 	    ------------------------------------------------
+ 	    NETRW REFERENCE MANUAL    by Charles E. Campbell
+ 	    ------------------------------------------------
+-Author:  Charles E. Campbell  <NcampObell@SdrPchip.AorgM-NOSPAM>
+-	  (remove NOSPAM from Campbell's email first)
++Original Author:  Charles E. Campbell
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -247,7 +247,7 @@ command: >
- 			(requires write permission there): >
- 				:helptags $VIMRUNTIME/doc
- <
--						*help-TOC* *help-toc-install*
-+					*:HelpToc* *help-TOC* *help-toc-install*
+ Copyright: Copyright (C) 2017 Charles E Campbell    *netrw-copyright*
+ 	The VIM LICENSE applies to the files in this package, including
+@@ -2659,10 +2658,34 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				  netrw last saw |g:netrw_cursor| >= 5 or when
+ 				  netrw was initially run.
  
- If you want to access an interactive table of contents, from any position in
- the file, you can use the helptoc plugin.  Load the plugin with: >
+-  *g:netrw_decompress*		= { ".gz"  : "gunzip" ,
+-				    ".bz2" : "bunzip2" ,
+-				    ".zip" : "unzip" ,
+-				    ".tar" : "tar -xf"}
++  *g:netrw_decompress*		= { '.lz4':	 'lz4 -d',
++				    '.lzo':	 'lzop -d',
++				    '.lz':	 'lzip -dk',
++				    '.7z':	 '7za x',
++				    '.001':	 '7za x',
++				    '.tar.bz':	 'tar -xvjf',
++				    '.tar.bz2':  'tar -xvjf',
++				    '.tbz':	 'tar -xvjf',
++				    '.tbz2':	 'tar -xvjf',
++				    '.tar.gz':	 'tar -xvzf',
++				    '.tgz':	 'tar -xvzf',
++				    '.tar.zst':  'tar --use-compress-program=unzstd -xvf',
++				    '.tzst':	 'tar --use-compress-program=unzstd -xvf',
++				    '.tar':	 'tar -xvf',
++				    '.zip':	 'unzip',
++				    '.bz':	 'bunzip2 -k',
++				    '.bz2':	 'bunzip2 -k',
++				    '.gz':	 'gunzip -k',
++				    '.lzma':	 'unlzma -T0 -k',
++				    '.xz':	 'unxz -T0 -k',
++				    '.zst':	 'zstd -T0 -d',
++				    '.Z':	 'uncompress -k',
++				    '.rar':	 'unrar x -ad',
++				    '.tar.lzma': 'tar --lzma -xvf',
++				    '.tlz':	 'tar --lzma -xvf',
++				    '.tar.xz':	 'tar -xvJf',
++				    '.txz':	 'tar -xvJf'}
++
+ 				  A dictionary mapping suffices to
+ 				  decompression programs.
+ 
 diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 637277ab5..593dec77c 100644
+index 593dec77c..a0bfd6034 100644
 --- a/runtime/doc/terminal.txt
 +++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
-+*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 19
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 19
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 23
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1737,4 +1737,23 @@ This can also be used in a "one-shot" manner: >
- 	  let g:termdebug_config['evaluate_in_popup'] = v:false
- 	endfunc
- <
+@@ -197,6 +197,13 @@ Command syntax ~
+ 			if [command] is NONE no job is started, the pty of the
+ 			terminal can be used by a command like gdb.
+ 
++							*terminal-nospecial*
++			Vim itself only recognizes |cmdline-special|
++			characters inside [command].  Everything else will be
++			passed untouched.  When needed to expand wildcards,
++			environment variables or other shell specials consider
++			|term++shell| option.
 +
-+Contributing ~
-+						*termdebug_contributing*
-+Contributions for termdebug improvements are welcome.
-+However, it is fairly common that during the development process you need some
-+mechanisms like `echo` statements (or similar) to help you in your job.
-+For this reason, you can set: >
-+    let g:termdebug_config['debug'] = true
-+<
-+This sets the `DEBUG` variable to `true` in the source code that you can use
-+within the source code. An example of its usage follows: >
-+    if exists('g:termdebug_loaded')
-+      if DEBUG
-+	Echoerr('Termdebug already loaded.')
-+      endif
-+      finish
-+    endif
-+<
+ 			If [command] is missing the default behavior is to
+ 			close the terminal when the shell exits.  This can be
+ 			changed with the ++noclose argument.
+@@ -241,10 +248,16 @@ Command syntax ~
+ 					no window will be used.
+ 			++norestore	Do not include this terminal window
+ 					in a session file.
 +
-  vim:tw=78:ts=8:noet:ft=help:norl:
++						*term++shell*
+ 			++shell		Instead of executing {command}
+ 					directly, use a shell, like with
+ 					`:!command`		*E279*
+ 					{only works on Unix and MS-Windows}
++					The resulting command will look like
++					'shell' 'shellcmdflag' [command]
++					Other options related to `:!command`
++					have no effect.
+ 			++kill={how}	When trying to close the terminal
+ 					window kill the job with {how}.  See
+ 					|term_setkill()| for the values.
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 5f0ad0635..0ebcd0684 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*   For Vim version 9.1.  Last change: 2024 Nov 12
++*various.txt*   For Vim version 9.1.  Last change: 2024 Nov 23
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -256,6 +256,17 @@ g8			Print the hex values of the bytes used in the
+ :!{cmd}			Execute {cmd} with the shell.  See also the 'shell'
+ 			and 'shelltype' option.  For the filter command, see
+ 			|:range!|.
++
++			Vim builds command line using options 'shell', 'shcf',
++			'sxq' and 'shq' in the following order:
++			`&sh &shcf &sxq &shq {cmd} &shq &sxq`
++			So setting both 'sxq' and 'shq' is possible but rarely
++			useful.  Additional escaping inside `{cmd}` may also
++			be due to 'sxe' option.
++
++			Also, all |cmdline-special| characters in {cmd} are
++			replaced by Vim before passing them to shell.
++
+ 							*E34*
+ 			Any '!' in {cmd} is replaced with the previous
+ 			external command (see also 'cpoptions').  But not when
+@@ -306,7 +317,10 @@ g8			Print the hex values of the bytes used in the
+ 			CTRL-L or ":redraw!" if the command did display
+ 			something.  However, this depends on what the |t_ti|
+ 			and |t_te| termcap entries are set to.
+-			Also see |shell-window|.
++
++			Hint: use |:terminal| command if you want to run {cmd}
++			in Vim window.  `:term ++shell ++close {cmd}` could
++			serve as close approximation to what `:!{cmd}` does.
+ 
+ 							*:!!*
+ :!!			Repeat last ":!{cmd}".
