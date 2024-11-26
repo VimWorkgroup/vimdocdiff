@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 1aa5cccf7..57d4af882 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index e763da065..d0f0c7b03 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 14
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 24
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 18
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 26
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5923,6 +5923,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			global
- 	Determines how many entries are remembered in the |:messages| history.
- 	The maximum value is 10000.
-+	Setting it to zero clears the message history.
-+
- 
- 						    *'mzquantum'* *'mzq'*
- 'mzquantum' 'mzq'	number	(default 100)
+@@ -5086,6 +5086,8 @@ getwininfo([{winid}])					*getwininfo()*
+ 			botline		last complete displayed buffer line
+ 			bufnr		number of buffer in the window
+ 			height		window height (excluding winbar)
++			leftcol		first column displayed; only used when
++					'wrap' is off
+ 			loclist		1 if showing a location list
+ 					{only with the +quickfix feature}
+ 			quickfix	1 if quickfix or location list window
