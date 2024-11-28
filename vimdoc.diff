@@ -1,19 +1,37 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e763da065..d0f0c7b03 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 57d4af882..e9f35e4f3 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 18
-+*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 26
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 24
++*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5086,6 +5086,8 @@ getwininfo([{winid}])					*getwininfo()*
- 			botline		last complete displayed buffer line
- 			bufnr		number of buffer in the window
- 			height		window height (excluding winbar)
-+			leftcol		first column displayed; only used when
-+					'wrap' is off
- 			loclist		1 if showing a location list
- 					{only with the +quickfix feature}
- 			quickfix	1 if quickfix or location list window
+@@ -7870,6 +7870,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	All fields except the {item} are optional.  A single percent sign can
+ 	be given as "%%".
+ 
++							*stl-%!*
+ 	When the option starts with "%!" then it is used as an expression,
+ 	evaluated and the result is used as the option value.  Example: >
+ 		:set statusline=%!MyStatusLine()
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 10e13f846..04d1a92bd 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 14
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Nov 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41607,6 +41607,8 @@ Changed~
+   started via |:Tutor|
+ - improve the |vimtutor| and add a second chapter for more advanced tips
+ - allow to pass local Vim script variables to python interpreter |py3eval()|
++- |getwininfo()| now also returns the "leftcol" property for a window
++- 'rulerformat' now supports the |stl-%!| item
+ 
+ 							*added-9.2*
+ Added ~
