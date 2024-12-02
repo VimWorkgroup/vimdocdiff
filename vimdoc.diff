@@ -1,19 +1,46 @@
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 5d97f793f..6d46458c0 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1557,6 +1557,14 @@ Useful values for the 'makeprg' options therefore are:
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 05c2d9d4c..1de1057b2 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 27
++*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 01
  
- Also see http://vim.sourceforge.net/tip_view.php?tip_id=280.
  
-+PYTEST COMPILER						*compiler-pytest*
-+
-+Commonly used compiler options can be added to 'makeprg' by setting the
-+b/g:pytest_makeprg_params variable.  For example: >
-+
-+  let b:pytest_makeprg_params = "--verbose --no-summary --disable-warnings"
-+
-+The global default is "--tb=short --quiet"; Python warnings are suppressed.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1069,8 +1069,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	done with ":syntax on".
  
- TEX COMPILER						*compiler-tex*
+ 							*'backspace'* *'bs'*
+-'backspace' 'bs'	string	(default "", set to "indent,eol,start"
+-							    in |defaults.vim|)
++'backspace' 'bs'	string	(Vim default: "indent,eol,start", Vi default: "")
+ 			global
+ 	Influences the working of <BS>, <Del>, CTRL-W and CTRL-U in Insert
+ 	mode.  This is a list of items, separated by commas.  Each item allows
+@@ -2155,9 +2154,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    a match from the menu. Only works in combination with
+ 		    "menu" or "menuone". No effect if "longest" is present.
  
+-	   noselect Do not select a match in the menu, force the user to
+-		    select one from the menu. Only works in combination with
+-		    "menu" or "menuone".
++	   noselect Same as "noinsert", except that no menu item is
++		    pre-selected. If both "noinsert" and "noselect" are present,
++		    "noselect" has precedence.
+ 
+ 	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
+ 		    allows for more flexible and intuitive matching, where
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index b9977a9f2..2aadcd3f4 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -41611,6 +41611,8 @@ Changed~
+ - 'rulerformat' now supports the |stl-%!| item
+ - the default 'history' option value has been increased to 200 and removed
+   from |defaults.vim|
++- the default 'backspace' option for Vim has been set to "indent,eol,start"
++  and removed from |defaults.vim|
+ 
+ 							*added-9.2*
+ Added ~
