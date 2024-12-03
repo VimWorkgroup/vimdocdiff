@@ -1,46 +1,38 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 05c2d9d4c..1de1057b2 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 2f1865482..e73d2f1fe 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Nov 27
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 01
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 Oct 27
++*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 02
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1069,8 +1069,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	done with ":syntax on".
+@@ -4749,7 +4749,6 @@ Insert mode completion/expansion:
+     (Prabir Shrestha, 2017 May 19, #1713)
+ -   When 'completeopt' has "noselect" does not insert a newline.
+     (Lifepillar, 2017 Apr 23, #1653)
+--   Can 'completeopt' be made buffer-local? (#5487)
+ -   When complete() first argument is before where insert started and
+     'backspace' is Vi compatible, the completion fails.
+     (Hirohito Higashi, 2015 Feb 19)
+diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
+index 604e26bfe..8a513e8bb 100644
+--- a/runtime/doc/usr_01.txt
++++ b/runtime/doc/usr_01.txt
+@@ -145,13 +145,13 @@ On other systems, you have to do a little work:
  
- 							*'backspace'* *'bs'*
--'backspace' 'bs'	string	(default "", set to "indent,eol,start"
--							    in |defaults.vim|)
-+'backspace' 'bs'	string	(Vim default: "indent,eol,start", Vi default: "")
- 			global
- 	Influences the working of <BS>, <Del>, CTRL-W and CTRL-U in Insert
- 	mode.  This is a list of items, separated by commas.  Each item allows
-@@ -2155,9 +2154,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    a match from the menu. Only works in combination with
- 		    "menu" or "menuone". No effect if "longest" is present.
- 
--	   noselect Do not select a match in the menu, force the user to
--		    select one from the menu. Only works in combination with
--		    "menu" or "menuone".
-+	   noselect Same as "noinsert", except that no menu item is
-+		    pre-selected. If both "noinsert" and "noselect" are present,
-+		    "noselect" has precedence.
- 
- 	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
- 		    allows for more flexible and intuitive matching, where
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index b9977a9f2..2aadcd3f4 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -41611,6 +41611,8 @@ Changed~
- - 'rulerformat' now supports the |stl-%!| item
- - the default 'history' option value has been increased to 200 and removed
-   from |defaults.vim|
-+- the default 'backspace' option for Vim has been set to "indent,eol,start"
-+  and removed from |defaults.vim|
- 
- 							*added-9.2*
- Added ~
+ 1. Copy the tutor file.  You can do this with Vim (it knows where to find it):
+ >
+-	vim --clean -c 'e $VIMRUNTIME/tutor/tutor' -c 'w! TUTORCOPY' -c 'q'
++	vim --clean -c 'e $VIMRUNTIME/tutor/tutor1' -c 'w! TUTORCOPY' -c 'q'
+ <
+    This will write the file "TUTORCOPY" in the current directory.  To use a
+ translated version of the tutor, append the two-letter language code to the
+ filename.  For French:
+ >
+-	vim --clean -c 'e $VIMRUNTIME/tutor/tutor.fr' -c 'w! TUTORCOPY' -c 'q'
++	vim --clean -c 'e $VIMRUNTIME/tutor/tutor1.fr' -c 'w! TUTORCOPY' -c 'q'
+ <
+ 2. Edit the copied file with Vim:
+ >
