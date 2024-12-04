@@ -1,38 +1,101 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 2f1865482..e73d2f1fe 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index d0f0c7b03..ac10590b1 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2024 Oct 27
-+*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 02
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Nov 26
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4749,7 +4749,6 @@ Insert mode completion/expansion:
-     (Prabir Shrestha, 2017 May 19, #1713)
- -   When 'completeopt' has "noselect" does not insert a newline.
-     (Lifepillar, 2017 Apr 23, #1653)
---   Can 'completeopt' be made buffer-local? (#5487)
- -   When complete() first argument is before where insert started and
-     'backspace' is Vi compatible, the completion fails.
-     (Hirohito Higashi, 2015 Feb 19)
-diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
-index 604e26bfe..8a513e8bb 100644
---- a/runtime/doc/usr_01.txt
-+++ b/runtime/doc/usr_01.txt
-@@ -145,13 +145,13 @@ On other systems, you have to do a little work:
+@@ -3789,7 +3789,7 @@ getbufvar({buf}, {varname} [, {def}])				*getbufvar()*
  
- 1. Copy the tutor file.  You can do this with Vim (it knows where to find it):
- >
--	vim --clean -c 'e $VIMRUNTIME/tutor/tutor' -c 'w! TUTORCOPY' -c 'q'
-+	vim --clean -c 'e $VIMRUNTIME/tutor/tutor1' -c 'w! TUTORCOPY' -c 'q'
+ getcellpixels()						*getcellpixels()*
+ 		Returns a |List| of terminal cell pixel size.
+-		List format is [xpixels, ypixels].
++		List format is [xpixel, ypixel].
+ 
+ 		Only works on Unix (terminal and gVim) and Windows (gVim only).
+ 		Returns [] on other systems or on failure.
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 06fc82923..8d8502a73 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*	For Vim version 9.1.  Last change: 2024 Nov 14
++*filetype.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -733,7 +733,6 @@ To enable the recognition of Markdown comments each time after removing
+ re-source "javaformat.vim" for Vim versions greater than `8.2.1397`: >
+ 	runtime autoload/javaformat.vim
  <
-    This will write the file "TUTORCOPY" in the current directory.  To use a
- translated version of the tutor, append the two-letter language code to the
- filename.  For French:
- >
--	vim --clean -c 'e $VIMRUNTIME/tutor/tutor.fr' -c 'w! TUTORCOPY' -c 'q'
-+	vim --clean -c 'e $VIMRUNTIME/tutor/tutor1.fr' -c 'w! TUTORCOPY' -c 'q'
+-
+ JSON-FORMAT						*ft-json-plugin*
+ 
+ JSON filetype can be extended to use 'formatexpr' and "json.FormatExpr()"
+@@ -745,6 +744,11 @@ Add following lines to $HOME/.vim/ftplugin/json.vim: >
+ 	import autoload 'dist/json.vim'
+ 	setl formatexpr=json.FormatExpr()
+ 
++LUA                                                     *ft-lua-plugin*
++
++You can enable folding of lua functions using |fold-expr| by: >
++
++	let g:lua_folding = 1
+ 
+ MAIL							*ft-mail-plugin*
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 1de1057b2..273ea64de 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 01
++*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1069,7 +1069,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	done with ":syntax on".
+ 
+ 							*'backspace'* *'bs'*
+-'backspace' 'bs'	string	(Vim default: "indent,eol,start", Vi default: "")
++'backspace' 'bs'	string	(Vim default: "indent,eol,start",
++				 Vi default:  "")
+ 			global
+ 	Influences the working of <BS>, <Del>, CTRL-W and CTRL-U in Insert
+ 	mode.  This is a list of items, separated by commas.  Each item allows
+@@ -2155,8 +2156,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    "menu" or "menuone". No effect if "longest" is present.
+ 
+ 	   noselect Same as "noinsert", except that no menu item is
+-		    pre-selected. If both "noinsert" and "noselect" are present,
+-		    "noselect" has precedence.
++		    pre-selected. If both "noinsert" and "noselect" are
++		    present, "noselect" has precedence.
+ 
+ 	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
+ 		    allows for more flexible and intuitive matching, where
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index a0bfd6034..da5b1481e 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Nov 23
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1759,8 +1759,8 @@ mechanisms like `echo` statements (or similar) to help you in your job.
+ For this reason, you can set: >
+     let g:termdebug_config['debug'] = true
  <
- 2. Edit the copied file with Vim:
- >
+-This sets the `DEBUG` variable to `true` in the source code that you can use
+-within the source code. An example of its usage follows: >
++This sets the `DEBUG` variable to `true`, which can be referenced in the
++source code.  An example of its usage follows: >
+     if exists('g:termdebug_loaded')
+       if DEBUG
+ 	Echoerr('Termdebug already loaded.')
