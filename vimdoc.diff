@@ -1,124 +1,86 @@
-diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
-index 77ea273ec..a7986851e 100644
---- a/runtime/doc/help.txt
-+++ b/runtime/doc/help.txt
-@@ -1,4 +1,4 @@
--*help.txt*	For Vim version 9.1.  Last change: 2024 Nov 07
-+*help.txt*	For Vim version 9.1.  Last change: 2024 Dec 06
- 
- 			VIM - main help file
- 									 k
-@@ -180,6 +180,7 @@ Language support ~
- |hebrew.txt|	Hebrew language support and editing
- |russian.txt|	Russian language support and editing
- |hangulin.txt|	Hangul (Korean) input mode
-+|vietnamese.txt|  Vietnamese language support and editing
- 
- GUI ~
- |gui.txt|	Graphical User Interface (GUI)
-diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
-index 69d8bc7c6..3fcbd9570 100644
---- a/runtime/doc/message.txt
-+++ b/runtime/doc/message.txt
-@@ -1,4 +1,4 @@
--*message.txt*   For Vim version 9.1.  Last change: 2024 Nov 14
-+*message.txt*   For Vim version 9.1.  Last change: 2024 Dec 06
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -29,7 +29,7 @@ depends on the 'shortmess' option.
- 				Clear messages, keeping only the {count} most
- 				recent ones.
- 
--The number of remembered messages is determined by the 'msghistory' option.
-+The number of remembered messages is determined by the 'messagesopt' option.
- 
- 								*g<*
- The "g<" command can be used to see the last page of previous command output.
-@@ -837,6 +837,7 @@ If you accidentally hit <Enter> or <Space> and you want to see the displayed
- text then use |g<|.  This only works when 'more' is set.
- 
- To reduce the number of hit-enter prompts:
-+- Set 'messagesopt'.
- - Set 'cmdheight' to 2 or higher.
- - Add flags to 'shortmess'.
- - Reset 'showcmd' and/or 'ruler'.
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 273ea64de..a31d04154 100644
+index a31d04154..4024d20c5 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 06
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 06
++*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4439,7 +4439,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+@@ -5638,21 +5638,24 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 'messagesopt' 'mopt'	string	(default "hit-enter,history:500")
  			global
- 	A history of ":" commands, and a history of previous search patterns
- 	is remembered.  This option decides how many entries may be stored in
--	each of these histories (see |cmdline-editing| and 'msghistory' for
-+	each of these histories (see |cmdline-editing| and 'messagesopt' for
- 	the number of messages to remember).
- 	The maximum value is 10000.
- 	NOTE: This option is set to the Vi default value when 'compatible' is
-@@ -5634,6 +5634,26 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	generated from a list of items, e.g., the Buffers menu.  Changing this
- 	option has no direct effect, the menu must be refreshed first.
  
-+						*'messagesopt'* *'mopt'*
-+'messagesopt' 'mopt'	string	(default "hit-enter,history:500")
-+			global
-+
-+	Option settings when outputting messages.  It can consist of the
-+	following items.  Items must be separated by a comma.
-+
-+	hit-enter	Use |hit-enter| prompt when the message is longer than
-+			'cmdheight' size.
-+
-+	wait:{n}	Ignored when "hit-enter" is present.  Instead of using
-+			|hit-enter| prompt, will simply wait for {n}
-+			milliseconds so the user has a chance to read the
-+			message, use 0 to disable sleep (but then the user may
-+			miss an important message).
-+
-+	history:{n}	Determines how many entries are remembered in the
-+			|:messages| history.  The maximum value is 10000.
-+			Setting it to zero clears the message history.
-+
+-	Option settings when outputting messages.  It can consist of the
++	Option settings for outputting messages.  It can consist of the
+ 	following items.  Items must be separated by a comma.
+ 
+-	hit-enter	Use |hit-enter| prompt when the message is longer than
++	hit-enter	Use a |hit-enter| prompt when the message is longer than
+ 			'cmdheight' size.
+ 
+-	wait:{n}	Ignored when "hit-enter" is present.  Instead of using
+-			|hit-enter| prompt, will simply wait for {n}
+-			milliseconds so the user has a chance to read the
+-			message, use 0 to disable sleep (but then the user may
+-			miss an important message).
++	wait:{n}	Instead of using a |hit-enter| prompt, simply wait for
++			{n} milliseconds so that the user has a chance to read
++			the message.  The maximum value of {n} is 10000.  Use
++			0 to disable the wait (but then the user may miss an
++			important message).
++			This item is ignored when "hit-enter" is present, but
++			required when "hit-enter" is not present.
+ 
+ 	history:{n}	Determines how many entries are remembered in the
+ 			|:messages| history.  The maximum value is 10000.
+ 			Setting it to zero clears the message history.
++			This item must always be present.
+ 
  						*'mkspellmem'* *'msm'*
  'mkspellmem' 'msm'	string	(default "460000,2000,500")
- 			global
-@@ -5917,13 +5937,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	time in msec between two mouse clicks for the second click to be
- 	recognized as a multi click.
- 
--						*'msghistory'* *'mhi'*
--'msghistory' 'mhi'	number	(default 500)
--			global
--	Determines how many entries are remembered in the |:messages| history.
--	The maximum value is 10000.
--	Setting it to zero clears the message history.
--
- 
- 						    *'mzquantum'* *'mzq'*
- 'mzquantum' 'mzq'	number	(default 100)
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index f5f77b3e9..312a1c23e 100644
+index 312a1c23e..76911425c 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 05
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 06
+@@ -41615,6 +41615,8 @@ Changed~
+   and removed from |defaults.vim|
+ - the completed word and completion type are provided when handling the
+   |CompleteDone| autocommand in the |v:event| dictionary
++- the default fontsize for the GTK builds of Vim (Windows and Unix) has been
++  increased to 12pt to accomodate modern high-dpi monitors
  
+ 							*added-9.2*
+ Added ~
+diff --git a/runtime/doc/vietnamese.txt b/runtime/doc/vietnamese.txt
+index ef0dce279..ff4f4641c 100644
+--- a/runtime/doc/vietnamese.txt
++++ b/runtime/doc/vietnamese.txt
+@@ -8,7 +8,7 @@ Vietnamese language support in Vim		*vietnamese* *Vietnamese*
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41667,7 +41667,7 @@ Options: ~
- 			popup
- 'findfunc'		Vim function to obtain the results for a |:find|
- 			command
--'msghistory'		Max number of messages to remember
-+'messagesopt'		configure |:messages| and |hit-enter| prompt
- 'winfixbuf'		Keep buffer focused in a window
- 'tabclose'		Which tab page to focus after closing a tab page
- 't_xo'			Terminal uses XON/XOFF handshaking (e.g. vt420)
+ 1. Introduction				  |vietnamese-intro|
+ 2. Vietnamese keymaps			  |vietnamese-keymap|
+-3. Localization				  |vietnamese-l18n|
++3. Localization				  |vietnamese-l10n|
+ 
+ ===============================================================================
+ 1. Introduction
+@@ -17,7 +17,7 @@ Vim supports Vietnamese language in the following ways:
+ 
+ - Built-in |vietnamese-keymap|, which allows you to type Vietnamese characters
+   in |Insert-mode| and |search-commands| using US keyboard layout.
+-- Localization in Vietnamese. See |vietnamese-l18n|
++- Localization in Vietnamese. See |vietnamese-l10n|
+ 
+ ===============================================================================
+ 2. Vietnamese keymaps
+@@ -63,7 +63,7 @@ below:
+ 
+ ===============================================================================
+ 3. Localization
+-							*vietnamese-l18n*
++							*vietnamese-l10n*
+ Vim |messages| are also available in Vietnamese.  If you wish to see messages
+ in Vietnamese, you can run the command |:language| with an argument being the
+ name of the Vietnamese locale.  For example, >
