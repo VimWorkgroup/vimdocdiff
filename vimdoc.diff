@@ -1,86 +1,28 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a31d04154..4024d20c5 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index b0c77db1d..eb6c3b233 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 06
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 07
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
++*syntax.txt*	For Vim version 9.1.  Last change: 2024 Dec 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5638,21 +5638,24 @@ A jump table for the options with a short description can be found at |Q_op|.
- 'messagesopt' 'mopt'	string	(default "hit-enter,history:500")
- 			global
- 
--	Option settings when outputting messages.  It can consist of the
-+	Option settings for outputting messages.  It can consist of the
- 	following items.  Items must be separated by a comma.
- 
--	hit-enter	Use |hit-enter| prompt when the message is longer than
-+	hit-enter	Use a |hit-enter| prompt when the message is longer than
- 			'cmdheight' size.
- 
--	wait:{n}	Ignored when "hit-enter" is present.  Instead of using
--			|hit-enter| prompt, will simply wait for {n}
--			milliseconds so the user has a chance to read the
--			message, use 0 to disable sleep (but then the user may
--			miss an important message).
-+	wait:{n}	Instead of using a |hit-enter| prompt, simply wait for
-+			{n} milliseconds so that the user has a chance to read
-+			the message.  The maximum value of {n} is 10000.  Use
-+			0 to disable the wait (but then the user may miss an
-+			important message).
-+			This item is ignored when "hit-enter" is present, but
-+			required when "hit-enter" is not present.
- 
- 	history:{n}	Determines how many entries are remembered in the
- 			|:messages| history.  The maximum value is 10000.
- 			Setting it to zero clears the message history.
-+			This item must always be present.
- 
- 						*'mkspellmem'* *'msm'*
- 'mkspellmem' 'msm'	string	(default "460000,2000,500")
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 312a1c23e..76911425c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -41615,6 +41615,8 @@ Changed~
-   and removed from |defaults.vim|
- - the completed word and completion type are provided when handling the
-   |CompleteDone| autocommand in the |v:event| dictionary
-+- the default fontsize for the GTK builds of Vim (Windows and Unix) has been
-+  increased to 12pt to accomodate modern high-dpi monitors
- 
- 							*added-9.2*
- Added ~
-diff --git a/runtime/doc/vietnamese.txt b/runtime/doc/vietnamese.txt
-index ef0dce279..ff4f4641c 100644
---- a/runtime/doc/vietnamese.txt
-+++ b/runtime/doc/vietnamese.txt
-@@ -8,7 +8,7 @@ Vietnamese language support in Vim		*vietnamese* *Vietnamese*
- 
- 1. Introduction				  |vietnamese-intro|
- 2. Vietnamese keymaps			  |vietnamese-keymap|
--3. Localization				  |vietnamese-l18n|
-+3. Localization				  |vietnamese-l10n|
- 
- ===============================================================================
- 1. Introduction
-@@ -17,7 +17,7 @@ Vim supports Vietnamese language in the following ways:
- 
- - Built-in |vietnamese-keymap|, which allows you to type Vietnamese characters
-   in |Insert-mode| and |search-commands| using US keyboard layout.
--- Localization in Vietnamese. See |vietnamese-l18n|
-+- Localization in Vietnamese. See |vietnamese-l10n|
- 
- ===============================================================================
- 2. Vietnamese keymaps
-@@ -63,7 +63,7 @@ below:
- 
- ===============================================================================
- 3. Localization
--							*vietnamese-l18n*
-+							*vietnamese-l10n*
- Vim |messages| are also available in Vietnamese.  If you wish to see messages
- in Vietnamese, you can run the command |:language| with an argument being the
- name of the Vietnamese locale.  For example, >
+@@ -883,12 +883,15 @@ There are many types of assembly languages that all use the same file name
+ extensions.  Therefore you will have to select the type yourself, or add a
+ line in the assembly file that Vim will recognize.  Currently these syntax
+ files are included:
+-	asm		GNU assembly (the default)
++	asm		GNU assembly (usually have .s or .S extension and were
++			already built using C compiler such as GCC or CLANG)
+ 	asm68k		Motorola 680x0 assembly
+ 	asmh8300	Hitachi H-8300 version of GNU assembly
+ 	ia64		Intel Itanium 64
+ 	fasm		Flat assembly (http://flatassembler.net)
+-	masm		Microsoft assembly (probably works for any 80x86)
++	masm		Microsoft assembly (.masm files are compiled with
++			Microsoft's Macro Assembler. This is only supported
++			for x86, x86_64, ARM and AARCH64 CPU families)
+ 	nasm		Netwide assembly
+ 	tasm		Turbo Assembly (with opcodes 80x86 up to Pentium, and
+ 			MMX)
