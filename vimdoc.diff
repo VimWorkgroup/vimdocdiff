@@ -1,28 +1,62 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index b0c77db1d..eb6c3b233 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 2637480ae..8fe70241e 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Nov 10
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Dec 12
+-*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 06
++*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -93,6 +93,13 @@ command.  There are however, two general exceptions:
+    end of the motion is moved to the end of the previous line and the motion
+    becomes inclusive.  Example: "}" moves to the first line after a paragraph,
+    but "d}" will not include that line.
++
++					*inclusive-motion-selection-exclusive*
++When 'selection' is "exclusive", |Visual| mode is active and an inclusive
++motion has been used, the cursor position will be adjusted by another
++character to the right, so that visual selction includes the expected text and
++can be acted upon.
++
+ 						*exclusive-linewise*
+ 2. If the motion is exclusive, the end of the motion is in column 1 and the
+    start of the motion was at or before the first non-blank in the line, the
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 4024d20c5..7c32384e1 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 07
++*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -883,12 +883,15 @@ There are many types of assembly languages that all use the same file name
- extensions.  Therefore you will have to select the type yourself, or add a
- line in the assembly file that Vim will recognize.  Currently these syntax
- files are included:
--	asm		GNU assembly (the default)
-+	asm		GNU assembly (usually have .s or .S extension and were
-+			already built using C compiler such as GCC or CLANG)
- 	asm68k		Motorola 680x0 assembly
- 	asmh8300	Hitachi H-8300 version of GNU assembly
- 	ia64		Intel Itanium 64
- 	fasm		Flat assembly (http://flatassembler.net)
--	masm		Microsoft assembly (probably works for any 80x86)
-+	masm		Microsoft assembly (.masm files are compiled with
-+			Microsoft's Macro Assembler. This is only supported
-+			for x86, x86_64, ARM and AARCH64 CPU families)
- 	nasm		Netwide assembly
- 	tasm		Turbo Assembly (with opcodes 80x86 up to Pentium, and
- 			MMX)
+@@ -7018,6 +7018,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	selection.
+ 	When "old" is used and 'virtualedit' allows the cursor to move past
+ 	the end of line the line break still isn't included.
++	When "exclusive" is used, cursor position in visual mode will be
++	adjusted for inclusive motions |inclusive-motion-selection-exclusive|.
+ 	Note that when "exclusive" is used and selecting from the end
+ 	backwards, you cannot include the last character of a line, when
+ 	starting in Normal mode and 'virtualedit' empty.
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 915db37e9..edb105aa5 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.1.  Last change: 2024 Sep 08
++*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1012,6 +1012,8 @@ CTRL-W g }						*CTRL-W_g}*
+ 		position isn't changed.  Useful example: >
+ 			:pedit +/fputc /usr/include/stdio.h
+ <
++		Also see |++opt| and |+cmd|.
++
+ 							*:ps* *:psearch*
+ :[range]ps[earch][!] [count] [/]pattern[/]
+ 		Works like |:ijump| but shows the found match in the preview
