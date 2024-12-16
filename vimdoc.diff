@@ -1,62 +1,124 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 2637480ae..8fe70241e 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index e4366551d..301eacee2 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*motion.txt*    For Vim version 9.1.  Last change: 2024 Oct 06
-+*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 14
+-*change.txt*    For Vim version 9.1.  Last change: 2024 Nov 12
++*change.txt*    For Vim version 9.1.  Last change: 2024 Dec 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -93,6 +93,13 @@ command.  There are however, two general exceptions:
+@@ -1512,18 +1512,17 @@ since formatting is highly dependent on the type of file.  It makes
+ sense to use an |autoload| script, so the corresponding script is only loaded
+ when actually needed and the script should be called <filetype>format.vim.
+ 
+-For example, the XML filetype plugin distributed with Vim in the $VIMRUNTIME
+-directory, sets the 'formatexpr' option to: >
++For example, the XML filetype plugin distributed with Vim in the
++$VIMRUNTIME/ftplugin directory, sets the 'formatexpr' option to: >
+ 
+    setlocal formatexpr=xmlformat#Format()
+ 
+ That means, you will find the corresponding script, defining the
+-xmlformat#Format() function, in the directory:
+-`$VIMRUNTIME/autoload/xmlformat.vim`
++xmlformat#Format() function, in the file `$VIMRUNTIME/autoload/xmlformat.vim`
+ 
+ Here is an example script that removes trailing whitespace from the selected
+-text.  Put it in your autoload directory, e.g. ~/.vim/autoload/format.vim: >
+-
++text.  Put it in your autoload directory, e.g. ~/.vim/autoload/format.vim:
++>vim
+   func! format#Format()
+     " only reformat on explicit gq command
+     if mode() != 'n'
+@@ -1556,7 +1555,7 @@ debugging it helps to set the 'debug' option.
+ 
+ 							*right-justify*
+ There is no command in Vim to right justify text.  You can do it with
+-an external command, like "par" (e.g.: "!}par" to format until the end of the
++an external command, like "par" (e.g.: `:.,}!par` to format until the end of the
+ paragraph) or set 'formatprg' to "par".
+ 
+ 							*format-comments*
+@@ -1622,7 +1621,7 @@ type of comment string.  A part consists of:
+ 	some indent for the start or end part that can be removed.
+ 
+ When a string has none of the 'f', 's', 'm' or 'e' flags, Vim assumes the
+-comment string repeats at the start of each line.  The flags field may be
++comment string repeats at the start of each line.  The {flags} field may be
+ empty.
+ 
+ Any blank space in the text before and after the {string} is part of the
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index 3da38ecc5..948ef7248 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
+@@ -1,4 +1,4 @@
+-*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Nov 19
++*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -437,7 +437,13 @@ also implicitly stops the block of ex-commands before it.  E.g. >
+ 	echo "Example"
+     endfunction
+ <
+-
++It's possible to add Vim syntax highlighting support to code examples.  This
++can be done by adding "vim" after the greater than (>) character (">vim").
++E.g: >vim
++    function Example_Func()
++	echo "Example"
++    endfunction
++<
+ The following are highlighted differently in a Vim help file:
+   - a special key name expressed either in <> notation as in <PageDown>, or
+     as a Ctrl character as in CTRL-X
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 8fe70241e..e5b8151d0 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1,4 +1,4 @@
+-*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 14
++*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -93,13 +93,6 @@ command.  There are however, two general exceptions:
     end of the motion is moved to the end of the previous line and the motion
     becomes inclusive.  Example: "}" moves to the first line after a paragraph,
     but "d}" will not include that line.
-+
+-
+-					*inclusive-motion-selection-exclusive*
+-When 'selection' is "exclusive", |Visual| mode is active and an inclusive
+-motion has been used, the cursor position will be adjusted by another
+-character to the right, so that visual selction includes the expected text and
+-can be acted upon.
+-
+ 						*exclusive-linewise*
+ 2. If the motion is exclusive, the end of the motion is in column 1 and the
+    start of the motion was at or before the first non-blank in the line, the
+@@ -129,6 +122,12 @@ This cannot be repeated: >
+ 	endif<CR>
+ Note that when using ":" any motion becomes characterwise exclusive.
+ 
 +					*inclusive-motion-selection-exclusive*
 +When 'selection' is "exclusive", |Visual| mode is active and an inclusive
 +motion has been used, the cursor position will be adjusted by another
 +character to the right, so that visual selction includes the expected text and
 +can be acted upon.
 +
- 						*exclusive-linewise*
- 2. If the motion is exclusive, the end of the motion is in column 1 and the
-    start of the motion was at or before the first non-blank in the line, the
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 4024d20c5..7c32384e1 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 07
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 14
+ 								*forced-motion*
+ FORCING A MOTION TO BE LINEWISE, CHARACTERWISE OR BLOCKWISE
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7018,6 +7018,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	selection.
- 	When "old" is used and 'virtualedit' allows the cursor to move past
- 	the end of line the line break still isn't included.
-+	When "exclusive" is used, cursor position in visual mode will be
-+	adjusted for inclusive motions |inclusive-motion-selection-exclusive|.
- 	Note that when "exclusive" is used and selecting from the end
- 	backwards, you cannot include the last character of a line, when
- 	starting in Normal mode and 'virtualedit' empty.
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 915db37e9..edb105aa5 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 0ebcd0684..440a66562 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
 @@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.1.  Last change: 2024 Sep 08
-+*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 14
+-*various.txt*   For Vim version 9.1.  Last change: 2024 Nov 23
++*various.txt*   For Vim version 9.1.  Last change: 2024 Dec 16
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1012,6 +1012,8 @@ CTRL-W g }						*CTRL-W_g}*
- 		position isn't changed.  Useful example: >
- 			:pedit +/fputc /usr/include/stdio.h
- <
-+		Also see |++opt| and |+cmd|.
-+
- 							*:ps* *:psearch*
- :[range]ps[earch][!] [count] [/]pattern[/]
- 		Works like |:ijump| but shows the found match in the preview
