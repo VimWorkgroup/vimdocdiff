@@ -1,442 +1,163 @@
 diff --git a/runtime/doc/fold.txt b/runtime/doc/fold.txt
-index b29049205..cf9208936 100644
+index cf9208936..b6cb2a440 100644
 --- a/runtime/doc/fold.txt
 +++ b/runtime/doc/fold.txt
 @@ -1,4 +1,4 @@
--*fold.txt*      For Vim version 9.1.  Last change: 2023 Mar 24
-+*fold.txt*      For Vim version 9.1.  Last change: 2024 Dec 16
+-*fold.txt*      For Vim version 9.1.  Last change: 2024 Dec 16
++*fold.txt*      For Vim version 9.1.  Last change: 2024 Dec 17
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -87,9 +87,11 @@ The most efficient is to call a compiled function without arguments: >
- The function must use v:lnum.  See |expr-option-function|.
- 
- These are the conditions with which the expression is evaluated:
-+
- - The current buffer and window are set for the line.
- - The variable "v:lnum" is set to the line number.
--- The result is used for the fold level in this way:
-+
-+The result of foldexpr then determines the fold level as follows:
-   value			meaning ~
-   0			the line is not in a fold
-   1, 2, ..		the line is in a fold with this level
-@@ -104,6 +106,8 @@ These are the conditions with which the expression is evaluated:
+@@ -106,7 +106,8 @@ The result of foldexpr then determines the fold level as follows:
    "<1", "<2", ..	a fold with this level ends at this line
    ">1", ">2", ..	a fold with this level starts at this line
  
-+The result values "=", "s" and "a" are more expensive, please see |fold-expr-slow|.
-+
+-The result values "=", "s" and "a" are more expensive, please see |fold-expr-slow|.
++The result values "=", "s" and "a" are more expensive, please see
++|fold-expr-slow|.
+ 
  It is not required to mark the start (end) of a fold with ">1" ("<1"), a fold
  will also start (end) when the fold level is higher (lower) than the fold
- level of the previous line.
-@@ -117,12 +121,6 @@ recognized, there is no error message and the fold level will be zero.
- For debugging the 'debug' option can be set to "msg", the error messages will
+@@ -122,7 +123,7 @@ For debugging the 'debug' option can be set to "msg", the error messages will
  be visible then.
  
--Note: Since the expression has to be evaluated for every line, this fold
--method can be very slow!
--
--Try to avoid the "=", "a" and "s" return values, since Vim often has to search
--backwards for a line for which the fold level is defined.  This can be slow.
--
  If the 'foldexpr' expression starts with s: or |<SID>|, then it is replaced
- with the script ID (|local-function|). Examples: >
+-with the script ID (|local-function|). Examples: >
++with the script ID (|local-function|).  Examples: >
  		set foldexpr=s:MyFoldExpr()
-@@ -148,6 +146,36 @@ end in that line.
+ 		set foldexpr=<SID>SomeFoldExpr()
+ <
+@@ -146,7 +147,7 @@ end in that line.
  It may happen that folds are not updated properly.  You can use |zx| or |zX|
  to force updating folds.
  
-+Minimizing Computational Cost			             *fold-expr-slow*
-+
-+Due to its computational cost, this fold method can make Vim unresponsive,
-+especially when the fold level of all lines have to be initially computed.
-+Afterwards, after each change, Vim restricts the computation of foldlevels
-+to those lines whose fold level was affected by it (and reuses the known
-+foldlevels of all the others).
-+
-+The fold expression should therefore strive to minimize the number of dependent
-+lines needed for the computation of a given line: For example, try to avoid the
-+"=", "a" and "s" return values, because these will require the evaluation of the
-+fold levels on previous lines until an independent fold level is found.
-+
-+If this proves difficult, the next best thing could be to cache all fold levels
-+in a buffer-local variable (b:foldlevels) that is only updated on |b:changedtick|:
-+>vim
-+  vim9script
-+  def MyFoldFunc(): number
-+    if b:lasttick == b:changedtick
-+      return b:foldlevels[v:lnum - 1]
-+    endif
-+    b:lasttick = b:changedtick
-+    b:foldlevels = []
-+    # compute foldlevels ...
-+    return b:foldlevels[v:lnum - 1]
-+  enddef
-+  set foldexpr=s:MyFoldFunc()
-+<
-+In above example further speedup was gained by using a precompiled Vim9script
-+function without arguments (that must still use v:lnum). See |expr-option-function|.
+-Minimizing Computational Cost			             *fold-expr-slow*
++MINIMIZING COMPUTATIONAL COST				*fold-expr-slow*
+ 
+ Due to its computational cost, this fold method can make Vim unresponsive,
+ especially when the fold level of all lines have to be initially computed.
+@@ -154,13 +155,15 @@ Afterwards, after each change, Vim restricts the computation of foldlevels
+ to those lines whose fold level was affected by it (and reuses the known
+ foldlevels of all the others).
+ 
+-The fold expression should therefore strive to minimize the number of dependent
+-lines needed for the computation of a given line: For example, try to avoid the
+-"=", "a" and "s" return values, because these will require the evaluation of the
+-fold levels on previous lines until an independent fold level is found.
++The fold expression should therefore strive to minimize the number of
++dependent lines needed for the computation of a given line: For example, try
++to avoid the "=", "a" and "s" return values, because these will require the
++evaluation of the fold levels on previous lines until an independent fold
++level is found.
+ 
+-If this proves difficult, the next best thing could be to cache all fold levels
+-in a buffer-local variable (b:foldlevels) that is only updated on |b:changedtick|:
++If this proves difficult, the next best thing could be to cache all fold
++levels in a buffer-local variable (b:foldlevels) that is only updated on
++|b:changedtick|:
+ >vim
+   vim9script
+   def MyFoldFunc(): number
+@@ -174,8 +177,9 @@ in a buffer-local variable (b:foldlevels) that is only updated on |b:changedtick
+   enddef
+   set foldexpr=s:MyFoldFunc()
+ <
+-In above example further speedup was gained by using a precompiled Vim9script
+-function without arguments (that must still use v:lnum). See |expr-option-function|.
++In above example further speedup was gained by using a precompiled Vim9 script
++function without arguments (that must still use v:lnum).  See
++|expr-option-function|.
  
  SYNTAX						*fold-syntax*
  
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 8f347d7d9..5f0893fee 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
+@@ -412,8 +416,8 @@ zX		Undo manually opened and closed folds: re-apply 'foldlevel'.
+ 		Also forces recomputing folds, like |zx|.
+ 
+ 							*zm*
+-zm		Fold more: Subtract |v:count1| from 'foldlevel'.  If 'foldlevel' was
+-		already zero nothing happens.
++zm		Fold more: Subtract |v:count1| from 'foldlevel'.  If
++		'foldlevel' was already zero nothing happens.
+ 		'foldenable' will be set.
+ 
+ 							*zM*
+@@ -477,7 +481,7 @@ zk		Move upwards to the end of the previous fold.  A closed fold
+ 
+ EXECUTING COMMANDS ON FOLDS ~
+ 
+-:[range]foldd[oopen] {cmd}			*:foldd* *:folddo* *:folddoopen*
++:[range]foldd[oopen] {cmd}		*:foldd* *:folddo* *:folddoopen*
+ 		Execute {cmd} on all lines that are not in a closed fold.
+ 		When [range] is given, only these lines are used.
+ 		Each time {cmd} is executed the cursor is positioned on the
+@@ -567,7 +571,7 @@ When there is room after the text, it is filled with the character specified
+ by 'fillchars'.
+ 
+ If the 'foldtext' expression starts with s: or |<SID>|, then it is replaced
+-with the script ID (|local-function|). Examples: >
++with the script ID (|local-function|).  Examples: >
+ 		set foldtext=s:MyFoldText()
+ 		set foldtext=<SID>SomeFoldText()
+ <
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index e5b8151d0..4e57797a5 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
 @@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 9.1.  Last change: 2024 Nov 12
-+*indent.txt*    For Vim version 9.1.  Last change: 2024 Dec 16
+-*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 16
++*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 17
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index c595d9d2a..e1f68a081 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
-@@ -1,4 +1,4 @@
--*index.txt*     For Vim version 9.1.  Last change: 2023 Jul 14
-+*index.txt*     For Vim version 9.1.  Last change: 2024 Dec 15
+@@ -125,8 +125,8 @@ Note that when using ":" any motion becomes characterwise exclusive.
+ 					*inclusive-motion-selection-exclusive*
+ When 'selection' is "exclusive", |Visual| mode is active and an inclusive
+ motion has been used, the cursor position will be adjusted by another
+-character to the right, so that visual selction includes the expected text and
+-can be acted upon.
++character to the right, so that the Visual selection includes the expected
++text and can be acted upon.
  
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1529,6 +1529,7 @@ tag		command		action ~
- |:ownsyntax|	:ow[nsyntax]	set new local syntax highlight for this window
- |:packadd|	:pa[ckadd]	add a plugin from 'packpath'
- |:packloadall|	:packl[oadall]	load all packages under 'packpath'
-+|:pbuffer|	:pb[uffer]	edit buffer in the preview window
- |:pclose|	:pc[lose]	close preview window
- |:pedit|	:ped[it]	edit file in the preview window
- |:perl|		:pe[rl]		execute Perl command
+ 								*forced-motion*
+ FORCING A MOTION TO BE LINEWISE, CHARACTERWISE OR BLOCKWISE
 diff --git a/runtime/doc/pi_tutor.txt b/runtime/doc/pi_tutor.txt
-index 618fe745a..f4f86e87b 100644
+index f4f86e87b..590d2e4b4 100644
 --- a/runtime/doc/pi_tutor.txt
 +++ b/runtime/doc/pi_tutor.txt
 @@ -1,4 +1,4 @@
--*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Nov 09
-+*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Dec 16
+-*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Dec 16
++*pi_tutor.txt*    For Vim version 9.1.  Last change: 2024 Dec 17
  
  INTERACTIVE TUTORIALS FOR VIM			 *vim-tutor-mode*
  
-@@ -16,21 +16,28 @@ by double-clicking them.
- 1.1 Commands
- ------------
- 								      *:Tutor*
--:Tutor {tutorial}	Opens a tutorial.  Command-line completion for
--			{tutorial} is provided, the candidates are a list of
--			'.tutor' files found in the 'tutor/'  folder in
--			the 'runtimepath'.  Tutorials prefixed with 'vim-'
-+:Tutor [tutorial]	Opens a tutorial.  Command-line completion for
-+			[tutorial] is provided, the candidates are a list of
-+			".tutor" files found in the "tutor/<lang>/"  folder in
-+			the 'runtimepath'.  Tutorials prefixed with "vim-"
- 			will always be shown first.
+@@ -30,7 +30,7 @@ by double-clicking them.
+ 			language if possible (|v:lang|), e.g. to open the
+ 			chapter 1 of the Italian tutor, use: >
  
--			If no {tutorial} is provided, the command starts the
--			'vim-01-beginner' tutorial, which is equivalent to
--			Vim's `vimtutor`.
-+			If no [tutorial] is provided, the command starts the
-+			"vim-01-beginner" tutorial, which is equivalent to
-+			Vim's `vimtutor`, chapter 1.
- 
-+			Uses the translated tutorial for the current message
-+			language if possible (|v:lang|), e.g. to open the
-+			chapter 1 of the Italian tutor, use: >
-+
-+			:lang it_IT.utf-8
-+			:Tutor
-+<
- =============================================================================
- 2. Creating tutorials                                        *vim-tutor-create*
- 
- Writing vim-tutor-mode tutorials is easy.  For an overview of the format used,
--please consult the 'tutor.tutor' file: >
-+please consult the "tutor.tutor" file: >
- 
-     :Tutor tutor
+-			:lang it_IT.utf-8
++			:lang it_IT.UTF-8
+ 			:Tutor
  <
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 6d46458c0..1cd075f3e 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Nov 28
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Dec 16
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1349,7 +1349,7 @@ It scans the Java bytecode of all classes in the currently open buffer.
- (Therefore, `:compiler! spotbugs` is not supported.)
- 
- Commonly used compiler options can be added to 'makeprg' by setting the
--"b:" or "g:spotbugs_makeprg_params" variable.  For example: >
-+"b:" or "g:spotbugs_makeprg_params" variable.  For example: >vim
- 
- 	let b:spotbugs_makeprg_params = "-longBugCodes -effort:max -low"
- 
-@@ -1359,22 +1359,25 @@ By default, the class files are searched in the directory where the source
- files are placed.  However, typical Java projects use distinct directories
- for source files and class files.  To make both known to SpotBugs, assign
- their paths (distinct and relative to their common root directory) to the
--following properties (using the example of a common Maven project): >
-+following properties (using the example of a common Maven project): >vim
- 
- 	let g:spotbugs_properties = {
--		\ 'sourceDirPath':	'src/main/java',
--		\ 'classDirPath':	'target/classes',
--		\ 'testSourceDirPath':	'src/test/java',
--		\ 'testClassDirPath':	'target/test-classes',
-+		\ 'sourceDirPath':	['src/main/java'],
-+		\ 'classDirPath':	['target/classes'],
-+		\ 'testSourceDirPath':	['src/test/java'],
-+		\ 'testClassDirPath':	['target/test-classes'],
- 	\ }
- 
-+Note that source and class path entries are expected to come in pairs: define
-+both "sourceDirPath" and "classDirPath" when you are considering at least one,
-+and apply the same logic to "testSourceDirPath" and "testClassDirPath".
- Note that values for the path keys describe only for SpotBugs where to look
- for files; refer to the documentation for particular compiler plugins for more
- information.
- 
- The default pre- and post-compiler actions are provided for Ant, Maven, and
- Javac compiler plugins and can be selected by assigning the name of a compiler
--plugin to the "compiler" key: >
-+plugin (`ant`, `maven`, or `javac`) to the "compiler" key: >vim
- 
- 	let g:spotbugs_properties = {
- 		\ 'compiler':		'maven',
-@@ -1384,7 +1387,7 @@ This single setting is essentially equivalent to all the settings below, with
- the exception made for the "PreCompilerAction" and "PreCompilerTestAction"
- values: their listed |Funcref|s will obtain no-op implementations whereas the
- implicit Funcrefs of the "compiler" key will obtain the requested defaults if
--available. >
-+available. >vim
- 
- 	let g:spotbugs_properties = {
- 		\ 'PreCompilerAction':
-@@ -1393,10 +1396,10 @@ available. >
- 			\ function('spotbugs#DefaultPreCompilerTestAction'),
- 		\ 'PostCompilerAction':
- 			\ function('spotbugs#DefaultPostCompilerAction'),
--		\ 'sourceDirPath':	'src/main/java',
--		\ 'classDirPath':	'target/classes',
--		\ 'testSourceDirPath':	'src/test/java',
--		\ 'testClassDirPath':	'target/test-classes',
-+		\ 'sourceDirPath':	['src/main/java'],
-+		\ 'classDirPath':	['target/classes'],
-+		\ 'testSourceDirPath':	['src/test/java'],
-+		\ 'testClassDirPath':	['target/test-classes'],
- 	\ }
- 
- With default actions, the compiler of choice will attempt to rebuild the class
-@@ -1404,23 +1407,42 @@ files for the buffer (and possibly for the whole project) as soon as a Java
- syntax file is loaded; then, `spotbugs` will attempt to analyze the quality of
- the compilation unit of the buffer.
- 
--When default actions are not suited to a desired workflow, consider writing
--arbitrary functions yourself and matching their |Funcref|s to the supported
-+Vim commands proficient in 'makeprg' [0] can be composed with default actions.
-+Begin by considering which of the supported keys, "DefaultPreCompilerCommand",
-+"DefaultPreCompilerTestCommand", or "DefaultPostCompilerCommand", you need to
-+write an implementation for, observing that each of these keys corresponds to
-+a particular "*Action" key.  Follow it by defining a new function that always
-+declares an only parameter of type string and puts to use a command equivalent
-+of |:make|, and assigning its |Funcref| to the selected key.  For example:
-+>vim
-+	function! GenericPostCompilerCommand(arguments) abort
-+		execute 'make ' . a:arguments
-+	endfunction
-+
-+	let g:spotbugs_properties = {
-+		\ 'DefaultPostCompilerCommand':
-+			\ function('GenericPostCompilerCommand'),
-+	\ }
-+
-+When default actions are not suited to a desired workflow, proceed by writing
-+arbitrary functions yourself and matching their Funcrefs to the supported
- keys: "PreCompilerAction", "PreCompilerTestAction", and "PostCompilerAction".
- 
- The next example re-implements the default pre-compiler actions for a Maven
--project and requests other default Maven settings with the "compiler" entry: >
--
-+project and requests other default Maven settings with the "compiler" entry:
-+>vim
- 	function! MavenPreCompilerAction() abort
- 		call spotbugs#DeleteClassFiles()
- 		compiler maven
- 		make compile
-+		cc
- 	endfunction
- 
- 	function! MavenPreCompilerTestAction() abort
- 		call spotbugs#DeleteClassFiles()
- 		compiler maven
- 		make test-compile
-+		cc
- 	endfunction
- 
- 	let g:spotbugs_properties = {
-@@ -1433,14 +1455,46 @@ project and requests other default Maven settings with the "compiler" entry: >
- 
- Note that all entered custom settings will take precedence over the matching
- default settings in "g:spotbugs_properties".
-+Note that it is necessary to notify the plugin of the result of a pre-compiler
-+action before further work can be undertaken.  Using |:cc| after |:make| (or
-+|:ll| after |:lmake|) as the last command of an action is the supported means
-+of such communication.
-+
-+Two commands, "SpotBugsRemoveBufferAutocmd" and "SpotBugsDefineBufferAutocmd",
-+are provided to toggle actions for buffer-local autocommands.  For example, to
-+also run actions on any |BufWritePost| and |SigUSR1| event, add these lines to
-+`~/.vim/after/ftplugin/java.vim`: >vim
-+
-+	if exists(':SpotBugsDefineBufferAutocmd') == 2
-+		SpotBugsDefineBufferAutocmd BufWritePost SigUSR1
-+	endif
-+
-+Otherwise, you can turn to `:doautocmd java_spotbugs User` at any time.
- 
- The "g:spotbugs_properties" variable is consulted by the Java filetype plugin
- (|ft-java-plugin|) to arrange for the described automation, and, therefore, it
- must be defined before |FileType| events can take place for the buffers loaded
- with Java source files.  It could, for example, be set in a project-local
--|vimrc| loaded by [0].
-+|vimrc| loaded by [1].
-+
-+Both "g:spotbugs_properties" and "b:spotbugs_properties" are recognized and
-+must be modifiable (|:unlockvar|).  The "*Command" entries are always treated
-+as global functions to be shared among all Java buffers.
-+
-+The SpotBugs Java library and, by extension, its distributed shell scripts do
-+not support in the `-textui` mode listed pathnames with directory filenames
-+that contain blank characters [2].  To work around this limitation, consider
-+making a symbolic link to such a directory from a directory that does not have
-+blank characters in its name and passing this information to SpotBugs: >vim
-+
-+	let g:spotbugs_alternative_path = {
-+		\ 'fromPath':	'path/to/dir_without_blanks',
-+		\ 'toPath':	'path/to/dir with blanks',
-+	\ }
- 
--[0] https://github.com/MarcWeber/vim-addon-local-vimrc/
-+[0] https://github.com/Konfekt/vim-compilers
-+[1] https://github.com/MarcWeber/vim-addon-local-vimrc
-+[2] https://github.com/spotbugs/spotbugs/issues/909
- 
- GNU MAKE						*compiler-make*
- 
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index eb6c3b233..7640ee183 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2024 Dec 12
-+*syntax.txt*	For Vim version 9.1.  Last change: 2024 Dec 16
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5857,6 +5857,8 @@ PmenuThumb	Popup menu: Thumb of the scrollbar.
- PmenuMatch	Popup menu: Matched text in normal item.
- 							*hl-PmenuMatchSel*
- PmenuMatchSel	Popup menu: Matched text in selected item.
-+							*hl-ComplMatchIns*
-+ComplMatchIns	Matched text of the currently inserted completion.
- 							*hl-PopupNotification*
- PopupNotification
- 		Popup window created with |popup_notification()|.  If not
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index b1318cf9e..342332ec2 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 04
-+*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 16
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1093,9 +1093,6 @@ Problem with 'delcombine'. (agguser, 2017 Nov 10, #2313)
- MS-Windows: buffer completion doesn't work when using backslash (or slash)
- for a path separator. (xtal8, #2201)
- 
--Would be nice for Insert mode completion to highlight the text that was added
--(and may change when picking another completion).
--
- Test more runtime files.
- 
- Window not closed when deleting buffer. (Harm te Hennepe, 2017 Aug 27, #2029)
+ =============================================================================
 diff --git a/runtime/doc/usr_01.txt b/runtime/doc/usr_01.txt
-index 8a513e8bb..70a3f9bcb 100644
+index 70a3f9bcb..556774e14 100644
 --- a/runtime/doc/usr_01.txt
 +++ b/runtime/doc/usr_01.txt
 @@ -1,4 +1,4 @@
--*usr_01.txt*	For Vim version 9.1.  Last change: 2024 Nov 03
-+*usr_01.txt*	For Vim version 9.1.  Last change: 2024 Dec 16
+-*usr_01.txt*	For Vim version 9.1.  Last change: 2024 Dec 16
++*usr_01.txt*	For Vim version 9.1.  Last change: 2024 Dec 17
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -110,8 +110,8 @@ For more info see |vimrc| and |compatible-default|.
- For the interactive tutor, see |vim-tutor-mode|
- 
- Instead of reading the text (boring!) you can use the vimtutor to learn your
--first Vim commands.  This is a 30-minute tutorial that teaches the most basic
--Vim functionality hands-on.
-+first Vim commands.  This is a 30-minute tutorial provided in 2 chapters, that
-+teaches the most basic Vim functionality hands-on.
- 
- On Unix, if Vim has been properly installed, you can start it from the shell:
+@@ -117,8 +117,9 @@ On Unix, if Vim has been properly installed, you can start it from the shell:
  >
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 76911425c..8993e3c66 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 06
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 16
+ 	vimtutor
  
+-On MS-Windows you can find it in the Program/Vim menu.  Or execute
+-vimtutor.bat in the $VIMRUNTIME directory.
++On MS-Windows you can find it in the "Program/Vim 9.1" menu.  Or execute
++vimtutor.bat from the installation directory (You can use `:echo $VIMRUNTIME`
++from within Vim to find this directory).
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41653,6 +41653,7 @@ Autocommands: ~
- 
- Highlighting: ~
- 
-+|hl-ComplMatchIns|	matched text of the currently inserted completion.
- |hl-MsgArea|		highlighting of the Command-line and messages area
- |hl-PmenuMatch|		Popup menu: highlighting of matched text
- |hl-PmenuMatchSel|	Popup menu: highlighting of matched text in selected
-@@ -41661,7 +41662,8 @@ Highlighting: ~
- Commands: ~
- 
- |[r| and |]r|		to move the cursor to previous/next rare word
--
-+|:pbuffer|		Edit buffer [N] from the buffer list in the preview
-+			window
- 
- Options: ~
- 
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index edb105aa5..776407258 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
-@@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 14
-+*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 16
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1005,6 +1005,15 @@ CTRL-W g }						*CTRL-W_g}*
- 		it.  Make the new Preview window (if required) N high.  If N is
- 		not given, 'previewheight' is used.
- 
-+							*:pb* *:pbuffer*
-+:[N]pb[uffer][!] [+cmd] [N]
-+		Edit buffer [N] from the buffer list in the preview window.
-+		If [N] is not given, the current buffer remains being edited.
-+		See |:buffer-!| for [!].  This will also edit a buffer that is
-+		not in the buffer list, without setting the 'buflisted' flag.
-+		The notation with single quotes does not work here, `:pbuffer
-+		12'345'` uses 12'345 as a buffer name.  Also see |+cmd|.
-+
- 							*:ped* *:pedit*
- :ped[it][!] [++opt] [+cmd] {file}
- 		Edit {file} in the preview window.  The preview window is
+ This will make a copy of chapter 1 tutor file, so that you can edit it without
+ the risk of damaging the original.  To continue with chapter 2, you can use
