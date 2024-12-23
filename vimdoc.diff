@@ -1,36 +1,38 @@
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index b9e992b04..b1e6c0cb3 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 6b2647504..af5b3a954 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*popup.txt*  For Vim version 9.1.  Last change: 2024 Jun 16
-+*popup.txt*  For Vim version 9.1.  Last change: 2024 Dec 19
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Nov 02
++*eval.txt*	For Vim version 9.1.  Last change: 2024 Dec 23
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -705,7 +705,6 @@ The second argument of |popup_create()| is a dictionary with options:
- 			present. Use zero to reset.
- 	fixed		When FALSE (the default), and:
- 			 - "pos" is "botleft" or "topleft", and
--			 - "wrap" is off, and
- 			 - the popup would be truncated at the right edge of
- 			   the screen, then
- 			the popup is moved to the left so as to fit the
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 7ce4d6f16..94ed836fc 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -797,7 +797,7 @@ length minus one is used: >
+ 
+ 
+ Blob modification ~
+-					*blob-modification* *E1182* *E1184*
++						*blob-modification* *E1184*
+ To change a specific byte of a blob use |:let| this way: >
+ 	:let blob[4] = 0x44
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 68e5d997f..a978ea369 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*starting.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
-+*starting.txt*  For Vim version 9.1.  Last change: 2024 Dec 19
+-*vim9.txt*	For Vim version 9.1.  Last change: 2024 May 31
++*vim9.txt*	For Vim version 9.1.  Last change: 2024 Dec 23
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -976,6 +976,7 @@ accordingly.  Vim proceeds in this order:
- The $MYVIMRC or $MYGVIMRC environment variable will be set to the first found
- vimrc and/or gvimrc file while $MYVIMDIR is set to the users personal runtime
- directory 'rtp' (typically the first entry in 'runtimepath').
-+Note: These environment variables resolve symbolic links, but 'rtp' does not.
- 
- 
- Some hints on using initializations ~
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -193,7 +193,7 @@ created yet.  In this case you can call `execute()` to invoke it at runtime. >
+ "closure".  A `:def` function always aborts on an error (unless `:silent!` was
+ used for the command or the error was caught a `:try` block), does not get a
+ range passed, cannot be a "dict" function, and can always be a closure.
+-						*vim9-no-dict-function*
++						*vim9-no-dict-function* *E1182*
+ You can use a Vim9 Class (|Vim9-class|) instead of a "dict function".
+ You can also pass the dictionary explicitly: >
+ 	def DictFunc(self: dict<any>, arg: string)
