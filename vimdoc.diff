@@ -1,102 +1,90 @@
-diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
-index 84aa53dc8..d97d230e9 100644
---- a/runtime/doc/develop.txt
-+++ b/runtime/doc/develop.txt
-@@ -1,4 +1,4 @@
--*develop.txt*   For Vim version 9.1.  Last change: 2024 Nov 11
-+*develop.txt*   For Vim version 9.1.  Last change: 2024 Dec 25
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -191,6 +191,12 @@ The basic steps to make changes to the code:
- For any non-trivial change, please always create a pull request on github,
- since this triggers the test suite.
- 
-+							*style-clang-format*
-+sound.c and sign.c can be (semi-) automatically formated using the
-+`clang-format` formatter according to the distributed .clang-format file.
-+Other source files do not yet correspond to the .clang-format file.  This may
-+change in the future and they may be reformatted as well.
-+
- 
- C COMPILER				*style-compiler* *ANSI-C* *C89* *C99*
- 
 diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 948ef7248..9e3e7488c 100644
+index 9e3e7488c..3ba092062 100644
 --- a/runtime/doc/helphelp.txt
 +++ b/runtime/doc/helphelp.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 15
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 25
+-*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 25
++*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 26
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -433,17 +433,38 @@ To quote a block of ex-commands verbatim, place a greater than (>) character
- at the end of the line before the block and a less than (<) character as the
- first non-blank on a line following the block.  Any line starting in column 1
- also implicitly stops the block of ex-commands before it.  E.g. >
--    function Example_Func()
--	echo "Example"
--    endfunction
-+	function Example_Func()
-+	  echo "Example"
-+	endfunction
+@@ -437,31 +437,24 @@ also implicitly stops the block of ex-commands before it.  E.g. >
+ 	  echo "Example"
+ 	endfunction
  <
--It's possible to add Vim syntax highlighting support to code examples.  This
--can be done by adding "vim" after the greater than (>) character (">vim").
-+
-+To add annotation in the block, place the annotation (ex: "lua") after a
-+greater than (>) character.  E.g: >lua
-+	print("hello")
-+<
-+Note: uses lua syntax highlighting, if "lua" key is in
-+|g:help_example_languages|.
-+
-+It's possible to add Vim syntax highlighting support to code examples.
- E.g: >vim
--    function Example_Func()
--	echo "Example"
--    endfunction
-+	function Example_Func()
-+	  echo "Example"
-+	endfunction
+-
+-To add annotation in the block, place the annotation (ex: "lua") after a
+-greater than (>) character.  E.g: >lua
+-	print("hello")
+-<
+-Note: uses lua syntax highlighting, if "lua" key is in
+-|g:help_example_languages|.
+-
+-It's possible to add Vim syntax highlighting support to code examples.
+-E.g: >vim
++To enable syntax highlighting for a block of code, place a language name
++annotation (e.g. "vim") after a greater than (>) character.  E.g. >vim
+ 	function Example_Func()
+ 	  echo "Example"
+ 	endfunction
  <
-+						*g:help_example_languages*
-+If you want to change the syntax highlighting in the block, you can
-+change it like this: >
-+	:let g:help_example_languages = #{ vim: 'vim', sh: 'bash' }
-+The key represents the annotation marker name, and the value is the 'syntax'
-+name.  By default, help files support only Vim script highlighting.
-+Note: When setting "g:help_example_languages", if you do not include "vim"
-+key, the Vim syntax highlighting will not be enabled. If you set it to an
-+empty value, syntax highlighting for embedded languages will be disabled.
+ 						*g:help_example_languages*
+-If you want to change the syntax highlighting in the block, you can
+-change it like this: >
+-	:let g:help_example_languages = #{ vim: 'vim', sh: 'bash' }
++By default, help files only support Vim script highlighting.  If you need
++syntax highlighting for other languages, add to your |vimrc|: >
++	:let g:help_example_languages = { "vim": "vim", "sh": "bash" }
+ The key represents the annotation marker name, and the value is the 'syntax'
+-name.  By default, help files support only Vim script highlighting.
+-Note: When setting "g:help_example_languages", if you do not include "vim"
+-key, the Vim syntax highlighting will not be enabled. If you set it to an
++name.
 +
-+Further note: including arbitrary syntax languages into help files may not
-+always work perfectly, if the included 'syntax' script does not account for
-+such an import.
-+						*help-notation*
- The following are highlighted differently in a Vim help file:
-   - a special key name expressed either in <> notation as in <PageDown>, or
-     as a Ctrl character as in CTRL-X
-diff --git a/runtime/doc/os_dos.txt b/runtime/doc/os_dos.txt
-index 96ef39d6f..03c88dc47 100644
---- a/runtime/doc/os_dos.txt
-+++ b/runtime/doc/os_dos.txt
++Note: If you do not include "vim" in "g:help_example_languages", its syntax
++highlighting will not be enabled.  If you set "g:help_example_languages" to an
+ empty value, syntax highlighting for embedded languages will be disabled.
+ 
+-Further note: including arbitrary syntax languages into help files may not
++Further note: Including arbitrary syntax languages into help files may not
+ always work perfectly, if the included 'syntax' script does not account for
+ such an import.
+ 						*help-notation*
+@@ -481,15 +474,15 @@ You can find the details in $VIMRUNTIME/syntax/help.vim
+ GENDER NEUTRAL LANGUAGE
+ 
+ 						*gender-neutral* *inclusion*
+-Vim is for everybody, no matter race, gender or anything. For new or updated
+-help text, gender neutral language is recommended. Some of the help text is
+-many years old and there is no need to change it. We do not make any
++Vim is for everybody, no matter race, gender or anything.  For new or updated
++help text, gender neutral language is recommended.  Some of the help text is
++many years old and there is no need to change it.  We do not make any
+ assumptions about the gender of the user, no matter how the text is phrased.
+ The goal is that the reader understands how Vim works, the exact wording is
+ secondary.
+ 
+ Many online technical style guides include sections about gender neutral
+-language. Here are a few: >
++language.  Here are a few: >
+ 
+ 	https://developers.google.com/style/pronouns
+ 	https://techwhirl.com/gender-neutral-technical-writing/
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index 6ebef9e44..39eb5442b 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
 @@ -1,4 +1,4 @@
--*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Sep 24
-+*os_dos.txt*    For Vim version 9.1.  Last change: 2024 Dec 25
+-*pattern.txt*   For Vim version 9.1.  Last change: 2024 Nov 09
++*pattern.txt*   For Vim version 9.1.  Last change: 2024 Dec 26
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -292,9 +292,9 @@ should be:
- 'shellquote'	   "
- 'shellxquote'						 "
+@@ -1504,6 +1504,7 @@ criteria:
+     - Matches at a camel case character (e.g. Case in CamelCase)
+     - Matches after a path separator or a hyphen.
+     - The number of unmatched characters in a string.
++    - A full/exact match is preferred.
+ The matching string with the highest score is returned first.
  
--For Dos 16 bit this starts the shell as:
-+For Dos 16 bit this starts the shell as: >
- 	<shell> -c "command name" >file
--For Win32 as:
-+For Win32 as: >
- 	<shell> -c "command name >file"
- For DOS 32 bit, DJGPP does this internally somehow.
- 
+ For example, when you search for the "get pat" string using fuzzy matching, it
