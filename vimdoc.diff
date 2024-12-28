@@ -1,90 +1,100 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 9e3e7488c..3ba092062 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 839d17a64..f025d816f 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 25
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 26
+-*insert.txt*    For Vim version 9.1.  Last change: 2024 Oct 08
++*insert.txt*    For Vim version 9.1.  Last change: 2024 Dec 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -437,31 +437,24 @@ also implicitly stops the block of ex-commands before it.  E.g. >
- 	  echo "Example"
- 	endfunction
- <
--
--To add annotation in the block, place the annotation (ex: "lua") after a
--greater than (>) character.  E.g: >lua
--	print("hello")
--<
--Note: uses lua syntax highlighting, if "lua" key is in
--|g:help_example_languages|.
--
--It's possible to add Vim syntax highlighting support to code examples.
--E.g: >vim
-+To enable syntax highlighting for a block of code, place a language name
-+annotation (e.g. "vim") after a greater than (>) character.  E.g. >vim
- 	function Example_Func()
- 	  echo "Example"
- 	endfunction
- <
- 						*g:help_example_languages*
--If you want to change the syntax highlighting in the block, you can
--change it like this: >
--	:let g:help_example_languages = #{ vim: 'vim', sh: 'bash' }
-+By default, help files only support Vim script highlighting.  If you need
-+syntax highlighting for other languages, add to your |vimrc|: >
-+	:let g:help_example_languages = { "vim": "vim", "sh": "bash" }
- The key represents the annotation marker name, and the value is the 'syntax'
--name.  By default, help files support only Vim script highlighting.
--Note: When setting "g:help_example_languages", if you do not include "vim"
--key, the Vim syntax highlighting will not be enabled. If you set it to an
-+name.
+@@ -2090,7 +2090,7 @@ the cursor is, or below the specified line.  To insert text above the first
+ line use the command ":0r {name}".
+ 
+ After the ":read" command, the cursor is left on the first non-blank in the
+-first new line.  Unless in Ex mode, then the cursor is left on the last new
++first new line.  If in Ex mode, then the cursor is left on the last new
+ line (sorry, this is Vi compatible).
+ 
+ If a file name is given with ":r", it becomes the alternate file.  This can be
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 1cd075f3e..b6d79507f 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1,4 +1,4 @@
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Dec 16
++*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Dec 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1424,6 +1424,70 @@ of |:make|, and assigning its |Funcref| to the selected key.  For example:
+ 			\ function('GenericPostCompilerCommand'),
+ 	\ }
+ 
++When "PostCompilerAction" is available, "PostCompilerActionExecutor" is also
++supported.  Its value must be a Funcref pointing to a function that always
++declares a single parameter of type string and decides whether |:execute| can
++be dispatched on its argument, containing a pending post-compiler action,
++after ascertaining the current status of |:cc| (or |:ll|): >vim
 +
-+Note: If you do not include "vim" in "g:help_example_languages", its syntax
-+highlighting will not be enabled.  If you set "g:help_example_languages" to an
- empty value, syntax highlighting for embedded languages will be disabled.
- 
--Further note: including arbitrary syntax languages into help files may not
-+Further note: Including arbitrary syntax languages into help files may not
- always work perfectly, if the included 'syntax' script does not account for
- such an import.
- 						*help-notation*
-@@ -481,15 +474,15 @@ You can find the details in $VIMRUNTIME/syntax/help.vim
- GENDER NEUTRAL LANGUAGE
- 
- 						*gender-neutral* *inclusion*
--Vim is for everybody, no matter race, gender or anything. For new or updated
--help text, gender neutral language is recommended. Some of the help text is
--many years old and there is no need to change it. We do not make any
-+Vim is for everybody, no matter race, gender or anything.  For new or updated
-+help text, gender neutral language is recommended.  Some of the help text is
-+many years old and there is no need to change it.  We do not make any
- assumptions about the gender of the user, no matter how the text is phrased.
- The goal is that the reader understands how Vim works, the exact wording is
- secondary.
- 
- Many online technical style guides include sections about gender neutral
--language. Here are a few: >
-+language.  Here are a few: >
- 
- 	https://developers.google.com/style/pronouns
- 	https://techwhirl.com/gender-neutral-technical-writing/
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 6ebef9e44..39eb5442b 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -1,4 +1,4 @@
--*pattern.txt*   For Vim version 9.1.  Last change: 2024 Nov 09
-+*pattern.txt*   For Vim version 9.1.  Last change: 2024 Dec 26
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1504,6 +1504,7 @@ criteria:
-     - Matches at a camel case character (e.g. Case in CamelCase)
-     - Matches after a path separator or a hyphen.
-     - The number of unmatched characters in a string.
-+    - A full/exact match is preferred.
- The matching string with the highest score is returned first.
- 
- For example, when you search for the "get pat" string using fuzzy matching, it
++	function! GenericPostCompilerActionExecutor(action) abort
++		try
++			cc
++		catch /\<E42:/
++			execute a:action
++		endtry
++	endfunction
++
++Complementary, some or all of the available "Pre*Action"s (or "*Pre*Command"s)
++may run `:doautocmd java_spotbugs_post User` in their implementations before
++|:make| (or its equivalent) to define a once-only |ShellCmdPost| `:autocmd`
++that will arrange for "PostCompilerActionExecutor" to be invoked; and then run
++`:doautocmd java_spotbugs_post ShellCmdPost` to consume this event: >vim
++
++	function! GenericPreCompilerCommand(arguments) abort
++		if !exists('g:spotbugs_compilation_done')
++			doautocmd java_spotbugs_post User
++			execute 'make ' . a:arguments
++			" only run doautocmd when :make was synchronous
++			" see note below
++			doautocmd java_spotbugs_post ShellCmdPost " XXX: (a)
++			let g:spotbugs_compilation_done = 1
++		else
++			cc
++		endif
++	endfunction
++
++	function! GenericPreCompilerTestCommand(arguments) abort
++		if !exists('g:spotbugs_test_compilation_done')
++			doautocmd java_spotbugs_post User
++			execute 'make ' . a:arguments
++			" only run doautocmd when :make was synchronous
++			" see note below
++			doautocmd java_spotbugs_post ShellCmdPost " XXX: (b)
++			let g:spotbugs_test_compilation_done = 1
++		else
++			cc
++		endif
++	endfunction
++
++	let g:spotbugs_properties = {
++		\ 'compiler':		'maven',
++		\ 'DefaultPreCompilerCommand':
++			\ function('GenericPreCompilerCommand'),
++		\ 'DefaultPreCompilerTestCommand':
++			\ function('GenericPreCompilerTestCommand'),
++		\ 'PostCompilerActionExecutor':
++			\ function('GenericPostCompilerActionExecutor'),
++	\ }
++
++If a command equivalent of `:make` is capable of asynchronous execution and
++consuming `ShellCmdPost` events, `:doautocmd java_spotbugs_post ShellCmdPost`
++must be removed from such "*Action" (or "*Command") implementations (i.e. the
++lines `(a)` and `(b)` in the listed examples) to retain a sequential order for
++non-blocking execution, and any notification (see below) must be suppressed.
++A `ShellCmdPost` `:autocmd` can be associated with any |:augroup| by assigning
++its name to the "augroupForPostCompilerAction" key.
++
+ When default actions are not suited to a desired workflow, proceed by writing
+ arbitrary functions yourself and matching their Funcrefs to the supported
+ keys: "PreCompilerAction", "PreCompilerTestAction", and "PostCompilerAction".
