@@ -1,100 +1,54 @@
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 839d17a64..f025d816f 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 7c32384e1..489415c78 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Oct 08
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Dec 28
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 14
++*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5072,11 +5072,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	a pattern that is matched against the 'term' option, a colon and the
+ 	protocol name to be used.  To illustrate this, the default value would
+ 	be set with: >
+-	   set keyprotocol=kitty:kitty,foot:kitty,wezterm:kitty,xterm:mok2
++	   set keyprotocol=kitty:kitty,foot:kitty,ghostty:kitty,wezterm:kitty
++	   set keyprotocol+=xterm:mok2
+ 
+-<	This means that when 'term' contains "kitty, "foot" or "wezterm"
+-	somewhere then the "kitty" protocol is used.  When 'term' contains
+-	"xterm" somewhere, then the "mok2" protocol is used.
++<	This means that when 'term' contains "kitty, "foot", "ghostty"  or
++	"wezterm" somewhere, then the "kitty" protocol is used.  When 'term'
++	contains "xterm" somewhere, then the "mok2" protocol is used.
+ 
+ 	The first match is used, thus if you want to have "kitty" use the
+ 	kitty protocol, but "badkitty" not, then you should match "badkitty"
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 8993e3c66..35921032e 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 16
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -2090,7 +2090,7 @@ the cursor is, or below the specified line.  To insert text above the first
- line use the command ":0r {name}".
+@@ -41617,6 +41617,10 @@ Changed~
+   |CompleteDone| autocommand in the |v:event| dictionary
+ - the default fontsize for the GTK builds of Vim (Windows and Unix) has been
+   increased to 12pt to accomodate modern high-dpi monitors
++- filetype detection now detects bash scripts as a separate "bash filetype
++  instead of the "sh" filetype
++- the default value of the 'keyprotocol' option has been updated by support
++  for the ghostty terminal emulator (using kitty protocol)
  
- After the ":read" command, the cursor is left on the first non-blank in the
--first new line.  Unless in Ex mode, then the cursor is left on the last new
-+first new line.  If in Ex mode, then the cursor is left on the last new
- line (sorry, this is Vi compatible).
- 
- If a file name is given with ":r", it becomes the alternate file.  This can be
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 1cd075f3e..b6d79507f 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Dec 16
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Dec 27
+ 							*added-9.2*
+ Added ~
+@@ -41721,4 +41725,4 @@ features, but does not include runtime file changes (syntax, indent, ftplugin,
+ documentation, etc.)
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1424,6 +1424,70 @@ of |:make|, and assigning its |Funcref| to the selected key.  For example:
- 			\ function('GenericPostCompilerCommand'),
- 	\ }
- 
-+When "PostCompilerAction" is available, "PostCompilerActionExecutor" is also
-+supported.  Its value must be a Funcref pointing to a function that always
-+declares a single parameter of type string and decides whether |:execute| can
-+be dispatched on its argument, containing a pending post-compiler action,
-+after ascertaining the current status of |:cc| (or |:ll|): >vim
-+
-+	function! GenericPostCompilerActionExecutor(action) abort
-+		try
-+			cc
-+		catch /\<E42:/
-+			execute a:action
-+		endtry
-+	endfunction
-+
-+Complementary, some or all of the available "Pre*Action"s (or "*Pre*Command"s)
-+may run `:doautocmd java_spotbugs_post User` in their implementations before
-+|:make| (or its equivalent) to define a once-only |ShellCmdPost| `:autocmd`
-+that will arrange for "PostCompilerActionExecutor" to be invoked; and then run
-+`:doautocmd java_spotbugs_post ShellCmdPost` to consume this event: >vim
-+
-+	function! GenericPreCompilerCommand(arguments) abort
-+		if !exists('g:spotbugs_compilation_done')
-+			doautocmd java_spotbugs_post User
-+			execute 'make ' . a:arguments
-+			" only run doautocmd when :make was synchronous
-+			" see note below
-+			doautocmd java_spotbugs_post ShellCmdPost " XXX: (a)
-+			let g:spotbugs_compilation_done = 1
-+		else
-+			cc
-+		endif
-+	endfunction
-+
-+	function! GenericPreCompilerTestCommand(arguments) abort
-+		if !exists('g:spotbugs_test_compilation_done')
-+			doautocmd java_spotbugs_post User
-+			execute 'make ' . a:arguments
-+			" only run doautocmd when :make was synchronous
-+			" see note below
-+			doautocmd java_spotbugs_post ShellCmdPost " XXX: (b)
-+			let g:spotbugs_test_compilation_done = 1
-+		else
-+			cc
-+		endif
-+	endfunction
-+
-+	let g:spotbugs_properties = {
-+		\ 'compiler':		'maven',
-+		\ 'DefaultPreCompilerCommand':
-+			\ function('GenericPreCompilerCommand'),
-+		\ 'DefaultPreCompilerTestCommand':
-+			\ function('GenericPreCompilerTestCommand'),
-+		\ 'PostCompilerActionExecutor':
-+			\ function('GenericPostCompilerActionExecutor'),
-+	\ }
-+
-+If a command equivalent of `:make` is capable of asynchronous execution and
-+consuming `ShellCmdPost` events, `:doautocmd java_spotbugs_post ShellCmdPost`
-+must be removed from such "*Action" (or "*Command") implementations (i.e. the
-+lines `(a)` and `(b)` in the listed examples) to retain a sequential order for
-+non-blocking execution, and any notification (see below) must be suppressed.
-+A `ShellCmdPost` `:autocmd` can be associated with any |:augroup| by assigning
-+its name to the "augroupForPostCompilerAction" key.
-+
- When default actions are not suited to a desired workflow, proceed by writing
- arbitrary functions yourself and matching their Funcrefs to the supported
- keys: "PreCompilerAction", "PreCompilerTestAction", and "PostCompilerAction".
+- vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:
++ vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
