@@ -1,54 +1,212 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7c32384e1..489415c78 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index ac10590b1..c82ff8115 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 14
-+*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 28
+-*builtin.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
++*builtin.txt*	For Vim version 9.1.  Last change: 2024 Dec 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5072,11 +5072,12 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	a pattern that is matched against the 'term' option, a colon and the
- 	protocol name to be used.  To illustrate this, the default value would
- 	be set with: >
--	   set keyprotocol=kitty:kitty,foot:kitty,wezterm:kitty,xterm:mok2
-+	   set keyprotocol=kitty:kitty,foot:kitty,ghostty:kitty,wezterm:kitty
-+	   set keyprotocol+=xterm:mok2
+@@ -67,6 +67,8 @@ autocmd_get([{opts}])		List	return a list of autocmds
+ balloon_gettext()		String	current text in the balloon
+ balloon_show({expr})		none	show {expr} inside the balloon
+ balloon_split({msg})		List	split {msg} as used for a balloon
++base64_decode({string})		Blob	base-64 decode {string} characters
++base64_encode({blob})		String	base-64 encode the bytes in {blob}
+ bindtextdomain({package}, {path})
+ 				Bool	bind text domain to specified path
+ blob2list({blob})		List	convert {blob} into a list of numbers
+@@ -1169,6 +1171,43 @@ autocmd_get([{opts}])					*autocmd_get()*
+ 		Return type: list<dict<any>>
  
--<	This means that when 'term' contains "kitty, "foot" or "wezterm"
--	somewhere then the "kitty" protocol is used.  When 'term' contains
--	"xterm" somewhere, then the "mok2" protocol is used.
-+<	This means that when 'term' contains "kitty, "foot", "ghostty"  or
-+	"wezterm" somewhere, then the "kitty" protocol is used.  When 'term'
-+	contains "xterm" somewhere, then the "mok2" protocol is used.
  
- 	The first match is used, thus if you want to have "kitty" use the
- 	kitty protocol, but "badkitty" not, then you should match "badkitty"
++base64_decode({string})					*base64_decode()*
++		Return a Blob containing the bytes decoded from the base64
++		characters in {string}.
++
++		The {string} argument should contain only base64-encoded
++		characters and should have a length that is a multiple of 4.
++
++		Returns an empty blob on error.
++
++		Examples: >
++		    " Write the decoded contents to a binary file
++		    call writefile(base64_decode(s), 'tools.bmp')
++		    " Decode a base64-encoded string
++		    echo list2str(blob2list(base64_decode(encodedstr)))
++<
++		Can also be used as a |method|: >
++			GetEncodedString()->base64_decode()
++<
++		Return type: |Blob|
++
++
++base64_encode({blob})					*base64_encode()*
++		Return a base64-encoded String representing the bytes in
++		{blob}.  The base64 alphabet defined in RFC 4648 is used.
++
++		Examples: >
++		    " Encode the contents of a binary file
++		    echo base64_encode(readblob('somefile.bin'))
++		    " Encode a string
++		    echo base64_encode(list2blob(str2list(somestr)))
++<
++		Can also be used as a |method|: >
++			GetBinaryData()->base64_encode()
++<
++		Return type: |String|
++
++
+ balloon_gettext()					*balloon_gettext()*
+ 		Return the current text in the balloon.  Only for the string,
+ 		not used for the List.  Returns an empty string if balloon
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index da5b1481e..7e2d89824 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Dec 03
++*terminal.txt*	For Vim version 9.1.  Last change: 2024 Dec 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -197,6 +197,9 @@ Command syntax ~
+ 			if [command] is NONE no job is started, the pty of the
+ 			terminal can be used by a command like gdb.
+ 
++			If [command] outputs NUL bytes, those will be
++			converted to new lines |NL-used-for-Nul|.
++
+ 							*terminal-nospecial*
+ 			Vim itself only recognizes |cmdline-special|
+ 			characters inside [command].  Everything else will be
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 342332ec2..48937b104 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 16
++*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4198,8 +4198,6 @@ Vim script language:
+ 	char2hex()		convert char string to hex string.
+ 	crypt()			encrypt string
+ 	decrypt()		decrypt string
+-	base64enc()		base 64 encoding
+-	base64dec()		base 64 decoding
+ 	attributes()		return file protection flags "drwxrwxrwx"
+ 	shorten(fname)		shorten a file name, like home_replace()
+ 	perl(cmd)		call Perl and return string
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 36907d249..fdb993442 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Nov 11
++*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Dec 30
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -1263,6 +1263,8 @@ Inter-process communication:		    *channel-functions*
+ 	json_decode()		decode a JSON string to Vim types
+ 	js_encode()		encode an expression to a JSON string
+ 	js_decode()		decode a JSON string to Vim types
++	base64_encode()		encode a blob into a base64 string
++	base64_decode()		decode a base64 string into a blob
+ 	err_teapot()		give error 418 or 503
+ 
+ Jobs:						*job-functions*
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 8993e3c66..35921032e 100644
+index 35921032e..af637021c 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 16
-+*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 28
+-*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 28
++*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 30
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41617,6 +41617,10 @@ Changed~
+@@ -41617,7 +41617,7 @@ Changed~
    |CompleteDone| autocommand in the |v:event| dictionary
  - the default fontsize for the GTK builds of Vim (Windows and Unix) has been
    increased to 12pt to accomodate modern high-dpi monitors
-+- filetype detection now detects bash scripts as a separate "bash filetype
-+  instead of the "sh" filetype
-+- the default value of the 'keyprotocol' option has been updated by support
-+  for the ghostty terminal emulator (using kitty protocol)
+-- filetype detection now detects bash scripts as a separate "bash filetype
++- filetype detection now detects bash scripts as a separate "bash" filetype
+   instead of the "sh" filetype
+ - the default value of the 'keyprotocol' option has been updated by support
+   for the ghostty terminal emulator (using kitty protocol)
+@@ -41629,13 +41629,15 @@ Various syntax, indent and other plugins were added.
  
- 							*added-9.2*
- Added ~
-@@ -41721,4 +41725,4 @@ features, but does not include runtime file changes (syntax, indent, ftplugin,
- documentation, etc.)
+ Functions: ~
+ 
++|base64_decode()|	decode a base64 string into a blob
++|base64_encode()|	encode a blob into a base64 string
+ |bindtextdomain()|	set message lookup translation base path
+ |diff()|		diff two Lists of strings
+ |filecopy()|		copy a file {from} to {to}
+ |foreach()|		apply function to List items
++|getcellpixels()|	get List of terminal cell pixel size
+ |getcmdcomplpat()|	Shell command line completion
+ |getcmdprompt()|	get prompt for input()/confirm()
+-|getcellpixels()|	get List of terminal cell pixel size
+ |getregion()|		get a region of text from a buffer
+ |getregionpos()|	get a list of positions for a region
+ |id()|			get unique identifier for a Dict, List, Object,
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index a06c2c6e0..9aab6c74a 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Nov 11
++*vim9class.txt*	For Vim version 9.1.  Last change: 2024 Dec 29
  
  
-- vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:
-+ vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -951,11 +951,11 @@ aliased: >
+ 						*enum* *E1418* *E1419* *E1420*
+ An enum is a type that can have one of a list of values.  Example: >
+ 
+-    :enum Color
++    enum Color
+ 	White,
+ 	Red,
+ 	Green, Blue, Black
+-    :endenum
++    endenum
+ <
+ 						*enumvalue* *E1422*
+ The enum values are separated by commas.  More than one enum value can be
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 776407258..5a5d571bc 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 16
++*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 29
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1011,8 +1011,9 @@ CTRL-W g }						*CTRL-W_g}*
+ 		If [N] is not given, the current buffer remains being edited.
+ 		See |:buffer-!| for [!].  This will also edit a buffer that is
+ 		not in the buffer list, without setting the 'buflisted' flag.
+-		The notation with single quotes does not work here, `:pbuffer
+-		12'345'` uses 12'345 as a buffer name.  Also see |+cmd|.
++		The notation with single quotes does not work here,
++		`:pbuffer 12'345'` uses 12'345' as a buffer name.
++		Also see |+cmd|.
+ 
+ 							*:ped* *:pedit*
+ :ped[it][!] [++opt] [+cmd] {file}
+@@ -1280,7 +1281,7 @@ list of buffers. |unlisted-buffer|
+ 		[!].  This will also edit a buffer that is not in the buffer
+ 		list, without setting the 'buflisted' flag.
+ 		The notation with single quotes does not work here,
+-		`:buf 12'345'` uses 12'345 as a buffer name.
++		`:buf 12'345'` uses 12'345' as a buffer name.
+ 		Also see |+cmd|.
+ 
+ :[N]b[uffer][!] [+cmd] {bufname}				*{bufname}*
