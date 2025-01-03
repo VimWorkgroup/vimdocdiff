@@ -1,391 +1,165 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c82ff8115..48ba03b8b 100644
+index 48ba03b8b..d7ed7320f 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2024 Dec 30
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -67,8 +67,8 @@ autocmd_get([{opts}])		List	return a list of autocmds
- balloon_gettext()		String	current text in the balloon
- balloon_show({expr})		none	show {expr} inside the balloon
- balloon_split({msg})		List	split {msg} as used for a balloon
--base64_decode({string})		Blob	base-64 decode {string} characters
--base64_encode({blob})		String	base-64 encode the bytes in {blob}
-+base64_decode({string})		Blob	base64 decode {string} characters
-+base64_encode({blob})		String	base64 encode the bytes in {blob}
- bindtextdomain({package}, {path})
- 				Bool	bind text domain to specified path
- blob2list({blob})		List	convert {blob} into a list of numbers
-@@ -1171,43 +1171,6 @@ autocmd_get([{opts}])					*autocmd_get()*
+@@ -279,6 +279,7 @@ getregionpos({pos1}, {pos2} [, {opts}])
+ 				List	get a list of positions for a region
+ getregtype([{regname}])		String	type of a register
+ getscriptinfo([{opts}])		List	list of sourced scripts
++getstacktrace()			List	get current stack trace of Vim scripts
+ gettabinfo([{expr}])		List	list of tab pages
+ gettabvar({nr}, {varname} [, {def}])
+ 				any	variable {varname} in tab {nr} or {def}
+@@ -4997,6 +4998,21 @@ getscriptinfo([{opts}])					*getscriptinfo()*
  		Return type: list<dict<any>>
  
  
--base64_decode({string})					*base64_decode()*
--		Return a Blob containing the bytes decoded from the base64
--		characters in {string}.
--
--		The {string} argument should contain only base64-encoded
--		characters and should have a length that is a multiple of 4.
--
--		Returns an empty blob on error.
--
--		Examples: >
--		    " Write the decoded contents to a binary file
--		    call writefile(base64_decode(s), 'tools.bmp')
--		    " Decode a base64-encoded string
--		    echo list2str(blob2list(base64_decode(encodedstr)))
--<
--		Can also be used as a |method|: >
--			GetEncodedString()->base64_decode()
--<
--		Return type: |Blob|
--
--
--base64_encode({blob})					*base64_encode()*
--		Return a base64-encoded String representing the bytes in
--		{blob}.  The base64 alphabet defined in RFC 4648 is used.
--
--		Examples: >
--		    " Encode the contents of a binary file
--		    echo base64_encode(readblob('somefile.bin'))
--		    " Encode a string
--		    echo base64_encode(list2blob(str2list(somestr)))
--<
--		Can also be used as a |method|: >
--			GetBinaryData()->base64_encode()
--<
--		Return type: |String|
--
--
- balloon_gettext()					*balloon_gettext()*
- 		Return the current text in the balloon.  Only for the string,
- 		not used for the List.  Returns an empty string if balloon
-@@ -1264,6 +1227,43 @@ balloon_split({msg})					*balloon_split()*
++getstacktrace()						*getstacktrace()*
++		Returns the current stack trace of Vim scripts.
++		Stack trace is a |List|, of which each item is a |Dictionary|
++		with the following items:
++		    funcref	The funcref if the stack is at the function,
++				otherwise this item is not exist.
++		    event	The string of the event description if the
++				stack is at autocmd event, otherwise this item
++				is not exist.
++		    lnum	The line number of the script on the stack.
++		    filepath	The file path of the script on the stack.
++
++		Return type: list<dict<any>>
++
++
+ gettabinfo([{tabnr}])					*gettabinfo()*
+ 		If {tabnr} is not specified, then information about all the
+ 		tab pages is returned as a |List|. Each List item is a
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index af5b3a954..2348cdddb 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2024 Dec 23
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Jan 02
  
- 		Return type: list<any> or list<string>
  
-+base64_decode({string})					*base64_decode()*
-+		Return a Blob containing the bytes decoded from the base64
-+		encoded characters in {string}.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1953,7 +1953,8 @@ variables for each buffer.  Use local buffer variables instead |b:var|.
+ 
+ PREDEFINED VIM VARIABLES			*vim-variable* *v:var* *v:*
+ 							*E963* *E1063*
+-Some variables can be set by the user, but the type cannot be changed.
++Most variables are read-only, when a variable can be set by the user, it will
++be mentioned at the variable description below. The type cannot be changed.
+ 
+ 					*v:argv* *argv-variable*
+ v:argv		The command line arguments Vim was invoked with.  This is a
+@@ -2172,7 +2173,8 @@ v:event		Dictionary containing information about the current
+ <
+ 					*v:exception* *exception-variable*
+ v:exception	The value of the exception most recently caught and not
+-		finished.  See also |v:throwpoint| and |throw-variables|.
++		finished.  See also |v:stacktrace|, |v:throwpoint|, and
++		|throw-variables|.
+ 		Example: >
+ 	:try
+ 	:  throw "oops"
+@@ -2548,6 +2550,12 @@ v:sizeofpointer	Number of bytes in a pointer.  Depends on how Vim was compiled.
+ 		This is only useful for deciding whether a test will give the
+ 		expected result.
+ 
++					*v:stacktrace* *stacktrace-variable*
++v:stacktrace	The stack trace of the exception most recently caught and
++		not finished.  Refer to |getstacktrace()| for the structure of
++		stack trace.  See also |v:exception|, |v:throwpoint|, and
++		|throw-variables|.
 +
-+		The {string} argument should contain only base64-encoded
-+		characters and should have a length that is a multiple of 4.
-+
-+		Returns an empty blob on error.
-+
-+		Examples: >
-+		    " Write the decoded contents to a binary file
-+		    call writefile(base64_decode(s), 'tools.bmp')
-+		    " Decode a base64-encoded string
-+		    echo list2str(blob2list(base64_decode(encodedstr)))
-+<
-+		Can also be used as a |method|: >
-+			GetEncodedString()->base64_decode()
-+<
-+		Return type: |Blob|
-+
-+
-+base64_encode({blob})					*base64_encode()*
-+		Return a base64-encoded String representing the bytes in
-+		{blob}.  The base64 alphabet defined in RFC 4648 is used.
-+
-+		Examples: >
-+		    " Encode the contents of a binary file
-+		    echo base64_encode(readblob('somefile.bin'))
-+		    " Encode a string
-+		    echo base64_encode(list2blob(str2list(somestr)))
-+<
-+		Can also be used as a |method|: >
-+			GetBinaryData()->base64_encode()
-+<
-+		Return type: |String|
-+
-+
- bindtextdomain({package}, {path})			*bindtextdomain()*
- 		Bind a specific {package} to a {path} so that the
- 		|gettext()| function can be used to get language-specific
-@@ -1896,10 +1896,15 @@ complete_info([{what}])				*complete_info()*
- 				See |complete_info_mode| for the values.
- 		   pum_visible	|TRUE| if popup menu is visible.
- 				See |pumvisible()|.
--		   items	List of completion matches.  Each item is a
--				dictionary containing the entries "word",
-+		   items	List of all completion candidates. Each item
-+				is a dictionary containing the entries "word",
- 				"abbr", "menu", "kind", "info" and "user_data".
- 				See |complete-items|.
-+		   matches	Same as "items", but only returns items that
-+				are matching current query. If both "matches"
-+				and "items" are in "what", the returned list
-+				will still be named "items", but each item
-+				will have an additional "match" field.
- 		   selected	Selected item index.  First index is zero.
- 				Index is -1 if no item is selected (showing
- 				typed text only, or the last completion after
+ 					*v:statusmsg* *statusmsg-variable*
+ v:statusmsg	Last given status message.  It's allowed to set this variable.
+ 
+@@ -2676,7 +2684,7 @@ v:this_session	Full filename of the last loaded or saved session file.  See
+ 					*v:throwpoint* *throwpoint-variable*
+ v:throwpoint	The point where the exception most recently caught and not
+ 		finished was thrown.  Not set when commands are typed.  See
+-		also |v:exception| and |throw-variables|.
++		also |v:exception|, |v:stacktrace|, and |throw-variables|.
+ 		Example: >
+ 	:try
+ 	:  throw "oops"
+@@ -3856,7 +3864,8 @@ in the variable |v:exception|: >
+ 	:    echo "Number thrown.  Value is" v:exception
+ 
+ You may also be interested where an exception was thrown.  This is stored in
+-|v:throwpoint|.  Note that "v:exception" and "v:throwpoint" are valid for the
++|v:throwpoint|.  And you can obtain the stack trace from |v:stacktrace|.
++Note that "v:exception", "v:stacktrace" and "v:throwpoint" are valid for the
+ exception most recently caught as long it is not finished.
+    Example: >
+ 
 diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index e1f68a081..5b844fbb9 100644
+index 5b844fbb9..512e2843c 100644
 --- a/runtime/doc/index.txt
 +++ b/runtime/doc/index.txt
-@@ -1,4 +1,4 @@
--*index.txt*     For Vim version 9.1.  Last change: 2024 Dec 15
-+*index.txt*     For Vim version 9.1.  Last change: 2025 Jan 02
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1185,6 +1185,7 @@ tag		command		action ~
- |:abbreviate|	:ab[breviate]	enter abbreviation
- |:abclear|	:abc[lear]	remove all abbreviations
- |:aboveleft|	:abo[veleft]	make split window appear left or above
-+|:abstract|	:abstract	declare a Vim9 abstract class
- |:all|		:al[l]		open a window for each file in the argument
- 				list
- |:amenu|	:am[enu]	enter new menu item for all modes
-@@ -1224,7 +1225,7 @@ tag		command		action ~
- |:breakdel|	:breakd[el]	delete a debugger breakpoint
- |:breaklist|	:breakl[ist]	list debugger breakpoints
- |:browse|	:bro[wse]	use file selection dialog
--|:bufdo|	:bufdo		execute command in each listed buffer
-+|:bufdo|	:bufd[o]	execute command in each listed buffer
- |:buffers|	:buffers	list all files in the buffer list
- |:bunload|	:bun[load]	unload a specific buffer
- |:bwipeout|	:bw[ipeout]	really delete a buffer
-@@ -1240,7 +1241,7 @@ tag		command		action ~
- |:cafter|	:caf[ter]	go to error after current cursor
- |:call|		:cal[l]		call a function
- |:catch|	:cat[ch]	part of a :try command
--|:cbefore|	:cbef[ore]	go to error before current cursor
-+|:cbefore|	:cbe[fore]	go to error before current cursor
- |:cbelow|	:cbel[ow]	go to error below current line
- |:cbottom|	:cbo[ttom]	scroll to the bottom of the quickfix window
- |:cbuffer|	:cb[uffer]	parse error messages and jump to first error
-@@ -1300,7 +1301,7 @@ tag		command		action ~
- |:debuggreedy|	:debugg[reedy]	read debug mode commands from normal input
- |:def|		:def		define a Vim9 user function
- |:defcompile|	:defc[ompile]	compile Vim9 user functions in current script
--|:defer|	:defer		call function when current function is done
-+|:defer|	:defe[r]	call function when current function is done
- |:delcommand|	:delc[ommand]	delete user-defined command
- |:delfunction|	:delf[unction]	delete a user function
- |:delmarks|	:delm[arks]	delete marks
-@@ -1310,7 +1311,7 @@ tag		command		action ~
- |:diffpatch|	:diffp[atch]	apply a patch and show differences
- |:diffput|	:diffpu[t]	remove differences in other buffer
- |:diffsplit|	:diffs[plit]	show differences with another file
--|:diffthis|	:diffthis	make current window a diff window
-+|:diffthis|	:difft[his]	make current window a diff window
- |:digraphs|	:dig[raphs]	show or enter digraphs
- |:display|	:di[splay]	display registers
- |:disassemble|	:disa[ssemble]	disassemble Vim9 user function
-@@ -1338,12 +1339,15 @@ tag		command		action ~
- |:emenu|	:em[enu]	execute a menu by name
- |:endclass|	:endclass	end of a class specification
- |:enddef|	:enddef		end of a user function started with :def
-+|:endenum|	:endenum	end of an enum specification
- |:endif|	:en[dif]	end previous :if
-+|:endinterface|	:endinterface	end of an interface specification
- |:endfor|	:endfo[r]	end previous :for
- |:endfunction|	:endf[unction]	end of a user function started with :function
- |:endtry|	:endt[ry]	end previous :try
- |:endwhile|	:endw[hile]	end previous :while
- |:enew|		:ene[w]		edit a new, unnamed buffer
-+|:enum|		:enum		start of an enum declaration
- |:eval|		:ev[al]		evaluate an expression and discard the result
- |:ex|		:ex		same as ":edit"
- |:execute|	:exe[cute]	execute result of expressions
-@@ -1382,7 +1386,7 @@ tag		command		action ~
+@@ -1386,7 +1386,7 @@ tag		command		action ~
  |:highlight|	:hi[ghlight]	specify highlighting methods
  |:hide|		:hid[e]		hide current buffer for a command
  |:history|	:his[tory]	print a history list
--|:horizontal|	:hor[izontal]	following window command work horizontally
-+|:horizontal|	:ho[rizontal]	following window command work horizontally
+-|:horizontal|	:ho[rizontal]	following window command work horizontally
++|:horizontal|	:hor[izontal]	following window command work horizontally
  |:insert|	:i[nsert]	insert text
  |:iabbrev|	:ia[bbrev]	like ":abbrev" but for Insert mode
  |:iabclear|	:iabc[lear]	like ":abclear" but for Insert mode
-@@ -1397,6 +1401,7 @@ tag		command		action ~
- |:inoreabbrev|	:inorea[bbrev]	like ":noreabbrev" but for Insert mode
- |:inoremenu|	:inoreme[nu]	like ":noremenu" but for Insert mode
- |:intro|	:int[ro]	print the introductory message
-+|:interface|	:interface	start of an interface declaration
- |:isearch|	:is[earch]	list one line where identifier matches
- |:isplit|	:isp[lit]	split window and jump to definition of
- 				identifier
-@@ -1421,7 +1426,7 @@ tag		command		action ~
- |:last|		:la[st]		go to the last file in the argument list
- |:language|	:lan[guage]	set the language (locale)
- |:later|	:lat[er]	go to newer change, redo
--|:lbefore|	:lbef[ore]	go to location before current cursor
-+|:lbefore|	:lbe[fore]	go to location before current cursor
- |:lbelow|	:lbel[ow]	go to location below current line
- |:lbottom|	:lbo[ttom]	scroll to the bottom of the location window
- |:lbuffer|	:lb[uffer]	parse locations and jump to first location
-@@ -1461,7 +1466,7 @@ tag		command		action ~
- |:lockmarks|	:loc[kmarks]	following command keeps marks where they are
- |:lockvar|	:lockv[ar]	lock variables
- |:lolder|	:lol[der]	go to older location list
--|:lopen|	:lope[n]	open location window
-+|:lopen|	:lop[en]	open location window
- |:lprevious|	:lp[revious]	go to previous location
- |:lpfile|	:lpf[ile]	go to last location in previous file
- |:lrewind|	:lr[ewind]	go to the specified location, default first one
-@@ -1496,7 +1501,7 @@ tag		command		action ~
- |:mzfile|	:mzf[ile]	execute MzScheme script file
- |:nbclose|	:nbc[lose]	close the current Netbeans session
- |:nbkey|	:nb[key]	pass a key to Netbeans
--|:nbstart|	:nbs[art]	start a new Netbeans session
-+|:nbstart|	:nbs[tart]	start a new Netbeans session
- |:next|		:n[ext]		go to next file in the argument list
- |:new|		:new		create a new empty window
- |:nmap|		:nm[ap]		like ":map" but for Normal mode
-@@ -1682,7 +1687,7 @@ tag		command		action ~
- |:tNext|	:tN[ext]	jump to previous matching tag
- |:tabNext|	:tabN[ext]	go to previous tab page
- |:tabclose|	:tabc[lose]	close current tab page
--|:tabdo|	:tabdo		execute command in each tab page
-+|:tabdo|	:tabd[o]	execute command in each tab page
- |:tabedit|	:tabe[dit]	edit a file in a new tab page
- |:tabfind|	:tabf[ind]	find file in 'path', edit it in a new tab page
- |:tabfirst|	:tabfir[st]	go to first tab page
-@@ -1706,6 +1711,8 @@ tag		command		action ~
- |:terminal|	:ter[minal]	open a terminal window
- |:tfirst|	:tf[irst]	jump to first matching tag
- |:throw|	:th[row]	throw an exception
-+|:this|		:this		prefix for an object member during
-+				initialization (e.g. on |new()|)
- |:tjump|	:tj[ump]	like ":tselect", but jump directly when there
- 				is only one match
- |:tlast|	:tl[ast]	jump to last matching tag
-@@ -1724,6 +1731,7 @@ tag		command		action ~
- |:tselect|	:ts[elect]	list matching tags and select one
- |:tunmap|	:tunma[p]	like ":unmap" but for Terminal-Job mode
- |:tunmenu|	:tu[nmenu]	remove menu tooltip
-+|:type|		:type		create a type alias
- |:undo|		:u[ndo]		undo last change(s)
- |:undojoin|	:undoj[oin]	join next change with previous undo block
- |:undolist|	:undol[ist]	list leafs of the undo tree
-@@ -1757,7 +1765,7 @@ tag		command		action ~
- |:vsplit|	:vs[plit]	split current window vertically
- |:vunmap|	:vu[nmap]	like ":unmap" but for Visual+Select mode
- |:vunmenu|	:vunme[nu]	remove menu for Visual+Select mode
--|:windo|	:windo		execute command in each window
-+|:windo|	:wind[o]	execute command in each window
- |:write|	:w[rite]	write to a file
- |:wNext|	:wN[ext]	write to a file and go to previous file in
- 				argument list
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index f025d816f..a5d245f50 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index fdb993442..ded30e35d 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2024 Dec 28
-+*insert.txt*    For Vim version 9.1.  Last change: 2024 Dec 31
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2024 Dec 30
++*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Jan 02
  
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1195,6 +1195,7 @@ items:
- 			|hl-PmenuKind| highlight group, allowing for the
- 			customization of ctermfg and guifg properties for the
- 			completion kind
-+	match		See "matches" in |complete_info()|.
- 
- All of these except "icase", "equal", "dup" and "empty" must be a string.  If
- an item does not meet these requirements then an error message is given and
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index d930dd33e..f56dbd4b6 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -1,4 +1,4 @@
--*term.txt*      For Vim version 9.1.  Last change: 2024 Oct 05
-+*term.txt*      For Vim version 9.1.  Last change: 2024 Dec 31
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -688,10 +688,11 @@ The default values are set like this: >
- 	 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
- 	 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
- 
--Some terminals accept the same sequences, but with all semicolons replaced by
--colons (this is actually more compatible, but less widely supported): >
--	 let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
--	 let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
-+Some terminals accept similar sequences, with semicolons replaced by colons
-+and an extra colon after the number 2 (this is conformant to the ISO 8613-6
-+standard, but less widely supported): >
-+	 let &t_8f = "\<Esc>[38:2::%lu:%lu:%lum"
-+	 let &t_8b = "\<Esc>[48:2::%lu:%lu:%lum"
- 
- These options contain printf strings, with |printf()| (actually, its C
- equivalent hence `l` modifier) invoked with the t_ option value and three
+@@ -1399,7 +1399,8 @@ Various:					*various-functions*
+ 	eventhandler()		check if invoked by an event handler
+ 	getcellpixels()		get List of cell pixel size
+ 	getpid()		get process ID of Vim
+-	getscriptinfo()		get list of sourced vim scripts
++	getscriptinfo()		get list of sourced Vim scripts
++	getstacktrace()		get current stack trace of Vim scripts
+ 	getimstatus()		check if IME status is active
+ 	interrupt()		interrupt script execution
+ 	windowsversion()	get MS-Windows version
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index af637021c..cfb472d44 100644
+index cfb472d44..bcb0b78f7 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2024 Dec 30
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 02
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -31849,14 +31849,14 @@ Autocommands: ~
- 
- Commands: ~
- 
--|:abstract|		define a Vim9 abstract class
--|:class|		start of a class specification
-+|:abstract|		declare a Vim9 abstract class
-+|:class|		start of a class declaration
- |:defer|		call function when current function is done
- |:echowindow|		same as :echomsg, but use a popup window
--|:endinterface|		end of an interface specification
--|:endclass|		end of a class specification
-+|:endinterface|		end of an interface declaration
-+|:endclass|		end of a class declaration
- |:horizontal|		following window command works horizontally
--|:interface|		start of an interface specification
-+|:interface|		start of an interface declaration
- |:public|		prefix for a class or object member
- |:static|		prefix for a class member or function
- |:this|			prefix for an object member
-@@ -41621,6 +41621,8 @@ Changed~
-   instead of the "sh" filetype
- - the default value of the 'keyprotocol' option has been updated by support
+@@ -41623,6 +41623,8 @@ Changed~
    for the ghostty terminal emulator (using kitty protocol)
-+- |complete_info()| returns the list of matches shown in the poppu menu via
-+  the "matches" key
+ - |complete_info()| returns the list of matches shown in the poppu menu via
+   the "matches" key
++- |v:stacktrace| The stack trace of the exception most recently caught and
++  not finished
  
  							*added-9.2*
  Added ~
+@@ -41642,6 +41644,7 @@ Functions: ~
+ |getcmdprompt()|	get prompt for input()/confirm()
+ |getregion()|		get a region of text from a buffer
+ |getregionpos()|	get a list of positions for a region
++|getstacktrace()|	get current stack trace of Vim scripts
+ |id()|			get unique identifier for a Dict, List, Object,
+ 			Channel or Blob variable
+ |matchbufline()|	all the matches of a pattern in a buffer
 diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 5a5d571bc..812062874 100644
+index 812062874..db24e5191 100644
 --- a/runtime/doc/windows.txt
 +++ b/runtime/doc/windows.txt
-@@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.1.  Last change: 2024 Dec 29
-+*windows.txt*   For Vim version 9.1.  Last change: 2025 Jan 02
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
 @@ -263,8 +263,8 @@ and 'winminwidth' are relevant.
  		will be equalized only vertically.
  		Doesn't work for |:execute| and |:normal|.
  
--						*:hor* *:horizontal*
--:hor[izontal] {cmd}
-+						*:ho* *:horizontal*
-+:ho[rizontal] {cmd}
+-						*:ho* *:horizontal*
+-:ho[rizontal] {cmd}
++						*:hor* *:horizontal*
++:hor[izontal] {cmd}
  		Execute {cmd}.  Currently only makes a difference for
  		`horizontal wincmd =`, which will equalize windows only
  		horizontally.
-@@ -968,8 +968,8 @@ A few peculiarities:
-   trigger the ATTENTION and responding "A" for Abort, the preview window will
-   become empty.
- 
--						*:pta* *:ptag*
--:pta[g][!] [tagname]
-+						*:pt* *:ptag*
-+:pt[ag][!] [tagname]
- 		Does ":tag[!] [tagname]" and shows the found tag in a
- 		"Preview" window without changing the current buffer or cursor
- 		position.  If a "Preview" window already exists, it is re-used
