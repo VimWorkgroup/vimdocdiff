@@ -1,21 +1,371 @@
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index b1e6c0cb3..06acf3918 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index 3ba092062..7b9dd7671 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
 @@ -1,4 +1,4 @@
--*popup.txt*  For Vim version 9.1.  Last change: 2024 Dec 19
-+*popup.txt*  For Vim version 9.1.  Last change: 2025 Jan 08
+-*helphelp.txt*	For Vim version 9.1.  Last change: 2024 Dec 26
++*helphelp.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -257,8 +257,8 @@ popup_clear([{force}])
+@@ -247,10 +247,10 @@ command: >
+ 			(requires write permission there): >
+ 				:helptags $VIMRUNTIME/doc
+ <
+-					*:HelpToc* *help-TOC* *help-toc-install*
++		*:HelpToc* *help-TOC* *help-toc-install* *package-helptoc*
+ 
+ If you want to access an interactive table of contents, from any position in
+-the file, you can use the helptoc plugin.  Load the plugin with: >
++the file, you can use the helptoc plugin.  Load the plugin with: >vim
+ 
+     packadd helptoc
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 489415c78..2f64ba3be 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2024 Dec 28
++*options.txt*	For Vim version 9.1.  Last change: 2025 Jan 12
  
  
- popup_close({id} [, {result}])				*popup_close()*
--		Close popup {id}.  The window and the associated buffer will
--		be deleted.
-+		Close popup {id}.  The window will be deleted.  The associated
-+		buffer will be deleted, if the popup created a new buffer.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2880,11 +2880,20 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Option settings for diff mode.  It can consist of the following items.
+ 	All are optional.  Items must be separated by a comma.
  
- 		If the popup has a callback it will be called just before the
- 		popup window is deleted.  If the optional {result} is present
+-		filler		Show filler lines, to keep the text
+-				synchronized with a window that has inserted
+-				lines at the same position.  Mostly useful
+-				when windows are side-by-side and 'scrollbind'
+-				is set.
++		algorithm:{text} Use the specified diff algorithm with the
++				internal diff engine. Currently supported
++				algorithms are:
++				myers      the default algorithm
++				minimal    spend extra time to generate the
++					   smallest possible diff
++				patience   patience diff algorithm
++				histogram  histogram diff algorithm
++
++		closeoff	When a window is closed where 'diff' is set
++				and there is only one window remaining in the
++				same tab page with 'diff' set, execute
++				`:diffoff` in that window.  This undoes a
++				`:diffsplit` command.
+ 
+ 		context:{n}	Use a context of {n} lines between a change
+ 				and a fold that contains unchanged lines.
+@@ -2895,6 +2904,23 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				value (999999) to disable folding completely.
+ 				See |fold-diff|.
+ 
++		filler		Show filler lines, to keep the text
++				synchronized with a window that has inserted
++				lines at the same position.  Mostly useful
++				when windows are side-by-side and 'scrollbind'
++				is set.
++
++		foldcolumn:{n}	Set the 'foldcolumn' option to {n} when
++				starting diff mode.  Without this 2 is used.
++
++		followwrap	Follow the 'wrap' option and leave as it is.
++
++		horizontal	Start diff mode with horizontal splits (unless
++				explicitly specified otherwise).
++
++		hiddenoff	Do not use diff mode for a buffer when it
++				becomes hidden.
++
+ 		iblank		Ignore changes where lines are all blank.  Adds
+ 				the "-B" flag to the "diff" command if
+ 				'diffexpr' is empty.  Check the documentation
+@@ -2908,6 +2934,17 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				are considered the same.  Adds the "-i" flag
+ 				to the "diff" command if 'diffexpr' is empty.
+ 
++		indent-heuristic
++				Use the indent heuristic for the internal
++				diff library.
++
++		internal	Use the internal diff library.  This is
++				ignored when 'diffexpr' is set.  *E960*
++				When running out of memory when writing a
++				buffer this item will be ignored for diffs
++				involving that buffer.  Set the 'verbose'
++				option to see when this happens.
++
+ 		iwhite		Ignore changes in amount of white space.  Adds
+ 				the "-b" flag to the "diff" command if
+ 				'diffexpr' is empty.  Check the documentation
+@@ -2927,46 +2964,19 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				of the "diff" command for what this does
+ 				exactly.
+ 
+-		horizontal	Start diff mode with horizontal splits (unless
+-				explicitly specified otherwise).
++		linematch:{n}   Align and mark changes between the most
++				similar lines between the buffers. When the
++				total number of lines in the diff hunk exceeds
++				{n}, the lines will not be aligned because for
++				very large diff hunks there will be a
++				noticeable lag. A reasonable setting is
++				"linematch:60", as this will enable alignment
++				for a 2 buffer diff hunk of 30 lines each,
++				or a 3 buffer diff hunk of 20 lines each.
+ 
+ 		vertical	Start diff mode with vertical splits (unless
+ 				explicitly specified otherwise).
+ 
+-		closeoff	When a window is closed where 'diff' is set
+-				and there is only one window remaining in the
+-				same tab page with 'diff' set, execute
+-				`:diffoff` in that window.  This undoes a
+-				`:diffsplit` command.
+-
+-		hiddenoff	Do not use diff mode for a buffer when it
+-				becomes hidden.
+-
+-		foldcolumn:{n}	Set the 'foldcolumn' option to {n} when
+-				starting diff mode.  Without this 2 is used.
+-
+-		followwrap	Follow the 'wrap' option and leave as it is.
+-
+-		internal	Use the internal diff library.  This is
+-				ignored when 'diffexpr' is set.  *E960*
+-				When running out of memory when writing a
+-				buffer this item will be ignored for diffs
+-				involving that buffer.  Set the 'verbose'
+-				option to see when this happens.
+-
+-		indent-heuristic
+-				Use the indent heuristic for the internal
+-				diff library.
+-
+-		algorithm:{text} Use the specified diff algorithm with the
+-				internal diff engine. Currently supported
+-				algorithms are:
+-				myers      the default algorithm
+-				minimal    spend extra time to generate the
+-					   smallest possible diff
+-				patience   patience diff algorithm
+-				histogram  histogram diff algorithm
+-
+ 	Examples: >
+ 		:set diffopt=internal,filler,context:4
+ 		:set diffopt=
+@@ -4348,7 +4358,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				     #:TabLineSel,_:TabLineFill,!:CursorColumn,
+ 				     .:CursorLine,o:ColorColumn,q:QuickFixLine,
+ 				     z:StatusLineTerm,Z:StatusLineTermNC,
+-				     g:MsgArea")
++				     g:MsgArea,h:ComplMatchIns")
+ 			global
+ 	This option can be used to set highlighting mode for various
+ 	occasions.  It is a comma-separated list of character pairs.  The
+@@ -4368,6 +4378,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|hl-MoreMsg|	 m  |more-prompt|
+ 	|hl-ModeMsg|	 M  Mode (e.g., "-- INSERT --")
+ 	|hl-MsgArea|	 g  |Command-line| and message area
++	|hl-ComplMatchIns| h  matched text of currently inserted completion
+ 	|hl-LineNr|	 n  line number for ":number" and ":#" commands, and
+ 			    when 'number' or 'relativenumber' option is set.
+ 	|hl-LineNrAbove|   a  line number above the cursor for when the
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index b6d79507f..834f0e1b6 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1,4 +1,4 @@
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2024 Dec 27
++*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Jan 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -550,9 +550,9 @@ EXECUTE A COMMAND IN ALL THE BUFFERS IN QUICKFIX OR LOCATION LIST:
+ <			Otherwise it works the same as `:ldo`.
+ 
+ FILTERING A QUICKFIX OR LOCATION LIST:
+-				    *cfilter-plugin* *:Cfilter* *:Lfilter*
++		    *cfilter-plugin* *:Cfilter* *:Lfilter* *package-cfilter*
+ If you have too many entries in a quickfix list, you can use the cfilter
+-plugin to reduce the number of entries.  Load the plugin with: >
++plugin to reduce the number of entries.  Load the plugin with: >vim
+ 
+     packadd cfilter
+ 
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 7640ee183..2fb320efc 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2024 Dec 16
++*syntax.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5854,9 +5854,11 @@ PmenuSbar	Popup menu: Scrollbar.
+ 							*hl-PmenuThumb*
+ PmenuThumb	Popup menu: Thumb of the scrollbar.
+ 							*hl-PmenuMatch*
+-PmenuMatch	Popup menu: Matched text in normal item.
++PmenuMatch	Popup menu: Matched text in normal item. Applied in
++		combination with |hl-Pmenu|.
+ 							*hl-PmenuMatchSel*
+-PmenuMatchSel	Popup menu: Matched text in selected item.
++PmenuMatchSel	Popup menu: Matched text in selected item. Applied in
++		combination with |hl-PmenuSel|.
+ 							*hl-ComplMatchIns*
+ ComplMatchIns	Matched text of the currently inserted completion.
+ 							*hl-PopupNotification*
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 7e2d89824..43b5e5f24 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2024 Dec 30
++*terminal.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -494,6 +494,12 @@ ConPTY problems have been fixed "winpty" will be preferred.
+ Environment variables are used to pass information to the running job:
+     VIM_SERVERNAME	v:servername
+ 
++							*git-vimdumps*
++There exists a git-difftool extension called `git-vimdumps` that can be used
++to conveniently inspect screendump files and diff them.  Please see in the Vim
++Repository the file `src/testdir/commondumps.vim` on how to create and use
++this git extension.
++
+ ==============================================================================
+ 2. Terminal functions				 *terminal-function-details*
+ 
+@@ -1254,7 +1260,7 @@ Alternatively, press "s" to swap the first and second dump. Do this several
+ times so that you can spot the difference in the context of the text.
+ 
+ ==============================================================================
+-6. Debugging				*terminal-debug* *terminal-debugger*
++6. Debugging	*terminal-debug* *terminal-debugger* *package-termdebug*
+ 
+ The Terminal debugging plugin can be used to debug a program with gdb and view
+ the source code in a Vim window.  Since this is completely contained inside
+diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
+index 70d24d3dd..a02835d86 100644
+--- a/runtime/doc/usr_02.txt
++++ b/runtime/doc/usr_02.txt
+@@ -1,4 +1,4 @@
+-*usr_02.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
++*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -694,6 +694,13 @@ Summary:					*help-summary*  >
+ 	:help E128
+ <    takes you to the |:function| command
+ 
++27) Documenction for packages distributed with Vim have the form package-<name>.
++     So >
++	:help package-comment
++<
++    will bring you to the help section for the included comment plugin and how to
++    enable it.
++
+ 
+ ==============================================================================
+ 
+diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
+index ca6b91075..93231f6cd 100644
+--- a/runtime/doc/usr_05.txt
++++ b/runtime/doc/usr_05.txt
+@@ -1,4 +1,4 @@
+-*usr_05.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
++*usr_05.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -392,7 +392,7 @@ The ":map" command (with no arguments) lists your current mappings.  At
+ least the ones for Normal mode.  More about mappings in section |40.1|.
+ 
+ ==============================================================================
+-*05.5*	Adding a package			*add-package* *matchit-install*
++*05.5*	Adding a package  *add-package* *matchit-install* *package-matchit*
+ 
+ A package is a set of files that you can add to Vim.  There are two kinds of
+ packages: optional and automatically loaded on startup.
+@@ -427,7 +427,7 @@ an archive or as a repository.  For an archive you can follow these steps:
+ 	   Here "fancytext" is the name of the package, it can be anything
+ 	   else.
+ 
+-Adding the editorconfig package				*editorconfig-install*
++Adding the editorconfig package *editorconfig-install* *package-editorconfig*
+ 
+ Similar to the matchit package, to load the distributed editorconfig plugin
+ when Vim starts, add the following line to your vimrc file: >
+@@ -437,7 +437,7 @@ After restarting your Vim, the plugin is active and you can read about it at: >
+ 	:h editorconfig.txt
+ 
+ 
+-Adding comment package					*comment-install*
++Adding comment package			*comment-install* *package-comment*
+ 
+ Load the plugin with this command: >
+ 	packadd comment
+@@ -450,7 +450,7 @@ the package loaded.  Once the package is loaded, read about it at: >
+ 	:h comment.txt
+ 
+ 
+-Adding nohlsearch package				*nohlsearch-install*
++Adding nohlsearch package	*nohlsearch-install* *package-nohlsearch*
+ 
+ Load the plugin with this command: >
+ 	packadd nohlsearch
+diff --git a/runtime/doc/usr_25.txt b/runtime/doc/usr_25.txt
+index af013bcfe..5b4df0d0e 100644
+--- a/runtime/doc/usr_25.txt
++++ b/runtime/doc/usr_25.txt
+@@ -1,4 +1,4 @@
+-*usr_25.txt*	For Vim version 9.1.  Last change: 2016 Mar 28
++*usr_25.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -190,15 +190,15 @@ This results in the following:
+ 	story. ~
+ 
+ 
+-JUSTIFYING TEXT
++JUSTIFYING TEXT			*justify* *:Justify* *Justify()* *package-justify*
+ 
+ Vim has no built-in way of justifying text.  However, there is a neat macro
+ package that does the job.  To use this package, execute the following
+-command: >
++command: >vim
+ 
+ 	:packadd justify
+ 
+-Or put this line in your |vimrc|: >
++Or put this line in your |vimrc|: >vim
+ 
+ 	packadd! justify
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index bcb0b78f7..e212230e5 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 02
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41625,6 +41625,9 @@ Changed~
+   the "matches" key
+ - |v:stacktrace| The stack trace of the exception most recently caught and
+   not finished
++- include the linematch algorithm for the 'diffopt' setting.  This aligns
++  changes between buffers on similar lines improving the diff highlighting in
++  Vim
+ 
+ 							*added-9.2*
+ Added ~
