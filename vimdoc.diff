@@ -1,198 +1,28 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index a34c63aeb..10970bc51 100644
+index 10970bc51..9ba22dc74 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 06
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -72,6 +72,7 @@ base64_encode({blob})		String	base64 encode the bytes in {blob}
- bindtextdomain({package}, {path})
- 				Bool	bind text domain to specified path
- blob2list({blob})		List	convert {blob} into a list of numbers
-+blob2str({blob} [, {options}])	String	convert {blob} into a String
- browse({save}, {title}, {initdir}, {default})
- 				String	put up a file requester
- browsedir({title}, {initdir})	String	put up a directory requester
-@@ -609,6 +610,8 @@ split({expr} [, {pat} [, {keepempty}]])
- sqrt({expr})			Float	square root of {expr}
- srand([{expr}])			List	get seed for |rand()|
- state([{what}])			String	current state of Vim
-+str2blob({string} [, {options}])
-+				Blob	convert {string} into a Blob
- str2float({expr} [, {quoted}])	Float	convert String to Float
- str2list({expr} [, {utf8}])	List	convert each character of {expr} to
- 					ASCII/UTF-8 value
-@@ -1289,6 +1292,38 @@ blob2list({blob})					*blob2list()*
+@@ -1244,7 +1244,7 @@ base64_decode({string})					*base64_decode()*
+ 		    " Write the decoded contents to a binary file
+ 		    call writefile(base64_decode(s), 'tools.bmp')
+ 		    " Decode a base64-encoded string
+-		    echo list2str(blob2list(base64_decode(encodedstr)))
++		    echo blob2str(base64_decode(encodedstr))
  <
- 		Return type: list<any> or list<number>
- 
-+
-+blob2str({blob} [, {options}])				*blob2str()*
-+		Return a String in the current 'encoding' by converting the
-+		bytes in {blob} into characters.
-+
-+		If {options} is not supplied, the current 'encoding' value is
-+		used to decode the bytes in {blob}.
-+
-+		The argument {options} is a |Dict| and supports the following
-+		items:
-+		    encoding	Decode the bytes in {blob} using this
-+				encoding.  The value is a |String|.  See
-+				|encoding-names| for the supported values.
-+							*E1515*
-+		An error is given and an empty string is returned if
-+		an invalid byte sequence is encountered in {blob},
-+
-+		Returns an empty String if blob is empty.
-+
-+		See also |str2blob()|
-+
-+		Examples: >
-+			blob2str(0z6162)	returns "ab"
-+			blob2str(0zC2ABC2BB)	returns "«»"
-+			blob2str(0zABBB, {'encoding': 'latin1'})  returns "«»"
-+<
-+		Can also be used as a |method|: >
-+			GetBlob()->blob2str()
-+<
-+		Return type: |String|
-+
-+
- 							*browse()*
- browse({save}, {title}, {initdir}, {default})
- 		Put up a file requester.  This only works when "has("browse")"
-@@ -10556,6 +10591,36 @@ state([{what}])						*state()*
- 		Return type: |String|
- 
- 
-+str2blob({string} [, {options}])				*str2blob()*
-+		Return a Blob by converting the characters in {string} into
-+		bytes.
-+
-+		If {options} is not supplied, the current 'encoding' value is
-+		used to convert the characters in {string} into bytes.
-+
-+		The argument {options} is a |Dict| and supports the following
-+		items:
-+		    encoding	Encode the characters in {string} using this
-+				encoding.  The value is a |String|.  See
-+				|encoding-names| for the supported values.
-+
-+		An error is given and an empty blob is returned if the
-+		character encoding fails.
-+
-+		Returns an empty Blob if {string} is empty.
-+
-+		See also |blob2str()|
-+
-+		Examples: >
-+			str2blob("ab")		returns 0z6162
-+			str2blob("«»")		returns 0zC2ABC2BB
-+			str2blob("«»", {'encoding': 'latin1'})	returns 0zABBB
-+<
-+		Can also be used as a |method|: >
-+			GetStr()->str2blob()
-+<
-+		Return type: |Blob|
-+
- str2float({string} [, {quoted}])				*str2float()*
- 		Convert String {string} to a Float.  This mostly works the
- 		same as when using a floating point number in an expression,
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 2f64ba3be..018f10d08 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Jan 12
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5582,6 +5582,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	command recursion, see |E169|.
- 	See also |:function|.
- 	Also used for maximum depth of callback functions.
-+	Also used for maximum depth of import.  See |:import-cycle|.
- 
- 						*'maxmapdepth'* *'mmd'* *E223*
- 'maxmapdepth' 'mmd'	number	(default 1000)
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index ded30e35d..cb4225734 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Jan 02
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -801,6 +801,8 @@ String manipulation:					*string-functions*
- 	trim()			trim characters from a string
- 	bindtextdomain()	set message lookup translation base path
- 	gettext()		lookup message translation
-+	str2blob()		convert a string into a blob
-+	blob2str()		convert a blob into a string
- 
- List manipulation:					*list-functions*
- 	get()			get an item without error for wrong index
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index e212230e5..cae287684 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 12
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41638,6 +41638,7 @@ Functions: ~
- 
- |base64_decode()|	decode a base64 string into a blob
- |base64_encode()|	encode a blob into a base64 string
-+|blob2str()|		convert a blob into a string
- |bindtextdomain()|	set message lookup translation base path
- |diff()|		diff two Lists of strings
- |filecopy()|		copy a file {from} to {to}
-@@ -41653,6 +41654,7 @@ Functions: ~
- |matchbufline()|	all the matches of a pattern in a buffer
- |matchstrlist()|	all the matches of a pattern in a List of strings
- |popup_setbuf()|	switch to a different buffer in a popup
-+|str2blob()|		convert a string into a blob
- 
- 
- Autocommands: ~
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index a978ea369..05b451cac 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.1.  Last change: 2024 Dec 23
-+*vim9.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2051,13 +2051,14 @@ prefixing the function with |<SID>| you should use|<ScriptCmd>|. For example:
- >
- 	noremap ,a <ScriptCmd>:call s:that.OtherFunc()<CR>
+ 		Can also be used as a |method|: >
+ 			GetEncodedString()->base64_decode()
+@@ -1260,7 +1260,7 @@ base64_encode({blob})					*base64_encode()*
+ 		    " Encode the contents of a binary file
+ 		    echo base64_encode(readblob('somefile.bin'))
+ 		    " Encode a string
+-		    echo base64_encode(list2blob(str2list(somestr)))
++		    echo base64_encode(str2blob(somestr))
  <
--							*:import-cycle*
--The `import` commands are executed when encountered.  If script A imports
--script B, and B (directly or indirectly) imports A, this will be skipped over.
--At this point items in A after "import B" will not have been processed and
--defined yet.  Therefore cyclic imports can exist and not result in an error
--directly, but may result in an error for items in A after "import B" not being
--defined.  This does not apply to autoload imports, see the next section.
-+							*:import-cycle* *E1045*
-+The `import` commands are executed when encountered.  It can be nested up to
-+'maxfuncdepth' levels deep.  If script A imports script B, and B (directly or
-+indirectly) imports A, this will be skipped over.  At this point items in A
-+after "import B" will not have been processed and defined yet.  Therefore
-+cyclic imports can exist and not result in an error directly, but may result
-+in an error for items in A after "import B" not being defined.  This does not
-+apply to autoload imports, see the next section.
- 
- 
- Importing an autoload script ~
+ 		Can also be used as a |method|: >
+ 			GetBinaryData()->base64_encode()
