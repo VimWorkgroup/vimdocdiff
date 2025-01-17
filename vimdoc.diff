@@ -1,28 +1,235 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 10970bc51..9ba22dc74 100644
+index 9ba22dc74..d60d61f0d 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 15
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 15
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jan 16
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1244,7 +1244,7 @@ base64_decode({string})					*base64_decode()*
- 		    " Write the decoded contents to a binary file
- 		    call writefile(base64_decode(s), 'tools.bmp')
- 		    " Decode a base64-encoded string
--		    echo list2str(blob2list(base64_decode(encodedstr)))
-+		    echo blob2str(base64_decode(encodedstr))
- <
- 		Can also be used as a |method|: >
- 			GetEncodedString()->base64_decode()
+@@ -72,7 +72,7 @@ base64_encode({blob})		String	base64 encode the bytes in {blob}
+ bindtextdomain({package}, {path})
+ 				Bool	bind text domain to specified path
+ blob2list({blob})		List	convert {blob} into a list of numbers
+-blob2str({blob} [, {options}])	String	convert {blob} into a String
++blob2str({blob} [, {options}])	String	convert {blob} into a list of strings
+ browse({save}, {title}, {initdir}, {default})
+ 				String	put up a file requester
+ browsedir({title}, {initdir})	String	put up a directory requester
+@@ -610,8 +610,8 @@ split({expr} [, {pat} [, {keepempty}]])
+ sqrt({expr})			Float	square root of {expr}
+ srand([{expr}])			List	get seed for |rand()|
+ state([{what}])			String	current state of Vim
+-str2blob({string} [, {options}])
+-				Blob	convert {string} into a Blob
++str2blob({list} [, {options}])
++				Blob	convert list of strings into a Blob
+ str2float({expr} [, {quoted}])	Float	convert String to Float
+ str2list({expr} [, {utf8}])	List	convert each character of {expr} to
+ 					ASCII/UTF-8 value
 @@ -1260,7 +1260,7 @@ base64_encode({blob})					*base64_encode()*
  		    " Encode the contents of a binary file
  		    echo base64_encode(readblob('somefile.bin'))
  		    " Encode a string
--		    echo base64_encode(list2blob(str2list(somestr)))
-+		    echo base64_encode(str2blob(somestr))
+-		    echo base64_encode(str2blob(somestr))
++		    echo base64_encode(str2blob([somestr]))
  <
  		Can also be used as a |method|: >
  			GetBinaryData()->base64_encode()
+@@ -1294,8 +1294,12 @@ blob2list({blob})					*blob2list()*
+ 
+ 
+ blob2str({blob} [, {options}])				*blob2str()*
+-		Return a String in the current 'encoding' by converting the
+-		bytes in {blob} into characters.
++		Return a List of Strings in the current 'encoding' by
++		converting the bytes in {blob} into characters.
++
++		Each <NL> byte in the blob is interpreted as the end of a
++		string and a new list item is added.  Each <NUL> byte in the
++		blob is converted into a <NL> character.
+ 
+ 		If {options} is not supplied, the current 'encoding' value is
+ 		used to decode the bytes in {blob}.
+@@ -1306,22 +1310,22 @@ blob2str({blob} [, {options}])				*blob2str()*
+ 				encoding.  The value is a |String|.  See
+ 				|encoding-names| for the supported values.
+ 							*E1515*
+-		An error is given and an empty string is returned if
++		An error is given and an empty List is returned if
+ 		an invalid byte sequence is encountered in {blob},
+ 
+-		Returns an empty String if blob is empty.
++		Returns an empty List if blob is empty.
+ 
+ 		See also |str2blob()|
+ 
+ 		Examples: >
+-			blob2str(0z6162)	returns "ab"
+-			blob2str(0zC2ABC2BB)	returns "«»"
+-			blob2str(0zABBB, {'encoding': 'latin1'})  returns "«»"
++			blob2str(0z6162)	returns ["ab"]
++			blob2str(0zC2ABC2BB)	returns ["«»"]
++			blob2str(0zABBB, {'encoding': 'latin1'}) returns ["«»"]
+ <
+ 		Can also be used as a |method|: >
+ 			GetBlob()->blob2str()
+ <
+-		Return type: |String|
++		Return type: list<string>
+ 
+ 
+ 							*browse()*
+@@ -1946,7 +1950,8 @@ complete_info([{what}])				*complete_info()*
+ 				typed text only, or the last completion after
+ 				no item is selected when using the <Up> or
+ 				<Down> keys)
+-		   inserted	Inserted string. [NOT IMPLEMENTED YET]
++		   completed	Return a dictionary containing the entries of
++				the currently selected index item.
+ 
+ 							*complete_info_mode*
+ 		mode values are:
+@@ -10591,33 +10596,39 @@ state([{what}])						*state()*
+ 		Return type: |String|
+ 
+ 
+-str2blob({string} [, {options}])				*str2blob()*
+-		Return a Blob by converting the characters in {string} into
+-		bytes.
++str2blob({list} [, {options}])					*str2blob()*
++		Return a Blob by converting the characters in the List of
++		strings in {list} into bytes.
++
++		A <NL> byte is added to the blob after each list item.  A
++		newline character in the string is translated into a <NUL>
++		byte in the blob.
+ 
+ 		If {options} is not supplied, the current 'encoding' value is
+-		used to convert the characters in {string} into bytes.
++		used to convert the characters into bytes.
+ 
+ 		The argument {options} is a |Dict| and supports the following
+ 		items:
+-		    encoding	Encode the characters in {string} using this
+-				encoding.  The value is a |String|.  See
+-				|encoding-names| for the supported values.
++		    encoding	Encode the characters using this encoding.
++				The value is a |String|.  See |encoding-names|
++				for the supported values.
+ 
+ 		An error is given and an empty blob is returned if the
+ 		character encoding fails.
+ 
+-		Returns an empty Blob if {string} is empty.
++		Returns an empty Blob if {list} is empty.
+ 
+ 		See also |blob2str()|
+ 
+ 		Examples: >
+-			str2blob("ab")		returns 0z6162
+-			str2blob("«»")		returns 0zC2ABC2BB
+-			str2blob("«»", {'encoding': 'latin1'})	returns 0zABBB
++		    str2blob(["ab"])	returns 0z6162
++		    str2blob(["«»"])	returns 0zC2ABC2BB
++		    str2blob(["a\nb"])	returns 0z610A62
++		    str2blob(readfile('myfile.txt'))
++		    str2blob(["«»"], {'encoding': 'latin1'}) returns 0zABBB
+ <
+ 		Can also be used as a |method|: >
+-			GetStr()->str2blob()
++			GetListOfStrings()->str2blob()
+ <
+ 		Return type: |Blob|
+ 
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 48937b104..2d48cc974 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*      For Vim version 9.1.  Last change: 2024 Dec 30
++*todo.txt*      For Vim version 9.1.  Last change: 2025 Jan 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -309,9 +309,6 @@ Problem with Visual highlight when 'linebreak' and 'showbreak' are set.
+ GUI Scroll test fails on FreeBSD when using Motif.  See FIXME in
+ Test_scrollbars in src/test_gui.vim
+ 
+-Selected index returned by complete_info() does not match the index in the
+-list of items.  #12230
+-
+ Support dark mode for MS-Windows: #12282
+ 
+ Remote command escapes single quote with backslash, should be doubling the
+diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
+index a02835d86..00d496253 100644
+--- a/runtime/doc/usr_02.txt
++++ b/runtime/doc/usr_02.txt
+@@ -1,4 +1,4 @@
+-*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Jan 11
++*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Jan 16
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -694,8 +694,8 @@ Summary:					*help-summary*  >
+ 	:help E128
+ <    takes you to the |:function| command
+ 
+-27) Documenction for packages distributed with Vim have the form package-<name>.
+-     So >
++27) Documentation for packages distributed with Vim have the form
++     package-<name>. So >
+ 	:help package-comment
+ <
+     will bring you to the help section for the included comment plugin and how to
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index cb4225734..35aba0250 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Jan 14
++*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Jan 16
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -801,8 +801,8 @@ String manipulation:					*string-functions*
+ 	trim()			trim characters from a string
+ 	bindtextdomain()	set message lookup translation base path
+ 	gettext()		lookup message translation
+-	str2blob()		convert a string into a blob
+-	blob2str()		convert a blob into a string
++	str2blob()		convert a list of strings into a blob
++	blob2str()		convert a blob into a list of strings
+ 
+ List manipulation:					*list-functions*
+ 	get()			get an item without error for wrong index
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index cae287684..ecdb555dc 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 14
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Jan 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41638,7 +41638,7 @@ Functions: ~
+ 
+ |base64_decode()|	decode a base64 string into a blob
+ |base64_encode()|	encode a blob into a base64 string
+-|blob2str()|		convert a blob into a string
++|blob2str()|		convert a blob into a List of strings
+ |bindtextdomain()|	set message lookup translation base path
+ |diff()|		diff two Lists of strings
+ |filecopy()|		copy a file {from} to {to}
+@@ -41654,7 +41654,7 @@ Functions: ~
+ |matchbufline()|	all the matches of a pattern in a buffer
+ |matchstrlist()|	all the matches of a pattern in a List of strings
+ |popup_setbuf()|	switch to a different buffer in a popup
+-|str2blob()|		convert a string into a blob
++|str2blob()|		convert a List of strings into a blob
+ 
+ 
+ Autocommands: ~
