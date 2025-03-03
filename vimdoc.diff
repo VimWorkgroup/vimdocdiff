@@ -1,25 +1,221 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 1a72e650c..cbd532262 100644
+index cbd532262..5ed06ba02 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Feb 16
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Feb 27
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Feb 27
++*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 02
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2107,10 +2107,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'completeitemalign'* *'cia'*
- 'completeitemalign' 'cia' string (default: "abbr,kind,menu")
- 			  global
--	A comma-separated list of |complete-items| that controls the alignment
--	and display order of items in the popup menu during Insert mode
--	completion. The supported values are abbr, kind, and menu. These
--	options allow to customize how the completion items are shown in the
-+	A comma-separated list of strings that controls the alignment and
-+	display order of items in the popup menu during Insert mode
-+	completion.  The supported values are "abbr", "kind", and "menu".
-+	These values allow customizing how |complete-items| are shown in the
- 	popup menu.  Note: must always contain those three values in any
- 	order.
+@@ -2120,6 +2120,17 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	A comma-separated list of options for Insert mode completion
+ 	|ins-completion|.  The supported values are:
  
++	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
++		    allows for more flexible and intuitive matching, where
++		    characters can be skipped and matches can be found even
++		    if the exact sequence is not typed.
++
++	   longest  Only insert the longest common text of the matches.  If
++		    the menu is displayed you can use CTRL-L to add more
++		    characters.  Whether case is ignored depends on the kind
++		    of completion.  For buffer text the 'ignorecase' option is
++		    used.
++
+ 	   menu	    Use a popup menu to show the possible completions.  The
+ 		    menu is only shown when there is more than one match and
+ 		    sufficient colors are available.  |ins-completion-menu|
+@@ -2128,15 +2139,17 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    Useful when there is additional information about the
+ 		    match, e.g., what file it comes from.
+ 
+-	   longest  Only insert the longest common text of the matches.  If
+-		    the menu is displayed you can use CTRL-L to add more
+-		    characters.  Whether case is ignored depends on the kind
+-		    of completion.  For buffer text the 'ignorecase' option is
+-		    used.
++	   noinsert Do not insert any text for a match until the user selects
++		    a match from the menu. Only works in combination with
++		    "menu" or "menuone". No effect if "longest" is present.
+ 
+-	   preview  Show extra information about the currently selected
+-		    completion in the preview window.  Only works in
+-		    combination with "menu" or "menuone".
++	   noselect Same as "noinsert", except that no menu item is
++		    pre-selected. If both "noinsert" and "noselect" are
++		    present, "noselect" has precedence.
++
++	   nosort   Disable sorting of completion candidates based on fuzzy
++		    scores when "fuzzy" is enabled. Candidates will appear
++		    in their original order.
+ 
+ 	   popup    Show extra information about the currently selected
+ 		    completion in a popup window.  Only works in combination
+@@ -2151,28 +2164,15 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    See the example at |complete-popuphidden|.
+ 		    {only works when compiled with the |+textprop| feature}
+ 
+-	   noinsert Do not insert any text for a match until the user selects
+-		    a match from the menu. Only works in combination with
+-		    "menu" or "menuone". No effect if "longest" is present.
+-
+-	   noselect Same as "noinsert", except that no menu item is
+-		    pre-selected. If both "noinsert" and "noselect" are
+-		    present, "noselect" has precedence.
+-
+-	   fuzzy    Enable |fuzzy-matching| for completion candidates. This
+-		    allows for more flexible and intuitive matching, where
+-		    characters can be skipped and matches can be found even
+-		    if the exact sequence is not typed.
+-
+-	   nosort   Disable sorting of completion candidates based on fuzzy
+-		    scores when "fuzzy" is enabled. Candidates will appear
+-		    in their original order.
+-
+ 	   preinsert
+ 		    Preinsert the portion of the first candidate word that is
+ 		    not part of the current completion leader and using the
+-		    |hl-ComplMatchIns| highlight group. Does not work when
+-		    "fuzzy" is also included.
++		    |hl-ComplMatchIns| highlight group.  In order for it to
++		    work, "fuzzy" must not bet set and "menuone" must be set.
++
++	   preview  Show extra information about the currently selected
++		    completion in the preview window.  Only works in
++		    combination with "menu" or "menuone".
+ 
+ 					*'completepopup'* *'cpp'*
+ 'completepopup' 'cpp'	string (default empty)
+@@ -9566,7 +9566,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	"lastused"	When completing buffer names and more than one buffer
+ 			matches, sort buffers by time last used (other than
+ 			the current buffer).
+-	When there is only a single match, it is fully completed in all cases.
++	"noselect"	Do not pre-select first menu item and start 'wildmenu'
++			if it is enabled.
++	When there is only a single match, it is fully completed in all cases
++	except when "noselect" is present.
+ 
+ 	Examples of useful colon-separated values:
+ 	"longest:full"	Like "longest", but also start 'wildmenu' if it is
+@@ -9589,7 +9592,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		:set wildmode=list,full
+ <	List all matches without completing, then each full match >
+ 		:set wildmode=longest,list
+-<	Complete longest common string, then list alternatives.
++<	Complete longest common string, then list alternatives >
++		:set wildmode=noselect:full
++<	Display 'wildmenu' without completing, then each full match >
++		:set wildmode=noselect:lastused,full
++<	Same as above, but sort buffers by time last used.
+ 	More info here: |cmdline-completion|.
+ 
+ 						*'wildoptions'* *'wop'*
+diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
+index 869314cad..d4f595f8e 100644
+--- a/runtime/doc/pi_getscript.txt
++++ b/runtime/doc/pi_getscript.txt
+@@ -1,4 +1,4 @@
+-*pi_getscript.txt*  For Vim version 9.1.  Last change: 2024 Oct 05
++*pi_getscript.txt*  For Vim version 9.1.  Last change: 2025 Feb 28
+ >
+ 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
+ <
+@@ -361,6 +361,11 @@ after/syntax/c.vim contained in it to overwrite a user's c.vim.
+ <        default= bunzip2
+ 		This variable holds the name of the command to decompress .bz2
+ 		files
++>
++	g:GetLatestVimScripts_bunzip3
++<        default= bunzip3
++		This variable holds the name of the command to decompress .bz3
++		files
+ >
+ 	g:GetLatestVimScripts_gunzip
+ <        default= gunzip
+@@ -409,6 +414,8 @@ The AutoInstall process will:
+ 		Windows: $HOME\vimfiles
+ 	if the downloaded file ends with ".bz2"
+ 		bunzip2 it
++	else if the downloaded file ends with ".bz3"
++		bunzip3 it
+ 	else if the downloaded file ends with ".gz"
+ 		gunzip it
+ 	if the resulting file ends with ".zip"
+@@ -422,6 +429,7 @@ The AutoInstall process will:
+ ==============================================================================
+ 9. GetLatestVimScripts History		*getscript-history* *glvs-hist* {{{1
+ 
++v38 Feb 25, 2025 : * handles additional decompression option for .bzip3 files.
+ v37 Sep 23, 2024 : * Support for the new vimball's .vmb extension (old .vba
+ 		     extension conflicted with visual basic).
+ 		   * Support for |glvs-autoinstall| in ftplugins and packages.
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 94ed836fc..ccedc1ad4 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 9.1.  Last change: 2024 Dec 19
++*starting.txt*  For Vim version 9.1.  Last change: 2025 Feb 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -828,8 +828,9 @@ accordingly.  Vim proceeds in this order:
+ 	easy to copy it to another system.
+ 
+ 	If Vim was started with "-u filename", the file "filename" is used.
+-	All following initializations until 4. are skipped. $MYVIMRC and
+-	$MYVIMDIR are not set.
++	All following initializations until 4. are skipped. `$MYVIMRC` and
++	`$MYVIMDIR` are not set (but `$MYVIMDIR` will be set, if 'rtp' is
++	updated).
+ 	"vim -u NORC" can be used to skip these initializations without
+ 	reading a file.  "vim -u NONE" also skips loading plugins.  |-u|
+ 
+@@ -850,9 +851,9 @@ accordingly.  Vim proceeds in this order:
+ 			*VIMINIT* *.vimrc* *_vimrc* *EXINIT* *.exrc* *_exrc*
+ 			*$MYVIMRC* *$MYVIMDIR*
+      c. Five places are searched for initializations.  The first that exists
+-	is used, the others are ignored.  The $MYVIMRC environment variable is
+-	set to the file that was first found, unless $MYVIMRC was already set
+-	and when using VIMINIT.  The $MYVIMDIR environment variable is
++	is used, the others are ignored.  The `$MYVIMRC` environment variable is
++	set to the file that was first found, unless `$MYVIMRC` was already set
++	when using VIMINIT.  The `$MYVIMDIR` environment variable is
+ 	set to the personal 'rtp' directory, however it is not verified
+ 	that the directory actually exists.
+ 	I   The environment variable VIMINIT (see also |compatible-default|) (*)
+@@ -973,9 +974,10 @@ accordingly.  Vim proceeds in this order:
+ 	The |v:vim_did_enter| variable is set to 1.
+ 	The |VimEnter| autocommands are executed.
+ 
+-The $MYVIMRC or $MYGVIMRC environment variable will be set to the first found
+-vimrc and/or gvimrc file while $MYVIMDIR is set to the users personal runtime
+-directory 'rtp' (typically the first entry in 'runtimepath').
++The `$MYVIMRC` or `$MYGVIMRC` environment variable will be set to the first found
++vimrc and/or gvimrc file while `$MYVIMDIR` is set to the users personal runtime
++directory 'rtp' (typically the first entry in 'runtimepath').  If 'rtp'
++changes, `$MYVIMDIR` will be updated.
+ Note: These environment variables resolve symbolic links, but 'rtp' does not.
+ 
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 99a4002c1..bfd44574d 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Feb 23
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Mar 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41605,6 +41605,8 @@ Completion: ~
+ 	"preinsert"	- highlight to be inserted values
+ - handle multi-line completion as expected
+ - improved commandline completion for the |:hi| command
++- New option value for 'wildoptions':
++  	"noselect"	- do not auto select an entry in the wildmenu
+ 
+ Options: ~
+ - the default for 'commentstring' contains whitespace padding to have
