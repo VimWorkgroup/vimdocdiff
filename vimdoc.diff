@@ -1,129 +1,100 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 5c449589d..8532fc956 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Mar 08
++*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Mar 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1346,6 +1346,10 @@ TextYankPost			After text has been yanked or deleted in the
+ 				called recursively.
+ 				It is not allowed to change the buffer text,
+ 				see |textlock|. *E1064*
++				Also triggered indirectly when Vim tries to
++				become owner of the Visual selection because
++				of setting "autoselect" for 'guioptions' or
++				'clipboard'.
+ 				{only when compiled with the +eval feature}
+ 
+ 							*User*
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 80b8a9cc4..ec1088933 100644
+index ec1088933..b7df7c561 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Feb 23
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Mar 11
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7587,9 +7587,8 @@ mkdir({name} [, {flags} [, {prot}]])			*mkdir()* *E739*
- 		If {prot} is given it is used to set the protection bits of
+@@ -7588,7 +7588,7 @@ mkdir({name} [, {flags} [, {prot}]])			*mkdir()* *E739*
  		the new directory.  The default is 0o755 (rwxr-xr-x: r/w for
  		the user, readable for others).  Use 0o700 to make it
--		unreadable for others.  This is only used for the last part of
--		{name}.  Thus if you create /tmp/foo/bar then /tmp/foo will be
--		created with 0o755.
-+		unreadable for others.  This is used for the newly created
-+		directories.  Note an umask is applied to {prot} (on Unix).
+ 		unreadable for others.  This is used for the newly created
+-		directories.  Note an umask is applied to {prot} (on Unix).
++		directories.  Note: umask is applied to {prot} (on Unix).
  		Example: >
  			:call mkdir($HOME .. "/tmp/foo/bar", "p", 0o700)
  
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 39402ee24..8a7f0c538 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 588daf643..c2ad86e0e 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2025 Mar 09
-+*filetype.txt*	For Vim version 9.1.  Last change: 2025 Mar 10
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -776,7 +776,7 @@ Local mappings:
- 	to the end of the file in Normal mode.  This means "> " is inserted in
- 	each line.
- 
--MAN					*ft-man-plugin* *:Man* *man.vim*
-+MAN					*ft-man-plugin* *:Man* *:ManReload* *man.vim*
- 
- This plugin displays a manual page in a nice way.  See |find-manpage| in the
- user manual for more information.
-@@ -793,6 +793,8 @@ Commands:
- Man {name}	Display the manual page for {name} in a window.
- Man {number} {name}
- 		Display the manual page for {name} in a section {number}.
-+ManReload	Reload the cache of available man pages used for |:Man| argument
-+		completion.
- 
- Global mapping:
- <Leader>K	Displays the manual page for the word under the cursor.
-@@ -823,6 +825,14 @@ desired folding style instead.  For example: >
- If you would like :Man {number} {name} to behave like man {number} {name} by
- not running man {name} if no page is found, then use this: >
- 	let g:ft_man_no_sect_fallback = 1
-+<
-+						*g:ft_man_implementation*
-+The completion for the :Man command tries to guess which implementation of man
-+the system has. If it guesses wrong, you can set g:ft_man_implementation to
-+one of these values:
-+	'man-db'	https://man-db.nongnu.org/
-+	''		Unknown, fall back to completing shell commands
-+			instead of man pages.
- 
- You may also want to set 'keywordprg' to make the |K| command open a manual
- page in a Vim window: >
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 834f0e1b6..91e48637a 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Jan 11
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Mar 11
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1722,6 +1722,13 @@ shells and OSes and also does not allow to use other available TeX options,
- if any.  If your TeX doesn't support "-interaction=nonstopmode", please
- report it with different means to express \nonstopmode from the command line.
- 
-+TSC COMPILER						*compiler-tsc*
-+
-+The executable and compiler options can be added to 'makeprg' by setting the
-+b/g:tsc_makeprg variable.  For example: >
-+
-+	let b:tsc_makeprg = "npx tsc --noEmit"
-+
- TYPST COMPILER						*compiler-typst*
- 
- Vim includes a compiler plugin for Typst files. This compiler is enabled
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index c4d7afc5f..81153717d 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2025 Feb 25
-+*syntax.txt*	For Vim version 9.1.  Last change: 2025 Mar 10
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 07
++*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4017,7 +4017,29 @@ highlighting is to put the following line in your |vimrc|: >
- 
- 	let g:vimsyn_noerror = 1
- <
-+To suppress only specific errors, define the following variables: >
+@@ -2107,14 +2107,23 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'completefuzzycollect'* *'cfc'*
+ 'completefuzzycollect' 'cfc'	string	(default: empty)
+ 				global
+-	This option enables fuzzy collection for (only some) specific
+-	|ins-completion| modes, adjusting how items are gathered for fuzzy
+-	matching based on input.
+-	The option can contain the following values (separated by commas),
+-	each enabling fuzzy collection for a specific completion mode:
+-	files		file names
+-	keyword		keyword completion in 'complete' and current file
+-	whole_line	whole lines
++	A comma-separated list of option enables fuzzy collection for specific
++	|ins-completion| modes, affecting how items are gathered during
++	completion. When set, fuzzy matching is used to find completion
++	candidates instead of the standard prefix-based matching. This option
++	can contain the following values are:
 +
-+   g:vimsyn_nobehaveerror = 1        " :behave error
-+   g:vimsyn_vimFTError = 1           " :filetype error
-+   g:vimsyn_noaugrouperror = 1       " :augroup error
-+   g:vimsyn_noopererror = 1          " operator error
-+   g:vimsyn_notypealiaserror = 1     " Vim9 type alias error
-+   g:vimsyn_novimfunctionerror = 1   " Vim9 method error
-+   g:vimsyn_nousercmderror = 1       " :com error
-+   g:vimsyn_novimsynerror = 1        " :syn error
-+   g:vimsyn_novimsyncaseerror = 1    " :syn case error
-+   g:vimsyn_novimsynconcealerror = 1 " :syn conceal error
-+   g:vimsyn_novimsynfoldlevelerror = 1 " :syn foldlevel error
-+   g:vimsyn_novimsynspellerror = 1   " :syn spell error
-+   g:vimsyn_novimsyncerror = 1       " :syn sync error
-+   g:vimsyn_novimhictermerror = 1    " :hi error
-+   g:vimsyn_vimhikeyerror = 1        " :hi key=arg error
-+<
-+To force highlighting of Neovim specific Vim script elements (even if not
-+using Neovim), set >
++	keyword		keywords in the current file |i_CTRL-X_CTRL-N|
++			keywords with the ".", "w", "b", "u", "U" and
++			"k{dict}" flags in 'complete'. |i_CTRL-N| |i_CTRL-P|
++
++	files		file names  |i_CTRL-X_CTRL-F|
++
++	whole_line	whole lines |i_CTRL-X_CTRL-L|
++
++	When used with 'completeopt' "longest" option, fuzzy collection can
++	identify the longest common string among the best fuzzy matches and
++	automatically insert it.
  
-+	let g:vimsyn_vim_features = ['nvim']
-+<
+ 						*'completeitemalign'* *'cia'*
+ 'completeitemalign' 'cia' string (default: "abbr,kind,menu")
+diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
+index dbfd31983..6a8204d96 100644
+--- a/runtime/doc/usr_52.txt
++++ b/runtime/doc/usr_52.txt
+@@ -1,4 +1,4 @@
+-*usr_52.txt*	For Vim version 9.1.  Last change: 2024 Oct 07
++*usr_52.txt*	For Vim version 9.1.  Last change: 2025 Mar 12
  
- WDL							*wdl.vim* *wdl-syntax*
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
+@@ -362,11 +362,10 @@ and it will be active next time you start Vim.  |add-plugin|: >
+ 	    endif
+ 	    var [beg, end] = [getpos("'["), getpos("']")]
+ 	    var type = v:event.regtype ?? 'v'
+-	    var pos = getregionpos(beg, end, {type: type})
+-	    var end_offset = (type == 'V' || v:event.inclusive) ? 1 : 0
++	    var pos = getregionpos(beg, end, {type: type, exclusive: false})
+ 	    var m = matchaddpos(hlgroup, pos->mapnew((_, v) => {
+ 	      var col_beg = v[0][2] + v[0][3]
+-	      var col_end = v[1][2] + v[1][3] + end_offset
++	      var col_end = v[1][2] + v[1][3] + 1
+ 	      return [v[0][1], col_beg, col_end - col_beg]
+ 	    }))
+ 	    var winid = win_getid()
