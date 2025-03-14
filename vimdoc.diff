@@ -1,100 +1,124 @@
 diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 5c449589d..8532fc956 100644
+index 8532fc956..372d1acbc 100644
 --- a/runtime/doc/autocmd.txt
 +++ b/runtime/doc/autocmd.txt
+@@ -387,6 +387,7 @@ Name			triggered by ~
+ |TabNew|		after creating a new tab page
+ |WinClosed|		after closing a window
+ |TabClosed|		after closing a tab page
++|TabClosedPre|		before closing a tab page
+ |WinEnter|		after entering another window
+ |WinLeave|		before leaving a window
+ |TabEnter|		after entering another tab page
+@@ -1232,6 +1233,10 @@ Syntax				When the 'syntax' option has been set.  The
+ 				See |:syn-on|.
+ 							*TabClosed*
+ TabClosed			After closing a tab page.
++							*TabClosedPre*
++TabClosedPre			Before closing a tab page.  The window layout
++				is locked, thus opening and closing of windows
++				is prohibited.
+ 							*TabEnter*
+ TabEnter			Just after entering a tab page. |tab-page|
+ 				After triggering the WinEnter and before
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 8a7f0c538..ac8d8f84b 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Mar 08
-+*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Mar 12
+-*filetype.txt*	For Vim version 9.1.  Last change: 2025 Mar 10
++*filetype.txt*	For Vim version 9.1.  Last change: 2025 Mar 13
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1346,6 +1346,10 @@ TextYankPost			After text has been yanked or deleted in the
- 				called recursively.
- 				It is not allowed to change the buffer text,
- 				see |textlock|. *E1064*
-+				Also triggered indirectly when Vim tries to
-+				become owner of the Visual selection because
-+				of setting "autoselect" for 'guioptions' or
-+				'clipboard'.
- 				{only when compiled with the +eval feature}
+@@ -640,6 +640,24 @@ One command, :DiffGitCached, is provided to show a diff of the current commit
+ in the preview window.  It is equivalent to calling "git diff --cached" plus
+ any arguments given to the command.
  
- 							*User*
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index ec1088933..b7df7c561 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -7588,7 +7588,7 @@ mkdir({name} [, {flags} [, {prot}]])			*mkdir()* *E739*
- 		the new directory.  The default is 0o755 (rwxr-xr-x: r/w for
- 		the user, readable for others).  Use 0o700 to make it
- 		unreadable for others.  This is used for the newly created
--		directories.  Note an umask is applied to {prot} (on Unix).
-+		directories.  Note: umask is applied to {prot} (on Unix).
- 		Example: >
- 			:call mkdir($HOME .. "/tmp/foo/bar", "p", 0o700)
++GIT REBASE						*ft-gitrebase-plugin*
++
++The gitrebase filetype defines the following buffer-local commands, to help
++with interactive `git rebase`: >
++
++	:Drop   " to discard this commit
++	:Edit   " to stop for editing this commit
++	:Fixup  " to squash (but discard the message) into the previous one
++	:Pick   " to pick this commit (the cursor is on)
++	:Reword " to pick this commit, but change the commit message
++	:Squash " to squash this commit into the previous one
++
++In addition, the following comamnd can be used to cycle between the different
++possibilities: >
++
++	:Cycle  " to cycle between the previous commands
++<
++For details, see `git-rebase --help`.
+ 
+ GO							*ft-go-plugin*
  
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 588daf643..c2ad86e0e 100644
+index c2ad86e0e..525a3a58b 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 07
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 12
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 12
++*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2107,14 +2107,23 @@ A jump table for the options with a short description can be found at |Q_op|.
+@@ -2107,23 +2107,24 @@ A jump table for the options with a short description can be found at |Q_op|.
  						*'completefuzzycollect'* *'cfc'*
  'completefuzzycollect' 'cfc'	string	(default: empty)
  				global
--	This option enables fuzzy collection for (only some) specific
--	|ins-completion| modes, adjusting how items are gathered for fuzzy
--	matching based on input.
--	The option can contain the following values (separated by commas),
--	each enabling fuzzy collection for a specific completion mode:
--	files		file names
--	keyword		keyword completion in 'complete' and current file
--	whole_line	whole lines
-+	A comma-separated list of option enables fuzzy collection for specific
-+	|ins-completion| modes, affecting how items are gathered during
-+	completion. When set, fuzzy matching is used to find completion
-+	candidates instead of the standard prefix-based matching. This option
-+	can contain the following values are:
-+
-+	keyword		keywords in the current file |i_CTRL-X_CTRL-N|
-+			keywords with the ".", "w", "b", "u", "U" and
-+			"k{dict}" flags in 'complete'. |i_CTRL-N| |i_CTRL-P|
-+
-+	files		file names  |i_CTRL-X_CTRL-F|
-+
-+	whole_line	whole lines |i_CTRL-X_CTRL-L|
-+
-+	When used with 'completeopt' "longest" option, fuzzy collection can
-+	identify the longest common string among the best fuzzy matches and
-+	automatically insert it.
+-	A comma-separated list of option enables fuzzy collection for specific
+-	|ins-completion| modes, affecting how items are gathered during
+-	completion. When set, fuzzy matching is used to find completion
+-	candidates instead of the standard prefix-based matching. This option
+-	can contain the following values are:
++	A comma-separated list of strings to enable fuzzy collection for
++	specific |ins-completion| modes, affecting how matches are gathered
++	during completion.  For specified modes, fuzzy matching is used to
++	find completion candidates instead of the standard prefix-based
++	matching.  This option can contain the following values:
+ 
+-	keyword		keywords in the current file |i_CTRL-X_CTRL-N|
+-			keywords with the ".", "w", "b", "u", "U" and
+-			"k{dict}" flags in 'complete'. |i_CTRL-N| |i_CTRL-P|
++	keyword		keywords in the current file	|i_CTRL-X_CTRL-N|
++			keywords with flags ".", "w",	|i_CTRL-N| |i_CTRL-P|
++			"b", "u", "U" and "k{dict}" in 'complete'
++			keywords in 'dictionary'	|i_CTRL-X_CTRL-K|
+ 
+-	files		file names  |i_CTRL-X_CTRL-F|
++	files		file names			|i_CTRL-X_CTRL-F|
+ 
+-	whole_line	whole lines |i_CTRL-X_CTRL-L|
++	whole_line	whole lines			|i_CTRL-X_CTRL-L|
+ 
+-	When used with 'completeopt' "longest" option, fuzzy collection can
+-	identify the longest common string among the best fuzzy matches and
+-	automatically insert it.
++	When used the 'completeopt' "longest" option value, fuzzy collection
++	can identify the longest common string among the best fuzzy matches
++	and insert it automatically.
  
  						*'completeitemalign'* *'cia'*
  'completeitemalign' 'cia' string (default: "abbr,kind,menu")
-diff --git a/runtime/doc/usr_52.txt b/runtime/doc/usr_52.txt
-index dbfd31983..6a8204d96 100644
---- a/runtime/doc/usr_52.txt
-+++ b/runtime/doc/usr_52.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index f12bcd4c3..6d41e342f 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*usr_52.txt*	For Vim version 9.1.  Last change: 2024 Oct 07
-+*usr_52.txt*	For Vim version 9.1.  Last change: 2025 Mar 12
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Mar 06
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Mar 13
  
- 		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -362,11 +362,10 @@ and it will be active next time you start Vim.  |add-plugin|: >
- 	    endif
- 	    var [beg, end] = [getpos("'["), getpos("']")]
- 	    var type = v:event.regtype ?? 'v'
--	    var pos = getregionpos(beg, end, {type: type})
--	    var end_offset = (type == 'V' || v:event.inclusive) ? 1 : 0
-+	    var pos = getregionpos(beg, end, {type: type, exclusive: false})
- 	    var m = matchaddpos(hlgroup, pos->mapnew((_, v) => {
- 	      var col_beg = v[0][2] + v[0][3]
--	      var col_end = v[1][2] + v[1][3] + end_offset
-+	      var col_end = v[1][2] + v[1][3] + 1
- 	      return [v[0][1], col_beg, col_end - col_beg]
- 	    }))
- 	    var winid = win_getid()
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41687,6 +41687,7 @@ Autocommands: ~
+ |CursorMovedC|		after the cursor was moved in the command-line
+ |KeyInputPre|		before processing any key event in any mode
+ |SessionWritePost|	after writing the session file |:mksession|
++|TabClosedPre|		before closing a |tabpage|.
+ |TermResponseAll|	after the terminal response to |t_RV| and others is
+ 			received
+ |WinNewPre|		before creating a new window
