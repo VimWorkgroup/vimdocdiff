@@ -1,126 +1,127 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 035f6f74f..0b7ba9126 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 0dbc7f872..069a853bd 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 26
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 27
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6476,6 +6476,15 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			global
- 	Determines the maximum number of items to show in the popup menu for
- 	Insert mode completion.  When zero as much space as available is used.
-+	|ins-completion-menu|.
-+
-+						*'pummaxwidth'* *'pmw'*
-+'pummaxwidth' 'pmw'	number	(default 0)
-+			global
-+	Determines the maximum width to use for the popup menu for completion.
-+	When zero, there is no maximum width limit, otherwise the popup menu
-+	will never be wider than this value.  Truncated text will be indicated
-+	by "..." at the end.  Takes precedence over 'pumwidth'.
- 	|ins-completion-menu|.
- 
- 						*'pumwidth'* *'pw'*
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index cf9a82ac4..a3f2d7cfc 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2025 Mar 08
-+*todo.txt*      For Vim version 9.1.  Last change: 2025 Mar 27
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -357,8 +357,6 @@ https://github.com/vim/vim/pull/5566
- 
- PR #11579 to add visualtext(), return Visually selected text.
- 
--PR #12032: Support Python 3 stable ABI.
--
- PR #11860: Add more info to 'colorcolumn': display a character and highlight
- for each separate entry.  Disadvantage: option value gets very complicated
- with multiple entries, e.g. every 8 columns.
-@@ -706,8 +704,6 @@ find them. (Max Kukartsev, #6218)
- 
- Enable 'termbidi' if $VTE_VERSION >= 5703 ?
- 
--Python 3.8 doesn't work. (Antonios Hadjigeorgalis, #5509)
--
- "--cleanFOO" does not result in an error. (#5537)
- 
- Output from assert_equalfile() doesn't give a hint about what's different.
-@@ -1490,8 +1486,6 @@ github with a URL like this:
-    https://github.com/vim/vim/compare/v7.4.920%5E...v7.4.920.diff
- Diff for version.c contains more context, can't skip a patch.
- 
--Python: ":py raw_input('prompt')" doesn't work. (Manu Hack)
--
- Comparing nested structures with "==" uses a different comparator than when
- comparing individual items.
- 
-@@ -1514,9 +1508,6 @@ C highlighting: modern C allows: /* comment */ #ifdef
- and also line continuation after #include.
- I can't recommend it though.
- 
--Build with Python on Mac does not always use the right library.
--(Kazunobu Kuriyama, 2015 Mar 28)
--
- To support Thai (and other languages) word boundaries, include the ICU
- library:  http://userguide.icu-project.org/boundaryanalysis
- 
-@@ -1793,13 +1784,6 @@ Problem with refresh:always in completion. (Tyler Wade, 2013 Mar 17)
- b:undo_ftplugin cannot call a script-local function. (Boris Danilov, 2013 Jan
- 7)
- 
--Win32: The Python interface only works with one version of Python, selected at
--compile time.  Can this be made to work with version 2.1 and 2.2 dynamically?
--
--Python: Be able to define a Python function that can be called directly from
--Vim script.  Requires converting the arguments and return value, like with
--vim.bindeval().
--
- Patch for :tabcloseleft, after closing a tab go to left tab. (William Bowers,
- 2012 Aug 4)
- 
-@@ -2912,6 +2896,20 @@ Quickfix/Location List:
- 7   Add a command that goes back to the position from before jumping to the
-     first quickfix location.
- 
-+
-+Python Interface:
-+-   Python 3.8 doesn't work. (Antonios Hadjigeorgalis, #5509)
-+-   Python: ":py raw_input('prompt')" doesn't work. (Manu Hack)
-+-   Build with Python on Mac does not always use the right library.
-+    (Kazunobu Kuriyama, 2015 Mar 28)
-+-   Win32: The Python interface only works with one version of Python,
-+    selected at compile time.  Can this be made to work with version 2.1 and
-+    2.2 dynamically?
-+-   Be able to define a Python function that can be called directly from Vim
-+    script.  Requires converting the arguments and return value, like with
-+    vim.bindeval().
-+
-+
- Vi incompatibility:
- -   Try new POSIX tests, made after my comments. (Geoff Clare, 2005 April 7)
-     Version 1.5 is in ~/src/posix/1.5. (Lynne Canal)
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 5868598be..0e9a5080f 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Mar 26
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Mar 27
+-*diff.txt*      For Vim version 9.1.  Last change: 2024 Mar 26
++*diff.txt*      For Vim version 9.1.  Last change: 2024 Mar 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41627,6 +41627,7 @@ Options: ~
- - 'rulerformat' now supports the |stl-%!| item
- - use 'smoothscroll' logic for CTRL-F / CTRL-B for pagewise scrolling
-   and CTRL-D / CTRL-U for half-pagewise scrolling
-+- 'pummaxwidth' maximum width for the completion popup menu
+@@ -243,12 +243,11 @@ The diffs are highlighted with these groups:
+ 				highlight the exact difference between the
+ 				two.  Will respect any 'diffopt' flag that
+ 				affects internal diff.
+-				Not used when `inline:` set to "none".
+-|hl-DiffTextAdd|  DiffTextAdd	Added text inside a Changed line. Similar to
++				Not used when `inline:` is set to "none".
++|hl-DiffTextAdd|  DiffTextAdd	Added text inside a Changed line.  Similar to
+ 				DiffText, but used when there is no
+-				corresponding text in other buffers.  Will not
+-				be used when `inline:` is set to "simple" or
+-				"none".
++				corresponding text in other buffers.  Not used
++				when `inline:` is set to "simple" or "none".
+ |hl-DiffDelete|	DiffDelete	Deleted lines.  Also called filler lines,
+ 				because they don't really exist in this
+ 				buffer.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 0b7ba9126..84deecae6 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 27
++*options.txt*	For Vim version 9.1.  Last change: 2025 Mar 28
  
- Ex commands: ~
- - allow to specify a priority when defining a new sign |:sign-define|
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2982,8 +2982,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				none    Do not perform inline highlighting.
+ 				simple  Highlight from first different
+ 					character to the last one in each
+-					line. This is the default if nothing
+-					is set.
++					line.  This is the default if no
++					`inline:` value is set.
+ 				char    Use internal diff to perform a
+ 					character-wise diff and highlight the
+ 					difference.
+diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
+index f11040c4e..857a3e648 100644
+--- a/runtime/doc/pattern.txt
++++ b/runtime/doc/pattern.txt
+@@ -1,4 +1,4 @@
+-*pattern.txt*   For Vim version 9.1.  Last change: 2025 Mar 21
++*pattern.txt*   For Vim version 9.1.  Last change: 2025 Mar 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1222,7 +1222,8 @@ x	A single character, with no special meaning, matches itself
+ 		\o40	octal number of character up to 0o377
+ 		\x20	hexadecimal number of character up to 0xff
+ 		\u20AC	hex. number of multibyte character up to 0xffff
+-		\U1234	hex. number of multibyte character up to 0xffffffff
++		\U1234	hex. number of multibyte character up to 8 characters
++			0xffffffff |E1541|
+ 	  NOTE: The other backslash codes mentioned above do not work inside
+ 	  []!
+ 	- Matching with a collection can be slow, because each character in
+@@ -1263,7 +1264,8 @@ x	A single character, with no special meaning, matches itself
+ \%u20AC	Matches the character specified with up to four hexadecimal
+ 	characters.
+ \%U1234abcd	Matches the character specified with up to eight hexadecimal
+-	characters, up to 0x7fffffff
++	characters, up to 0x7fffffff (the maximum allowed value is INT_MAX
++	|E1541|, but the maximum valid Unicode codepoint is U+10FFFF).
+ 
+ ==============================================================================
+ 7. Ignoring case in a pattern					*/ignorecase*
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 1a7452f93..521c6116d 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2025 Mar 26
++*syntax.txt*	For Vim version 9.1.  Last change: 2025 Mar 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2202,12 +2202,12 @@ cycles for such a feature to become either integrated into the platform or
+ withdrawn from this effort.  To cater for early adopters, there is optional
+ support in Vim for syntax related preview features that are implemented.  You
+ can request it by specifying a list of preview feature numbers as follows: >
+-	:let g:java_syntax_previews = [455, 476]
++	:let g:java_syntax_previews = [488, 494]
+ 
+ The supported JEP numbers are to be drawn from this table:
+ 	`430`: String Templates [JDK 21]
+-	`455`: Primitive types in Patterns, instanceof, and switch
+-	`476`: Module Import Declarations
++	`488`: Primitive types in Patterns, instanceof, and switch
++	`494`: Module Import Declarations
+ 
+ Note that as soon as the particular preview feature will have been integrated
+ into the Java platform, its entry will be removed from the table and related
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index b96f77907..46db57a45 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
+@@ -1,4 +1,4 @@
+-*vi_diff.txt*   For Vim version 9.1.  Last change: 2024 Nov 10
++*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Mar 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -91,8 +91,11 @@ Maximum display width	   Unix and Win32: 1024 characters, otherwise 255
+ Maximum lhs of a mapping   50 characters.
+ Number of different highlighting types: over 30000
+ Range of a Number variable:  -2147483648 to 2147483647 (might be more on 64
+-			   bit systems)
++			   bit systems)  See also: |v:numbermax|,
++			   |v:numbermin| and |v:numbersize|
+ Maximum length of a line in a tags file: 512 bytes.
++							*E1541*
++Maximum value for |/\U| and |/\%U|: 2147483647 (for 32bit integer).
+ 
+ Information for undo and text in registers is kept in memory, thus when making
+ (big) changes the amount of (virtual) memory available limits the number of
