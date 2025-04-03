@@ -1,84 +1,79 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index b903b3887..5a72e214f 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Mar 26
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -11923,7 +11923,7 @@ trunc({expr})							*trunc()*
- 		Return type: |Float|
- 
- 
--tuple2list({list})					*tuple2list()*
-+tuple2list({tuple})					*tuple2list()*
- 		Create a List from a shallow copy of the tuple items.
- 		Examples: >
- 			tuple2list((1, 2, 3))		returns [1, 2, 3]
-diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
-index 069a853bd..81564664e 100644
---- a/runtime/doc/diff.txt
-+++ b/runtime/doc/diff.txt
-@@ -1,4 +1,4 @@
--*diff.txt*      For Vim version 9.1.  Last change: 2024 Mar 28
-+*diff.txt*      For Vim version 9.1.  Last change: 2025 Mar 28
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
 diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index bcd64e30a..7ea768aef 100644
+index 7ea768aef..170d2d037 100644
 --- a/runtime/doc/eval.txt
 +++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2025 Mar 23
-+*eval.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
+-*eval.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Apr 02
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -541,7 +541,8 @@ example, to add up all the numbers in a list: >
- A Tuple is an ordered sequence of items.  An item can be of any type.  Items
- can be accessed by their index number.  A Tuple is immutable.
+@@ -5149,7 +5149,7 @@ executable.  It takes the following arguments:
+ 	filetype	string
+ 	executable	string
  
--A Tuple uses less memory compared to a List and provides O(1) lookup time.
-+A Tuple is similar to a List but uses less memory and provides O(1) lookup
-+time for an item.
+-						      *dist#vim9#Open()* *:Open*
++					*dist#vim9#Open()* *:Open* *:URLOpen*
+ 						      *g:Openprg* *gx*
+ dist#vim9#Open(file: string) ~
  
- Tuple creation ~
- 						*E1526* *E1527*
-@@ -579,6 +580,15 @@ is not available it returns zero or the default value you specify: >
- 	:echo get(mytuple, idx, "NONE")
+@@ -5157,6 +5157,8 @@ Opens `path` with the system default handler (macOS `open`, Windows
+ `explorer.exe`, Linux `xdg-open`, …). If the variable |g:Openprg| exists the
+ string specified in the variable is used instead.
  
- 
-+Tuple modification ~
-+							*tuple-modification*
-+A tuple is immutable and items cannot be added or removed from a tuple.  But
-+List and Dict items within a tuple can be modified: >
-+	:let tuple = (1, [2, 3], {'a': 4})
-+	:let tuple[1][0] = 10
-+	:let tuple[2]['a'] = 20
++The |:Open| user command uses file completion for its argument.
 +
+ This function is by default called using the gx mapping.  In visual mode
+ tries to open the visually selected text.
+ 
+@@ -5175,13 +5177,18 @@ Usage: >vim
+ 	:call dist#vim9#Open(<path>)
+ 	:Open <path>
+ <
++							*package-open*
++The |:Open| and |:Launch| command are provided by the included plugin
++$VIMRUNTIME/plugin/openPlugin.vim
+ 
+-						  *dist#vim9#Launch()* *:Launch*
++						*dist#vim9#Launch()* *:Launch*
+ dist#vim9#Launch(file: string) ~
+ 
+ Launches <args> with the appropriate system programs. Intended for launching
+ GUI programs within Vim.
+ 
++The |:Launch| user command uses shell completion for its first argument.
 +
- Tuple concatenation ~
- 							*tuple-concatenation*
- Two tuples can be concatenated with the "+" operator: >
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 4c5e5ef4c..8279e3e99 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
+ NOTE: escaping of <args> is left to the user
+ 
+ Examples: >vim
+diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
+index 2e98becf1..afc2d0eeb 100644
+--- a/runtime/doc/pi_zip.txt
++++ b/runtime/doc/pi_zip.txt
 @@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Mar 23
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
+-*pi_zip.txt*	For Vim version 9.1.  Last change: 2023 Nov 05
++*pi_zip.txt*	For Vim version 9.1.  Last change: 2025 Apr 02
  
- 		     VIM USER MANUAL - by Bram Moolenaar
+ 				+====================+
+ 				| Zip File Interface |
+@@ -100,12 +100,14 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
+    should be treated as zip files.
  
-@@ -862,7 +862,7 @@ Tuple manipulation:					*tuple-functions*
- 	reverse()		reverse the order of items in a Tuple
- 	slice()			take a slice of a Tuple
- 	string()		string representation of a Tuple
--	tuple2list()		convert a Tuple of items into a list
-+	tuple2list()		convert a Tuple into a List
+    Alternatively, one may change *g:zipPlugin_ext* in one's .vimrc.
+-   Currently (11/30/15) it holds: >
+-
+-	let g:zipPlugin_ext= '*.zip,*.jar,*.xpi,*.ja,*.war,*.ear,*.celzip,
+-       \ *.oxt,*.kmz,*.wsz,*.xap,*.docx,*.docm,*.dotx,*.dotm,*.potx,*.potm,
+-       \ *.ppsx,*.ppsm,*.pptx,*.pptm,*.ppam,*.sldx,*.thmx,*.xlam,*.xlsx,*.xlsm,
+-       \ *.xlsb,*.xltx,*.xltm,*.xlam,*.crtx,*.vdw,*.glox,*.gcsx,*.gqsx,*.epub'
++   Currently (as of April 2025) it holds: >
++
++        let g:zipPlugin_ext='*.aar,*.apk,*.celzip,*.crtx,*.docm,*.docx,
++       \ *.dotm,*.dotx,*.ear,*.epub,*.gcsx,*.glox,*.gqsx,*.ja,*.jar,*.kmz,
++       \ *.odb,*.odc,*.odf,*.odg,*.odi,*.odm,*.odp,*.ods,*.odt,*.otc,*.otf,
++       \ *.otg,*.oth,*.oti,*.otp,*.ots,*.ott,*.oxt,*.potm,*.potx,*.ppam,
++       \ *.ppsm,*.ppsx,*.pptm,*.pptx,*.sldx,*.thmx,*.vdw,*.war,*.whl,*.wsz,
++       \ *.xap,*.xlam,*.xlsb,*.xlsm,*.xlsx,*.xltm,*.xltx,*.xpi,*.zip'
  
- Dictionary manipulation:				*dict-functions*
- 	get()			get an entry without an error for a wrong key
+ ==============================================================================
+ 4. History							*zip-history* {{{1
