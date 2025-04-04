@@ -1,79 +1,154 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 7ea768aef..170d2d037 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 372d1acbc..820c30260 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
-+*eval.txt*	For Vim version 9.1.  Last change: 2025 Apr 02
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Mar 12
++*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -593,7 +593,8 @@ BufWriteCmd			Before writing the whole buffer to a file.
+ 				The buffer contents should not be changed.
+ 				When the command resets 'modified' the undo
+ 				information is adjusted to mark older undo
+-				states as 'modified', like |:write| does.
++				states as 'modified', like |:write| does.  Use
++				the |'[| and |']| marks for the range of lines.
+ 				|Cmd-event|
+ 							*BufWritePost*
+ BufWritePost			After writing the whole buffer to a file
+@@ -886,14 +887,14 @@ FileType			When the 'filetype' option has been set.  The
+ FileWriteCmd			Before writing to a file, when not writing the
+ 				whole buffer.  Should do the writing to the
+ 				file.  Should not change the buffer.  Use the
+-				'[ and '] marks for the range of lines.
++				|'[| and |']| marks for the range of lines.
+ 				|Cmd-event|
+ 							*FileWritePost*
+ FileWritePost			After writing to a file, when not writing the
+ 				whole buffer.
+ 							*FileWritePre*
+ FileWritePre			Before writing to a file, when not writing the
+-				whole buffer.  Use the '[ and '] marks for the
++				whole buffer.  Use the |'[| and |']| marks for the
+ 				range of lines.
+ 							*FilterReadPost*
+ FilterReadPost			After reading a file from a filter command.
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index c656a117c..24137c74d 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.1.  Last change: 2025 Mar 18
++*change.txt*    For Vim version 9.1.  Last change: 2025 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -156,8 +156,8 @@ only after a '.').
+ The 'B' and 'M' flags in 'formatoptions' change the behavior for inserting
+ spaces before and after a multibyte character |fo-table|.
+ 
+-The '[ mark is set at the end of the first line that was joined, '] at the end
+-of the resulting line.
++The |'[| mark is set at the end of the first line that was joined, |']| at the
++end of the resulting line.
+ 
+ 
+ ==============================================================================
+@@ -1188,8 +1188,8 @@ the ":put" command, Vim always inserts the text in the next line.  You can
+ exchange two characters with the command sequence "xp".  You can exchange two
+ lines with the command sequence "ddp".  You can exchange two words with the
+ command sequence "deep" (start with the cursor in the blank space before the
+-first word).  You can use the "']" or "`]" command after the put command to
+-move the cursor to the end of the inserted text, or use "'[" or "`[" to move
++first word).  You can use the |']| or |`]| command after the put command to
++move the cursor to the end of the inserted text, or use |'[| or |`[| to move
+ the cursor to the start.
+ 
+ 						*put-Visual-mode* *v_p* *v_P*
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index a70515d6f..a88aad1a7 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.1.  Last change: 2024 Oct 14
++*editing.txt*   For Vim version 9.1.  Last change: 2025 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -974,8 +974,9 @@ Note: When the 'write' option is off, you are not able to write any file.
+ 			executed like with ":!{cmd}", any '!' is replaced with
+ 			the previous command |:!|.
+ 
+-The default [range] for the ":w" command is the whole buffer (1,$).  If you
+-write the whole buffer, it is no longer considered changed.  When you
++The default [range] for the ":w" command is the whole buffer (1,$).  The |'[|
++and |']| marks will be set to the [range] being used for the write command.
++If you write the whole buffer, it is no longer considered changed.  When you
+ write it to a different file with ":w somefile" it depends on the "+" flag in
+ 'cpoptions'.  When included, the write command will reset the 'modified' flag,
+ even though the buffer itself may still be different from its file.
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 4e57797a5..726d15dde 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
+@@ -1,4 +1,4 @@
+-*motion.txt*    For Vim version 9.1.  Last change: 2024 Dec 17
++*motion.txt*    For Vim version 9.1.  Last change: 2025 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -895,12 +895,12 @@ Numbered mark should be stored.  See |viminfo-file-marks|.
+ 
+ 
+ 							*'[* *`[*
+-'[  `[			To the first character of the previously changed
+-			or yanked text.
++'[  `[			To the first character of the previously changed,
++			or yanked text.  Also set when writing the buffer.
+ 
+ 							*']* *`]*
+ ']  `]			To the last character of the previously changed or
+-			yanked text.
++			yanked text.  Also set when writing the buffer.
+ 
+ After executing an operator the Cursor is put at the beginning of the text
+ that was operated upon.  After a put command ("p" or "P") the cursor is
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 0e9a5080f..b7b2bcc5f 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Mar 27
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41553,6 +41553,8 @@ Enum support for Vim9 script |:enum|
+ 
+ Support for protected _new() method
+ 
++Add support for object<{type}> as variable data type |vim9-types|
++
+ Diff mode ~
+ ---------
+ Include the "linematch" algorithm for the 'diffopt' setting.  This aligns
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index d06c250a3..54fb8f333 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.1.  Last change: 2025 Mar 23
++*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5149,7 +5149,7 @@ executable.  It takes the following arguments:
- 	filetype	string
- 	executable	string
- 
--						      *dist#vim9#Open()* *:Open*
-+					*dist#vim9#Open()* *:Open* *:URLOpen*
- 						      *g:Openprg* *gx*
- dist#vim9#Open(file: string) ~
- 
-@@ -5157,6 +5157,8 @@ Opens `path` with the system default handler (macOS `open`, Windows
- `explorer.exe`, Linux `xdg-open`, …). If the variable |g:Openprg| exists the
- string specified in the variable is used instead.
- 
-+The |:Open| user command uses file completion for its argument.
-+
- This function is by default called using the gx mapping.  In visual mode
- tries to open the visually selected text.
- 
-@@ -5175,13 +5177,18 @@ Usage: >vim
- 	:call dist#vim9#Open(<path>)
- 	:Open <path>
- <
-+							*package-open*
-+The |:Open| and |:Launch| command are provided by the included plugin
-+$VIMRUNTIME/plugin/openPlugin.vim
- 
--						  *dist#vim9#Launch()* *:Launch*
-+						*dist#vim9#Launch()* *:Launch*
- dist#vim9#Launch(file: string) ~
- 
- Launches <args> with the appropriate system programs. Intended for launching
- GUI programs within Vim.
- 
-+The |:Launch| user command uses shell completion for its first argument.
-+
- NOTE: escaping of <args> is left to the user
- 
- Examples: >vim
-diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
-index 2e98becf1..afc2d0eeb 100644
---- a/runtime/doc/pi_zip.txt
-+++ b/runtime/doc/pi_zip.txt
-@@ -1,4 +1,4 @@
--*pi_zip.txt*	For Vim version 9.1.  Last change: 2023 Nov 05
-+*pi_zip.txt*	For Vim version 9.1.  Last change: 2025 Apr 02
- 
- 				+====================+
- 				| Zip File Interface |
-@@ -100,12 +100,14 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
-    should be treated as zip files.
- 
-    Alternatively, one may change *g:zipPlugin_ext* in one's .vimrc.
--   Currently (11/30/15) it holds: >
--
--	let g:zipPlugin_ext= '*.zip,*.jar,*.xpi,*.ja,*.war,*.ear,*.celzip,
--       \ *.oxt,*.kmz,*.wsz,*.xap,*.docx,*.docm,*.dotx,*.dotm,*.potx,*.potm,
--       \ *.ppsx,*.ppsm,*.pptx,*.pptm,*.ppam,*.sldx,*.thmx,*.xlam,*.xlsx,*.xlsm,
--       \ *.xlsb,*.xltx,*.xltm,*.xlam,*.crtx,*.vdw,*.glox,*.gcsx,*.gqsx,*.epub'
-+   Currently (as of April 2025) it holds: >
-+
-+        let g:zipPlugin_ext='*.aar,*.apk,*.celzip,*.crtx,*.docm,*.docx,
-+       \ *.dotm,*.dotx,*.ear,*.epub,*.gcsx,*.glox,*.gqsx,*.ja,*.jar,*.kmz,
-+       \ *.odb,*.odc,*.odf,*.odg,*.odi,*.odm,*.odp,*.ods,*.odt,*.otc,*.otf,
-+       \ *.otg,*.oth,*.oti,*.otp,*.ots,*.ott,*.oxt,*.potm,*.potx,*.ppam,
-+       \ *.ppsm,*.ppsx,*.pptm,*.pptx,*.sldx,*.thmx,*.vdw,*.war,*.whl,*.wsz,
-+       \ *.xap,*.xlam,*.xlsb,*.xlsm,*.xlsx,*.xltm,*.xltx,*.xpi,*.zip'
- 
- ==============================================================================
- 4. History							*zip-history* {{{1
+@@ -1467,6 +1467,7 @@ The following builtin types are supported:
+ 	blob
+ 	list<{type}>
+ 	dict<{type}>
++	object<{type}>
+ 	job
+ 	channel
+ 	tuple<{type}>
