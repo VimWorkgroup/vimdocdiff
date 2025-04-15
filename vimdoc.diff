@@ -1,225 +1,113 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 8530196aa..83e00e0a2 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 5c0ebcf2e..f52cf40ad 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 08
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -212,7 +212,7 @@ A few examples: >
-    :set makeprg=make,file	    results in "make,file"
-    :set makeprg=make\\,file	    results in "make\,file"
-    :set tags=tags,file		    results in "tags" and "file"
--   :set tags=tags\\,file	    results in "tags,file"
-+   :set tags=tags\\,file	    results in "tags\,file"
-    :let &tags='tags\,file'	    (same as above)
- 
- The "|" character separates a ":set" command from a following command.  To
-@@ -3621,6 +3621,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  lastline	'@'		'display' contains lastline/truncate
- 	  trunc		'>'		truncated text in the
- 					|ins-completion-menu|.
-+	  truncrl	'<'		same as "trunc' in 'rightleft' mode
- 
- 	Any one that is omitted will fall back to the default.
- 
-@@ -3645,6 +3646,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  lastline	NonText			|hl-NonText|
- 	  trunc		one of the many Popup menu highlighting groups like
- 			|hl-PmenuSel|
-+	  truncrl	same as "trunc"
- 
- 						*'findfunc'* *'ffu'* *E1514*
- 'findfunc' 'ffu'	string	(default empty)
-@@ -9638,55 +9640,65 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'wildmode'* *'wim'*
- 'wildmode' 'wim'	string	(Vim default: "full")
- 			global
--	Completion mode that is used for the character specified with
--	'wildchar'.  It is a comma-separated list of up to four parts.  Each
--	part specifies what to do for each consecutive use of 'wildchar'.  The
--	first part specifies the behavior for the first use of 'wildchar',
--	The second part for the second use, etc.
--
--	Each part consists of a colon separated list consisting of the
--	following possible values:
--	""		Complete only the first match.
--	"full"		Complete the next full match.  After the last match,
--			the original string is used and then the first match
--			again.  Will also start 'wildmenu' if it is enabled.
--	"longest"	Complete till longest common string.  If this doesn't
--			result in a longer string, use the next part.
--	"list"		When more than one match, list all matches.
--	"lastused"	When completing buffer names and more than one buffer
--			matches, sort buffers by time last used (other than
--			the current buffer).
--	"noselect"	Do not pre-select first menu item and start 'wildmenu'
--			if it is enabled.
--	When there is only a single match, it is fully completed in all cases
--	except when "noselect" is present.
--
--	Examples of useful colon-separated values:
--	"longest:full"	Like "longest", but also start 'wildmenu' if it is
--			enabled.  Will not complete to the next full match.
--	"list:full"	When more than one match, list all matches and
--			complete first match.
--	"list:longest"	When more than one match, list all matches and
--			complete till longest common string.
--	"list:lastused" When more than one buffer matches, list all matches
--			and sort buffers by time last used (other than the
--			current buffer).
-+	Completion mode used for the character specified with 'wildchar'.
-+	This option is a comma-separated list of up to four parts,
-+	corresponding to the first, second, third, and fourth presses of
-+	'wildchar'.  Each part is a colon-separated list of completion
-+	behaviors, which are applied simultaneously during that phase.
-+
-+	The possible behavior values are:
-+	""		Only complete (insert) the first match.  No further
-+			matches are cycled or listed.
-+	"full"		Complete the next full match.  Cycles through all
-+			matches, returning to the original input after the
-+			last match.  If 'wildmenu' is enabled, it will be
-+			shown.
-+	"longest"	Complete to the longest common substring.  If this
-+			doesn't extend the input, the next 'wildmode' part is
-+			used.
-+	"list"		If multiple matches are found, list all of them.
-+	"lastused"	When completing buffer names, sort them by most
-+			recently used (excluding the current buffer).  Only
-+			applies to buffer name completion.
-+	"noselect"	If 'wildmenu' is enabled, show the menu but do not
-+			preselect the first item.
-+	If only one match exists, it is completed fully, unless "noselect" is
-+	specified.
-+
-+	Some useful combinations of colon-separated values:
-+	"longest:full"		Start with the longest common string and show
-+				'wildmenu' (if enabled).  Does not cycle
-+				through full matches.
-+	"list:full"		List all matches and complete first match.
-+	"list:longest"		List all matches and complete till the longest
-+				common prefix.
-+	"list:lastused"		List all matches.  When completing buffers,
-+				sort them by most recently used (excluding the
-+				current buffer).
-+	"noselect:lastused"	Do not preselect the first item in 'wildmenu'
-+				if it is active.  When completing buffers,
-+				sort them by most recently used (excluding the
-+				current buffer).
- 
- 	Examples: >
- 		:set wildmode=full
--<	Complete first full match, next match, etc.  (the default) >
-+<	Complete full match on every press (default behavior) >
- 		:set wildmode=longest,full
--<	Complete longest common string, then each full match >
-+<	First press: longest common substring
-+	Second press: cycle through full matches >
- 		:set wildmode=list:full
--<	List all matches and complete each full match >
-+<	First press: list all matches and complete the first one >
- 		:set wildmode=list,full
--<	List all matches without completing, then each full match >
-+<	First press: list matches only
-+	Second press: complete full matches >
- 		:set wildmode=longest,list
--<	Complete longest common string, then list alternatives >
-+<	First press: longest common substring
-+	Second press: list all matches >
- 		:set wildmode=noselect:full
--<	Display 'wildmenu' without completing, then each full match >
-+<	Show 'wildmenu' without completing or selecting on first press
-+	Cycle full matches on second press >
- 		:set wildmode=noselect:lastused,full
--<	Same as above, but sort buffers by time last used.
-+<	Same as above, but buffer matches are sorted by time last used
- 	More info here: |cmdline-completion|.
- 
- 						*'wildoptions'* *'wop'*
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 521c6116d..3c3bde227 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2025 Mar 27
-+*syntax.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2451,6 +2451,12 @@ have the following in your .vimrc: >
- 
- 	let filetype_m = "mma"
- 
-+MBSYNC					*mbsync.vim* *ft-mbsync-syntax*
-+
-+The mbsync application uses a configuration file to setup mailboxes names,
-+user and password. All files ending with `.mbsyncrc` or with the name
-+`isyncrc` will be recognized as mbsync configuration files.
-+
- MEDIAWIKI					*ft-mediawiki-syntax*
- 
- By default, syntax highlighting includes basic HTML tags like style and
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index 56714dbd8..fea6cddd1 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
-@@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.1.  Last change: 2025 Mar 22
-+*usr_05.txt*	For Vim version 9.1.  Last change: 2025 Apr 10
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -307,23 +307,27 @@ This switches on three very clever mechanisms:
-    filetypes.  See |:filetype-indent-on| and 'indentexpr'.
- 
- 
--				*restore-cursor* *last-position-jump*  >
-+				*restore-cursor* *last-position-jump*  >vim
-     augroup RestoreCursor
-       autocmd!
-       autocmd BufReadPost *
-         \ let line = line("'\"")
-         \ | if line >= 1 && line <= line("$") && &filetype !~# 'commit'
-         \      && index(['xxd', 'gitrebase'], &filetype) == -1
-+        \      && !&diff
-         \ |   execute "normal! g`\""
-         \ | endif
-     augroup END
- 
- Another autocommand.  This time it is used after reading any file.  The
- complicated stuff after it checks if the '" mark is defined, and jumps to it
--if so.  It doesn't do that for a commit or rebase message, which are likely
--a different one than last time, and when using xxd(1) to filter and edit
--binary files, which transforms input files back and forth, causing them to
--have dual nature, so to speak.  See also |using-xxd|.
-+if so.  It doesn't do that when:
-+ - editing a commit or rebase message, which are likely a different one than
-+   last time,
-+ - using xxd(1) to filter and edit binary files, which transforms input files
-+   back and forth, causing them to have dual nature, so to speak (see also
-+   |using-xxd|) and
-+ - Vim is in diff mode
- 
- The backslash at the start of a line is used to continue the command from the
- previous line.  That avoids a line getting very long.  See |line-continuation|.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 8a7f49e33..befd92ffd 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 08
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 12
+-*insert.txt*    For Vim version 9.1.  Last change: 2025 Mar 09
++*insert.txt*    For Vim version 9.1.  Last change: 2025 Apr 14
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41631,6 +41631,7 @@ Options: ~
-   and CTRL-D / CTRL-U for half-pagewise scrolling
- - New option value for 'fillchars':
-   	"trunc"		- configure truncation indicator, 'pummaxwidth'
-+  	"truncrl"	- like "trunc" but in 'rl' mode, 'pummaxwidth'
+@@ -1167,6 +1167,9 @@ For example, the function can contain this: >
+ 	let matches = ... list of words ...
+ 	return {'words': matches, 'refresh': 'always'}
+ <
++If looking for matches is time-consuming, |complete_check()| may be used to
++maintain responsiveness.
++
+ 						*complete-items*
+ Each list item can either be a string or a Dictionary.  When it is a string it
+ is used as the completion.  When it is a Dictionary it can contain these
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 83e00e0a2..99e6d54f8 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
++*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 14
  
- Ex commands: ~
- - allow to specify a priority when defining a new sign |:sign-define|
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2085,6 +2085,28 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		|i_CTRL-X_CTRL-D|
+ 	]	tag completion
+ 	t	same as "]"
++	f{func}	call the function {func}. Multiple "f" flags may be specified.
++		Refer to |complete-functions| for details on how the function
++		is invoked and what it should return.  The value can be the
++		name of a function or a |Funcref|.  For |Funcref| values,
++		spaces must be escaped with a backslash ('\'), and commas with
++		double backslashes ('\\') (see |option-backslash|).
++		If the Dict returned by the {func} includes {"refresh": "always"},
++		the function will be invoked again whenever the leading text
++		changes.
++		Completion matches are always inserted at the keyword
++		boundary, regardless of the column returned by {func} when
++		a:findstart is 1.  This ensures compatibility with other
++		completion sources.
++		To make further modifications to the inserted text, {func}
++		can make use of |CompleteDonePre|.
++		If generating matches is potentially slow, |complete_check()|
++		should be used to avoid blocking and preserve editor
++		responsiveness.
++	f	equivalent to using "f{func}", where the function is taken from
++		the 'completefunc' option.
++	o	equivalent to using "f{func}", where the function is taken from
++		the 'omnifunc' option.
+ 
+ 	Unloaded buffers are not loaded, thus their autocmds |:autocmd| are
+ 	not executed, this may lead to unexpected completions from some files
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index befd92ffd..50fb66ff9 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 12
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 14
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41617,6 +41617,10 @@ Completion: ~
+ - improved commandline completion for the |:hi| command
+ - New option value for 'wildmode':
+ 	"noselect"	- do not auto select an entry in the wildmenu
++- New flags for 'complete':
++	"f{func}"	- complete using given function
++	"f"		- complete using 'completefunc'
++	"o"		- complete using 'omnifunc'
+ 
+ Options: ~
+ - the default for 'commentstring' contains whitespace padding to have
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 5d6f7fca1..519545677 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.1.  Last change: 2025 Apr 05
++*vim9class.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1067,6 +1067,22 @@ The above enum definition is equivalent to the following class definition: >
+       public const ordinal: number
+     endclass
+ <
++A enum can contain object variables and methods just like a regular
++class: >
++
++    enum Color
++	Cyan([0, 255, 255]),
++	Magenta([255, 0, 255]),
++	Gray([128, 128, 128])
++
++	var rgb_values: list<number>
++
++	def Get_RGB(): list<number>
++	    return this.rgb_values
++	enddef
++    endenum
++    echo Color.Magenta.Get_RGB()
++<
+ ==============================================================================
+ 
+ 9.  Rationale
