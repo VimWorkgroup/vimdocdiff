@@ -1,113 +1,111 @@
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 5c0ebcf2e..f52cf40ad 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 20bf39597..761d6676f 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2025 Mar 09
-+*insert.txt*    For Vim version 9.1.  Last change: 2025 Apr 14
+-*filetype.txt*	For Vim version 9.1.  Last change: 2025 Mar 15
++*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1167,6 +1167,9 @@ For example, the function can contain this: >
- 	let matches = ... list of words ...
- 	return {'words': matches, 'refresh': 'always'}
- <
-+If looking for matches is time-consuming, |complete_check()| may be used to
-+maintain responsiveness.
-+
- 						*complete-items*
- Each list item can either be a string or a Dictionary.  When it is a string it
- is used as the completion.  When it is a Dictionary it can contain these
+@@ -158,6 +158,8 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.inc		g:filetype_inc
+ 	*.lsl		g:filetype_lsl
+ 	*.m		g:filetype_m		|ft-mathematica-syntax|
++	*[mM]makefile,*.mk,*.mak,[mM]akefile*
++			g:make_flavor		|ft-make-syntax|
+ 	*.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md
+ 			g:filetype_md		|ft-pandoc-syntax|
+ 	*.mod		g:filetype_mod
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 83e00e0a2..99e6d54f8 100644
+index 99e6d54f8..b3b29d0d8 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 14
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 14
++*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2085,6 +2085,28 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		|i_CTRL-X_CTRL-D|
- 	]	tag completion
- 	t	same as "]"
-+	f{func}	call the function {func}. Multiple "f" flags may be specified.
-+		Refer to |complete-functions| for details on how the function
-+		is invoked and what it should return.  The value can be the
-+		name of a function or a |Funcref|.  For |Funcref| values,
-+		spaces must be escaped with a backslash ('\'), and commas with
-+		double backslashes ('\\') (see |option-backslash|).
-+		If the Dict returned by the {func} includes {"refresh": "always"},
-+		the function will be invoked again whenever the leading text
-+		changes.
-+		Completion matches are always inserted at the keyword
-+		boundary, regardless of the column returned by {func} when
-+		a:findstart is 1.  This ensures compatibility with other
-+		completion sources.
-+		To make further modifications to the inserted text, {func}
-+		can make use of |CompleteDonePre|.
-+		If generating matches is potentially slow, |complete_check()|
-+		should be used to avoid blocking and preserve editor
-+		responsiveness.
-+	f	equivalent to using "f{func}", where the function is taken from
-+		the 'completefunc' option.
-+	o	equivalent to using "f{func}", where the function is taken from
-+		the 'omnifunc' option.
+@@ -2201,6 +2201,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    Useful when there is additional information about the
+ 		    match, e.g., what file it comes from.
  
- 	Unloaded buffers are not loaded, thus their autocmds |:autocmd| are
- 	not executed, this may lead to unexpected completions from some files
++	   nearest  Matches are presented in order of proximity to the cursor
++		    position.  This applies only to matches from the current
++		    buffer.  No effect if "fuzzy" is present.
++
+ 	   noinsert Do not insert any text for a match until the user selects
+ 		    a match from the menu.  Only works in combination with
+ 		    "menu" or "menuone".  No effect if "longest" is present.
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 1189b370b..51688b705 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -431,17 +431,6 @@ settings are described below, in |netrw-browser-options|, and in
+   *g:netrw_silent*	=0 : transfers done normally
+ 			=1 : transfers done silently
+ 
+- *g:netrw_use_errorwindow* =2: messages from netrw will use a popup window
+-			     Move the mouse and pause to remove the popup window.
+-			     (default value if popup windows are available)
+-			 =1 : messages from netrw will use a separate one
+-			      line window.  This window provides reliable
+-			      delivery of messages.
+-			     (default value if popup windows are not available)
+-			 =0 : messages from netrw will use echoerr ;
+-			      messages don't always seem to show up this
+-			      way, but one doesn't have to quit the window.
+-
+  *g:netrw_cygwin*	=1 assume scp under windows is from cygwin. Also
+ 			   permits network browsing to use ls with time and
+ 			   size sorting (default if windows)
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 3c3bde227..ae89bd9f1 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
++*syntax.txt*	For Vim version 9.1.  Last change: 2025 Apr 15
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2393,11 +2393,16 @@ Comments are also highlighted by default.  You can turn this off by using: >
+ 
+ 	:let make_no_comments = 1
+ 
+-Microsoft Makefile handles variable expansion and comments differently
+-(backslashes are not used for escape).  If you see any wrong highlights
+-because of this, you can try this: >
++There are various Make implementations, which add extensions other than the
++POSIX specification and thus are mutually incompatible.  If the filename is
++BSDmakefile or GNUmakefile, the corresponding implementation is automatically
++determined; otherwise vim tries to detect it by the file contents.  If you see
++any wrong highlights because of this, you can enforce a flavor by setting one
++of the following: >
+ 
+-	:let make_microsoft = 1
++	:let g:make_flavor = 'bsd'  " or
++	:let g:make_flavor = 'gnu'  " or
++	:let g:make_flavor = 'microsoft'
+ 
+ 
+ MAPLE						*maple.vim* *ft-maple-syntax*
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index befd92ffd..50fb66ff9 100644
+index 50fb66ff9..27470f002 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 12
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 14
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 14
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 15
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41617,6 +41617,10 @@ Completion: ~
+@@ -41613,6 +41613,7 @@ Completion: ~
+ - New option value for 'completeopt':
+ 	"nosort"	- do not sort completion results
+ 	"preinsert"	- highlight to be inserted values
++	"nearest"	- sort completion results by distance to cursor
+ - handle multi-line completion items as expected
  - improved commandline completion for the |:hi| command
  - New option value for 'wildmode':
- 	"noselect"	- do not auto select an entry in the wildmenu
-+- New flags for 'complete':
-+	"f{func}"	- complete using given function
-+	"f"		- complete using 'completefunc'
-+	"o"		- complete using 'omnifunc'
- 
- Options: ~
- - the default for 'commentstring' contains whitespace padding to have
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 5d6f7fca1..519545677 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.1.  Last change: 2025 Apr 05
-+*vim9class.txt*	For Vim version 9.1.  Last change: 2025 Apr 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1067,6 +1067,22 @@ The above enum definition is equivalent to the following class definition: >
-       public const ordinal: number
-     endclass
- <
-+A enum can contain object variables and methods just like a regular
-+class: >
-+
-+    enum Color
-+	Cyan([0, 255, 255]),
-+	Magenta([255, 0, 255]),
-+	Gray([128, 128, 128])
-+
-+	var rgb_values: list<number>
-+
-+	def Get_RGB(): list<number>
-+	    return this.rgb_values
-+	enddef
-+    endenum
-+    echo Color.Magenta.Get_RGB()
-+<
- ==============================================================================
- 
- 9.  Rationale
