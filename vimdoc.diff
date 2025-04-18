@@ -1,96 +1,126 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 761d6676f..c0bf1e616 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 5a72e214f..b69f6b463 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 15
-+*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 16
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -662,6 +662,16 @@ possibilities: >
- The `:Cycle` command is also mapped to the CTRL-A and CTRL-X keys.
- For details, see `git-rebase --help`.
- 
-+GLEAM						*ft-gleam-plugin*
-+
-+By default the following options are set for the recommended gleam style: >
-+
-+	setlocal expandtab shiftwidth=2 softtabstop=2
-+
-+To disable this behavior, set the following variable in your vimrc: >
-+
-+	let g:gleam_recommended_style = 0
-+
- GO							*ft-go-plugin*
- 
- By default the following options are set, based on Golang official docs: >
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index b3b29d0d8..8ab0dcc8b 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 15
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 16
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2125,6 +2125,13 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	based expansion (e.g., dictionary |i_CTRL-X_CTRL-K|, included patterns
- 	|i_CTRL-X_CTRL-I|, tags |i_CTRL-X_CTRL-]| and normal expansions).
+@@ -8158,7 +8158,8 @@ printf({fmt}, {expr1} ...)				*printf()*
+ <		      1.41
  
-+	An optional match limit can be specified for a completion source by
-+	appending a caret ("^") followed by a {count} to the source flag.
-+	For example: ".^9,w,u,t^5" limits matches from the current buffer
-+	to 9 and from tags to 5. Other sources remain unlimited.
-+	The match limit takes effect only during forward completion (CTRL-N)
-+	and is ignored during backward completion (CTRL-P).
-+
- 						*'completefunc'* *'cfu'*
- 'completefunc' 'cfu'	string	(default: empty)
- 			local to buffer
-diff --git a/runtime/doc/pi_tar.txt b/runtime/doc/pi_tar.txt
-index 5b317d608..6d49928dc 100644
---- a/runtime/doc/pi_tar.txt
-+++ b/runtime/doc/pi_tar.txt
+ 		You will get an overflow error |E1510|, when the field-width
+-		or precision will result in a string longer than 6400 chars.
++		or precision will result in a string longer than 1 MiB
++		(1024*1024 = 1048576) chars.
+ 
+ 							*E1500*
+ 		You cannot mix positional and non-positional arguments: >
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index d97d230e9..18e2caec7 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
 @@ -1,4 +1,4 @@
--*pi_tar.txt*	For Vim version 9.1.  Last change: 2024 May 11
-+*pi_tar.txt*	For Vim version 9.1.  Last change: 2025 Mar 16
- 
- 		       +====================+
- 		       | Tar File Interface |
-@@ -74,6 +74,15 @@ Copyright 2005-2017:					*tar-copyright*
- 	let g:loaded_tarPlugin= 1
- 	let g:loaded_tar      = 1
- <
-+							*tar-mappings*
-+   MAPPINGS~
-+
-+   The following (buffer-local) mappings are available in a tar buffer:
-+
-+	<CR>		Open selected file for editing, any changes will be
-+			written back to the archive.
-+	<LeftMouse>	same as <CR>
-+	x		Extract selected file.
- 
- ==============================================================================
- 3. Options						*tar-options*
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 27470f002..a5579f4ab 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 15
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 16
+-*develop.txt*   For Vim version 9.1.  Last change: 2024 Dec 25
++*develop.txt*   For Vim version 9.1.  Last change: 2025 Apr 18
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41622,6 +41622,8 @@ Completion: ~
- 	"f{func}"	- complete using given function
- 	"f"		- complete using 'completefunc'
- 	"o"		- complete using 'omnifunc'
-+- allow to limit matches for the 'complete' sources by using the
-+  "{flag}^<limit>" notation
+@@ -192,7 +192,7 @@ For any non-trivial change, please always create a pull request on github,
+ since this triggers the test suite.
  
+ 							*style-clang-format*
+-sound.c and sign.c can be (semi-) automatically formated using the
++sound.c and sign.c can be (semi-) automatically formatted using the
+ `clang-format` formatter according to the distributed .clang-format file.
+ Other source files do not yet correspond to the .clang-format file.  This may
+ change in the future and they may be reformatted as well.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 8ab0dcc8b..83032e1c4 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 16
++*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2208,8 +2208,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    Useful when there is additional information about the
+ 		    match, e.g., what file it comes from.
+ 
+-	   nearest  Matches are presented in order of proximity to the cursor
+-		    position.  This applies only to matches from the current
++	   nearest  Matches are listed based on their proximity to the cursor
++		    position, unlike the default behavior, which only
++		    considers proximity for matches appearing below the
++		    cursor.  This applies only to matches from the current
+ 		    buffer.  No effect if "fuzzy" is present.
+ 
+ 	   noinsert Do not insert any text for a match until the user selects
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index a5579f4ab..527ed1850 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 16
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -41594,7 +41594,7 @@ Default values: ~
+ - the default 'backspace' option for Vim has been set to "indent,eol,start"
+   and removed from |defaults.vim|
+ - the default fontsize for the GTK builds of Vim (Windows and Unix) has been
+-  increased to 12pt to accomodate modern high-dpi monitors
++  increased to 12pt to accommodate modern high-dpi monitors
+ - the default value of the 'keyprotocol' option has been updated and support
+   for the ghostty terminal emulator (using kitty protocol) has been added
+ 
+@@ -41637,8 +41637,8 @@ Options: ~
+ - use 'smoothscroll' logic for CTRL-F / CTRL-B for pagewise scrolling
+   and CTRL-D / CTRL-U for half-pagewise scrolling
+ - New option value for 'fillchars':
+-  	"trunc"		- configure truncation indicator, 'pummaxwidth'
+-  	"truncrl"	- like "trunc" but in 'rl' mode, 'pummaxwidth'
++	"trunc"		- configure truncation indicator, 'pummaxwidth'
++	"truncrl"	- like "trunc" but in 'rl' mode, 'pummaxwidth'
+ 
+ Ex commands: ~
+ - allow to specify a priority when defining a new sign |:sign-define|
+@@ -41739,7 +41739,7 @@ Ex-Commands: ~
  Options: ~
- - the default for 'commentstring' contains whitespace padding to have
+ 
+ 'chistory'		Size of the quickfix stack |quickfix-stack|.
+-'completefuzzycollect'	Enable fuzzy collection of candiates for (some)
++'completefuzzycollect'	Enable fuzzy collection of candidates for (some)
+ 			|ins-completion| modes
+ 'completeitemalign'	Order of |complete-items| in Insert mode completion
+ 			popup
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 54fb8f333..ba72358d1 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 03
++*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1493,11 +1493,11 @@ tuple<number>			a tuple with a single item of type |Number|
+ tuple<number, string>		a tuple with two items of type |Number| and
+ 				|String|
+ tuple<number, float, bool>	a tuple with three items of type |Number|,
+-				|Float| and |Boolean|.
++				|Float| and |Boolean|
+ tuple<...list<number>>		a variadic tuple with zero or more items of
+-				type |Number|.
++				type |Number|
+ tuple<number, ...list<string>>	a tuple with an item of type |Number| followed
+-				by zero or more items of type |String|.
++				by zero or more items of type |String|
+ 
+ Examples: >
+     var myTuple: tuple<number> = (20,)
