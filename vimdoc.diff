@@ -1,126 +1,80 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 5a72e214f..b69f6b463 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index c0bf1e616..77bf5f337 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Mar 30
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8158,7 +8158,8 @@ printf({fmt}, {expr1} ...)				*printf()*
- <		      1.41
- 
- 		You will get an overflow error |E1510|, when the field-width
--		or precision will result in a string longer than 6400 chars.
-+		or precision will result in a string longer than 1 MiB
-+		(1024*1024 = 1048576) chars.
- 
- 							*E1500*
- 		You cannot mix positional and non-positional arguments: >
-diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
-index d97d230e9..18e2caec7 100644
---- a/runtime/doc/develop.txt
-+++ b/runtime/doc/develop.txt
-@@ -1,4 +1,4 @@
--*develop.txt*   For Vim version 9.1.  Last change: 2024 Dec 25
-+*develop.txt*   For Vim version 9.1.  Last change: 2025 Apr 18
+-*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 16
++*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 19
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -192,7 +192,7 @@ For any non-trivial change, please always create a pull request on github,
- since this triggers the test suite.
- 
- 							*style-clang-format*
--sound.c and sign.c can be (semi-) automatically formated using the
-+sound.c and sign.c can be (semi-) automatically formatted using the
- `clang-format` formatter according to the distributed .clang-format file.
- Other source files do not yet correspond to the .clang-format file.  This may
- change in the future and they may be reformatted as well.
+@@ -153,7 +153,11 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.f		g:filetype_f		|ft-forth-syntax|
+ 	*.frm		g:filetype_frm		|ft-form-syntax|
+ 	*.fs		g:filetype_fs		|ft-forth-syntax|
+-	*.h		g:c_syntax_for_h	|ft-c-syntax|
++	*.h		g:c_syntax_for_h	|ft-c-syntax|	(deprecated)
++	*.h		g:ch_syntax_for_h	|ft-ch-syntax|	(deprecated)
++	*.h		g:filetype_h		|ft-c-syntax|
++						|ft-ch-syntax|
++						|ft-cpp-syntax|
+ 	*.i		g:filetype_i		|ft-progress-syntax|
+ 	*.inc		g:filetype_inc
+ 	*.lsl		g:filetype_lsl
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 8ab0dcc8b..83032e1c4 100644
+index 83032e1c4..8073457a0 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 16
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
++*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 19
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2208,8 +2208,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    Useful when there is additional information about the
- 		    match, e.g., what file it comes from.
+@@ -4845,7 +4845,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <
+ 	Also used for the |gf| command if an unmodified file name can't be
+ 	found.  Allows doing "gf" on the name after an 'include' statement.
+-	Also used for |<cfile>|.
++	Note: Not used for |<cfile>|.
  
--	   nearest  Matches are presented in order of proximity to the cursor
--		    position.  This applies only to matches from the current
-+	   nearest  Matches are listed based on their proximity to the cursor
-+		    position, unlike the default behavior, which only
-+		    considers proximity for matches appearing below the
-+		    cursor.  This applies only to matches from the current
- 		    buffer.  No effect if "fuzzy" is present.
- 
- 	   noinsert Do not insert any text for a match until the user selects
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a5579f4ab..527ed1850 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+ 	If the expression starts with s: or |<SID>|, then it is replaced with
+ 	the script ID (|local-function|). Example: >
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index ae89bd9f1..a8fbe1a85 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 16
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 18
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41594,7 +41594,7 @@ Default values: ~
- - the default 'backspace' option for Vim has been set to "indent,eol,start"
-   and removed from |defaults.vim|
- - the default fontsize for the GTK builds of Vim (Windows and Unix) has been
--  increased to 12pt to accomodate modern high-dpi monitors
-+  increased to 12pt to accommodate modern high-dpi monitors
- - the default value of the 'keyprotocol' option has been updated and support
-   for the ghostty terminal emulator (using kitty protocol) has been added
- 
-@@ -41637,8 +41637,8 @@ Options: ~
- - use 'smoothscroll' logic for CTRL-F / CTRL-B for pagewise scrolling
-   and CTRL-D / CTRL-U for half-pagewise scrolling
- - New option value for 'fillchars':
--  	"trunc"		- configure truncation indicator, 'pummaxwidth'
--  	"truncrl"	- like "trunc" but in 'rl' mode, 'pummaxwidth'
-+	"trunc"		- configure truncation indicator, 'pummaxwidth'
-+	"truncrl"	- like "trunc" but in 'rl' mode, 'pummaxwidth'
- 
- Ex commands: ~
- - allow to specify a priority when defining a new sign |:sign-define|
-@@ -41739,7 +41739,7 @@ Ex-Commands: ~
- Options: ~
- 
- 'chistory'		Size of the quickfix stack |quickfix-stack|.
--'completefuzzycollect'	Enable fuzzy collection of candiates for (some)
-+'completefuzzycollect'	Enable fuzzy collection of candidates for (some)
- 			|ins-completion| modes
- 'completeitemalign'	Order of |complete-items| in Insert mode completion
- 			popup
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 54fb8f333..ba72358d1 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 03
-+*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
+-*syntax.txt*	For Vim version 9.1.  Last change: 2025 Apr 15
++*syntax.txt*	For Vim version 9.1.  Last change: 2025 Apr 19
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1493,11 +1493,11 @@ tuple<number>			a tuple with a single item of type |Number|
- tuple<number, string>		a tuple with two items of type |Number| and
- 				|String|
- tuple<number, float, bool>	a tuple with three items of type |Number|,
--				|Float| and |Boolean|.
-+				|Float| and |Boolean|
- tuple<...list<number>>		a variadic tuple with zero or more items of
--				type |Number|.
-+				type |Number|
- tuple<number, ...list<string>>	a tuple with an item of type |Number| followed
--				by zero or more items of type |String|.
-+				by zero or more items of type |String|
+@@ -1056,8 +1056,12 @@ Variable		Highlight ~
+ *c_ansi_typedefs*	 ... but do standard ANSI types
+ *c_ansi_constants*	 ... but do standard ANSI constants
+ *c_no_utf*		don't highlight \u and \U in strings
+-*c_syntax_for_h*	for *.h files use C syntax instead of C++ and use objc
+-			syntax instead of objcpp
++*c_syntax_for_h*	use C syntax for *.h files instead of C++/ObjC/ObjC++
++			(NOTE: This variable is deprecated and no longer
++			 necessary, as *.h files now default to C, unless the
++			 file contains C++ or Objective-C syntax. If the
++			 automated detection fails, the default filetype can
++			 be adjusted using `g:filetype_h`.)
+ *c_no_if0*		don't highlight "#if 0" blocks as comments
+ *c_no_cformat*		don't highlight %-formats in strings
+ *c_no_c99*		don't highlight C99 standard items
+@@ -1116,8 +1120,11 @@ the C syntax file.  See |c.vim| for all the settings that are available for C.
  
- Examples: >
-     var myTuple: tuple<number> = (20,)
+ By setting a variable you can tell Vim to use Ch syntax for *.h files, instead
+ of C or C++: >
+-	:let ch_syntax_for_h = 1
++	:let g:filetype_h = 'ch'
+ 
++NOTE: In previous versions of Vim, the following (now-deprecated) variable was
++used, but is no longer the preferred approach: >
++	:let ch_syntax_for_h = 1
+ 
+ CHILL						*chill.vim* *ft-chill-syntax*
+ 
