@@ -1,176 +1,195 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e6747adcf..9f91f47d4 100644
+index 9f91f47d4..55a0731a8 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Apr 23
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Apr 24
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 Apr 24
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Apr 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -136,6 +136,7 @@ complete({startcol}, {matches}) none	set Insert mode completion
- complete_add({expr})		Number	add completion match
- complete_check()		Number	check for key typed during completion
- complete_info([{what}])		Dict	get current completion information
-+complete_match([{lnum}, {col}])	List	get completion column and trigger text
- confirm({msg} [, {choices} [, {default} [, {type}]]])
- 				Number	number of choice picked by user
- copy({expr})			any	make a shallow copy of {expr}
-@@ -2032,6 +2033,50 @@ complete_info([{what}])				*complete_info()*
- <
+@@ -2034,8 +2034,11 @@ complete_info([{what}])				*complete_info()*
  		Return type: dict<any>
  
-+complete_match([{lnum}, {col}])			*complete_match()*
-+		Returns a List of matches found according to the 'isexpand'
-+		option. Each match is represented as a List containing
-+		[startcol, trigger_text] where:
-+		- startcol: column position where completion should start,
-+		  or -1 if no trigger position is found. For multi-character
-+		  triggers, returns the column of the first character.
-+		- trigger_text: the matching trigger string from 'isexpand',
-+		  or empty string if no match was found or when using the
-+		  default 'iskeyword' pattern.
+ complete_match([{lnum}, {col}])			*complete_match()*
+-		Returns a List of matches found according to the 'isexpand'
+-		option. Each match is represented as a List containing
++		Searches backward from the given position and returns a List
++		of matches according to the 'isexpand' option. When no
++		arguments are provided, uses the current cursor position.
 +
-+		When 'isexpand' is empty, uses the 'iskeyword' pattern
-+		"\k\+$" to find the start of the current keyword.
-+
-+		When no arguments are provided, uses the current cursor
-+		position.
-+
-+		Examples: >
-+	set isexpand=.,->,/,/*,abc
-+	func CustomComplete()
-+	  let res = complete_match()
-+	  if res->len() == 0 | return | endif
-+	  let [col, trigger] = res[0]
-+	  let items = []
-+	  if trigger == '/*'
-+	    let items = ['/** */']
-+	  elseif trigger == '/'
-+	    let items = ['/*! */', '// TODO:', '// fixme:']
-+	  elseif trigger == '.'
-+	    let items = ['length()']
-+	  elseif trigger =~ '^\->'
-+	    let items = ['map()', 'reduce()']
-+	  elseif trigger =~ '^\abc'
-+	    let items = ['def', 'ghk']
-+	  endif
-+	  if items->len() > 0
-+	    let startcol = trigger =~ '^/' ? col : col + len(trigger)
-+	    call complete(startcol, items)
-+	  endif
-+	endfunc
-+	inoremap <Tab> <Cmd>call CustomComplete()<CR>
-+<
-+		Return type: list<list<any>>
-+
- 						*confirm()*
- confirm({msg} [, {choices} [, {default} [, {type}]]])
- 		confirm() offers the user a dialog, from which a choice can be
++		Each match is represented as a List containing
+ 		[startcol, trigger_text] where:
+ 		- startcol: column position where completion should start,
+ 		  or -1 if no trigger position is found. For multi-character
+@@ -2047,9 +2050,6 @@ complete_match([{lnum}, {col}])			*complete_match()*
+ 		When 'isexpand' is empty, uses the 'iskeyword' pattern
+ 		"\k\+$" to find the start of the current keyword.
+ 
+-		When no arguments are provided, uses the current cursor
+-		position.
+-
+ 		Examples: >
+ 	set isexpand=.,->,/,/*,abc
+ 	func CustomComplete()
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 018dbcaf1..fa9506da2 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
+@@ -1,4 +1,4 @@
+-*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 22
++*filetype.txt*	For Vim version 9.1.  Last change: 2025 Apr 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -269,7 +269,7 @@ D. If your filetype can only be detected by inspecting the contents of the
+       item of the 'runtimepath' option.  Example for Unix: >
+ 	:!mkdir ~/.vim
+ <
+-   2. Create a vim script file for doing this.  Example: >
++   2. Create a Vim script file for doing this.  Example: >
+ 	if did_filetype()	" filetype already set..
+ 	  finish		" ..don't do these checks
+ 	endif
+diff --git a/runtime/doc/if_perl.txt b/runtime/doc/if_perl.txt
+index 86edd05a0..85e5a90e5 100644
+--- a/runtime/doc/if_perl.txt
++++ b/runtime/doc/if_perl.txt
+@@ -1,4 +1,4 @@
+-*if_perl.txt*   For Vim version 9.1.  Last change: 2023 May 14
++*if_perl.txt*   For Vim version 9.1.  Last change: 2025 Apr 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Sven Verdoolaege
+@@ -74,7 +74,7 @@ The ActiveState one should work, Strawberry Perl is a good alternative.
+ 			|script-here|.
+ 
+ 
+-Example vim script: >
++Example Vim script: >
+ 
+ 	function! WhitePearl()
+ 	perl << EOF
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 8073457a0..03a6a6c5c 100644
+index 03a6a6c5c..255b9d50f 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 19
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 24
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 24
++*options.txt*	For Vim version 9.1.  Last change: 2025 Apr 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4983,6 +4983,19 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	and there is a letter before it, the completed part is made uppercase.
- 	With 'noinfercase' the match is used as-is.
+@@ -4996,6 +4996,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Note: Use "\\," to add a literal comma as trigger character, see
+ 	|option-backslash|.
  
-+						*'isexpand'* *'ise'*
-+'isexpand' 'ise'	string	(default: "")
-+			local to buffer
-+	Defines characters and patterns for completion in insert mode. Used by
-+	the |complete_match()| function to determine the starting position for
-+	completion. This is a comma-separated list of triggers. Each trigger
-+	can be:
-+	- A single character like "." or "/"
-+	- A sequence of characters like "->", "/*", or "/**"
-+
-+	Note: Use "\\," to add a literal comma as trigger character, see
-+	|option-backslash|.
++	Examples: >
++		set isexpand=.,->,/*,\\,
++<
 +
  			*'insertmode'* *'im'* *'noinsertmode'* *'noim'*
  'insertmode' 'im'	boolean	(default off)
  			global
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index a3f2d7cfc..522368787 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
+index 20caab1e1..e549ea641 100644
+--- a/runtime/doc/pi_getscript.txt
++++ b/runtime/doc/pi_getscript.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2025 Mar 27
-+*todo.txt*      For Vim version 9.1.  Last change: 2025 Apr 24
+-*pi_getscript.txt*  For Vim version 9.1.  Last change: 2025 Mar 15
++*pi_getscript.txt*  For Vim version 9.1.  Last change: 2025 Apr 27
+ >
+ 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
+ <
+@@ -156,7 +156,7 @@ may have.  As an example, consider: >
  
+ 	" GetLatestVimScripts: 884  1 :AutoInstall: AutoAlign.vim
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4749,20 +4749,10 @@ Insert mode completion/expansion:
- 7   When expanding file names with an environment variable, add the match with
-     the unexpanded var.  So $HOME/tm expands to "/home/guy/tmp" and
-     "$HOME/tmp"
--8   When there is no word before the cursor but something like "sys." complete
--    with "sys.".  Works well for C and similar languages.
- 9   ^X^L completion doesn't repeat correctly.  It uses the first match with
-     the last added line, instead of continuing where the last match ended.
-     (Webb)
--8   Add option to set different behavior for Insert mode completion:
--    - ignore/match case
--    - different characters than 'iskeyword'
--8   Add option 'isexpand', containing characters when doing expansion (so that
--    "." and "\" can be included, without changing 'iskeyword'). (Goldfarb)
--    Also: 'istagword': characters used for CTRL-].
--    When 'isexpand' or 'istagword' are empty, use 'iskeyword'.
--    Alternative: Use a pattern so that start and end of a keyword can be
--    defined, only allow dash in the middle, etc.
-+8   Add option 'istagword': characters used for CTRL-]. like 'isexpand'
- 8   Add a command to undo the completion, go back to the original text.
- 7   Completion of an abbreviation: Can leave letters out, like what Instant
-     text does: www.textware.com
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 0c24b8469..a22b6f798 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
+-This comment line tells getscript.vim to check vimscript #884 and that the
++This comment line tells getscript.vim to check Vim script #884 and that the
+ script is automatically installable.  Getscript will also use this line to
+ help build the GetLatestVimScripts.dat file, by including a line such as: >
+ 
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 51688b705..00799911e 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -460,7 +460,7 @@ file using root-relative paths, use the full path:
+ ==============================================================================
+ 4. Network-Oriented File Transfer			*netrw-xfer* {{{1
+ 
+-Network-oriented file transfer under Vim is implemented by a vim script
++Network-oriented file transfer under Vim is implemented by a Vim script
+ (<netrw.vim>) using plugin techniques.  It currently supports both reading and
+ writing across networks using rcp, scp, ftp or ftp+<.netrc>, scp, fetch,
+ dav/cadaver, rsync, or sftp.
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index 858309a28..132414368 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
 @@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Apr 21
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Apr 24
- 
- 		     VIM USER MANUAL - by Bram Moolenaar
- 
-@@ -1124,6 +1124,8 @@ Insert mode completion:				*completion-functions*
- 	complete_add()		add to found matches
- 	complete_check()	check if completion should be aborted
- 	complete_info()		get current completion information
-+	complete_match()	get insert completion start match col and
-+				trigger text
- 	pumvisible()		check if the popup menu is displayed
- 	pum_getpos()		position and size of popup menu if visible
- 
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index dfbe457a2..9560b1dfb 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 23
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Apr 24
+-*tagsrch.txt*   For Vim version 9.1.  Last change: 2024 Aug 01
++*tagsrch.txt*   For Vim version 9.1.  Last change: 2025 Apr 26
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41688,6 +41688,7 @@ Functions: ~
- |blob2str()|		convert a blob into a List of strings
- |bindtextdomain()|	set message lookup translation base path
- |cmdcomplete_info()|	get current cmdline completion info
-+|complete_match()|	get completion and trigger info
- |diff()|		diff two Lists of strings
- |filecopy()|		copy a file {from} to {to}
- |foreach()|		apply function to List items
-@@ -41750,6 +41751,7 @@ Options: ~
- 'eventignorewin'	autocommand events that are ignored in a window
- 'findfunc'		Vim function to obtain the results for a |:find|
- 			command
-+'isexpand'		defines triggers for completion
- 'lhistory'		Size of the location list stack |quickfix-stack|.
- 'messagesopt'		configure |:messages| and |hit-enter| prompt
- 'pummaxwidth'		maximum width for the completion popup menu
+@@ -914,7 +914,7 @@ Currently up to three flags may be passed to the tag function:
+ 	        (mnemonic: the tag function may use the context around the
+ 		cursor to perform a better job of generating the tag list.)
+   'i'		In Insert mode, the user was completing a tag (with
+-		|i_CTRL-X_CTRL-]| or 'completeopt' contains `t`).
++		|i_CTRL-X_CTRL-]| or 'complete' contains "`t`" or "`]`").
+   'r'		The first argument to tagfunc should be interpreted as a
+ 		|pattern| (see |tag-regexp|), such as when using: >
+ 		  :tag /pat
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index a22b6f798..ffa6fcb7a 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Apr 24
++*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Apr 27
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -35,8 +35,10 @@ like for example .vim files or configuration files like .vimrc and .gvimrc.
+ These scripts may define functions, commands and settings that Vim uses to
+ customize and extend its behavior.
+ 
+-With a slight abuse of nomenclature, we will use "Vim script" to refer to the
+-Vim scripting language throughout this documentation.  This shorthand helps to
++						*vim-script-notation*
++The correct notation is "Vim script" (or "Vim9 script" when refering to the
++new Vim9 language |Vim9-script|), so we will use "Vim script" to refer to the
++Vim scripting language throughout this documentation. This shorthand helps to
+ streamline explanations and discussions about scripting with Vim.
+ 
+ A Vim plugin is a collection of one or more Vim scripts, along with additional
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index ba72358d1..0dae57deb 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 18
++*vim9.txt*	For Vim version 9.1.  Last change: 2025 Apr 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2043,7 +2043,7 @@ The script name after `import` can be:
+ 
+ If the name does not end in ".vim" then the use of "as name" is required.
+ 
+-Once a vim9 script file has been imported, the result is cached and used the
++Once a Vim9 script file has been imported, the result is cached and used the
+ next time the same script is imported.  It will not be read again.
+ 
+ It is not allowed to import the same script twice, also when using two
+@@ -2056,7 +2056,7 @@ line, there can be no line break: >
+ 	echo that
+ 		.name  # Error!
+ <						*import-map*
+-When you've imported a function from one script into a vim9 script you can
++When you've imported a function from one script into a Vim9 script you can
+ refer to the imported function in a mapping by prefixing it with |<SID>|: >
+ 	noremap <silent> ,a :call <SID>name.Function()<CR>
+ 
