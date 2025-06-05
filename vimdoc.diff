@@ -1,202 +1,994 @@
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index 00a09ae14..d03d81eff 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 717f13a6f..3105a3d7d 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*index.txt*     For Vim version 9.1.  Last change: 2025 May 14
-+*index.txt*     For Vim version 9.1.  Last change: 2025 May 26
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 May 14
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2007,6 +2007,7 @@ complete_info([{what}])				*complete_info()*
+ 		   "omni"	     Omni completion |i_CTRL-X_CTRL-O|
+ 		   "spell"	     Spelling suggestions |i_CTRL-X_s|
+ 		   "eval"	     |complete()| completion
++		   "register"	     Words from registers |i_CTRL-X_CTRL-R|
+ 		   "unknown"	     Other internal modes
+ 
+ 		If the optional {what} list argument is supplied, then only
+@@ -4727,10 +4728,9 @@ getmousepos()						*getmousepos()*
+ 					start of the clicked char
+ 		All numbers are 1-based.
+ 
+-		If not over a window, e.g. when in the command line, then only
+-		"screenrow" and "screencol" are valid, the others are zero.
+-
+-		When on the |tabpanel|, "wincol" value is zero.
++		If not over a window, e.g. when in the command line or within
++		|tabpanel|, then only "screenrow" and "screencol" are valid,
++		the others are zero.
+ 
+ 		When on the status line below a window or the vertical
+ 		separator right of a window, the "line" and "column" values
+@@ -5042,6 +5042,10 @@ getregion({pos1}, {pos2} [, {opts}])			*getregion()*
+ 		- It is evaluated in current window context, which makes a
+ 		  difference if the buffer is displayed in a window with
+ 		  different 'virtualedit' or 'list' values.
++		- When specifying an exclusive selection and {pos1} and {pos2}
++		  are equal, the returned list contains a single character as
++		  if selection is inclusive, to match the behavior of an empty
++		  exclusive selection in Visual mode.
+ 
+ 		Examples: >
+ 			:xnoremap <CR>
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 24137c74d..6bf9e2c69 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.1.  Last change: 2025 Apr 03
++*change.txt*    For Vim version 9.1.  Last change: 2025 May 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -163,6 +163,7 @@ commands in CTRL-X submode				*i_CTRL-X_index*
+@@ -664,8 +664,9 @@ For other systems the tmpnam() library function is used.
+ 			Repeat last :substitute with same search pattern and
+ 			substitute string, but without the same flags.  You
+ 			may add [flags], see |:s_flags|.
+-			Note that after `:substitute` the '&' flag can't be
+-			used, it's recognized as a pattern separator.
++			Note that after `:substitute` the '&' and '#' flags
++			can't be used, they're recognized as a pattern
++			separator.
+ 			The space between `:substitute` and the 'c', 'g',
+ 			'i', 'I' and 'r' flags isn't required, but in scripts
+ 			it's a good idea to keep it to avoid confusion.
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index a88aad1a7..dbb991e56 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.1.  Last change: 2025 Apr 03
++*editing.txt*   For Vim version 9.1.  Last change: 2025 Jun 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1342,9 +1342,15 @@ b:browsefilter variable.  You would most likely set b:browsefilter in a
+ filetype plugin, so that the browse dialog would contain entries related to
+ the type of file you are currently editing.  Disadvantage: This makes it
+ difficult to start editing a file of a different type.  To overcome this, you
+-may want to add "All Files (*.*)\t*\n" as the final filter on Windows or "All
+-Files (*)\t*\n" on other platforms, so that the user can still access any
+-desired file.
++may want to add >
++
++	All Files\t(*.*)\t*\n
++<
++as the final filter on Windows or >
++
++	All Files\t(*)\t*\n
++<
++on other platforms, so that the user can still access any desired file.
+ 
+ To avoid setting browsefilter when Vim does not actually support it, you can
+ use has("browsefilter"): >
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 170d2d037..492a4444a 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2025 Apr 02
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Jun 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5149,6 +5149,10 @@ executable.  It takes the following arguments:
+ 	filetype	string
+ 	executable	string
+ 
++							*package-open*
++The |:Open| and |:Launch| command are provided by the included plugin
++$VIMRUNTIME/plugin/openPlugin.vim
++
+ 					*dist#vim9#Open()* *:Open* *:URLOpen*
+ 						      *g:Openprg* *gx*
+ dist#vim9#Open(file: string) ~
+@@ -5159,6 +5163,9 @@ string specified in the variable is used instead.
+ 
+ The |:Open| user command uses file completion for its argument.
+ 
++The |:URLOpen| user command works the same but does not perform file
++completion and therefore does not expand special characters |cmdline-special|.
++
+ This function is by default called using the gx mapping.  In visual mode
+ tries to open the visually selected text.
+ 
+@@ -5176,11 +5183,8 @@ NOTE: Escaping of the path is automatically applied.
+ Usage: >vim
+ 	:call dist#vim9#Open(<path>)
+ 	:Open <path>
++	:URLOpen <path>
+ <
+-							*package-open*
+-The |:Open| and |:Launch| command are provided by the included plugin
+-$VIMRUNTIME/plugin/openPlugin.vim
+-
+ 						*dist#vim9#Launch()* *:Launch*
+ dist#vim9#Launch(file: string) ~
+ 
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index 4e08d9059..c49a4d50b 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
+@@ -1,4 +1,4 @@
+-*helphelp.txt*	For Vim version 9.1.  Last change: 2025 May 04
++*helphelp.txt*	For Vim version 9.1.  Last change: 2025 Jun 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -305,8 +305,9 @@ Tip: After inserting a pattern to look for with the `/` command, if you press
+ <Esc> instead of <CR>, you can then get more context for each remaining entry
+ by pressing `J` or `K`.
+ 
+-Refer |helptoc.vim| for more details about helptoc, particularly about using
+-it with filetypes other than help, and configuring its options.
++Refer to |helptoc.txt| for more details about helptoc, particularly about
++using it with filetypes other than help, and configuring its options.
++Note:  You need to `packadd helptoc` before you can jump to |helptoc.txt|.
+ 
+ ==============================================================================
+ 2. Translated help files				*help-translated*
+@@ -411,7 +412,7 @@ in such a modeline, that can have undesired consequences.
+ 
+ TAGS
+ 
+-To define a help tag, place the name between asterisks (*tag-name*).  The
++To define a help tag, place the name between asterisks ("*tag-name*").  The
+ tag-name should be different from all the Vim help tag names and ideally
+ should begin with the name of the Vim plugin.  The tag name is usually right
+ aligned on a line.
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index d03d81eff..ff2799470 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -1,4 +1,4 @@
+-*index.txt*     For Vim version 9.1.  Last change: 2025 May 26
++*index.txt*     For Vim version 9.1.  Last change: 2025 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -163,7 +163,7 @@ commands in CTRL-X submode				*i_CTRL-X_index*
  |i_CTRL-X_CTRL-N|	CTRL-X CTRL-N	next completion
  |i_CTRL-X_CTRL-O|	CTRL-X CTRL-O	omni completion
  |i_CTRL-X_CTRL-P|	CTRL-X CTRL-P	previous completion
-+|i_CTRL-X_CTRL-R|	CTRL-X CTRL-R	complete words from registers
+-|i_CTRL-X_CTRL-R|	CTRL-X CTRL-R	complete words from registers
++|i_CTRL-X_CTRL-R|	CTRL-X CTRL-R	complete contents from registers
  |i_CTRL-X_CTRL-S|	CTRL-X CTRL-S	spelling suggestions
  |i_CTRL-X_CTRL-T|	CTRL-X CTRL-T	complete identifiers from thesaurus
  |i_CTRL-X_CTRL-Y|	CTRL-X CTRL-Y	scroll down
 diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index f3d92b290..553183d74 100644
+index 553183d74..155eb8f13 100644
 --- a/runtime/doc/insert.txt
 +++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2025 May 08
-+*insert.txt*    For Vim version 9.1.  Last change: 2025 May 26
+-*insert.txt*    For Vim version 9.1.  Last change: 2025 May 26
++*insert.txt*    For Vim version 9.1.  Last change: 2025 Jun 04
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -649,6 +649,7 @@ Completion can be done for:
+@@ -529,7 +529,7 @@ paragraph, no matter where the cursor currently is.  Or you can use Visual
+ mode: hit "v", move to the end of the block, and type "gq".  See also |gq|.
+ 
+ ==============================================================================
+-4. 'expandtab', 'smarttab' and 'softtabstop' options	*ins-expandtab*
++4. 'expandtab', 'softtabstop' and 'smarttab' options	*ins-expandtab*
+ 
+ If the 'expandtab' option is on, spaces will be used to fill the amount of
+ whitespace of the tab.  If you want to enter a real <Tab>, type CTRL-V first
+@@ -540,13 +540,6 @@ number of characters in the line increases.  Backspacing will delete one
+ space at a time.  The original character will be put back for only one space
+ that you backspace over (the last one).
+ 
+-							*ins-smarttab*
+-When the 'smarttab' option is on, a <Tab> inserts 'shiftwidth' positions at
+-the beginning of a line and 'tabstop' positions in other places.  This means
+-that often spaces instead of a <Tab> character are inserted.  When 'smarttab'
+-is off, a <Tab> always inserts 'tabstop' positions, and 'shiftwidth' is only
+-used for ">>" and the like.
+-
+ 							*ins-softtabstop*
+ When the 'softtabstop' option is non-zero, a <Tab> inserts 'softtabstop'
+ positions, and a <BS> used to delete white space, will delete 'softtabstop'
+@@ -561,6 +554,13 @@ the cursor.  Otherwise you cannot always delete a single character before the
+ cursor.  You will have to delete 'softtabstop' characters first, and then type
+ extra spaces to get where you want to be.
+ 
++							*ins-smarttab*
++When the 'smarttab' option is on, the <Tab> key indents by 'shiftwidth' if the
++cursor is in leading whitespace.  The <BS> key has the opposite effect. This
++behaves as if 'softtabstop' were set to the value of 'shiftwidth'. This option
++allows the user to set 'softtabstop' to a value other than 'shiftwidth' and
++still use the <Tab> key for indentation.
++
+ ==============================================================================
+ 5. Replace mode				*Replace* *Replace-mode* *mode-replace*
+ 
+@@ -649,7 +649,7 @@ Completion can be done for:
  11. omni completion					|i_CTRL-X_CTRL-O|
  12. Spelling suggestions				|i_CTRL-X_s|
  13. keywords in 'complete'				|i_CTRL-N| |i_CTRL-P|
-+14. words from registers				|i_CTRL-X_CTRL-R|
+-14. words from registers				|i_CTRL-X_CTRL-R|
++14. contents from registers				|i_CTRL-X_CTRL-R|
  
  Additionally, |i_CTRL-X_CTRL-Z| stops completion without changing the text.
  
-@@ -1019,6 +1020,21 @@ CTRL-X CTRL-V		Guess what kind of item is in front of the cursor and
- 			completion, for example: >
+@@ -1021,7 +1021,7 @@ CTRL-X CTRL-V		Guess what kind of item is in front of the cursor and
  				:imap <Tab> <C-X><C-V>
  
-+
-+Completing words from registers				*compl-register-words*
-+							*i_CTRL-X_CTRL-R*
-+CTRL-X CTRL-R		Guess what kind of item is in front of the cursor from
-+			all registers and find the first match for it.
-+			Further use of CTRL-R (without CTRL-X) will insert the
-+			register content, see |i_CTRL-R|.
-+			'ignorecase' applies to the matching.
-+
-+	CTRL-N		Search forwards for next match.  This match replaces
-+			the previous one.
-+
-+	CTRL-P		Search backwards for previous match.  This match
-+			replaces the previous one.
+ 
+-Completing words from registers				*compl-register-words*
++Completing contents from registers			*compl-register-words*
+ 							*i_CTRL-X_CTRL-R*
+ CTRL-X CTRL-R		Guess what kind of item is in front of the cursor from
+ 			all registers and find the first match for it.
+@@ -1035,6 +1035,11 @@ CTRL-X CTRL-R		Guess what kind of item is in front of the cursor from
+ 	CTRL-P		Search backwards for previous match.  This match
+ 			replaces the previous one.
+ 
++	CTRL-X CTRL-R	Further use of CTRL-X CTRL-R will copy the line
++			following the previous expansion in other contexts
++			unless a double CTRL-X is used (e.g. this switches
++			from completing register words to register contents).
 +
  User defined completion					*compl-function*
  
  Completion is done by a function that can be defined by the user with the
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e74c5e8a5..b163571e4 100644
+index b163571e4..4471b7c52 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 May 16
-+*options.txt*	For Vim version 9.1.  Last change: 2025 May 26
+-*options.txt*	For Vim version 9.1.  Last change: 2025 May 26
++*options.txt*	For Vim version 9.1.  Last change: 2025 Jun 04
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2085,7 +2085,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		|i_CTRL-X_CTRL-D|
- 	]	tag completion
- 	t	same as "]"
--	f{func}	call the function {func}.  Multiple "f" flags may be specified.
-+	F{func}	call the function {func}.  Multiple "F" flags may be specified.
- 		Refer to |complete-functions| for details on how the function
- 		is invoked and what it should return.  The value can be the
- 		name of a function or a |Funcref|.  For |Funcref| values,
-@@ -2103,9 +2103,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		If generating matches is potentially slow, |complete_check()|
- 		should be used to avoid blocking and preserve editor
- 		responsiveness.
--	f	equivalent to using "f{func}", where the function is taken from
-+	F	equivalent to using "F{func}", where the function is taken from
- 		the 'completefunc' option.
--	o	equivalent to using "f{func}", where the function is taken from
-+	o	equivalent to using "F{func}", where the function is taken from
- 		the 'omnifunc' option.
+@@ -3376,6 +3376,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	events are ignored, autocommands will not be executed.
+ 	Otherwise this is a comma-separated list of event names.  Example: >
+ 	    :set ei=WinEnter,WinLeave
++<
++	To ignore all but some events, a "-" prefix can be used: >
++	    :set ei=all,-WinLeave
+ <
+ 						*'eventignorewin'* *'eiw'*
+ 'eventignorewin' 'eiw'	string	(default "")
+@@ -5719,6 +5722,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Maximum value is 6.
+ 	Even when this option is set to 2 you can still edit text with more
+ 	combining characters, you just can't see them.  Use |g8| or |ga|.
++	When set to 0, you will not be able to see any combining characters.
+ 	See |mbyte-combining|.
  
- 	Unloaded buffers are not loaded, thus their autocmds |:autocmd| are
-@@ -3633,7 +3633,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	one dot may appear.
- 	This option is not copied to another buffer, independent of the 's' or
- 	'S' flag in 'cpoptions'.
--	Only alphanumeric characters, '-' and '_' can be used.
-+	Only alphanumeric characters, '-' and '_' can be used (and a '.' is
-+	allowed as delimiter when combining different filetypes).
+ 						*'maxfuncdepth'* *'mfd'*
+@@ -7195,9 +7199,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	the end of line the line break still isn't included.
+ 	When "exclusive" is used, cursor position in visual mode will be
+ 	adjusted for inclusive motions |inclusive-motion-selection-exclusive|.
+-	Note that when "exclusive" is used and selecting from the end
+-	backwards, you cannot include the last character of a line, when
+-	starting in Normal mode and 'virtualedit' empty.
++
++	Note:
++	- When "exclusive" is used and selecting from the end backwards, you
++	  cannot include the last character of a line, when starting in Normal
++	  mode and 'virtualedit' empty.
++	- when "exclusive" is used with a single character visual selection,
++	  Vim will behave as if the 'selection' is inclusive (in other words,
++	  you cannot visually select an empty region).
  
- 						*'fillchars'* *'fcs'*
- 'fillchars' 'fcs'	string	(default "vert:|,fold:-,eob:~,lastline:@")
-@@ -4658,7 +4659,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 'ignorecase' 'ic'	boolean	(default off)
+ 	The 'selection' option is set by the |:behave| command.
+ 
+@@ -7495,10 +7504,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'shiftwidth'* *'sw'*
+ 'shiftwidth' 'sw'	number	(default 8)
+ 			local to buffer
+-	Number of spaces to use for each step of (auto)indent.  Used for
+-	|'cindent'|, |>>|, |<<|, etc.
+-	When zero the 'tabstop' value will be used.  Use the |shiftwidth()|
+-	function to get the effective shiftwidth value.
++	Number of columns that make up one level of (auto)indentation.  Used
++	by |'cindent'|, |<<|, |>>|, etc.
++	If set to 0, Vim uses the current 'tabstop' value.  Use |shiftwidth()|
++	to obtain the effective value in scripts.
+ 
+ 						*'shortmess'* *'shm'*
+ 'shortmess' 'shm'	string	(Vim default "filnxtToOS", Vi default: "S",
+@@ -7794,19 +7803,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				 *'smarttab'* *'sta'* *'nosmarttab'* *'nosta'*
+ 'smarttab' 'sta'	boolean	(default off)
  			global
- 	Ignore case in search patterns, |cmdline-completion|, when
--	searching in the tags file, and non-|Vim9| |expr-==|.
-+	searching in the tags file, non-|Vim9| |expr-==| and for Insert-mode
-+	completion |ins-completion|.
- 	Also see 'smartcase' and 'tagcase'.
- 	Can be overruled by using "\c" or "\C" in the pattern, see
- 	|/ignorecase|.
+-	When on, a <Tab> in front of a line inserts blanks according to
+-	'shiftwidth'.  'tabstop' or 'softtabstop' is used in other places.  A
+-	<BS> will delete a 'shiftwidth' worth of space at the start of the
+-	line.
+-	When off, a <Tab> always inserts blanks according to 'tabstop' or
+-	'softtabstop'.  'shiftwidth' is only used for shifting text left or
+-	right |shift-left-right|.
+-	What gets inserted (a <Tab> or spaces) depends on the 'expandtab'
+-	option.  Also see |ins-expandtab|.  When 'expandtab' is not set, the
+-	number of spaces is minimized by using <Tab>s.
+-	This option is reset when 'paste' is set and restored when 'paste' is
+-	reset.
+-	NOTE: This option is reset when 'compatible' is set.
++	When enabled, the <Tab> key will indent by 'shiftwidth' if the cursor
++	is in leading whitespace.  The <BS> key has the opposite effect.
++	This behaves as if 'softtabstop' is set to the value of 'shiftwidth'.
++	This option is reset when 'compatible' is set; it is temporarily
++	disabled when 'paste' is enabled, and restored when 'paste' is turned
++	off.
++	Have a look at section |30.5| of the user guide for detailed
++	explanations on how Vim works with tabs and spaces.
+ 
+ 			*'smoothscroll'* *'sms'* *'nosmoothscroll'* *'nosms'*
+ 'smoothscroll' 'sms'	boolean  (default off)
+@@ -8429,7 +8433,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 'tabpanel' 'tpl'			string	(default empty)
+ 			global
+ 			{not in Vi}
+-	When non empty, this option determines the content of the |tabpanel|.
++	When non-empty, this option determines the content of the |tabpanel|.
+ 	The option consists of printf style '%' items interspersed with
+ 	normal text, similar to the 'statusline' or 'tabline'.
+ 
+@@ -8465,7 +8469,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Optional settings for the |tabpanel|,  It can consist of the following
+ 	items.  Items must be separated by a comma.
+ 
+-		align:{text}	Specified the position of tabpanel.
++		align:{text}	Specifies the position of the tabpanel.
+ 				Currently supported positions are:
+ 
+ 				left	left-aligned
+@@ -8473,13 +8477,13 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 				(default "left")
+ 
+-		columns:{n}	Use the size (in char) of tabpanel.
++		columns:{n}	Use the size (in characters) of the tabpanel.
+ 				The tabpanel is never shown when using zero
+ 				or less than the size of Vim window.
+ 				(default 20)
+ 
+ 		vert		Use a vertical separator for tabpanel.
+-				This vertical separator is used "tpl_vert" of
++				This vertical separator used is "tpl_vert" of
+ 				'fillchars'.
+ 				(default off)
+ 
+@@ -8493,46 +8497,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'tabstop'* *'ts'*
+ 'tabstop' 'ts'		number	(default 8)
+ 			local to buffer
+-	Number of spaces that a <Tab> in the file counts for.  Also see
+-	the |:retab| command, and the 'softtabstop' option.
+-
+-	Note: Setting 'tabstop' to any other value than 8 can make your file
+-	appear wrong in many places, e.g., when printing it.
+-	The value must be more than 0 and less than 10000.
+-
+-	There are five main ways to use tabs in Vim:
+-	1. Always keep 'tabstop' at 8, set 'softtabstop' and 'shiftwidth' to 4
+-	   (or 3 or whatever you prefer) and use 'noexpandtab'.  Then Vim
+-	   will use a mix of tabs and spaces, but typing <Tab> and <BS> will
+-	   behave like a tab appears every 4 (or 3) characters.
+-	   This is the recommended way, the file will look the same with other
+-	   tools and when listing it in a terminal.
+-	2. Set 'softtabstop' and 'shiftwidth' to whatever you prefer and use
+-	   'expandtab'.  This way you will always insert spaces.  The
+-	   formatting will never be messed up when 'tabstop' is changed (leave
+-	   it at 8 just in case).  The file will be a bit larger.
+-	   You do need to check if no Tabs exist in the file.  You can get rid
+-	   of them by first setting 'expandtab' and using `%retab!`, making
+-	   sure the value of 'tabstop' is set correctly.
+-	3. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use
+-	   'expandtab'.  This way you will always insert spaces.  The
+-	   formatting will never be messed up when 'tabstop' is changed.
+-	   You do need to check if no Tabs exist in the file, just like in the
+-	   item just above.
+-	4. Set 'tabstop' and 'shiftwidth' to whatever you prefer and use a
+-	   |modeline| to set these values when editing the file again.  Only
+-	   works when using Vim to edit the file, other tools assume a tabstop
+-	   is worth 8 spaces.
+-	5. Always set 'tabstop' and 'shiftwidth' to the same value, and
+-	   'noexpandtab'.  This should then work (for initial indents only)
+-	   for any tabstop setting that people use.  It might be nice to have
+-	   tabs after the first non-blank inserted as spaces if you do this
+-	   though.  Otherwise aligned comments will be wrong when 'tabstop' is
+-	   changed.
++	Defines the column multiple used to display the Horizontal Tab
++	character (ASCII 9); a Horizontal Tab always advances to the next
++	tab stop.
++	The value must be at least 1 and at most 9999.
++	If Vim was compiled with |+vartabs| and |'vartabstop'| is set, this option
++	is ignored.
++	Leave it at 8 unless you have a strong reason (see usr |30.5|).
+ 
+-	If Vim is compiled with the |+vartabs| feature then the value of
+-	'tabstop' will be ignored if |'vartabstop'| is set to anything other
+-	than an empty string.
+ 
+ 			*'tagbsearch'* *'tbs'* *'notagbsearch'* *'notbs'*
+ 'tagbsearch' 'tbs'	boolean	(default on)
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 349c1af8d..de902ee2c 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*  For Vim version 9.1.  Last change: 2025 Apr 06
++*quickref.txt*  For Vim version 9.1.  Last change: 2025 Jun 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -918,7 +918,7 @@ Short explanation of each option:		*option-list*
+ 'signcolumn'	  'scl'	    when to display the sign column
+ 'smartcase'	  'scs'     no ignore case when pattern has uppercase
+ 'smartindent'	  'si'	    smart autoindenting for C programs
+-'smarttab'	  'sta'     use 'shiftwidth' when inserting <Tab>
++'smarttab'	  'sta'     <Tab> in leading whitespace indents by 'shiftwidth'
+ 'smoothscroll'	  'sms'     scroll by screen lines when 'wrap' is set
+ 'softtabstop'	  'sts'     number of spaces that <Tab> uses while editing
+ 'spell'			    enable spell checking
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 513fdac7a..44fed277f 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2025 May 21
++*syntax.txt*	For Vim version 9.1.  Last change: 2025 Jun 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2067,13 +2067,8 @@ old way, put the following line into your Vim startup file: >
+ All (exported) public types declared in `java.lang` are always automatically
+ imported and available as simple names.  To highlight them, use: >
+ 	:let g:java_highlight_java_lang_ids = 1
+-
+-You can also highlight types of most standard Java packages if you download
+-the javaid.vim script at http://www.fleiner.com/vim/download.html.  If you
+-prefer to only highlight types of a certain package, say `java.io`, use the
+-following: >
+-	:let g:java_highlight_java_io = 1
+-Check the javaid.vim file for a list of all the packages that are supported.
++You can also generate syntax items for other public and protected types and
++opt in to highlight some of their names; see |java-package-info-url|.
+ 
+ Headers of indented function declarations can be highlighted (along with parts
+ of lambda expressions and method reference expressions), but it depends on how
+@@ -2226,7 +2221,8 @@ The supported JEP numbers are to be drawn from this table:
+ Note that as soon as the particular preview feature will have been integrated
+ into the Java platform, its entry will be removed from the table and related
+ optionality will be discontinued.
+-
++						*java-package-info-url*
++https://github.com/zzzyxwvut/java-vim/blob/master/tools/javaid/src/javaid/package-info.java
+ 
+ JSON			*json.vim* *ft-json-syntax* *g:vim_json_conceal*
+ 						*g:vim_json_warnings*
+@@ -3106,7 +3102,7 @@ PRINTCAP + TERMCAP	*ft-ptcap-syntax* *ft-termcap-syntax*
+ This syntax file applies to the printcap and termcap databases.
+ 
+ In order for Vim to recognize printcap/termcap files that do not match
+-the patterns *printcap*, or *termcap*, you must put additional patterns
++the patterns "*printcap*", or "*termcap*", you must put additional patterns
+ appropriate to your system in your |myfiletypefile| file.  For these
+ patterns, you must set the variable "b:ptcap_type" to either "print" or
+ "term", and then the 'filetype' option to ptcap.
+diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
+index e17d53326..e30109803 100644
+--- a/runtime/doc/tabpage.txt
++++ b/runtime/doc/tabpage.txt
+@@ -1,4 +1,4 @@
+-*tabpage.txt*   For Vim version 9.1.  Last change: 2025 May 14
++*tabpage.txt*   For Vim version 9.1.  Last change: 2025 May 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -436,9 +436,9 @@ side of the window.  It looks like this:
+ 	|           |text text text text text text text
+ 	|           |text text text text text text text
+ <
+-To configure the tabpanel, use following options: 'tabpanel',
+-'showtabpanel', 'tabpanelopt'.
+-The 'tabpanel' and 'showtabpanel' options are function similar to the
++To configure the tabpanel, use the following options: 'tabpanel',
++'showtabpanel' and 'tabpanelopt'.
++The 'tabpanel' and 'showtabpanel' options function similar to
+ 'statusline' or 'tabline'.
+ 
+ The "columns:" of 'tabpanelopt' option specifies the width of the tabpanel:
+@@ -480,7 +480,7 @@ displayed between the tabpanel and the main window:
+ 	|  ~/aaa.txt|text text text text text text text
+ 	|(2)        |text text text text text text text
+ <
+-The vertical separator is used "tpl_vert" of 'fillchars'.
++The vertical separator used is "tpl_vert" of 'fillchars'.
+ 
+ You can customize the appearance of the tab page labels using the highlight
+ groups: |hl-TabPanel| |hl-TabPanelSel| |hl-TabPanelFill|
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 522368787..578f5e8fe 100644
+index 578f5e8fe..06d98fd0f 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*todo.txt*      For Vim version 9.1.  Last change: 2025 Apr 24
-+*todo.txt*      For Vim version 9.1.  Last change: 2025 May 26
+-*todo.txt*      For Vim version 9.1.  Last change: 2025 May 26
++*todo.txt*      For Vim version 9.1.  Last change: 2025 May 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4764,7 +4764,6 @@ Insert mode completion/expansion:
- 7   When expanding $HOME/dir with ^X^F keep the $HOME (with an option?).
- 7   Add CTRL-X command in Insert mode like CTRL-X CTRL-N, that completes WORDS
-     instead of words.
--8   Add CTRL-X CTRL-R: complete words from register contents.
- 8   Add completion of previously inserted texts (like what CTRL-A does).
-     Requires remembering a number of insertions.
- 8   Add 'f' flag to 'complete': Expand file names.
-diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
-index 17590e5cb..7f7a6660d 100644
---- a/runtime/doc/uganda.txt
-+++ b/runtime/doc/uganda.txt
+@@ -4702,8 +4702,6 @@ Autocommands:
+ 
+ 
+ Omni completion:
+--   Add a flag to 'complete' to be able to do omni completion with CTRL-N (and
+-    mix it with other kinds of completion).
+ -   Ideas from the Vim 7 BOF at SANE:
+ 	- For interpreted languages, use the interpreter to obtain information.
+ 	  Should work for Java (Eclipse does this), Python, Tcl, etc.
+diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
+index e52853a82..af1cd619b 100644
+--- a/runtime/doc/usr_02.txt
++++ b/runtime/doc/usr_02.txt
 @@ -1,4 +1,4 @@
--*uganda.txt*    For Vim version 9.1.  Last change: 2024 Aug 14
-+*uganda.txt*    For Vim version 9.1.  Last change: 2025 May 25
+-*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Feb 01
++*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Jun 03
  
+ 		     VIM USER MANUAL - by Bram Moolenaar
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -127,6 +127,9 @@ Note:
-   contact information with the "--with-modified-by" configure argument or the
-   MODIFIED_BY define.
+@@ -438,9 +438,9 @@ of the tag given by the word under the cursor.)
+    After a few jumps, you might want to go back.  CTRL-T (pop tag) takes you
+ back to the preceding position.  CTRL-O (jump to older position) also works
+ nicely here.
+-   At the top of the help screen, there is the notation *help.txt*.  This name
+-between "*" characters is used by the help system to define a tag (hyperlink
+-destination).
++   At the top of the help screen, there is the notation "*help.txt*".  This
++name between "*" characters is used by the help system to define a tag
++(hyperlink destination).
+    See |29.1| for details about using tags.
  
-+- This license applies to the source code of Vim.  However, different license
-+  conditions may apply to some runtime files included with Vim; these will be
-+  specified in the header of each respective file.
- ==============================================================================
- Kibaale Children's Centre		*kcc* *Kibaale*  *charity*
+ To get help on a given subject, use the following command: >
+diff --git a/runtime/doc/usr_11.txt b/runtime/doc/usr_11.txt
+index 9ba6f4420..19851b530 100644
+--- a/runtime/doc/usr_11.txt
++++ b/runtime/doc/usr_11.txt
+@@ -1,4 +1,4 @@
+-*usr_11.txt*	For Vim version 9.1.  Last change: 2020 Oct 25
++*usr_11.txt*	For Vim version 9.1.  Last change: 2025 Jun 03
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -127,7 +127,7 @@ Example: >
+ 	vim -r .help.txt.swo
+ 
+ This is also handy when the swap file is in another directory than expected.
+-Vim recognizes files with the pattern *.s[uvw][a-z] as swap files.
++Vim recognizes files with the pattern "*.s[uvw][a-z]" as swap files.
+ 
+ If this still does not work, see what file names Vim reports and rename the
+ files accordingly.  Check the 'directory' option to see where Vim may have
+diff --git a/runtime/doc/usr_22.txt b/runtime/doc/usr_22.txt
+index 0220893a7..c0ab47af8 100644
+--- a/runtime/doc/usr_22.txt
++++ b/runtime/doc/usr_22.txt
+@@ -1,4 +1,4 @@
+-*usr_22.txt*	For Vim version 9.1.  Last change: 2024 Oct 05
++*usr_22.txt*	For Vim version 9.1.  Last change: 2025 Jun 04
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -27,23 +27,25 @@ Vim has a plugin that makes it possible to edit a directory.  Try this: >
+ 	:edit .
+ 
+ Through the magic of autocommands and Vim scripts, the window will be filled
+-with the contents of the directory.  It looks like this:
+-
+-" ============================================================================ ~
+-" Netrw Directory Listing                                        (netrw v109) ~
+-"   Sorted by      name ~
+-"   Sort sequence: [\/]$,\.h$,\.c$,\.cpp$,*,\.info$,\.swp$,\.o$\.obj$,\.bak$ ~
+-"   Quick Help: <F1>:help  -:go up dir  D:delete  R:rename  s:sort-by  x:exec ~
+-" ============================================================================ ~
+-../ ~
+-./ ~
+-check/ ~
+-Makefile ~
+-autocmd.txt ~
+-change.txt ~
+-eval.txt ~
+-filetype.txt ~
+-help.txt.info ~
++with the contents of the directory.  It looks like this (slightly cleaned up
++so that it fits within 80 chars): >
++
++  " ===========================================================================
++  " Netrw Directory Listing                                        (netrw v180)
++  "   /path/to/vim/runtime/doc
++  "   Sorted by      name
++  "   Sort sequence: [\/]$,*,\(\.bak\|\~\|\.o\|\.h\|\.info\|\.swp\)[*@]\=$
++  "   Quick Help: <F1>:help -:go up dir D:delete R:rename s:sort-by x:special
++  " ===========================================================================
++  ../
++  ./
++  check/
++  Makefile
++  autocmd.txt
++  change.txt
++  eval.txt
++  filetype.txt
++  help.txt.info
+ 
+ You can see these items:
  
 diff --git a/runtime/doc/usr_24.txt b/runtime/doc/usr_24.txt
-index 72f43f068..250bd17ea 100644
+index 250bd17ea..0f7249574 100644
 --- a/runtime/doc/usr_24.txt
 +++ b/runtime/doc/usr_24.txt
-@@ -187,6 +187,7 @@ with a certain type of item:
+@@ -1,4 +1,4 @@
+-*usr_24.txt*	For Vim version 9.1.  Last change: 2018 Mar 18
++*usr_24.txt*	For Vim version 9.1.  Last change: 2025 Jun 02
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -187,7 +187,7 @@ with a certain type of item:
  	CTRL-X CTRL-D		macro definitions (also in included files)
  	CTRL-X CTRL-I		current and included files
  	CTRL-X CTRL-K		words from a dictionary
-+	CTRL-X CTRL-R		words from registers
+-	CTRL-X CTRL-R		words from registers
++	CTRL-X CTRL-R		contents from registers
  	CTRL-X CTRL-T		words from a thesaurus
  	CTRL-X CTRL-]		tags
  	CTRL-X CTRL-V		Vim command line
+diff --git a/runtime/doc/usr_30.txt b/runtime/doc/usr_30.txt
+index c3bbcba69..86fe649bd 100644
+--- a/runtime/doc/usr_30.txt
++++ b/runtime/doc/usr_30.txt
+@@ -1,4 +1,4 @@
+-*usr_30.txt*	For Vim version 9.1.  Last change: 2024 Apr 29
++*usr_30.txt*	For Vim version 9.1.  Last change: 2025 May 30
+ 
+ 		     VIM USER MANUAL - by Bram Moolenaar
+ 
+@@ -409,108 +409,202 @@ the cursor is on "printf":
+ ==============================================================================
+ *30.5*	Tabs and spaces
+ 
+-'tabstop' is set to eight by default.  Although you can change it, you quickly
+-run into trouble later.  Other programs won't know what tabstop value you
+-used.  They probably use the default value of eight, and your text suddenly
+-looks very different.  Also, most printers use a fixed tabstop value of eight.
+-Thus it's best to keep 'tabstop' alone.  (If you edit a file which was written
+-with a different tabstop setting, see |25.3| for how to fix that.)
+-   For indenting lines in a program, using a multiple of eight spaces makes
+-you quickly run into the right border of the window.  Using a single space
+-doesn't provide enough visual difference.  Many people prefer to use four
+-spaces, a good compromise.
+-   Since a <Tab> is eight spaces and you want to use an indent of four spaces,
+-you can't use a <Tab> character to make your indent.  There are two ways to
+-handle this:
++A QUICK HISTORY OF THE RATIONALE BEHIND TABS
+ 
+-1.  Use a mix of <Tab> and space characters.  Since a <Tab> takes the place of
+-    eight spaces, you have fewer characters in your file.  Inserting a <Tab>
+-    is quicker than eight spaces.  Backspacing works faster as well.
++`vi` (the ancestor of Vim) was created by Bill Joy.  At the time, he was using
++a PDP-11 with limited memory and I/O operation capabilities.  Back then, it
++was common to optimize the size of source code with the following trick.
++  The ASCII table was first designed to remotely control teleprinters.  When
++control character 9 (the Horizontal Tab, caret notation: ^I) was sent to a
++teleprinter, it would move the carriage to the next tab stop.  Assuming tab
++stops were separated by 8 columns (a typical standard), this means that a
++single control character could produce the same visual effect as up to 8 space
++characters.  For example, the following two lines will display identically >
+ 
+-2.  Use spaces only.  This avoids the trouble with programs that use a
+-    different tabstop value.
++	1234^I9
++	1234    9
+ 
+-Fortunately, Vim supports both methods quite well.
++Using the <Tab> key was also faster than typing <Space> several times; the
++same was true for <BS>.
+ 
+ 
+-SPACES AND TABS
++THE ISSUE WITH TABS AND INDENTATION
+ 
+-If you are using a combination of tabs and spaces, you just edit normally.
+-The Vim defaults do a fine job of handling things.
+-   You can make life a little easier by setting the 'softtabstop' option.
+-This option tells Vim to make the <Tab> key look and feel as if tabs were set
+-at the value of 'softtabstop', but actually use a combination of tabs and
+-spaces.
+-   After you execute the following command, every time you press the <Tab> key
+-the cursor moves to the next 4-column boundary: >
++In Vim, the number of columns between two (virtual) horizontal tab stops
++is controlled by 'tabstop' and is set to eight by default.  Although you can
++change it, you quickly run into trouble later.  Other programs won't know what
++tabstop value you used.  They probably use the default value of eight, and
++your text suddenly looks very different.  Also, most printers use a fixed
++tabstop value of eight.  Thus it's best to keep 'tabstop' alone; if you edit a
++file which was written with a different tabstop setting, see |25.3| for how
++to fix that.
++   For indenting lines in a program, using a multiple of eight columns makes
++you quickly run into the right border of the window.  Using a single space
++doesn't provide enough visual difference.  Many people prefer to use four
++spaces, a good compromise.
++   Since a tab character at the beginning of a line is visually represented
++as eight spaces and you want to use an indent of four spaces, you can't use a
++tab character to make your indent.
++  To remedy this, `vi` had the 'shiftwidth' option.  When set to 4, on a new
++line, pressing <C-t> in Insert mode would indent the line by 4 spaces,
++a result impossible to get with the <Tab> key and 'tabstop' set to 8.
++ To optimize space, `vi` would also silently remove packs of spaces and replace
++them with tab characters.  The following shows what happens pressing <C-t>
++a few times.
++  A "." stands for a space character and "------->" for a tab character.
+ 
+-	:set softtabstop=4
++	type				result ~
++	<C-t>				....
++	<C-t><C-t>			------->
++	<C-t><C-t><C-t>			------->....
+ 
+-When you start in the first column and press <Tab>, you get 4 spaces inserted
+-in your text.  The second time, Vim takes out the 4 spaces and puts in a <Tab>
+-(thus taking you to column 8).  Thus Vim uses as many <Tab>s as possible, and
+-then fills up with spaces.
+-   When backspacing it works the other way around.  A <BS> will always delete
+-the amount specified with 'softtabstop'.  Then <Tab>s are used as many as
+-possible and spaces to fill the gap.
+-   The following shows what happens pressing <Tab> a few times, and then using
+-<BS>.  A "." stands for a space and "------->" for a <Tab>.
++  Similarly pressing <C-d> in Insert mode would decrease the indent.  Hence
++with `set tabstop=8 shiftwidth=2` one has
+ 
+-	type			  result ~
+-	<Tab>			  ....
+-	<Tab><Tab>		  ------->
+-	<Tab><Tab><Tab>		  ------->....
+-	<Tab><Tab><Tab><BS>	  ------->
+-	<Tab><Tab><Tab><BS><BS>   ....
++	type				result ~
++	<C-t><Tab><C-t>			..----->..
++	<C-t><Tab><C-t><C-d>		------->
+ 
+-An alternative is to use the 'smarttab' option.  When it's set, Vim uses
+-'shiftwidth' for a <Tab> typed in the indent of a line, and a real <Tab> when
+-typed after the first non-blank character.  However, <BS> doesn't work like
+-with 'softtabstop'.
++  A third option that one could set in `vi` was 'autoindent'.  It copies the
++indent level of the previous lines,
+ 
++	type				result ~
++	<Space><Tab>hello		.------>hello
++	<Space><Tab>hello<Enter>	.------>hello
++					------->
+ 
+-JUST SPACES
++but the new line is produced by optimizing the number of characters used.
+ 
+-If you want absolutely no tabs in your file, you can set the 'expandtab'
+-option: >
+ 
+-	:set expandtab
++JUST SPACES
+ 
+-When this option is set, the <Tab> key inserts a series of spaces.  Thus you
+-get the same amount of white space as if a <Tab> character was inserted, but
+-there isn't a real <Tab> character in your file.
+-   The backspace key will delete each space by itself.  Thus after typing one
+-<Tab> you have to press the <BS> key up to eight times to undo it.  If you are
+-in the indent, pressing CTRL-D will be a lot quicker.
++But separating tab stops with 8 columns was not universal: IBM had a standard
++at 10 columns, and today some Go developers write code with `tabstop=4`.  Every
++time text is displayed with a different 'tabstop' value, it risks misaligning
++the text, especially once the file is shared and opened on another machine.
++  In the meantime, computers got much better and the few octets saved by using
++tabs were no longer making any real difference.  It became possible to use
++only spaces and thus guarantee the same resulting text everywhere.  But using
++only spaces was impossible in `vi` without sacrificing features.  Remember that
++'autoindent' would systematically try to input a tab character when it could.
++  Vim 4.0 made working with only spaces as convenient as working only with
++tabs (or a mix of tabs and spaces), by introducing the 'expandtab' option.
++When set, Vim will replace any horizontal tab character it would normally
++insert with an equivalent number of spaces, to end up with the same visual
++effect. <BS> would continue to remove only one character at a time.
++
++	type				result ~
++	<Tab>				........
++	<Tab><BS>			.......
+ 
+ 
+ CHANGING TABS IN SPACES (AND BACK)
+ 
+-Setting 'expandtab' does not affect any existing tabs.  In other words, any
+-tabs in the document remain tabs.  If you want to convert tabs to spaces, use
+-the ":retab" command.  Use these commands: >
++Setting 'expandtab' does not immediately affect existing tab characters.  In
++order to purge a file from all its horizontal tab characters, Vim 5.3
++introduced the |:retab| command.  Use these commands: >
+ 
+ 	:set expandtab
+-	:%retab
+-
+-Now Vim will have changed all indents to use spaces instead of tabs.  However,
+-all tabs that come after a non-blank character are kept.  If you want these to
+-be converted as well, add a !: >
+-
+-	:%retab!
++	:retab
+ 
+ This is a little bit dangerous, because it can also change tabs inside a
+ string.  To check if these exist, you could use this: >
+ 
+ 	/"[^"\t]*\t[^"]*"
+ 
+-It's recommended not to use hard tabs inside a string.  Replace them with
+-"\t" to avoid trouble.
++It's recommended not to use actual tab characters inside a string.  Replace
++them with "\t" to avoid trouble.
+ 
+-The other way around works just as well: >
++  The other way around works just as well: >
+ 
+ 	:set noexpandtab
+-	:%retab!
++	:retab!
++
++
++SOFT TAB STOPS
++
++When using only spaces, or a mix of spaces and horizontal tabs, one gets the
++unpleasant feeling that the two keys <Tab> and <BS> do not act in mirror, as
++they do when using only tab characters.
++  Vim 5.4 introduced the 'softtabstop' option.  On top of the (hard) tab stops
++used to display the horizontal tab characters in the text, Vim adds extra
++soft tab stops dedicated only to the cursor.  When 'softtabstop' is set to a
++positive value, and the <Tab> key will push the cursor to the next soft tab
++stop.  Vim will insert the correct combination of tab characters and spaces to
++make the effect visually.  Likewise pressing <BS> will have the cursor try to
++reach the nearest soft tab stop.  The following example uses
++`:set softtabstop=4`
++
++	type			result ~
++	<Tab>			....
++	<Tab><Tab>a		------->a
++	<Tab><Tab>a<Tab>	------->a...
++	<Tab><Tab>a<Tab><BS>	------->a
++
++  To maintain global coherence, one can `:set softtabstop=-1` so that
++the value of 'shiftwidth' is use for the number of columns between two soft
++tab stops.
++
++  If you prefer to have different values for 'shiftwidth' and 'softtabstop',
++you can still do so and use <C-t> to indent with 'shiftwidth'.  Or you can
++use the 'smarttab' option introduced in Vim 5.6, allowing for a unified
++<Tab> key that knows what to do in the different situations.
++
++
++VARIABLE TAB STOPS
++
++As we said before, the ASCII table was designed to remotely control
++teleprinters.  A given teleprinter could be configured to have their physical
++tab stops have variable spacing.  After all, the ^I control character was
++only stipulating: go to the next tab stop wherever it is.
++  Vim 7.3 introduced 'vartabstop' to emulate the same functionality.  For
++example if Vim was compiled with `+vartabs` and `:set vartabstop=2,4` one gets
++
++	actual character	result ~
++	^I			->
++	^I^I			->--->
++	^I^I^I			->--->--->
++
++  Similarly, 'varsofttabstop' was also introduced, to have variably spaced
++soft tab stops.  With `:set varsofttabstop=2,4` one gets
++
++	type			  result ~
++	<Tab>			  ..
++	<Tab><Tab>		  ......
++	<Tab><Tab><Tab>		  ------->....
++
++
++EXAMPLES OF CONFIGURATION
++
++By default, Vim is configured to use only tabs: >
++
++	:set tabstop=8
++	:set shiftwidth=8
++	:set noexpandtab
++	:set softtabstop=0
++	:set nosmarttab
++<
++  If you want to write C code as if it were Python (only spaces, with indents
++of 4 spaces), here is what you can use: >
++
++	:set shiftwidth=4
++	:set softtabstop=-1
++	:set expandtab
++<
++  If you want the same behavior but with better control over alignment
++(e.g.  lining up parameters or comments in multiples of 2 spaces), use: >
++
++	:set shiftwidth=4
++	:set softtabstop=2
++	:set expandtab
++	:set smarttab
++<
++  If instead, you would like to write C code like Bram Moolenaar would have
++(using a mix of tabs and spaces), you can use >
++
++	:set shiftwidth=4
++	:set softtabstop=-1
++<
+ 
+ ==============================================================================
+ *30.6*	Formatting comments
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index e03deedb8..5cffb6351 100644
+index 5cffb6351..ec963aea7 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 May 16
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 May 26
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 May 26
++*version9.txt*  For Vim version 9.1.  Last change: 2025 May 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41586,6 +41586,9 @@ Support for the |Tuple| data type in Vim script and Vim9 script.
+@@ -41684,6 +41684,8 @@ Others: ~
+   and decouple it from |netrw|
+ - new digraph "APPROACHES THE LIMIT" using ".="
+ - |CTRL-C| always closes the active |popup-window|.
++- the configure script will favor using GTK3 over GTK2 when auto-detecting the
++  gui toolkit
  
- Support for a vertical |tabpanel| window similar to the 'tabline'.
- 
-+New Insert-mode completion: |i_CTRL-X_CTRL-R| to complete words from
-+registers.
-+
- 							*changed-9.2*
- Changed~
- -------
-@@ -41621,8 +41624,8 @@ Completion: ~
- - New option value for 'wildmode':
- 	"noselect"	- do not auto select an entry in the wildmenu
- - New flags for 'complete':
--	"f{func}"	- complete using given function
--	"f"		- complete using 'completefunc'
-+	"F{func}"	- complete using given function
-+	"F"		- complete using 'completefunc'
- 	"o"		- complete using 'omnifunc'
- - allow to limit matches for the 'complete' sources by using the
-   "{flag}^<limit>" notation
+ 							*added-9.2*
+ Added ~
 diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index 46db57a45..ae14968bb 100644
+index ae14968bb..b35fe77c7 100644
 --- a/runtime/doc/vi_diff.txt
 +++ b/runtime/doc/vi_diff.txt
-@@ -338,6 +338,7 @@ Insert-mode completion.					|ins-completion|
+@@ -1,4 +1,4 @@
+-*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Mar 28
++*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Jun 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -338,7 +338,7 @@ Insert-mode completion.					|ins-completion|
  	|i_CTRL-X_CTRL-D|	definitions or macros
  	|i_CTRL-X_CTRL-O|	Omni completion: clever completion
  				specifically for a file type
-+	|i_CTRL-X_CTRL-R|	words from registers
+-	|i_CTRL-X_CTRL-R|	words from registers
++	|i_CTRL-X_CTRL-R|	contents from registers
  	etc.
  
  Long line support.					|'wrap'| |'linebreak'|
