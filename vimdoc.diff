@@ -1,451 +1,1187 @@
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 204a9117c..d11cb1f18 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
+@@ -1,4 +1,4 @@
+-*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Apr 21
++*autocmd.txt*   For Vim version 9.1.  Last change: 2025 Jun 19
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -130,6 +130,10 @@ exception is that "<sfile>" is expanded when the autocmd is defined.  Example:
+ 	:au BufNewFile,BufRead *.html so <sfile>:h/html.vim
+ 
+ Here Vim expands <sfile> to the name of the file containing this line.
++However, <sfile> works differently in a function, in which case it's better to
++use `:execute` with <script> to achieve the same purpose:
++>
++	:exe $'au BufNewFile,BufRead *.html so {expand("<script>:h")}/html.vim'
+ 
+ `:autocmd` adds to the list of autocommands regardless of whether they are
+ already present.  When your .vimrc file is sourced twice, the autocommands
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 3105a3d7d..8c79f565b 100644
+index 8c79f565b..8f9c7baa2 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jun 02
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jun 07
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jun 07
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Jul 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2047,8 +2047,8 @@ complete_match([{lnum}, {col}])			*complete_match()*
- 		  or empty string if no match was found or when using the
- 		  default 'iskeyword' pattern.
+@@ -238,8 +238,8 @@ getcharsearch()			Dict	last character search
+ getcharstr([{expr} [, {opts}]])	String	get one character from the user
+ getcmdcomplpat()		String	return the completion pattern of the
+ 					current command-line completion
+-getcmdcompltype()		String	return the type of the current
+-					command-line completion
++getcmdcompltype({pat})		String	return the type of command-line
++					completion
+ getcmdline()			String	return the current command-line input
+ getcmdpos()			Number	return cursor position in command-line
+ getcmdprompt()			String	return the current command-line prompt
+@@ -4201,10 +4201,11 @@ getcmdcomplpat()					*getcmdcomplpat()*
+ 		Return type: |String|
  
--		When 'isexpand' is empty, uses the 'iskeyword' pattern
--		"\k\+$" to find the start of the current keyword.
-+		When 'isexpand' is empty, uses the 'iskeyword' pattern "\k\+$"
-+		to find the start of the current keyword.
  
- 		Examples: >
- 	set isexpand=.,->,/,/*,abc
+-getcmdcompltype()					*getcmdcompltype()*
+-		Return the type of the current command-line completion.
+-		Only works when the command line is being edited, thus
+-		requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
++getcmdcompltype([{pat}])				*getcmdcompltype()*
++		Return the type of command-line completion using {pat}.
++		If {pat} is omited, only works when the command line is being
++		edited, thus requires use of |c_CTRL-\_e| or |c_CTRL-R_=|.
++
+ 		See |:command-completion| for the return string.
+ 		Also see |getcmdtype()|, |setcmdpos()|, |getcmdline()|,
+ 		|getcmdprompt()|, |getcmdcomplpat()| and |setcmdline()|.
+@@ -12143,6 +12144,7 @@ uniq({list} [, {func} [, {dict}]])			*uniq()* *E882*
+ 			:let newlist = uniq(copy(mylist))
+ <		The default compare function uses the string representation of
+ 		each item.  For the use of {func} and {dict} see |sort()|.
++		For deduplicating text in the current buffer see |:uniq|.
+ 
+ 		Returns zero if {list} is not a |List|.
+ 
+@@ -13037,6 +13039,8 @@ vms			VMS version of Vim.
+ vreplace		Compiled with |gR| and |gr| commands. (always true)
+ vtp			Compiled for vcon support |+vtp| (check vcon to find
+ 			out if it works in the current console).
++wayland			Compiled with Wayland protocol support.
++wayland_clipboard	Compiled with support for Wayland selections/clipboard
+ wildignore		Compiled with 'wildignore' option.
+ wildmenu		Compiled with 'wildmenu' option.
+ win16			old version for MS-Windows 3.1 (always false)
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 6bf9e2c69..e958e038b 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*    For Vim version 9.1.  Last change: 2025 May 28
++*change.txt*    For Vim version 9.1.  Last change: 2025 Jun 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -20,6 +20,7 @@ commands with the "." command.
+ 5. Copying and moving text	|copy-move|
+ 6. Formatting text		|formatting|
+ 7. Sorting text			|sorting|
++8. Deduplicating text		|deduplicating|
+ 
+ For inserting text see |insert.txt|.
+ 
+@@ -1895,6 +1896,7 @@ And a few warnings:
+ 
+ Vim has a sorting function and a sorting command.  The sorting function can be
+ found here: |sort()|, |uniq()|.
++Also see |:uniq|.
+ 
+ 							*:sor* *:sort*
+ :[range]sor[t][!] [b][f][i][l][n][o][r][u][x] [/{pattern}/]
+@@ -1904,7 +1906,7 @@ found here: |sort()|, |uniq()|.
+ 			With [!] the order is reversed.
+ 
+ 			With [i] case is ignored.
+-
++							*:sort-l*
+ 			With [l] sort uses the current collation locale.
+ 			Implementation details: strcoll() is used to compare
+ 			strings. See |:language| to check or set the collation
+@@ -1937,13 +1939,14 @@ found here: |sort()|, |uniq()|.
+ 
+ 			With [b] sorting is done on the first binary number in
+ 			the line (after or inside a {pattern} match).
+-
++							*:sort-u* *:sort-uniq*
+ 			With [u] (u stands for unique) only keep the first of
+ 			a sequence of identical lines (ignoring case when [i]
+ 			is used).  Without this flag, a sequence of identical
+ 			lines will be kept in their original order.
+ 			Note that leading and trailing white space may cause
+ 			lines to be different.
++			When you just want to make things unique, use |:uniq|.
+ 
+ 			When /{pattern}/ is specified and there is no [r] flag
+ 			the text matched with {pattern} is skipped, so that
+@@ -1990,4 +1993,55 @@ The sorting can be interrupted, but if you interrupt it too late in the
+ process you may end up with duplicated lines.  This also depends on the system
+ library function used.
+ 
++==============================================================================
++8. Deduplicating text				*deduplicating* *unique*
++
++Vim has a deduplicating function and a deduplicating command.  The
++deduplicating function can be found here: |uniq()|.
++Also see |:sort-uniq|.
++
++							*:uni* *:uniq*
++:[range]uni[q][!] [i][l][r][u] [/{pattern}/]
++			Remove duplicate lines that are adjacent to each other
++			in [range].  When no range is given, all lines are
++			processed.
++
++			With [i] case is ignored when comparing lines.
++
++			With [l] comparison uses the current collation locale.
++			See |:sort-l| for more details.
++
++			With [r] comparison is done on the text that matches
++			/{pattern}/ instead of the full line.
++
++			With [u] only keep lines that do not repeat (i.e., are
++			not immediately followed by the same line).
++
++			With [!] only keep lines that are immediately followed
++			by a duplicate.
++
++			If both [!] and [u] are given, [u] is ignored and [!]
++			takes effect.
++
++			When /{pattern}/ is specified and [r] is not used, the
++			text matched with {pattern} is skipped and comparison
++			is done on what comes after the match.
++			'ignorecase' applies to the pattern, but 'smartcase'
++			is not used.
++			Instead of the slash any non-letter can be used.
++
++			For example, to remove adjacent duplicate lines based
++			on the second comma-separated field: >
++				:uniq /[^,]*,/
++<			Or to keep only unique lines ignoring the first 5
++			characters: >
++				:uniq u /.\{5}/
++<			If {pattern} is empty (e.g. // is used), the last
++			search pattern is used.
++
++			Note that leading and trailing white space may cause
++			lines to be considered different.
++			To remove all duplicates regardless of position, use
++			|:sort-u| or external tools.
++
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 93431f8fc..a15debe5e 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*   For Vim version 9.1.  Last change: 2025 Mar 08
++*cmdline.txt*   For Vim version 9.1.  Last change: 2025 Jun 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -415,7 +415,7 @@ CTRL-D		List names that match the pattern in front of the cursor.
+ 		to the end.
+ 		The 'wildoptions' option can be set to "tagfile" to list the
+ 		file of matching tags.
+-					*c_CTRL-I* *c_wildchar* *c_<Tab>*
++				*c_CTRL-I* *c_wildchar* *c_<Tab>* */_<Tab>*
+ 'wildchar' option
+ 		A match is done on the pattern in front of the cursor.  The
+ 		match (if there are several, the first match) is inserted
+@@ -425,6 +425,10 @@ CTRL-D		List names that match the pattern in front of the cursor.
+ 		again and there were multiple matches, the next
+ 		match is inserted.  After the last match, the first is used
+ 		again (wrap around).
++
++		In search context use <CTRL-V><Tab> or "\t" to search for a
++		literal <Tab> instead of triggering completion.
++
+ 		The behavior can be changed with the 'wildmode' option.
+ 							*c_<S-Tab>*
+ <S-Tab>		Like 'wildchar' or <Tab>, but begin with the last match and
+@@ -458,7 +462,7 @@ CTRL-G		When 'incsearch' is set, entering a search pattern for "/" or
+ 		"?" and the current match is displayed then CTRL-G will move
+ 		to the next match (does not take |search-offset| into account)
+ 		Use CTRL-T to move to the previous match.  Hint: on a regular
+-		keyboard T is above G.
++		keyboard G is below T.
+ 	                                            *c_CTRL-T* */_CTRL-T*
+ CTRL-T		When 'incsearch' is set, entering a search pattern for "/" or
+ 		"?" and the current match is displayed then CTRL-T will move
+diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
+index 81564664e..493c740ad 100644
+--- a/runtime/doc/diff.txt
++++ b/runtime/doc/diff.txt
+@@ -1,4 +1,4 @@
+-*diff.txt*      For Vim version 9.1.  Last change: 2025 Mar 28
++*diff.txt*      For Vim version 9.1.  Last change: 2025 Jun 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -304,18 +304,20 @@ that the buffers will be equal within the specified range.
+ 
+ 
+ When no [range] is given, the diff at the cursor position or just above it is
+-affected.  When [range] is used, Vim tries to only put or get the specified
+-lines.  When there are deleted lines, this may not always be possible.
++affected.  There can be deleted lines below the last line of the buffer.  When
++the cursor is on the last line in the buffer and there is no diff above this
++line, and no [range] is given, the diff below the cursor position will be used
++instead.
+ 
+-There can be deleted lines below the last line of the buffer.  When the cursor
+-is on the last line in the buffer and there is no diff above this line, the
+-":diffget" and "do" commands will obtain lines from the other buffer.
++When [range] is used, Vim tries to only put or get the specified lines.  When
++there are deleted lines, they will be used if they are between the lines
++specified by [range].
+ 
+-To be able to get those lines from another buffer in a [range] it's allowed to
+-use the last line number plus one.  This command gets all diffs from the other
+-buffer: >
++To be able to put or get those lines to/from another buffer in a [range] it's
++allowed to use 0 and the last line number plus one.  This command gets all
++diffs from the other buffer: >
+ 
+-	:1,$+1diffget
++	:0,$+1diffget
+ 
+ Note that deleted lines are displayed, but not counted as text lines.  You
+ can't move the cursor into them.  To fill the deleted lines with the lines
+diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
+index dbb991e56..270cc9e24 100644
+--- a/runtime/doc/editing.txt
++++ b/runtime/doc/editing.txt
+@@ -1,4 +1,4 @@
+-*editing.txt*   For Vim version 9.1.  Last change: 2025 Jun 04
++*editing.txt*   For Vim version 9.1.  Last change: 2025 Jun 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1342,15 +1342,15 @@ b:browsefilter variable.  You would most likely set b:browsefilter in a
+ filetype plugin, so that the browse dialog would contain entries related to
+ the type of file you are currently editing.  Disadvantage: This makes it
+ difficult to start editing a file of a different type.  To overcome this, you
+-may want to add >
++can add the following as the final filter on Windows: >
+ 
+ 	All Files\t(*.*)\t*\n
+ <
+-as the final filter on Windows or >
++Or the following on other platforms, so that the user can still access any
++desired file: >
+ 
+ 	All Files\t(*)\t*\n
+ <
+-on other platforms, so that the user can still access any desired file.
+ 
+ To avoid setting browsefilter when Vim does not actually support it, you can
+ use has("browsefilter"): >
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 492a4444a..6a576d31c 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2025 Jun 04
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Jun 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2240,6 +2240,15 @@ v:charconvert_to
+ 		The name of the character encoding of a file after conversion.
+ 		Only valid while evaluating the 'charconvert' option.
+ 
++					*v:clipmethod*
++v:clipmethod	The current method of accessing the clipboard that is being
++		used.  Can either have the value of:
++			wayland		The Wayland protocol is being used.
++			x11		X11 selections are being used.
++			none		The above methods are unavailable or
++					cannot be used.
++		See 'clipmethod' for more details.
++
+ 					*v:cmdarg* *cmdarg-variable*
+ v:cmdarg	This variable is used for two purposes:
+ 		1. The extra arguments given to a file read/write command.
+@@ -2969,6 +2978,12 @@ v:vim_did_enter	Zero until most of startup is done.  It is set to one just
+ 					*v:warningmsg* *warningmsg-variable*
+ v:warningmsg	Last given warning message.  It's allowed to set this variable.
+ 
++					*v:wayland_display*
++v:wayland_display
++		The name of the Wayland display that Vim is connected to.
++		Equivalent to the $WAYLAND_DISPLAY environment variable.
++		If this is empty, then Vim is not connected to any display.
++
+ 					*v:windowid* *windowid-variable*
+ v:windowid	When any X11/Wayland based GUI is running or when running in a
+ 		terminal and Vim connects to the X server (|-X|) this will be
+diff --git a/runtime/doc/help.txt b/runtime/doc/help.txt
+index a7986851e..e8f15c737 100644
+--- a/runtime/doc/help.txt
++++ b/runtime/doc/help.txt
+@@ -1,4 +1,4 @@
+-*help.txt*	For Vim version 9.1.  Last change: 2024 Dec 06
++*help.txt*	For Vim version 9.1.  Last change: 2025 Jun 27
+ 
+ 			VIM - main help file
+ 									 k
+@@ -187,6 +187,9 @@ GUI ~
+ |gui_w32.txt|	Win32 GUI
+ |gui_x11.txt|	X11 GUI
+ 
++System Integration ~
++|wayland.txt|	Wayland protocol support
++
+ Interfaces ~
+ |if_cscop.txt|	using Cscope with Vim
+ |if_lua.txt|	Lua interface
+diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
+index ff2799470..c9e80da9b 100644
+--- a/runtime/doc/index.txt
++++ b/runtime/doc/index.txt
+@@ -1,4 +1,4 @@
+-*index.txt*     For Vim version 9.1.  Last change: 2025 Jun 02
++*index.txt*     For Vim version 9.1.  Last change: 2025 Jun 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1264,6 +1264,7 @@ tag		command		action ~
+ |:class|	:class		start of a class declaration
+ |:clast|	:cla[st]	go to the specified error, default last one
+ |:clearjumps|	:cle[arjumps]	clear the jump list
++|:clipreset|	:clip[reset]	reset 'clipmethod'
+ |:clist|	:cl[ist]	list all errors
+ |:close|	:clo[se]	close current window
+ |:cmap|		:cm[ap]		like ":map" but for Command-line mode
+@@ -1740,6 +1741,7 @@ tag		command		action ~
+ |:unabbreviate|	:una[bbreviate]	remove abbreviation
+ |:unhide|	:unh[ide]	open a window for each loaded file in the
+ 				buffer list
++|:uniq|		:uni[q]		uniq lines
+ |:unlet|	:unl[et]	delete variable
+ |:unlockvar|	:unlo[ckvar]	unlock variables
+ |:unmap|	:unm[ap]	remove mapping
+@@ -1776,6 +1778,7 @@ tag		command		action ~
+ |:winsize|	:wi[nsize]	get or set window size (obsolete)
+ |:wincmd|	:winc[md]	execute a Window (CTRL-W) command
+ |:winpos|	:winp[os]	get or set window position
++|:wlrestore|	:wl[restore]	restore the Wayland compositor connection
+ |:wnext|	:wn[ext]	write to a file and go to next file in
+ 				argument list
+ |:wprevious|	:wp[revious]	write to a file and go to previous file in
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 155eb8f13..da028e820 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -1,4 +1,4 @@
+-*insert.txt*    For Vim version 9.1.  Last change: 2025 Jun 04
++*insert.txt*    For Vim version 9.1.  Last change: 2025 Jun 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -659,6 +659,9 @@ and one of the CTRL-X commands.  You exit CTRL-X mode by typing a key that is
+ not a valid CTRL-X mode command.  Valid keys are the CTRL-X command itself,
+ CTRL-N (next), and CTRL-P (previous).
+ 
++By default, the possible completions are showed in a menu and the first
++completion is inserted into the text. This can be adjusted with 'completeopt'.
++
+ To get the current completion information, |complete_info()| can be used.
+ Also see the 'infercase' option if you want to adjust the case of the match.
+ 
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index bb915580a..b50468863 100644
+index b50468863..cf064e17f 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Jun 05
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Jun 10
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Jun 10
++*options.txt*	For Vim version 9.1.  Last change: 2025 Jul 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7704,7 +7704,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'showtabpanel'* *'stpl'*
- 'showtabpanel' 'stpl'	number	(default 0)
+@@ -1785,7 +1785,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						  for X-windows, "" otherwise)
  			global
--			{not in Vi}
- 			{not available when compiled without the |+tabpanel|
- 			feature}
- 	The value of this option specifies when the |tabpanel| with tab page
-@@ -7712,7 +7711,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		0: never
- 		1: only if there are at least two tab pages
- 		2: always
--	This is for the non-GUI implementation of the tabpanel only.
- 	See |tab-page| for more information about tab page labels.
+ 			{only in GUI versions or when the |+xterm_clipboard|
+-			feature is included}
++			or |+wayland_clipboard| features are included}
+ 	This option is a list of comma-separated names.
+ 	Note: if one of the items is "exclude:", then you can't add an item
+ 	after that.  Therefore do not append an item with += but use ^= to
+@@ -1810,12 +1810,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			register '*' for all yank, delete, change and put
+ 			operations which would normally go to the unnamed
+ 			register.  When "unnamed" is also included to the
+-			option, yank operations (but not delete, change or
+-			put) will additionally copy the text into register
+-			'*'.
+-			Only available with the |+X11| feature.
+-			Availability can be checked with: >
+-				if has('unnamedplus')
++			option, yank operations (but not delete, change or put)
++			will additionally copy the text into register '*'.  If
++			Wayland is being used and the compositor does not
++			support the primary-selection-unstable-v1 protocol,
++			then the regular selection is used in its place.  Only
++			available with the |+X11| or |+wayland_clipboard|
++			feature.  Availability can be checked with: >
++			if has('unnamedplus')
+ <
+ 						*clipboard-autoselect*
+ 	autoselect	Works like the 'a' flag in 'guioptions': If present,
+@@ -1852,24 +1854,54 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	exclude:{pattern}
+ 			Defines a pattern that is matched against the name of
+ 			the terminal 'term'.  If there is a match, no
+-			connection will be made to the X server.  This is
+-			useful in this situation:
++			connection will be made to the X server or Wayland
++			compositor.  This is useful in this situation:
+ 			- Running Vim in a console.
+-			- $DISPLAY is set to start applications on another
+-			  display.
+-			- You do not want to connect to the X server in the
+-			  console, but do want this in a terminal emulator.
+-			To never connect to the X server use: >
++			- $DISPLAY/$WAYLAND_DISPLAY is set to start
++			  applications on another display.
++			- You do not want to connect to the X server/Wayland
++			  compositor in the console, but do want this in a
++			  terminal emulator.
++			To never connect to the X server/Wayland compositor
++			use: >
+ 				exclude:.*
+-<			This has the same effect as using the |-X| argument.
++<			This has the same effect as using the |-X| or |-Y|
++			argument.
+ 			Note that when there is no connection to the X server
+ 			the window title won't be restored and the clipboard
+-			cannot be accessed.
++			cannot be accessed.  This is the same for Wayland,
++			except there is no title restoring.
+ 			The value of 'magic' is ignored, {pattern} is
+ 			interpreted as if 'magic' was on.
+ 			The rest of the option value will be used for
+ 			{pattern}, this must be the last entry.
  
- 						*'sidescroll'* *'ss'*
-@@ -7805,11 +7803,13 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			global
- 	When enabled, the <Tab> key will indent by 'shiftwidth' if the cursor
- 	is in leading whitespace.  The <BS> key has the opposite effect.
--	This behaves as if 'softtabstop' is set to the value of 'shiftwidth'.
-+	In leading whitespace, this has the same effect as setting
-+	'softtabstop' to the value of 'shiftwidth'.
- 	This option is reset when 'compatible' is set; it is temporarily
- 	disabled when 'paste' is enabled, and restored when 'paste' is turned
- 	off.
--	Have a look at section |30.5| of the user guide for detailed
-+	NOTE: in most cases, using 'softtabstop' is a better option.  Have a
-+	look at section |30.5| of the user guide for detailed
- 	explanations on how Vim works with tabs and spaces.
- 
- 			*'smoothscroll'* *'sms'* *'nosmoothscroll'* *'nosms'*
-@@ -8430,9 +8430,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	argument or the ":tab all" command. |tabpage|
- 
- 				*'tabpanel'* *'tpl'* *g:actual_curtabpage*
--'tabpanel' 'tpl'			string	(default empty)
-+'tabpanel' 'tpl'	string	(default empty)
- 			global
--			{not in Vi}
- 	When non-empty, this option determines the content of the |tabpanel|.
- 	The option consists of printf style '%' items interspersed with
- 	normal text, similar to the 'statusline' or 'tabline'.
-@@ -8443,12 +8442,12 @@ A jump table for the options with a short description can be found at |Q_op|.
- 
- 	You can use |g:actual_curtabpage| within a function assigned to
- 	tabpanel. |g:actual_curtabpage| represents current tab's label number.
--	This option can contain line breaks:
-->
--	set tabpanel=%!TabPanel()
--	function! TabPanel() abort
--	  return printf("(%2d)\n  %%f", g:actual_curtabpage)
--	endfunction
-+	The option value can contain line breaks: >
++						*'clipmethod'* *'cpm'*
++'clipmethod' 'cpm'	string	(default for Unix: "wayland,x11",
++				 for VMS: "x11",
++				 otherwise: "")
++			global
++			{only when the |+xterm_clipboard| or
++			|+wayland_clipboard| features are included}
++	Specifies which method of accessing the system clipboard is used,
++	depending on which method works first or is available.  Supported
++	methods are:
++		wayland		Wayland selections
++		x11		X11 selections
 +
-+		set tabpanel=%!TabPanel()
-+		function! TabPanel() abort
-+		  return printf("(%2d)\n  %%f", g:actual_curtabpage)
-+		endfunction
- <
- 	The result is:
- >
-@@ -8461,30 +8460,28 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	|           |
- 	|           |
- <
--
- 					*'tabpanelopt'* *'tplo'*
--'tabpanelopt' 'tplo'		string	(default "")
-+'tabpanelopt' 'tplo'	string	(default "")
++	Note: This option is ignored when either the GUI is running or if Vim
++	is run on a system without Wayland or X11 support, such as Windows or
++	macOS.  The GUI or system way of accessing the clipboard is always
++	used instead.
++
++	The option value is a list of comma separated items.  The list is
++	parsed left to right in order, and the first method that Vim
++	determines is available or is working is used as the actual method for
++	accessing the clipboard.
++
++	The current method that is being used can be found in the |v:clipmethod|
++	variable.
++
+ 						*'cmdheight'* *'ch'*
+ 'cmdheight' 'ch'	number	(default 1)
+ 			global or local to tab page
+@@ -2043,7 +2075,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	'smartcase'	+ off		no automatic ignore case switch
+ 	'smartindent'	+ off		no smart indentation
+ 	'smarttab'	+ off		no smart tab size
+-	'softtabstop'	+ 0		tabs are always 'tabstop' positions
++	'softtabstop'	+ 0		no soft tab stops
+ 	'startofline'	+ on		goto startofline with some commands
+ 	'tagcase'	& "followic"	'ignorecase' when searching tags file
+ 	'tagrelative'	& off		tag file names are not relative
+@@ -2249,6 +2281,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    completion in the preview window.  Only works in
+ 		    combination with "menu" or "menuone".
+ 
++	This option does not apply to |cmdline-completion|. See 'wildoptions'
++	for that.
++
+ 					*'completepopup'* *'cpp'*
+ 'completepopup' 'cpp'	string (default empty)
  			global
--			{not in Vi}
- 	Optional settings for the |tabpanel|,  It can consist of the following
- 	items.  Items must be separated by a comma.
+@@ -2355,7 +2390,7 @@ A jump table for the options with a short description can be found at |Q_op|.
  
- 		align:{text}	Specifies the position of the tabpanel.
- 				Currently supported positions are:
+ 						*'cpoptions'* *'cpo'* *cpo*
+ 'cpoptions' 'cpo'	string	(Vim default: "aABceFsz",
+-				 Vi default:  all flags, except "#{|&/\."
++				 Vi default:  all flags, except "#{|&/\.~"
+ 				 |$VIM_POSIX|:  all flags)
+ 			global
+ 	A sequence of single character flags.  When a character is present
+@@ -2645,6 +2680,13 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			character, the cursor won't move. When not included,
+ 			the cursor would skip over it and jump to the
+ 			following occurrence.
++								*cpo-~*
++		~	When included, don't resolve symbolic links when
++			changing directory with |:cd|, |:lcd|, or |:tcd|.
++			This preserves the symbolic link path in buffer names
++			and when displaying the current directory.  When
++			excluded (default), symbolic links are resolved to
++			their target paths.
  
--				left	left-aligned
--				right	right-aligned
-+				left	left-side
-+				right	right-side
+ 	POSIX flags.  These are not included in the Vi default value, except
+ 	when $VIM_POSIX was set on startup. |posix|
+@@ -3387,6 +3429,73 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	buffers, for which window and buffer related autocommands can be
+ 	ignored indefinitely without affecting the global 'eventignore'.
  
- 				(default "left")
- 
--		columns:{n}	Use the size (in characters) of the tabpanel.
--				The tabpanel is never shown when using zero
--				or less than the size of Vim window.
-+		columns:{n}	Number of columns of the tabpanel.
-+				If this value is 0 or less than 'columns', the
-+				tab panel will not be displayed.
- 				(default 20)
- 
- 		vert		Use a vertical separator for tabpanel.
--				This vertical separator used is "tpl_vert" of
--				'fillchars'.
-+				The vertical separator character is taken from
-+				"tpl_vert" in 'fillchars'.
- 				(default off)
- 
- 	Examples: >
-@@ -8493,16 +8490,15 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		:set tabpanelopt=vert,align:right
- 		:set tabpanelopt=columns:16
- <
--
- 						*'tabstop'* *'ts'*
- 'tabstop' 'ts'		number	(default 8)
++	Note: The following events are considered to happen outside of a
++	window context and thus cannot be ignored by 'eventignorewin':
++
++		|CmdlineChanged|,
++		|CmdlineEnter|,
++		|CmdlineLeave|,
++		|CmdlineLeavePre|,
++		|CmdUndefined|,
++		|CmdwinEnter|,
++		|CmdwinLeave|,
++		|ColorScheme|,
++		|ColorSchemePre|,
++		|CompleteChanged|,
++		|CompleteDone|,
++		|CompleteDonePre|,
++		|DiffUpdated|,
++		|DirChanged|,
++		|DirChangedPre|,
++		|EncodingChanged|,
++		|ExitPre|,
++		|FocusGained|,
++		|FocusLost|,
++		|FuncUndefined|,
++		|GUIEnter|,
++		|GUIFailed|,
++		|KeyInputPre|,
++		|MenuPopup|,
++		|ModeChanged|,
++		|OptionSet|,
++		|QuickFixCmdPost|,
++		|QuickFixCmdPre|,
++		|QuitPre|,
++		|RemoteReply|,
++		|SafeState|,
++		|SafeStateAgain|,
++		|SessionLoadPost|,
++		|SessionWritePost|,
++		|ShellCmdPost|,
++		|SigUSR1|,
++		|SourceCmd|,
++		|SourcePost|,
++		|SourcePre|,
++		|SpellFileMissing|,
++		|StdinReadPost|,
++		|StdinReadPre|,
++		|SwapExists|,
++		|Syntax|,
++		|TabClosed|,
++		|TabClosedPre|,
++		|TabEnter|,
++		|TabLeave|,
++		|TabNew|,
++		|TermChanged|,
++		|TerminalOpen|,
++		|TerminalWinOpen|,
++		|TermResponse|,
++		|TermResponseAll|,
++		|User|,
++		|VimEnter|,
++		|VimLeave|,
++		|VimLeavePre|,
++		|VimResized|,
++		|VimResume|,
++		|VimSuspend|,
++		|WinNew|,
++		|WinNewPre|
++
+ 				 *'expandtab'* *'et'* *'noexpandtab'* *'noet'*
+ 'expandtab' 'et'	boolean	(default off)
  			local to buffer
- 	Defines the column multiple used to display the Horizontal Tab
--	character (ASCII 9); a Horizontal Tab always advances to the next
--	tab stop.
-+	character (ASCII 9); a Horizontal Tab always advances to the next tab
-+	stop.
- 	The value must be at least 1 and at most 9999.
--	If Vim was compiled with |+vartabs| and |'vartabstop'| is set, this option
--	is ignored.
-+	If Vim was compiled with |+vartabs| and |'vartabstop'| is set, this
-+	option is ignored.
- 	Leave it at 8 unless you have a strong reason (see usr |30.5|).
+@@ -4495,7 +4604,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|hl-Directory|	 d  directories in CTRL-D listing and other special
+ 			    things in listings
+ 	|hl-ErrorMsg|	 e  error messages
+-			 h  (obsolete, ignored)
+ 	|hl-IncSearch|	 i  'incsearch' highlighting
+ 	|hl-CurSearch|	 y  current instance of last search pattern
+ 	|hl-Search|	 l  last search pattern highlighting (see 'hlsearch')
+@@ -4517,9 +4625,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|hl-Title|	 t  Titles for output from ":set all", ":autocmd" etc.
+ 	|hl-VertSplit|	 c  column used to separate vertically split windows
+ 	|hl-Visual|	 v  Visual mode
+-	|hl-VisualNOS|	 V  Visual mode when Vim does is "Not Owning the
+-			    Selection" Only X11 Gui's |gui-x11| and
+-			    |xterm-clipboard|.
++	|hl-VisualNOS|	 V  Visual mode when Vim is "Not Owning the
++			    Selection" Only X11 Gui's |gui-x11|,
++			    |xterm-clipboard| and |wayland-selections|
+ 	|hl-WarningMsg|	 w  warning messages
+ 	|hl-WildMenu|	 W  wildcard matches displayed for 'wildmenu'
+ 	|hl-Folded|	 f  line used for closed folds
+@@ -7826,21 +7934,24 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 					*'softtabstop'* *'sts'*
+ 'softtabstop' 'sts'	number	(default 0)
+ 			local to buffer
+-	Number of spaces that a <Tab> counts for while performing editing
+-	operations, like inserting a <Tab> or using <BS>.  It "feels" like
+-	<Tab>s are being inserted, while in fact a mix of spaces and <Tab>s is
+-	used.  This is useful to keep the 'ts' setting at its standard value
+-	of 8, while being able to edit like it is set to 'sts'.  However,
+-	commands like "x" still work on the actual characters.
+-	When 'sts' is zero, this feature is off.
+-	When 'sts' is negative, the value of 'shiftwidth' is used.
+-	'softtabstop' is set to 0 when the 'paste' option is set and restored
+-	when 'paste' is reset.
+-	See also |ins-expandtab|.  When 'expandtab' is not set, the number of
+-	spaces is minimized by using <Tab>s.
+-	The 'L' flag in 'cpoptions' changes how tabs are used when 'list' is
+-	set.
+-	NOTE: This option is set to 0 when 'compatible' is set.
++	Create soft tab stops, separated by 'softtabstop' number of columns.
++	In Insert mode, pressing the <Tab> key will move the cursor to the
++	next soft tab stop, instead of inserting a literal tab.  <BS> behaves
++	similarly in reverse.  Vim inserts a minimal mix of tab and space
++	characters to produce the visual effect.
++
++	This setting does not affect the display of existing tab characters.
++
++	A value of 0 disables this behaviour.  A negative value makes Vim use
++	'shiftwidth'.  If you plan to use 'sts' and 'shiftwidth' with
++	different values, you might consider setting 'smarttab'.
++
++	'softtabstop' is temporarily set to 0 when 'paste' is on and reset
++	when it is turned off.  It is also reset when 'compatible' is set.
++
++	The 'L' flag in 'cpoptions' alters tab behavior when 'list' is
++	enabled.  See also |ins-expandtab| ans user manual section |30.5| for
++	in-depth explanations.
  
+ 	If Vim is compiled with the |+vartabs| feature then the value of
+ 	'softtabstop' will be ignored if |'varsofttabstop'| is set to
+@@ -9284,36 +9395,40 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			local to buffer
+ 			{only available when compiled with the |+vartabs|
+ 			feature}
+-	A list of the number of spaces that a <Tab> counts for while editing,
+-	such as inserting a <Tab> or using <BS>.  It "feels" like variable-
+-	width <Tab>s are being inserted, while in fact a mixture of spaces
+-	and <Tab>s is used.  Tab widths are separated with commas, with the
+-	final value applying to all subsequent tabs.
++	Defines variable-width soft tab stops.  The value is a comma-separated
++	list of widths in columns.  Each width defines the number of columns
++	before the next soft tab stop.  The last value repeats indefinitely.
  
+ 	For example, when editing assembly language files where statements
+ 	start in the 9th column and comments in the 41st, it may be useful
+ 	to use the following: >
+ 		:set varsofttabstop=8,32,8
+-<	This will set soft tabstops with 8 and 8 + 32 spaces, and 8 more
+-	for every column thereafter.
++<	This sets soft tab stops at column 8, then at column 40 (8 + 32), and
++	every 8 columns thereafter.
+ 
+-	Note that the value of |'softtabstop'| will be ignored while
+-	'varsofttabstop' is set.
++	Note: this setting overrides 'softtabstop'.
++	See section |30.5| of the user manual for detailed explanations on how
++	Vim works with tabs and spaces.
+ 
+ 						*'vartabstop'* *'vts'*
+ 'vartabstop' 'vts'	string	(default "")
+ 			local to buffer
+ 			{only available when compiled with the |+vartabs|
+ 			feature}
+-	A list of the number of spaces that a <Tab> in the file counts for,
+-	separated by commas.  Each value corresponds to one tab, with the
+-	final value applying to all subsequent tabs. For example: >
+-		:set vartabstop=4,20,10,8
+-<	This will make the first tab 4 spaces wide, the second 20 spaces,
+-	the third 10 spaces, and all following tabs 8 spaces.
++	Defines variable-width tab stops. The value is a comma-separated list
++	of widths in columns.  Each width defines the number of columns
++	before the next tab stop; the last value repeats indefinitely.
++
++	For example: >
++		:set vartabstop=4,8
++<	This places the first tab stop 4 columns from the start of the line
++	and each subsequent tab stop 8 columns apart.
+ 
+-	Note that the value of |'tabstop'| will be ignored while 'vartabstop'
+-	is set.
++	Note: this setting overrides 'tabstop'.
++	On UNIX, it is recommended to keep the default tabstop value of 8.
++	Consider setting 'varsofttabstop' instead.
++	See section |30.5| of the user manual for detailed explanations on how
++	Vim works with tabs and spaces.
+ 
+ 						*'verbose'* *'vbs'*
+ 'verbose' 'vbs'		number	(default 0)
+@@ -9644,7 +9759,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		:set wc=X
+ 		:set wc=^I
+ 		:set wc=<Tab>
+-<	NOTE: This option is set to the Vi default value when 'compatible' is
++<	'wildchar' also enables completion in search pattern contexts such as
++	|/|, |?|, |:s|, |:g|, |:v|, and |:vim|.  To insert a literal <Tab>
++	instead of triggering completion, type <C-V><Tab> or "\t".
++	NOTE: This option is set to the Vi default value when 'compatible' is
+ 	set and to the Vim default value when 'compatible' is reset.
+ 
+ 						*'wildcharm'* *'wcm'*
+@@ -9809,6 +9927,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 'wildoptions' 'wop'	string	(default "")
+ 			global
+ 	A list of words that change how |cmdline-completion| is done.
++
+ 	The following values are supported:
+ 	  fuzzy		Use |fuzzy-matching| to find completion matches. When
+ 			this value is specified, wildcard expansion will not
+@@ -9826,6 +9945,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				d	#define
+ 				f	function
+ 
++	This option does not apply to |ins-completion|. See 'completeopt' for
++	that.
++
+ 						*'winaltkeys'* *'wak'*
+ 'winaltkeys' 'wak'	string	(default "menu")
+ 			global
+@@ -9963,6 +10085,39 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	'winwidth' applies to the current window.  Use 'winminwidth' to set
+ 	the minimal width for other windows.
+ 
++						*'wlseat'* *'wse'*
++'wlseat' 'wse'		string	(default "")
++			global
++			{only when the |+wayland| feature is included}
++	Specifies the Wayland seat to use for Wayland functionality,
++	specifically the clipboard.  If the seat does not exist, then the
++	option will still be set to the new value, with the Wayland clipboard
++	being unavailable as a result.  If an empty value is passed then Vim
++	will attempt to use the first seat found available.  Updating this
++	option will also update |v:clipmethod|.
++
++				*'wlsteal'* *'wst'* *'nowlsteal'* *'nowst'*
++'wlsteal' 'wst'		boolean  (default off)
++			global
++			{only when the |+wayland_clipboard| feature is included}
++	When enabled, then allow Vim to steal focus by creating a temporary
++	surface, in order to access the clipboard.  For more information see
++	|wayland-focus-steal|.
++
++						*'wltimeoutlen'* *'wtm'*
++'wltimeoutlen' 'wtm'	number	(default 500)
++			global
++			{only when the |+wayland| feature is included}
++	The timeout in milliseconds before Vim gives up on waiting for the
++	Wayland compositor.  While Vim waits on the compositor, it is
++	unresponsive to input and does not update the screen.  Therefore
++	setting this to a lower value may make Vim feel more responsive in
++	some cases.  On the other hand, it may also mean you receive errors
++	when the compositor takes more time to respond than usual.
++
++	Additionally, this option is also used as the maximum timeout when
++	waiting for a surface to gain focus, see |wayland-focus-steal|.
++
+ 						*'wrap'* *'nowrap'*
+ 'wrap'			boolean	(default on)
+ 			local to window
 diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index 00799911e..ad5bc2d9b 100644
+index ad5bc2d9b..56825de17 100644
 --- a/runtime/doc/pi_netrw.txt
 +++ b/runtime/doc/pi_netrw.txt
-@@ -2557,12 +2557,6 @@ your browsing preferences.  (see also: |netrw-settings|)
- 				    |g:netrw_maxfilenamelen|, which affects
- 				    local file long listing.
+@@ -339,10 +339,8 @@ NETRW VARIABLES AND SETTINGS				*netrw-variables* {{{2
+     )
  
--  *g:netrw_errorlvl*		=0: error levels greater than or equal to
--				    this are permitted to be displayed
--				    0: notes
--				    1: warnings
--				    2: errors
+ Netrw provides a lot of variables which allow you to customize netrw to your
+-preferences.  One way to look at them is via the command :NetrwSettings (see
+-|netrw-settings|) which will display your current netrw settings.  Most such
+-settings are described below, in |netrw-browser-options|, and in
+-|netrw-externapp|:
++preferences.  Most such settings are described below, in
++|netrw-browser-options|, and in |netrw-externapp|:
+ 
+  *b:netrw_lastfile*	last file Network-read/written retained on a
+ 			per-buffer basis (supports plain :Nw )
+@@ -765,9 +763,6 @@ below, a {netfile} is a URL to a remote file.
+ 		strings (ie. "").
+ 		(related: |netrw-userpass|)
+ 
+-:NetrwSettings  This command is described in |netrw-settings| -- used to
+-		display netrw settings and change netrw behavior.
 -
-   *g:netrw_fastbrowse*		=0: slow speed directory browsing;
- 				    never re-uses directory listings;
- 				    always obtains directory listings.
+ 
+ ==============================================================================
+ 8. Variables and Options		*netrw-var* *netrw-settings* {{{1
+@@ -1125,7 +1120,6 @@ QUICK REFERENCE: MAPS				*netrw-browse-maps* {{{2
+ 
+ 				*netrw-quickcom* *netrw-quickcoms*
+ QUICK REFERENCE: COMMANDS	*netrw-explore-cmds* *netrw-browse-cmds* {{{2
+-     :NetrwSettings............................................|netrw-settings|
+      :Ntree....................................................|netrw-ntree|
+      :Explore[!]  [dir] Explore directory of current file......|netrw-explore|
+      :Hexplore[!] [dir] Horizontal Split & Explore.............|netrw-explore|
+@@ -2735,11 +2729,6 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				     rightmouse      : remove file/directory
+ 				=0: disables mouse maps
+ 
+-  *g:netrw_nobeval*		doesn't exist (default)
+-				If this variable exists, then balloon
+-				evaluation will be suppressed
+-				(see |'ballooneval'|)
+-
+  *g:netrw_sizestyle*		not defined: actual bytes (default)
+ 				="b" : actual bytes       (default)
+ 				="h" : human-readable (ex. 5k, 4m, 3g)
+@@ -2955,17 +2944,6 @@ file you edit; this apparently also applies to directories.  In other words,
+ autochdir sets the current directory to that containing the "file" (even if
+ that "file" is itself a directory).
+ 
+-NETRW SETTINGS WINDOW				*netrw-settings-window* {{{2
+-
+-With the NetrwSettings.vim plugin, >
+-	:NetrwSettings
+-will bring up a window with the many variables that netrw uses for its
+-settings.  You may change any of their values; when you save the file, the
+-settings therein will be used.  One may also press "?" on any of the lines for
+-help on what each of the variables do.
+-
+-(also see: |netrw-browser-var| |netrw-protocol| |netrw-variables|)
+-
+ 
+ ==============================================================================
+ OBTAINING A FILE					*netrw-obtain* *netrw-O* {{{2
 diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index de902ee2c..6af25683f 100644
+index 6af25683f..a5d25b0de 100644
 --- a/runtime/doc/quickref.txt
 +++ b/runtime/doc/quickref.txt
 @@ -1,4 +1,4 @@
--*quickref.txt*  For Vim version 9.1.  Last change: 2025 Jun 04
-+*quickref.txt*  For Vim version 9.1.  Last change: 2025 Jun 10
+-*quickref.txt*  For Vim version 9.1.  Last change: 2025 Jun 10
++*quickref.txt*  For Vim version 9.1.  Last change: 2025 Jun 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -942,7 +942,7 @@ Short explanation of each option:		*option-list*
- 'tabclose'	  'tcl'     which tab page to focus when closing a tab
- 'tabline'	  'tal'     custom format for the console tab pages line
- 'tabpagemax'	  'tpm'     maximum number of tab pages for |-p| and "tab all"
--'tabstop'	  'ts'	    number of spaces that <Tab> in file uses
-+'tabstop'	  'ts'	    number of columns between two tab stops
- 'tagbsearch'	  'tbs'     use binary searching in tags files
- 'tagcase'	  'tc'      how to handle case when searching in tags files
- 'tagfunc'	  'tfu'	    function to get list of tag matches
+@@ -646,6 +646,7 @@ Short explanation of each option:		*option-list*
+ 'cinscopedecls'	  'cinsd'   words that are recognized by 'cino-g'
+ 'cinwords'	  'cinw'    words where 'si' and 'cin' add an indent
+ 'clipboard'	  'cb'	    use the clipboard as the unnamed register
++'clipmethod'	  'cpm'	    specify order of what clipboard methods to use
+ 'cmdheight'	  'ch'	    number of lines to use for the command-line
+ 'cmdwinheight'	  'cwh'     height of the command-line window
+ 'colorcolumn'	  'cc'	    columns to highlight
+@@ -920,7 +921,7 @@ Short explanation of each option:		*option-list*
+ 'smartindent'	  'si'	    smart autoindenting for C programs
+ 'smarttab'	  'sta'     <Tab> in leading whitespace indents by 'shiftwidth'
+ 'smoothscroll'	  'sms'     scroll by screen lines when 'wrap' is set
+-'softtabstop'	  'sts'     number of spaces that <Tab> uses while editing
++'softtabstop'	  'sts'     number of columns between two soft tab stops
+ 'spell'			    enable spell checking
+ 'spellcapcheck'   'spc'     pattern to locate end of a sentence
+ 'spellfile'	  'spf'     files where |zg| and |zw| store words
+@@ -987,8 +988,8 @@ Short explanation of each option:		*option-list*
+ 'undoreload'	  'ur'	    max nr of lines to save for undo on a buffer reload
+ 'updatecount'	  'uc'	    after this many characters flush swap file
+ 'updatetime'	  'ut'	    after this many milliseconds flush swap file
+-'varsofttabstop'  'vsts'    a list of number of spaces when typing <Tab>
+-'vartabstop'	  'vts'	    a list of number of spaces for <Tab>s
++'varsofttabstop'  'vsts'    a list of number of columns between soft tab stops
++'vartabstop'	  'vts'	    a list of number of columns between tab stops
+ 'verbose'	  'vbs'     give informative messages
+ 'verbosefile'	  'vfile'   file to write messages in
+ 'viewdir'	  'vdir'    directory where to store files with :mkview
+@@ -1018,6 +1019,9 @@ Short explanation of each option:		*option-list*
+ 'winminwidth'	  'wmw'     minimal number of columns for any window
+ 'winptydll'		    name of the winpty dynamic library
+ 'winwidth'	  'wiw'     minimal number of columns for current window
++'wlseat'	  'wse'	    the Wayland seat to use
++'wlsteal'	  'wst'	    allow focus stealing functionality for Wayland
++'wltimeoutlen'	  'wtm'	    timeout to use when polling in Wayland
+ 'wrap'			    long lines wrap and continue on the next line
+ 'wrapmargin'	  'wm'	    chars from the right where wrapping starts
+ 'wrapscan'	  'ws'	    searches wrap around the end of the file
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index ccedc1ad4..2fdf3fcb6 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*  For Vim version 9.1.  Last change: 2025 Feb 27
++*starting.txt*  For Vim version 9.1.  Last change: 2025 Jun 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -559,6 +559,12 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ 		client-server messages), call the |serverlist()| function.
+ 		This does not enable the XSMP handler though.
+ 
++							*-Y*
++-Y		Do not try connecting to the Wayland compositor.  Is only
++		relevant for Unix when compiled with the |+wayland| feature,
++		otherwise it's ignored.  Note that this will make any feature
++		that uses Wayland unavailable, such as the clipboard.
++
+ 							*-s*
+ -s {scriptin}	The script file "scriptin" is read.  The characters in the
+ 		file are interpreted as if you had typed them.  The same can
 diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
-index e30109803..2be0a91e2 100644
+index 2be0a91e2..4b0b591b4 100644
 --- a/runtime/doc/tabpage.txt
 +++ b/runtime/doc/tabpage.txt
 @@ -1,4 +1,4 @@
--*tabpage.txt*   For Vim version 9.1.  Last change: 2025 May 30
-+*tabpage.txt*   For Vim version 9.1.  Last change: 2025 Jun 07
+-*tabpage.txt*   For Vim version 9.1.  Last change: 2025 Jun 07
++*tabpage.txt*   For Vim version 9.1.  Last change: 2025 Jul 01
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -441,7 +441,8 @@ To configure the tabpanel, use the following options: 'tabpanel',
- The 'tabpanel' and 'showtabpanel' options function similar to
- 'statusline' or 'tabline'.
+@@ -19,6 +19,8 @@ when used in combination with more than one tab page.
  
--The "columns:" of 'tabpanelopt' option specifies the width of the tabpanel:
-+The "columns:" item of 'tabpanelopt' option specifies the width of the
-+tabpanel:
- >
-               +------ This width
-               |
-@@ -451,26 +452,17 @@ The "columns:" of 'tabpanelopt' option specifies the width of the tabpanel:
- 	|  ~/aaa.txt|text text text text text text text
- 	|(2)        |text text text text text text text
- <
--The "align:" of 'tabpanelopt' option determines whether the tabpanel is
--displayed on the right side of the window:
-+The "align:" item of the 'tabpanelopt' option determines whether the tabpanel
-+will be displayed on the left or right side of the window:
- >
- 	+----------------------------------+-----------
- 	|text text text text text text text|(1)
- 	|text text text text text text text|  ~/aaa.txt
- 	|text text text text text text text|(2)
- <
--The "wrap" of 'tabpanelopt' option controls whether lines in tabpanel are
--wraped:
-->
--	+-----------+----------------------------------
--	|(1)        |text text text text text text text
--	|  ~/long_lo|text text text text text text text
--	|ng_file_nam|text text text text text text text
--	|e.txt      |text text text text text text text
--	|(2)        |text text text text text text text
--
--The "vert" of 'tabpanelopt' option defines whether a vertical separator is
--displayed between the tabpanel and the main window:
-+The "vert" item of the 'tabpanelopt' option specifies whether a vertical
-+separator should be displayed between the tabpanel and the display part of the
-+window:
- >
-                     +------ This is
-                     |
-@@ -480,7 +472,7 @@ displayed between the tabpanel and the main window:
- 	|  ~/aaa.txt|text text text text text text text
- 	|(2)        |text text text text text text text
- <
--The vertical separator used is "tpl_vert" of 'fillchars'.
-+The vertical separator character is taken from "tpl_vert" in 'fillchars'.
+ {not able to use multiple tab pages when the |+windows| feature was disabled
+ at compile time}
++{not able to use |tabpanel| feature when the |+tabpanel| feature was disabled
++at compile time}
  
- You can customize the appearance of the tab page labels using the highlight
- groups: |hl-TabPanel| |hl-TabPanelSel| |hl-TabPanelFill|
-diff --git a/runtime/doc/usr_25.txt b/runtime/doc/usr_25.txt
-index 54fd6bc51..ed92c9535 100644
---- a/runtime/doc/usr_25.txt
-+++ b/runtime/doc/usr_25.txt
+ ==============================================================================
+ 1. Introduction						*tab-page-intro*
+@@ -438,15 +440,15 @@ side of the window.  It looks like this:
+ <
+ To configure the tabpanel, use the following options: 'tabpanel',
+ 'showtabpanel' and 'tabpanelopt'.
+-The 'tabpanel' and 'showtabpanel' options function similar to
+-'statusline' or 'tabline'.
++The 'tabpanel' option functions similar to 'statusline' or 'tabline', and the
++'showtabpanel' option functions similar to 'laststatus' or 'showtabline'.
+ 
+ The "columns:" item of 'tabpanelopt' option specifies the width of the
+ tabpanel:
+ >
+-              +------ This width
+-              |
+-         <----+----->
++	      +------ This width
++	      |
++	 <----+----->
+ 	+-----------+----------------------------------
+ 	|(1)        |text text text text text text text
+ 	|  ~/aaa.txt|text text text text text text text
+@@ -464,9 +466,9 @@ The "vert" item of the 'tabpanelopt' option specifies whether a vertical
+ separator should be displayed between the tabpanel and the display part of the
+ window:
+ >
+-                    +------ This is
+-                    |
+-                    v
++		    +------ This is
++		    |
++		    v
+ 	+-----------+----------------------------------
+ 	|(1)        |text text text text text text text
+ 	|  ~/aaa.txt|text text text text text text text
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 06d98fd0f..0a4c92fcb 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*usr_25.txt*	For Vim version 9.1.  Last change: 2025 Feb 01
-+*usr_25.txt*	For Vim version 9.1.  Last change: 2025 Jun 10
+-*todo.txt*      For Vim version 9.1.  Last change: 2025 May 30
++*todo.txt*      For Vim version 9.1.  Last change: 2025 Jun 12
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2202,8 +2202,6 @@ displayed in a window should return the value that's stored for that buffer.
+ 
+ ":he ctrl_u" can be auto-corrected to ":he ctrl-u".
+ 
+-Diff mode out of sync. (Gary Johnson, 2010 Aug 4)
+-
+ Win32: completion of file name ":e c:\!test" results in ":e c:\\!test", which
+ does not work. (Nieko Maatjes, 2009 Jan 8, Ingo Karkat, 2009 Jan 22)
+ 
+diff --git a/runtime/doc/usr_24.txt b/runtime/doc/usr_24.txt
+index 0f7249574..173781223 100644
+--- a/runtime/doc/usr_24.txt
++++ b/runtime/doc/usr_24.txt
+@@ -1,4 +1,4 @@
+-*usr_24.txt*	For Vim version 9.1.  Last change: 2025 Jun 02
++*usr_24.txt*	For Vim version 9.1.  Last change: 2025 Jun 22
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -215,27 +215,28 @@ An alternative is to filter the text through an external program.  Example: >
- *25.3*	Indents and tabs
+@@ -568,14 +568,13 @@ that combination.  Thus CTRL-K dP also works.  Since there is no digraph for
+ 	using.  Always use ":digraphs" to find out which digraphs are currently
+ 	available.
  
- Indents can be used to make text stand out from the rest.  The example texts
--in this manual, for example, are indented by eight spaces or a tab.  You would
--normally enter this by typing a tab at the start of each line.  Take this
-+in this manual, for example, are indented by eight columns.  You would
-+normally enter this by typing <Tab> at the start of each line.  Take this
- text:
- 	the first line ~
- 	the second line ~
+-You can define your own digraphs.  Example: >
++You can define your own digraphs by specifying the target character with a
++decimal number.  Example: >
  
--This is entered by typing a tab, some text, <Enter>, tab and more text.
-+This is entered by typing <Tab>, some text, <Enter>, <Tab> and more text.
-    The 'autoindent' option inserts indents automatically: >
+-	:digraph a" ä
++	:digraph a\" 228
  
- 	:set autoindent
- 
- When a new line is started it gets the same indent as the previous line.  In
--the above example, the tab after the <Enter> is not needed anymore.
-+the above example, pressing the <Tab> key after <Enter> is not needed anymore.
- 
- 
- INCREASING INDENT
- 
--To increase the amount of indent in a line, use the ">" operator.  Often this
--is used as ">>", which adds indent to the current line.
-+To increase the amount of indent in a line, use the ">" operator, in Normal
-+mode.  Often this is used as ">>", which adds indent to the current line.
-+In Insert mode, use <C-t>.
-    The amount of indent added is specified with the 'shiftwidth' option.  The
--default value is 8.  To make ">>" insert four spaces worth of indent, for
-+default value is 8.  To make ">>" insert four columns worth of indent, for
- example, type this: >
- 
- 	:set shiftwidth=4
-@@ -248,46 +249,27 @@ When used on the second line of the example text, this is what you get:
- "4>>" will increase the indent of four lines.
- 
- 
--TABSTOP
-+SOFT TAB STOPS
- 
- If you want to make indents a multiple of 4, you set 'shiftwidth' to 4.  But
--when pressing a <Tab> you still get 8 spaces worth of indent.  To change this,
--set the 'softtabstop' option: >
-+when pressing a <Tab> you still get 8 columns worth of indent.  To change
-+this, set the 'softtabstop' option: >
- 
- 	:set softtabstop=4
- 
--This will make the <Tab> key insert 4 spaces worth of indent.  If there are
--already four spaces, a <Tab> character is used (saving seven characters in the
--file).  (If you always want spaces and no tab characters, set the 'expandtab'
--option.)
-+Vim now creates invisible tab stops for your cursor every 4 columns; hitting
-+<Tab> jumps to the next stop and inserts the exact mix of spaces or tabs
-+needed.
- 
- 	Note:
- 	You could set the 'tabstop' option to 4.  However, if you edit the
- 	file another time, with 'tabstop' set to the default value of 8, it
- 	will look wrong.  In other programs and when printing the indent will
- 	also be wrong.  Therefore it is recommended to keep 'tabstop' at eight
--	all the time.  That's the standard value everywhere.
-+	all the time.  That's the standard value everywhere on UNIX-like
-+	systems.
- 
- 
--CHANGING TABS
+-This defines that CTRL-K a" inserts an ä character.  You can also specify the
+-character with a decimal number.  This defines the same digraph: >
 -
--You edit a file which was written with a tabstop of 3.  In Vim it looks ugly,
--because it uses the normal tabstop value of 8.  You can fix this by setting
--'tabstop' to 3.  But you have to do this every time you edit this file.
--   Vim can change the use of tabstops in your file.  First, set 'tabstop' to
--make the indents look good, then use the ":retab" command: >
--
--	:set tabstop=3
--	:retab 8
--
--The ":retab" command will change 'tabstop' to 8, while changing the text such
--that it looks the same.  It changes spans of white space into tabs and spaces
--for this.  You can now write the file.  Next time you edit it the indents will
--be right without setting an option.
--   Warning: When using ":retab" on a program, it may change white space inside
--a string constant.  Therefore it's a good habit to use "\t" instead of a
--real tab.
--
- ==============================================================================
- *25.4*	Dealing with long lines
+-	:digraph a" 228
++This defines that CTRL-K a" inserts an ä character.  Note: we had to escape
++the " character since otherwise it would act as a comment character.
  
-@@ -576,6 +558,32 @@ The "gR" command uses Virtual Replace mode.  This preserves the layout:
- 
- 	inp	0.786	0.534	0.693 ~
- 
-+
-+REFORMATTING TABS IN TABLES
-+
-+You edit a file that contains tabular data and the original author of the file
-+decided to align the tabular data using tab characters (instead of spaces).
-+Alas, they were using tab stops separated by 4 columns and Vim's default
-+is 8 columns; the table looks wrong!  What can be done?
-+  To fix the appearance without modifying the file, adjust the setting
-+temporarily: >
-+
-+	:set tabstop=4
-+
-+This updates the visual layout, but the file itself remains unchanged.
-+  Another possibility is to permanently reformat the file.  For this Vim
-+provides the |:retab| command.  First, set 'tabstop' to match original layout
-+(as above), then run: >
-+
-+	:retab 8
-+
-+The ":retab" command will change 'tabstop' to 8, while changing the text such
-+that it looks the same.  It changes spans of white space into tabs and spaces
-+for this.  You can now write the file.
-+   Warning: When using ":retab" on a program, it may change white space inside
-+a string constant.  Therefore it's a good habit to use "\t" instead of a
-+real tab.
-+
- ==============================================================================
- 
- Next chapter: |usr_26.txt|  Repeating
-diff --git a/runtime/doc/usr_30.txt b/runtime/doc/usr_30.txt
-index 86fe649bd..59ef37a99 100644
---- a/runtime/doc/usr_30.txt
-+++ b/runtime/doc/usr_30.txt
+ More information about digraphs here: |digraphs|
+    Another way to insert special characters is with a keymap.  More about that
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index ffa6fcb7a..9b8cdc2be 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
 @@ -1,4 +1,4 @@
--*usr_30.txt*	For Vim version 9.1.  Last change: 2025 May 30
-+*usr_30.txt*	For Vim version 9.1.  Last change: 2025 Jun 10
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Apr 27
++*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Jul 03
  
  		     VIM USER MANUAL - by Bram Moolenaar
  
-@@ -547,8 +547,8 @@ tab stops.
- 
-   If you prefer to have different values for 'shiftwidth' and 'softtabstop',
- you can still do so and use <C-t> to indent with 'shiftwidth'.  Or you can
--use the 'smarttab' option introduced in Vim 5.6, allowing for a unified
--<Tab> key that knows what to do in the different situations.
-+use the 'smarttab' option, allowing for a unified <Tab> key that knows what to
-+do in the different situations.
- 
- 
- VARIABLE TAB STOPS
+@@ -1100,8 +1100,7 @@ Buffers, windows and the argument list:
+ Command line:					*command-line-functions*
+ 	getcmdcomplpat()	get completion pattern of the current command
+ 				line
+-	getcmdcompltype()	get the type of the current command line
+-				completion
++	getcmdcompltype()	get the type of the command line completion
+ 	getcmdline()		get the current command line input
+ 	getcmdprompt()		get the current command line prompt
+ 	getcmdpos()		get position of the cursor in the command line
 diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 8416a17e7..d6fb6418f 100644
+index d6fb6418f..abca72813 100644
 --- a/runtime/doc/various.txt
 +++ b/runtime/doc/various.txt
 @@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2025 May 15
-+*various.txt*   For Vim version 9.1.  Last change: 2025 Jun 10
+-*various.txt*   For Vim version 9.1.  Last change: 2025 Jun 10
++*various.txt*   For Vim version 9.1.  Last change: 2025 Jun 28
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41,7 +41,6 @@ CTRL-L			Clear and redraw the screen.  The redraw may happen
- 			when 'tabpanel' includes an item that doesn't trigger
- 			automatic updating.
+@@ -524,6 +524,8 @@ T  *+visual*		Visual mode |Visual-mode| Always enabled since 7.4.200.
+ T  *+visualextra*	extra Visual mode commands |blockwise-operators|
+ T  *+vreplace*		|gR| and |gr|
+    *+vtp*		on MS-Windows console: support for 'termguicolors'
++N  *+wayland*		Unix only: support for the Wayland protocol.
++N  *+wayland_clipboard*	Unix only: support for Wayland selections/clipboard.
+ T  *+wildignore*	|'wildignore'|  Always enabled since 9.0.0278
+ T  *+wildmenu*		|'wildmenu'|  Always enabled since 9.0.0279
+ T  *+windows*		more than one window; Always enabled since 8.0.1118.
+@@ -791,7 +793,15 @@ K			Run a program to lookup the keyword under the
+ 			was used for the previous execution of this command.
+ 			If the value was never specified, then it uses the
+ 			value of $DISPLAY environment variable as it was when
+-			Vim was started.
++			Vim was started.  This will also update |v:clipmethod|.
++			{only available when compiled with the
++			|+xterm_clipboard| feature}
++
++							*:clipreset* *:clip*
++:clip[reset]		Attempts to choose a new method for accessing the
++			clipboard, using the 'clipmethod' option.  This is
++			useful when the current method has become unavailable,
++			and you want to try using another method.
+ 			{only available when compiled with the |+clipboard|
+ 			feature}
  
--
- 							*N<Del>*
- <Del>			When entering a number: Remove the last digit.
- 			Note: if you like to use <BS> for this, add this
-@@ -515,7 +514,7 @@ T  *+title*		Setting the window 'title' and 'icon'; Always enabled
- N  *+toolbar*		|gui-toolbar|
- T  *+user_commands*	User-defined commands. |user-commands|
- 			Always enabled since 8.1.1210.
--H  *+vartabs*		Variable-width tabstops. |'vartabstop'|
-+H  *+vartabs*		Variable-width tab stops. |'vartabstop'|
- T  *+vertsplit*		Vertically split windows |:vsplit|; Always enabled
- 			since 8.0.1118.
- T  *+vim9script*	|Vim9| script
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index b35fe77c7..f694df838 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index ec963aea7..75d14011a 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Jun 02
-+*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Jun 10
+-*version9.txt*  For Vim version 9.1.  Last change: 2025 May 28
++*version9.txt*  For Vim version 9.1.  Last change: 2025 Jul 03
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1102,7 +1102,7 @@ The following options are supported by Vi: ~
- 'shiftwidth'	  'sw'	    number of spaces to use for (auto)indent step
- 'showmatch'	  'sm'	    briefly jump to matching bracket if insert one
- 'showmode'	  'smd'     message on status line to show current mode
--'tabstop'	  'ts'	    number of spaces that <Tab> in file uses
-+'tabstop'	  'ts'	    number of columns between two tab stops
- 'taglength'	  'tl'	    number of significant characters for a tag
- 'tags'		  'tag'     list of file names used by the tag command
- 			    {Vi: default is "tags /usr/lib/tags"}
+@@ -41571,7 +41571,7 @@ Other new features ~
+ The new packages |package-comment|, |package-nohlsearch| and |package-hlyank|
+ are included.
+ 
+-Support for Wayland UI.
++Support for Wayland UI and support for the Wayland clipboard
+ 
+ Support for the XDG Desktop Specification |xdg-base-dir|
+ 
+@@ -41607,6 +41607,8 @@ Completion: ~
+ - allow to complete directories from 'cdpath' for |:cd| and similar commands,
+   add the "cd_in_path" completion type for e.g. |:command-complete| and
+   |getcompletion()|
++- |getcompletion()| now accepts a pat and returns the completion type for the
++  {pat} argument
+ - allow to complete shell commands and files using the new shellcmdline
+   completion type using |:command-complete| and |getcmdcomplpat()|
+ - allow to specify additional attributes in the completion menu (allows to
+@@ -41632,6 +41634,8 @@ Completion: ~
+ - add ":filetype" command completion
+ - add "filetypecmd" completion type for |getcompletion()|
+ - 'smartcase' applies to completion filtering
++- 'wildchar' enables completion in search contexts using |/|, |?|, |:g|, |:v|
++  and |:vimgrep| commands
+ 
+ Options: ~
+ - the default for 'commentstring' contains whitespace padding to have
+@@ -41639,6 +41643,8 @@ Options: ~
+ - 'completeopt' is now a |global-local| option.
+ - add 'cpoptions' flag "z" |cpo-z|, to disable some (traditional) vi
+   behaviour/inconsistency (see |d-special| and |cw|).
++- add 'cpoptions' flag "~" |cpo-~| to disable resolving symlinks on |:cd|
++  commands
+ - new option values for 'fillchars':
+ 	"trunc"		- configure truncation indicator, 'pummaxwidth'
+ 	"truncrl"	- like "trunc" but in 'rl' mode, 'pummaxwidth'
+@@ -41686,6 +41692,7 @@ Others: ~
+ - |CTRL-C| always closes the active |popup-window|.
+ - the configure script will favor using GTK3 over GTK2 when auto-detecting the
+   gui toolkit
++- |gv| works in operator pending mode and does not abort
+ 
+ 							*added-9.2*
+ Added ~
+@@ -41755,6 +41762,7 @@ Ex-Commands: ~
+ |:pbuffer|		Edit buffer [N] from the buffer list in the preview
+ 			window
+ |:redrawtabpanel|	Force updating the 'tabpanel'.
++|:uniq|			Deduplicate text in the current buffer.
+ 
+ Options: ~
+ 
+diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
+index 3f48915c6..68773dd9d 100644
+--- a/runtime/doc/visual.txt
++++ b/runtime/doc/visual.txt
+@@ -1,4 +1,4 @@
+-*visual.txt*    For Vim version 9.1.  Last change: 2023 Sep 19
++*visual.txt*    For Vim version 9.1.  Last change: 2025 Jun 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -392,7 +392,7 @@ want only part of the line to be replaced you will have to make a mapping for
+ it.  In a future release ":" may work on partial lines.
+ 
+ Here is an example, to replace the selected text with the output of "date": >
+-	:vmap _a <Esc>`>a<CR><Esc>`<i<CR><Esc>!!date<CR>kJJ
++	:vmap _a <Esc>`>a<CR><Esc>`<i<CR><Esc>!!date<CR>kgJgJ
+ 
+ (In the <> notation |<>|, when typing it you should type it literally; you
+ need to remove the 'B' and '<' flags from 'cpoptions')
