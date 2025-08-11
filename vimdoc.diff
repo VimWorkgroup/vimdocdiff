@@ -1,19 +1,27 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7a12ee12b..b22a1711d 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index e31e3573e..deb40445e 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Aug 06
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Aug 07
+-*develop.txt*   For Vim version 9.1.  Last change: 2025 Aug 10
++*develop.txt*   For Vim version 9.1.  Last change: 2025 Aug 11
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3016,6 +3016,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	If some of the {address} do not resolve to a line in each buffer (e.g.
- 	a pattern search that does not match anything), none of the anchors
- 	will be used.
-+								*E1562*
-+	Diff anchors can only be used when there are no hidden diff buffers.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -340,8 +340,14 @@ Therefore, the latest ISO C standard we follow is:
  
- 						*'dex'* *'diffexpr'*
- 'diffexpr' 'dex'	string	(default "")
+ In addition, the following `C99` features are explicitly allowed:
+ 	- `//` comments, as required by |style-comments|;
+-	- the `_Bool` type.
+-	- logical lines may contain up to 4095 characters;
++	- Mixed declarations and statements in a block;
++	- Variadic macros `(..., __VA_ARGS__)`;
++	- Trailing comma in `enum` lists;
++	- `_Bool` type (for `bool`, `true` and `false`);
++	- `__func__` predefined identifier;
++	- `inline` functions (use `static inline` for portability);
++	- Compound literals `(type){ initializer-list }`;
++	- Logical source lines up to 4095 characters.
+ 
+ Platform-specific code may use any newer compiler features supported on that
+ platform.
