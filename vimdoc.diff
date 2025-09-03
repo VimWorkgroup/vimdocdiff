@@ -1,101 +1,17 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e020d8852..40e6d93eb 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index 12ac3f65e..4053243bf 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Sep 01
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Sep 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -13161,9 +13161,7 @@ vreplace		Compiled with |gR| and |gr| commands. (always true)
- vtp			Compiled for vcon support |+vtp| (check vcon to find
- 			out if it works in the current console).
- wayland			Compiled with Wayland protocol support.
--wayland_clipboard	Compiled with support for Wayland clipboard.
--wayland_focus_steal	Compiled with support for Wayland clipboard focus
--			stealing.
-+wayland_clipboard	Compiled with support for Wayland selections/clipboard
- wildignore		Compiled with 'wildignore' option.
- wildmenu		Compiled with 'wildmenu' option.
- win16			old version for MS-Windows 3.1 (always false)
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 2925a33e1..89ba7c2ee 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
-@@ -1,4 +1,4 @@
--*gui_x11.txt*   For Vim version 9.1.  Last change: 2025 Sep 01
-+*gui_x11.txt*   For Vim version 9.1.  Last change: 2025 Sep 02
+-*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Aug 10
++*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Sep 02
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -709,8 +709,8 @@ overwriting selected text.
+@@ -1398,5 +1398,6 @@ MS-DOS:				| support was dropped with v7.4.1399
+ MS-Windows XP and Vista:	| support was dropped with v9.0.0496
+ OS/2				| support was dropped with v7.4.1008
+ RISC OS:			| support was dropped with v7.3.0187
++NextStep Systems		| support was deprecated with v9.1.1727
  
- 								*W23*
- When you are yanking into the "* or "+ register and Vim cannot establish a
--connection to the X11 selection (or X11/Wayland clipboard), it will use
--register 0 and output a warning:
-+connection to the X11 selection (or clipboard), it will use register 0 and
-+output a warning:
- 
-   Warning: Clipboard register not available, using register 0 ~
- 
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 23607a3ad..20fe85b84 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Sep 01
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Sep 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -10195,8 +10195,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 				*'wlsteal'* *'wst'* *'nowlsteal'* *'nowst'*
- 'wlsteal' 'wst'		boolean  (default off)
- 			global
--			{only when the |+wayland_focus_steal| feature is
--			included}
-+			{only when the |+wayland_clipboard| feature is included}
- 	When enabled, then allow Vim to steal focus by creating a temporary
- 	surface, in order to access the clipboard.  For more information see
- 	|wayland-focus-steal|.
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 16bab2693..e29fafdf7 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2025 Sep 01
-+*various.txt*   For Vim version 9.1.  Last change: 2025 Sep 02
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -528,8 +528,6 @@ T  *+vreplace*		|gR| and |gr|
-    *+vtp*		on MS-Windows console: support for 'termguicolors'
- N  *+wayland*		Unix only: support for the Wayland protocol.
- N  *+wayland_clipboard*	Unix only: support for Wayland selections/clipboard.
--N  *+wayland_focus_steal* Unix only: support for Wayland clipboard on
--			compositors without a data control protocol.
- T  *+wildignore*	'wildignore'  Always enabled since 9.0.0278
- T  *+wildmenu*		'wildmenu'  Always enabled since 9.0.0279
- T  *+windows*		more than one window; Always enabled since 8.0.1118.
-diff --git a/runtime/doc/wayland.txt b/runtime/doc/wayland.txt
-index eda3e2575..ef70f67c4 100644
---- a/runtime/doc/wayland.txt
-+++ b/runtime/doc/wayland.txt
-@@ -1,4 +1,4 @@
--*wayland.txt*   For Vim version 9.1.  Last change: 2025 Sep 01
-+*wayland.txt*   For Vim version 9.1.  Last change: 2025 Sep 02
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -105,8 +105,7 @@ To solve this problem, Vim implements a way of gaining focus in order to
- access the clipboard, by creating a temporary transparent top-level surface.
- This is by default disabled and can be enabled via the 'wlsteal' option.
- Moreover, a seat that has a keyboard is also required, see 'wlseat', and the
--xdg-shell protocol must be available.  Additionally, Vim must be compiled with
--the |+wayland_focus_steal| feature.
-+xdg-shell protocol must be available.
- 
- Note that this method can have several side effects from the result of focus
- stealing.  For example, if you have a taskbar that shows currently opened apps
+  vim:tw=78:ts=8:noet:ft=help:norl:
