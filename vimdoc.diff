@@ -1,64 +1,37 @@
-diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
-index 2d486b6ba..50d9b04f6 100644
---- a/runtime/doc/develop.txt
-+++ b/runtime/doc/develop.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 40e6d93eb..1b15246da 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*develop.txt*   For Vim version 9.1.  Last change: 2025 Sep 01
-+*develop.txt*   For Vim version 9.1.  Last change: 2025 Sep 04
+-*builtin.txt*	For Vim version 9.1.  Last change: 2025 Sep 02
++*builtin.txt*	For Vim version 9.1.  Last change: 2025 Sep 06
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -13,6 +13,7 @@ Vim.
- 2. Design decisions	|design-decisions|
- 3. Assumptions		|design-assumptions|
- 4. Coding style		|coding-style|
-+5. Policy		|design-policy|
- 
- See the file README.txt in the "src" directory for an overview of the source
- code.
-@@ -728,4 +729,35 @@ OK:	    do
- 	    while (cond);
- 
- 
-+==============================================================================
-+5. Policy	*design-policy* *new-features* *deprecated-features*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -12416,18 +12416,19 @@ wildtrigger()						*wildtrigger()*
+ 		produce a beep when no matches are found and generally
+ 		operates more quietly.  This makes it suitable for triggering
+ 		completion automatically, such as from an |:autocmd|.
 +
-+The time between either a new minor (e.g. 9.2.0) or major (e.g. 10.0) version
-+is released is called a development cycle.  Within the development cycle each
-+single change to the C core will receive a new increased human-readable patch
-+number in order to reference each specific patch release.  A typical
-+development release cycle may last several years and accumulate about 1500 -
-+2500 patch numbers.
-+
-+Before a release is made, a stability period will be announced. During this
-+time, only clear bug fixes, security fixes, documentation changes, translation
-+updates and runtime file updates will be accepted (provided they do not
-+introduce backwards-incompatible changes), concentrating on polishing up the
-+upcoming release.
-+
-+New features are accepted only within a development cycle, but not within the
-+stability period.  During the cycle, new features may be developed and are
-+allowed to change, but they must be settled before the cycle closes.
-+
-+Once a minor release has been made, features included in that release must not
-+receive any backwards-incompatible changes.  Later patches are expected to
-+preserve compatibility for the C core of Vim.  Runtime files are handled a bit
-+more flexibly to give runtime files maintainers a chance to change old
-+behaviour.
-+
-+Within a development cycle, features may be marked as deprecated. Deprecated
-+features can be disabled at compile time through an appropriate switch. After
-+a new release, deprecated features may be removed completely in a following
-+cycle.
-+
-  vim:tw=78:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index 9e1cb3b17..1c5d7245b 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
-@@ -1,4 +1,4 @@
--*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Sep 02
-+*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Sep 04
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+ 						*cmdline-autocompletion*
+-		Example: To make the completion menu pop up automatically as
+-		you type on the command line, use: >
++		Example: To make the completion menu pop up automatically
++		while typing on the command line: >
+ 			autocmd CmdlineChanged [:/\?] call wildtrigger()
+ 			set wildmode=noselect:lastused,full wildoptions=pum
+ <
+-		To retain normal history navigation (up/down keys): >
+-			cnoremap <Up>   <C-U><Up>
+-			cnoremap <Down> <C-U><Down>
++		To retain normal history navigation with the up/down keys: >
++			cnoremap <expr> <Up>   wildmenumode() ? "\<C-E>\<Up>"   : "\<Up>"
++			cnoremap <expr> <Down> wildmenumode() ? "\<C-E>\<Down>" : "\<Down>"
+ <
+-		To set an option specifically when performing a search, e.g.
+-		to set 'pumheight': >
++		To apply an option only during a search, for example to set
++		'pumheight': >
+ 			autocmd CmdlineEnter [/\?] set pumheight=8
+ 			autocmd CmdlineLeave [/\?] set pumheight&
+ <
