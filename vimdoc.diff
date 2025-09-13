@@ -1,30 +1,21 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 951532afc..097ad2d2d 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 1c238c581..133bcc279 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*   For Vim version 9.1.  Last change: 2025 Sep 08
-+*cmdline.txt*   For Vim version 9.1.  Last change: 2025 Sep 10
+-*userfunc.txt*	For Vim version 9.1.  Last change: 2025 Aug 06
++*userfunc.txt*	For Vim version 9.1.  Last change: 2025 Sep 12
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1350,7 +1350,7 @@ automatically showing a popup menu of suggestions as you type, whether
- searching (/ or ?) or entering commands (:).
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -393,8 +393,8 @@ is used as a method: >
+ ==============================================================================
  
- A basic setup is: >
--	autocmd CmdlineChanged [:/\?] call wildtrigger()
-+	autocmd CmdlineChanged [:\/\?] call wildtrigger()
- 	set wildmode=noselect:lastused,full
- 	set wildoptions=pum
+ 3. Cleaning up in a function ~
+-							*:defer*
+-:defer {func}({args})	Call {func} when the current function is done.
++							*:defe* *:defer*
++:defe[r] {func}({args})	Call {func} when the current function is done.
+ 			{args} are evaluated here.
  
-@@ -1363,8 +1363,8 @@ To retain normal command-line history navigation with <Up>/<Down>: >
- 
- Options can also be applied only for specific command-lines.  For
- example, to use a shorter popup menu height only during search: >
--	autocmd CmdlineEnter [/\?] set pumheight=8
--	autocmd CmdlineLeave [/\?] set pumheight&
-+	autocmd CmdlineEnter [\/\?] set pumheight=8
-+	autocmd CmdlineLeave [\/\?] set pumheight&
- 
- EXTRAS					*fuzzy-file-picker* *live-grep*
- 
+ Quite often a command in a function has a global effect, which must be undone
