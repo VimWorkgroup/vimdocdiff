@@ -1,41 +1,39 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 78c2702ea..1227641a2 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index e6f2d146f..f5a54b784 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Sep 21
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Sep 22
+-*cmdline.txt*   For Vim version 9.1.  Last change: 2025 Sep 15
++*cmdline.txt*   For Vim version 9.1.  Last change: 2025 Sep 23
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41736,9 +41736,17 @@ Functions: ~
- - |matchfuzzy()| and |matchfuzzypos()| use an improved fuzzy matching
-   algorithm (same as fzy).
- - |sha256()| also accepts a |Blob| as argument.
--- |listener_add()| allows to register un-buffered listeners, so that chagnes
-+- |listener_add()| allows to register un-buffered listeners, so that changes
-   are handled as soon as they happen.
+@@ -1425,12 +1425,14 @@ file picker: >
  
-+Plugins~
-+- |zip| plugin works with PowerShell Core.
-+
-+Platform specific ~
-+- MS-Winodws: Paths like "\Windows" and "/Windows" are now considered to be
-+  absolute paths (to the current drive) and no longer relative.
-+- macOS: increase default scheduler priority to TASK_DEFAULT_APPLICATION.
-+
- Others: ~
- - the regex engines match correctly case-insensitive multi-byte characters
-   (and apply proper case folding)
-@@ -41765,11 +41773,6 @@ Others: ~
- - |min()|/|max()| can handle all comparable data types.
- - Vim triggers the |TermResponseAll| autocommand for any terminal OSC value.
+ 	set findfunc=Find
+ 	func Find(arg, _)
+-	  if get(s:, 'filescache', []) == []
+-	    let s:filescache = systemlist(
+-		\ 'find . -path "*/.git" -prune -o -type f -print')
++          if empty(s:filescache)
++            let s:filescache = globpath('.', '**', 1, 1)
++            call filter(s:filescache, '!isdirectory(v:val)')
++            call map(s:filescache, "fnamemodify(v:val, ':.')")
+ 	  endif
+ 	  return a:arg == '' ? s:filescache : matchfuzzy(s:filescache, a:arg)
+ 	endfunc
++	let s:filescache = []
+ 	autocmd CmdlineEnter : let s:filescache = []
  
--Platform specific ~
--- MS-Winodws: Paths like "\Windows" and "/Windows" are now considered to be
--  absolute paths (to the current drive) and no longer relative.
--- macOS: increase default scheduler priority to TASK_DEFAULT_APPLICATION.
--
- 							*added-9.2*
- Added ~
- -----
+ The `:Grep` command searches for lines matching a pattern and updates the
+@@ -1441,8 +1443,8 @@ the `CmdlineLeavePre` autocmd from the next section): >
+ 		\ Grep call <SID>VisitFile()
+ 
+ 	func s:Grep(arglead, cmdline, cursorpos)
+-	  let cmd = $'grep -REIHns "{a:arglead}" --exclude-dir=.git
+-		\ --exclude=".*"'
++	  if match(&grepprg, '\$\*') == -1 | let &grepprg .= ' $*' | endif
++	  let cmd = substitute(&grepprg, '\$\*', shellescape(escape(a:arglead, '\')), '')
+ 	  return len(a:arglead) > 1 ? systemlist(cmd) : []
+ 	endfunc
+ 
