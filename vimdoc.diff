@@ -1,19 +1,58 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 88a4e1336..2781f8a45 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
-@@ -1425,10 +1425,10 @@ file picker: >
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 05da80126..012027518 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -8926,9 +8926,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	For Win32 console, Windows 10 version 1703 (Creators Update) or later
+ 	is required.  Use this check to find out: >
+ 		if has('vcon')
+-<	This requires Vim to be built with the |+vtp| feature.  Enabling
+-	'termguicolors' also enable Virtual Terminal Processing (VTP) in the
+-	Windows console, which improves rendering of multi-byte characters.
++<	This requires Vim to be built with the |+vtp| feature, see also
++	|win32-term-colors|.
  
- 	set findfunc=Find
- 	func Find(arg, _)
--          if empty(s:filescache)
--            let s:filescache = globpath('.', '**', 1, 1)
--            call filter(s:filescache, '!isdirectory(v:val)')
--            call map(s:filescache, "fnamemodify(v:val, ':.')")
-+	  if empty(s:filescache)
-+	    let s:filescache = globpath('.', '**', 1, 1)
-+	    call filter(s:filescache, '!isdirectory(v:val)')
-+	    call map(s:filescache, "fnamemodify(v:val, ':.')")
- 	  endif
- 	  return a:arg == '' ? s:filescache : matchfuzzy(s:filescache, a:arg)
- 	endfunc
+ 	Note that the "cterm" attributes are still used, not the "gui" ones.
+ 
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index f5fa0ac98..fc3ea8439 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
+@@ -1,4 +1,4 @@
+-*os_win32.txt*  For Vim version 9.1.  Last change: 2025 Aug 06
++*os_win32.txt*  For Vim version 9.1.  Last change: 2025 Sep 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by George Reilly
+@@ -24,7 +24,8 @@ The 32 bit version also runs on 64 bit MS-Windows systems.
+ 7. Installation package		|win32-installer|
+ 8. Win32 mini FAQ		|win32-faq|
+ 
+-Additionally, there are a number of common Win32 and DOS items:
++Additionally, there are a number of common Win32 and DOS items in
++|os_dos.txt|:
+ File locations			|dos-locations|
+ Using backslashes		|dos-backslash|
+ Standard mappings		|dos-standard-mappings|
+@@ -85,6 +86,21 @@ The only kind of terminal type that the Win32 version of Vim understands is
+ probably get very strange behavior from Vim.  Therefore Vim does not obtain
+ the default value of 'term' from the environment variable "TERM".
+ 
++Terminal Colors						*win32-term-colors*
++
++The Win32 console supports 16 colors by default |dos-colors|.  From Windows 10
++version 1703 (Creators Update) onwards, the console supports 256 colors and
++true color (24-bit) when 'termguicolors' is set and Vim is built with support
++for Virtual Terminal Processing (VTP) |+vtp|.
++
++Virtual Terminal Processing is automatically enabled if either the
++'termguicolors' option is set or the 't_Co' option is set to 256.  This
++enables ANSI escape sequences for colors, improves rendering of multi-byte
++characters and enables other terminal features in the Windows console.
++
++The actual color rendering depends on whether your terminal supports VTP (such
++as Windows Terminal or the modern Windows 10/11 console).
++
+ $PATH							*win32-PATH*
+ 
+ The directory of the Vim executable is appended to $PATH.  This is mostly to
