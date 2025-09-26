@@ -1,58 +1,30 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 05da80126..012027518 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -8926,9 +8926,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	For Win32 console, Windows 10 version 1703 (Creators Update) or later
- 	is required.  Use this check to find out: >
- 		if has('vcon')
--<	This requires Vim to be built with the |+vtp| feature.  Enabling
--	'termguicolors' also enable Virtual Terminal Processing (VTP) in the
--	Windows console, which improves rendering of multi-byte characters.
-+<	This requires Vim to be built with the |+vtp| feature, see also
-+	|win32-term-colors|.
- 
- 	Note that the "cterm" attributes are still used, not the "gui" ones.
- 
-diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
-index f5fa0ac98..fc3ea8439 100644
---- a/runtime/doc/os_win32.txt
-+++ b/runtime/doc/os_win32.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index d9819ce74..5488050a8 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*os_win32.txt*  For Vim version 9.1.  Last change: 2025 Aug 06
-+*os_win32.txt*  For Vim version 9.1.  Last change: 2025 Sep 25
+-*eval.txt*	For Vim version 9.1.  Last change: 2025 Sep 24
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Sep 25
  
  
- 		  VIM REFERENCE MANUAL    by George Reilly
-@@ -24,7 +24,8 @@ The 32 bit version also runs on 64 bit MS-Windows systems.
- 7. Installation package		|win32-installer|
- 8. Win32 mini FAQ		|win32-faq|
- 
--Additionally, there are a number of common Win32 and DOS items:
-+Additionally, there are a number of common Win32 and DOS items in
-+|os_dos.txt|:
- File locations			|dos-locations|
- Using backslashes		|dos-backslash|
- Standard mappings		|dos-standard-mappings|
-@@ -85,6 +86,21 @@ The only kind of terminal type that the Win32 version of Vim understands is
- probably get very strange behavior from Vim.  Therefore Vim does not obtain
- the default value of 'term' from the environment variable "TERM".
- 
-+Terminal Colors						*win32-term-colors*
-+
-+The Win32 console supports 16 colors by default |dos-colors|.  From Windows 10
-+version 1703 (Creators Update) onwards, the console supports 256 colors and
-+true color (24-bit) when 'termguicolors' is set and Vim is built with support
-+for Virtual Terminal Processing (VTP) |+vtp|.
-+
-+Virtual Terminal Processing is automatically enabled if either the
-+'termguicolors' option is set or the 't_Co' option is set to 256.  This
-+enables ANSI escape sequences for colors, improves rendering of multi-byte
-+characters and enables other terminal features in the Windows console.
-+
-+The actual color rendering depends on whether your terminal supports VTP (such
-+as Windows Terminal or the modern Windows 10/11 console).
-+
- $PATH							*win32-PATH*
- 
- The directory of the Vim executable is appended to $PATH.  This is mostly to
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3240,8 +3240,8 @@ declarations and assignments do not use a command.  |vim9-declaration|
+ :let [{name1}, {name2}, ...] %= {expr1}
+ :let [{name1}, {name2}, ...] .= {expr1}
+ :let [{name1}, {name2}, ...] ..= {expr1}
+-			Like above, but append, add, subtract, multiply,
+-			divide, or modulo the value for each |List| or |Tuple|
++			Like above, but add, subtract, multiply, divide,
++			modulo, or append the value for each |List| or |Tuple|
+ 			item.
+ 			`.=` is not supported with Vim script version 2 and
+ 			later, see |vimscript-version|.
+@@ -3260,7 +3260,7 @@ declarations and assignments do not use a command.  |vim9-declaration|
+ :let [{name}, ..., ; {lastname}] -= {expr1}
+ :let [{name}, ..., ; {lastname}] .= {expr1}
+ :let [{name}, ..., ; {lastname}] ..= {expr1}
+-			Like above, but append/add/subtract the value for each
++			Like above, but add/subtract/append the value for each
+ 			|List| item.
+ 			`.=` is not supported with Vim script version 2 and
+ 			later, see |vimscript-version|.
