@@ -1,59 +1,19 @@
-diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
-index 85bc7d7e6..52d07b10b 100644
---- a/runtime/doc/develop.txt
-+++ b/runtime/doc/develop.txt
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index 94ae22610..dcdad65e1 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
 @@ -1,4 +1,4 @@
--*develop.txt*   For Vim version 9.1.  Last change: 2025 Sep 23
-+*develop.txt*   For Vim version 9.1.  Last change: 2025 Sep 29
+-*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Sep 10
++*vi_diff.txt*   For Vim version 9.1.  Last change: 2025 Sep 29
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -388,7 +388,7 @@ unreliable, fails on major platforms (e.g., macOS), and is only part of the
- new release workflow.  In practice, contributors edit the relevant `.pro` files
- by hand when adding, removing, or modifying a function signatures.
+@@ -1378,7 +1378,7 @@ support is verified as part of the CI test suite.
  
--This system has been in place since at least v1.24, when Vim’s functions were
-+This system has been in place since at least v1.24, when Vim's functions were
- still written in K&R style.
- 
- ==============================================================================
-@@ -425,12 +425,12 @@ For any non-trivial change, please always create a pull request on github,
- since this triggers the test suite.
- 
- A PR should ideally contain a single commit for a single logical change.
--However, you can include several commits if you want to group multiple
--logical, atomic changes in one PR.  This can also make longer PRs easier to
--review.  Be sure to describe the reasoning for your changes in each commit
--message, as this greatly helps with the review process.  In cases where each
--commit handles different logical changes, they will also be applied as
--separate patches in Vim’s repository.
-+However, you can include several commits if you want to group multiple logical,
-+atomic changes in one PR.  This can also make longer PRs easier to review.  Be
-+sure to describe the reasoning for your changes in each commit message, as
-+this greatly helps with the review process.  In cases where each commit
-+handles different logical changes, they will also be applied as separate
-+patches in Vim's repository.
- 
- 							*style-clang-format*
- sound.c and sign.c can be (semi-) automatically formatted using the
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index ac57264b8..5b3bf6b6d 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
-@@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2025 Sep 27
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2025 Sep 29
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -478,8 +478,8 @@ annotation (e.g. "vim") after a greater than (>) character.  E.g. >vim
- 						*g:help_example_languages*
- By default, help files only support Vim script highlighting.  If you need
- syntax highlighting for other languages, add to your |vimrc|: >
--	:let g:help_example_languages = {
--	      \	"vim": "vim", "vim9": "vim", "bash": "sh" }
-+	:let g:help_example_languages = #{
-+	      \	vim: "vim", vim9: "vim", bash: "sh" }
- The key represents the annotation marker name, and the value is the 'syntax'
- name.
- 
+ System				| Status:~
+ --------------------------------+-----------------------------------------
+-Amiga (OS4, AROS & MorphOS):	| still supported (?)
++Amiga (OS4, AROS & MorphOS):	| supported
+ Haiku:				| supported
+ Linux:				| fully supported (on maintained versions)
+ macOS:				| fully supported up until v10.6 (?)
