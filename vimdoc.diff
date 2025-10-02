@@ -1,59 +1,15 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e644fd11d..6d2b3242d 100644
+index 6d2b3242d..48e901305 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Sep 29
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Oct 01
+@@ -2292,7 +2292,9 @@ A jump table for the options with a short description can be found at |Q_op|.
  
+ 	   noselect Same as "noinsert", except that no menu item is
+ 		    pre-selected.  If both "noinsert" and "noselect" are
+-		    present, "noselect" has precedence.
++		    present, "noselect" takes precedence.  This options is
++		    enabled automatically when 'autocomplete' is on, unless
++		    "preinsert" is also enabled.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2257,12 +2257,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    see 'completefuzzycollect'.
- 
- 	   longest
--		    When 'autocomplete' is not active, only the longest
--		    common prefix of the matches is inserted.  If the popup
--		    menu is displayed, you can use CTRL-L to add more
--		    characters.  Whether case is ignored depends on the type
--		    of completion.  For buffer text the 'ignorecase' option
--		    applies.
-+		    When 'autocomplete' is not active, only the longest common
-+		    prefix of the matches is inserted.  If the popup menu is
-+		    displayed, you can use CTRL-L to add more characters.
-+		    Whether case is ignored depends on the type of completion.
-+		    For buffer text the 'ignorecase' option applies.
- 
- 		    When 'autocomplete' is active and no completion item is
- 		    selected, the longest common prefix of the matches is
-@@ -2313,8 +2312,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    {only works when compiled with the |+textprop| feature}
- 
- 	   preinsert
--		    Inserts the text of the first completion candidate
--		    beyond the current leader, highlighted with |hl-PreInsert|.
-+		    Inserts the text of the first completion candidate beyond
-+		    the current leader, highlighted with |hl-PreInsert|.
- 		    The cursor does not move.
- 		    Requires "fuzzy" to be unset, and either "menuone" in
- 		    'completeopt' or 'autocomplete' enabled.  When
-diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
-index fc3ea8439..adce877ac 100644
---- a/runtime/doc/os_win32.txt
-+++ b/runtime/doc/os_win32.txt
-@@ -1,4 +1,4 @@
--*os_win32.txt*  For Vim version 9.1.  Last change: 2025 Sep 25
-+*os_win32.txt*  For Vim version 9.1.  Last change: 2025 Oct 01
- 
- 
- 		  VIM REFERENCE MANUAL    by George Reilly
-@@ -24,8 +24,7 @@ The 32 bit version also runs on 64 bit MS-Windows systems.
- 7. Installation package		|win32-installer|
- 8. Win32 mini FAQ		|win32-faq|
- 
--Additionally, there are a number of common Win32 and DOS items in
--|os_dos.txt|:
-+Additionally, there are a number of common Win32 and DOS items in |os_dos.txt|:
- File locations			|dos-locations|
- Using backslashes		|dos-backslash|
- Standard mappings		|dos-standard-mappings|
+ 	   nosort   Disable sorting of completion candidates based on fuzzy
+ 		    scores when "fuzzy" is enabled.  Candidates will appear
