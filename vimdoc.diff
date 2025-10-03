@@ -1,15 +1,21 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 6d2b3242d..48e901305 100644
+index 48e901305..d0e587b4f 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -2292,7 +2292,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Oct 01
++*options.txt*	For Vim version 9.1.  Last change: 2025 Oct 03
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2292,8 +2292,8 @@ A jump table for the options with a short description can be found at |Q_op|.
  
  	   noselect Same as "noinsert", except that no menu item is
  		    pre-selected.  If both "noinsert" and "noselect" are
--		    present, "noselect" has precedence.
-+		    present, "noselect" takes precedence.  This options is
-+		    enabled automatically when 'autocomplete' is on, unless
-+		    "preinsert" is also enabled.
+-		    present, "noselect" takes precedence.  This options is
+-		    enabled automatically when 'autocomplete' is on, unless
++		    present, "noselect" takes precedence.  This is enabled
++		    automatically when 'autocomplete' is on, unless
+ 		    "preinsert" is also enabled.
  
  	   nosort   Disable sorting of completion candidates based on fuzzy
- 		    scores when "fuzzy" is enabled.  Candidates will appear
