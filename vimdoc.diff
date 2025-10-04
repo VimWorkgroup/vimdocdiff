@@ -1,24 +1,47 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 8f10398c2..8e2e0c610 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/mbyte.txt b/runtime/doc/mbyte.txt
+index fa050b9ba..d41b0d2aa 100644
+--- a/runtime/doc/mbyte.txt
++++ b/runtime/doc/mbyte.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2025 Sep 28
-+*syntax.txt*	For Vim version 9.1.  Last change: 2025 Oct 04
+-*mbyte.txt*     For Vim version 9.1.  Last change: 2025 Aug 10
++*mbyte.txt*     For Vim version 9.1.  Last change: 2025 Oct 04
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2272,11 +2272,11 @@ cycles for such a feature to become either integrated into the platform or
- withdrawn from this effort.  To cater for early adopters, there is optional
- support in Vim for syntax related preview features that are implemented.  You
- can request it by specifying a list of preview feature numbers as follows: >
--	:let g:java_syntax_previews = [488]
-+	:let g:java_syntax_previews = [507]
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar et al.
+@@ -971,6 +971,36 @@ of Windows you use.  For example, on my Windows 2000 box:
+    The default is still English (United Stated)
  
- The supported JEP numbers are to be drawn from this table:
- 	`430`: String Templates [JDK 21]
--	`488`: Primitive types in Patterns, instanceof, and switch
-+	`507`: Primitive types in Patterns, instanceof, and switch
  
- Note that as soon as the particular preview feature will have been integrated
- into the Java platform, its entry will be removed from the table and related
++MS-Windows IME Compatibility			*multibyte-ime-compatibility*
++
++Vim manages input methods on Windows systems via the `imm32.dll` (Input Method
++Manager).  The implementation, dating back to the Windows 2000 era, may not be
++fully compatible with modern input methods.  Modern input method processing
++has shifted to the Text Services Framework (TSF), whose behavior may not fully
++align with the traditional IME interface.  For details about IME and TSF,
++refer to the Microsoft documentation website (link is omitted since MS
++documentation URLs often change).
++
++In some cases Vim might incorrectly enable the Input Method (IM) in Normal
++mode upon startup when the Windows display language is set to a CJK language.
++To work around this issue, try adding the following configuration to your
++|gvimrc| file: >
++
++	autocmd VimEnter * set imdisable | set noimdisable
++<
++If you make any progress in diagnosing or resolving these issues, feedback is
++welcome.
++
++Note: IME behavior can vary due to differences in implementations by different
++vendors.  If you encounter issues with a specific input method, it is
++recommended to test with an alternative one.
++
++For proper integration with Vim's |+multi_byte_ime| system, changes in the
++input method's status must be detectable by the `ImmGetOpenStatus()` function
++in Vims source code.  Currently, some input methods that support multi-language
++input may have internal state changes that gVim cannot capture.
++
++
+ Cursor color when IME or XIM is on				*CursorIM*
+     There is a little cute feature for IME.  Cursor can indicate status of IME
+     by changing its color.  Usually status of IME was indicated by little icon
