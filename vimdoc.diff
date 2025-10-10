@@ -1,21 +1,16 @@
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 57bcb2427..3d12d8ecb 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -1,4 +1,4 @@
--*pattern.txt*   For Vim version 9.1.  Last change: 2025 Oct 05
-+*pattern.txt*   For Vim version 9.1.  Last change: 2025 Oct 09
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index 8e06df2d3..922da7272 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
+@@ -375,10 +375,7 @@ only function prototypes.
  
+ The `make proto` target in `src/Makefile` automates updating most of the .pro
+ files using the Python script proto/gen_prototypes.py, which relies on the
+-python3-clangd module.  Note that a few proto files are hand edited.
+-
+-This system has been in place since at least v1.24, when Vim's functions were
+-still written in K&R style.
++python3-clang module.  Note that a few proto files are hand edited.
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1550,7 +1550,8 @@ a List of strings.  |matchfuzzy()| returns the matching strings, while
- 
- The "f" flag of `:vimgrep` enables fuzzy matching.
- 
--To enable fuzzy matching for |ins-completion|, add the "fuzzy" value to the
--'completeopt' option.
-+To enable fuzzy matching for |ins-completion|, add "fuzzy" to the
-+'completeopt' option.  For |cmdline-completion|, add "fuzzy" to the
-+'wildoptions' option.
- 
-  vim:tw=78:ts=8:noet:ft=help:norl:
+ ==============================================================================
+ 4. Coding style						*coding-style*
