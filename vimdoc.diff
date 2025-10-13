@@ -1,76 +1,26 @@
-diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
-index 048f428cb..1c9de0cbc 100644
---- a/runtime/doc/message.txt
-+++ b/runtime/doc/message.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 914e9fc83..5ed3e803a 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*message.txt*   For Vim version 9.1.  Last change: 2025 Aug 06
-+*message.txt*   For Vim version 9.1.  Last change: 2025 Oct 12
+-*insert.txt*    For Vim version 9.1.  Last change: 2025 Sep 16
++*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 12
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -859,26 +859,27 @@ This message is given when the screen is filled with messages.  It is only
- given when the 'more' option is on.  It is highlighted with the |hl-MoreMsg|
- group.
- 
--Type					effect ~
--     <CR> or <NL> or j or <Down>	one more line
--     d					down a page (half a screen)
--     <Space> or f or <PageDown>		down a screen
--     G					down all the way, until the hit-enter
--					prompt
--
--     <BS> or k or <Up>			one line back
--     u					up a page (half a screen)
--     b or <PageUp>			back a screen
--     g					back to the start
--
--     q, <Esc> or CTRL-C			stop the listing
--     :					stop the listing and enter a
--					     command-line
--    <C-Y>				yank (copy) a modeless selection to
--					the clipboard ("* and "+ registers)
--    {menu-entry}			what the menu is defined to in
--					Cmdline-mode.
--    <LeftMouse>				next page (*)
-+Type						effect ~
-+     <CR> or <NL> or j or <Down>		one more line
-+     d						down a page (half a screen)
-+     <Space> or f or <PageDown> or CTRL-F	down a screen
-+     G						down all the way, until the
-+						hit-enter prompt
-+
-+     <BS> or k or <Up>				one line back
-+     u						up a page (half a screen)
-+     b or <PageUp> or CTRL-B			back a screen
-+     g						back to the start
-+
-+     q, <Esc> or CTRL-C				stop the listing
-+     :						stop the listing and enter a
-+						command-line
-+    <C-Y>					yank (copy) a modeless
-+						selection to the clipboard
-+						("* and "+ registers)
-+    {menu-entry}				what the menu is defined to
-+						in Cmdline-mode.
-+    <LeftMouse>					next page (*)
- 
- Any other key causes the meaning of the keys to be displayed.
- 
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 0a662f7cc..90cd5c4c7 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*  For Vim version 9.1.  Last change: 2025 Oct 07
-+*version9.txt*  For Vim version 9.1.  Last change: 2025 Oct 12
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -41780,6 +41780,7 @@ Others: ~
-   Command-line.
- - |min()|/|max()| can handle all comparable data types.
- - Vim triggers the |TermResponseAll| autocommand for any terminal OSC value.
-+- Support CTRL-B and CTRL-F in the |more-prompt|.
- 
- 							*added-9.2*
- Added ~
+@@ -80,10 +80,11 @@ CTRL-W		Delete the word before the cursor (see |i_backspacing| about
+ 		joining lines).  See the section "word motions",
+ 		|word-motions|, for the definition of a word.
+ 						*i_CTRL-U*
+-CTRL-U		Delete all entered characters before the cursor in the current
+-		line.  If there are no newly entered characters and
+-		'backspace' is not empty, delete all characters before the
+-		cursor in the current line.
++CTRL-U		Delete all characters that were entered after starting Insert
++		mode and before the cursor in the current line.
++		If there are no newly entered characters and 'backspace' is
++		not empty, delete all characters before the cursor in the
++		current line.
+ 		If C-indenting is enabled the indent will be adjusted if the
+ 		line becomes blank.
+ 		See |i_backspacing| about joining lines.
