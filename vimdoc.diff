@@ -1,234 +1,116 @@
-diff --git a/runtime/doc/arabic.txt b/runtime/doc/arabic.txt
-index b8fccf241..59992dba2 100644
---- a/runtime/doc/arabic.txt
-+++ b/runtime/doc/arabic.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 89d52e260..c08147c60 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*arabic.txt*	For Vim version 9.1.  Last change: 2021 Jun 22
-+*arabic.txt*	For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL	  by Nadim Shaikli
-@@ -191,7 +191,7 @@ o  Enable Arabic settings [short-cut]
- 
-       To activate the Arabic keymap (i.e. to remap your English/Latin
-       keyboard to look-n-feel like a standard Arabic one), set the
--      'keymap' command to "arabic".  This is done by entering
-+      'keymap' option to "arabic".  This is done by entering
- >
- 		:set keymap=arabic
- <
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 914cff9c3..ff64628e0 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
-@@ -1,4 +1,4 @@
--*change.txt*    For Vim version 9.1.  Last change: 2025 Oct 12
-+*change.txt*    For Vim version 9.1.  Last change: 2025 Oct 14
+-*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 12
++*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 14
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1137,12 +1137,12 @@ inside of strings can change!  Also see 'softtabstop' option. >
- 			current line).  This always works |linewise|, thus
- 			this command can be used to put a yanked block as new
- 			lines.
--			If no register is specified, it depends on the 'cb'
--			option: If 'cb' contains "unnamedplus", paste from the
--			+ register |quoteplus|.  Otherwise, if 'cb' contains
--			"unnamed", paste from the * register |quotestar|.
--			Otherwise, paste from the unnamed register
--			|quote_quote|.
-+			If no register is specified, it depends on the
-+			'clipboard' option: If 'clipboard' contains
-+			"unnamedplus", paste from the + register |quoteplus|.
-+			Otherwise, if 'clipboard' contains "unnamed", paste
-+			from the * register |quotestar|.  Otherwise, paste from
-+			the unnamed register |quote_quote|.
- 			The register can also be '=' followed by an optional
- 			expression.  The expression continues until the end of
- 			the command.  You need to escape the '|' and '"'
-diff --git a/runtime/doc/diff.txt b/runtime/doc/diff.txt
-index a73a3ce0b..419373a8d 100644
---- a/runtime/doc/diff.txt
-+++ b/runtime/doc/diff.txt
+@@ -1287,26 +1287,9 @@ remove existing text in the preview window.  The size of the preview window is
+ three lines, but 'previewheight' is used when it has a value of 1 or 2.
+ 
+ 						*complete-popup*
+-When "popup" is in 'completeopt' a popup window is used to display the "info".
+-Then the 'completepopup' option specifies the properties of the popup.  This
+-is used when the info popup is created.  The option is a comma-separated list
+-of values:
+-	height		maximum height of the popup
+-	width		maximum width of the popup
+-	highlight	highlight group of the popup (default is PmenuSel)
+-	align		"item" (default) or "menu"
+-	border		"on" (default) or "off"
+-Example: >
+-	:set completepopup=height:10,width:60,highlight:InfoPopup
+-
+-When `"align"` is set to `"item"`, the popup is positioned near the selected
+-item, and moves as the selection changes.
+-When set to `"menu"`, the popup aligns with the top of the menu (if the menu
+-appears below the text), or with the bottom (if the menu appears above).
+-
+-If the 'mouse' is enabled, a close button and resize handle will appear on the
+-popup border.
+-
++When "popup" is included in 'completeopt', a popup window is used to display
++the completion "info" text.  The appearance and behavior of this popup are
++controlled by the 'completepopup' option when the popup is created.
+ After creation, the info popup can be located with |popup_findinfo()| and
+ modified using |popup_setoptions()|.
+ 
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index f32f58ba6..f4fd5ed80 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*diff.txt*      For Vim version 9.1.  Last change: 2025 Oct 12
-+*diff.txt*      For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -139,7 +139,7 @@ file for a moment and come back to the same file and be in diff mode again.
- 		buffers.
- 
- The `:diffoff` command resets the relevant options to the values they had when
--using `:diffsplit`, `:diffpatch`, `:diffthis`. or starting Vim in diff mode.
-+using `:diffsplit`, `:diffpatch`, `:diffthis`, or starting Vim in diff mode.
- When using `:diffoff` twice the last saved values are restored.
- Otherwise they are set to their default value:
- 
-diff --git a/runtime/doc/editing.txt b/runtime/doc/editing.txt
-index 1e36e132a..6141dcec1 100644
---- a/runtime/doc/editing.txt
-+++ b/runtime/doc/editing.txt
-@@ -1,4 +1,4 @@
--*editing.txt*   For Vim version 9.1.  Last change: 2025 Oct 13
-+*editing.txt*   For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -137,7 +137,7 @@ as the original file with 'backupext' appended.  The default "~" is a bit
- strange to avoid accidentally overwriting existing files.  If you prefer
- ".bak" change the 'backupext' option.  Extra dots are replaced with '_' on
- MS-Windows machines, when Vim has detected that an MS-DOS-like filesystem is
--being used (e.g., messydos or crossdos) or when the 'shortname' option is on.
-+being used, or when the 'shortname' option is on.
- The backup file can be placed in another directory by setting 'backupdir'.
- 
- 							*auto-shortname*
-diff --git a/runtime/doc/if_mzsch.txt b/runtime/doc/if_mzsch.txt
-index c5e5dedeb..d76816dbe 100644
---- a/runtime/doc/if_mzsch.txt
-+++ b/runtime/doc/if_mzsch.txt
-@@ -1,4 +1,4 @@
--*if_mzsch.txt*  For Vim version 9.1.  Last change: 2025 Oct 12
-+*if_mzsch.txt*  For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Sergey Khorev
-@@ -68,7 +68,7 @@ It is raised for various Vim errors.
- 
- During compilation, the MzScheme interface will remember the current MzScheme
- collection path.  If you want to specify additional paths use the
--'current-library-collection-paths' parameter.  E.g., to cons the user-local
-+"current-library-collection-paths" parameter.  E.g., to cons the user-local
- MzScheme collection path: >
-     :mz << EOF
-     (current-library-collection-paths
-diff --git a/runtime/doc/if_perl.txt b/runtime/doc/if_perl.txt
-index 44ea4e9ff..7f74a9f3b 100644
---- a/runtime/doc/if_perl.txt
-+++ b/runtime/doc/if_perl.txt
-@@ -1,4 +1,4 @@
--*if_perl.txt*   For Vim version 9.1.  Last change: 2025 Oct 12
-+*if_perl.txt*   For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Sven Verdoolaege
-@@ -18,9 +18,9 @@ Perl and Vim				*perl* *Perl*
- 
- Vim syntax highlighting supports Perl and POD files.  Vim assumes a file is
- Perl code if the filename has a .pl or .pm suffix.  Vim also examines the
--first line of a file, regardless of the filename suffix, to check if a file is
--a Perl script (see scripts.vim in Vim's syntax directory).  Vim assumes a file
--is POD text if the filename has a .POD suffix.
-+shebang line of a file, if no filetype has been detected, to check if a file
-+is a Perl script.  Vim assumes a file is POD text if the filename has a .POD
-+suffix.
- 
- To use tags with Perl, you need Universal/Exuberant Ctags.  Look here:
- 	Universal Ctags (preferred): https://ctags.io
-diff --git a/runtime/doc/indent.txt b/runtime/doc/indent.txt
-index 0599ac4f3..afd395465 100644
---- a/runtime/doc/indent.txt
-+++ b/runtime/doc/indent.txt
-@@ -1,4 +1,4 @@
--*indent.txt*    For Vim version 9.1.  Last change: 2025 Oct 12
-+*indent.txt*    For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -717,12 +717,11 @@ Block if, select case, select type, select rank,  where, forall, type,
- interface, associate, block, enum, critical, and change team constructs are
- indented.  The indenting of subroutines, functions, modules, and program
- blocks is optional.  Comments, labeled statements, and continuation lines are
--indented if the Fortran is in free source form, whereas they are not indented
--if the Fortran is in fixed source form because of the left margin
--requirements.  Hence manual indent corrections will be necessary for labeled
--statements and continuation lines when fixed source form is being used.  For
--further discussion of the method used for the detection of source format see
--|ft-fortran-syntax|.
-+indented in free source form, whereas they are not indented in fixed source
-+form because of the left margin requirements.  Hence manual indent corrections
-+will be necessary for labeled statements and continuation lines when fixed
-+source form is being used.  For further discussion of the method used for the
-+detection of source format see |ft-fortran-syntax|.
- 
- Do loops ~
- All do loops are left unindented by default.  Do loops can be unstructured in
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 3651f1b09..236340dae 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2025 Oct 13
-+*syntax.txt*	For Vim version 9.1.  Last change: 2025 Oct 14
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Oct 12
++*options.txt*	For Vim version 9.1.  Last change: 2025 Oct 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5916,7 +5916,7 @@ guisp={color-name}					*highlight-guisp*
- 	If you want to develop a color list that can be relied on by others,
- 	it is best to prefix your color names.  By convention these color
- 	lists are placed in the colors/lists directory.  You can see an
--	example in '$VIMRUNTIME/colors/lists/csscolors.vim'.  This list would
-+	example in "$VIMRUNTIME/colors/lists/csscolors.vim".  This list would
- 	be sourced by a color scheme using: >
+@@ -2339,12 +2339,50 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			global
+ 			{not available when compiled without the |+textprop|
+ 			or |+quickfix| feature}
+-	When 'completeopt' contains "popup" then this option is used for the
++	When 'completeopt' contains "popup", this option specifies the
+ 	properties of the info popup when it is created.  If an info popup
+ 	window already exists it is closed, so that the option value is
+ 	applied when it is created again.
+-	You can also use |popup_findinfo()| and then set properties for an
+-	existing info popup with |popup_setoptions()|.  See |complete-popup|.
++
++	The option is a comma-separated list of values:
++		align		"item" (default) or "menu"
++		border		border style:
++				"single"	thin box-drawing characters
++				"double"	double-line
++				"round"		rounded corners
++				"ascii"		ASCII characters (-, |, +)
++				"custom:X;X;X;X;X;X;X;X"
++						eight characters separated by
++						semicolons, in the order: top,
++						right, bottom, left, topleft,
++						topright, botright, botleft
++				"on"		same as "double" when
++						'encoding' is "utf-8" and
++						'ambiwidth' is "single", else
++						"ascii" (default)
++				"off"		no border
++		borderhighlight	highlight group for the popup border characters
++		close		show close button: "on" (default) or "off"
++		height		maximum height of the popup
++		highlight	popup highlight group (default: PmenuSel)
++		resize		show resize handle: "on" (default) or "off"
++		shadow		"off" (default) or "on" using |hl-PmenuShadow|
++		width		maximum width of the popup
++
++	Example: >
++		:set completepopup=height:10,border:single,highlight:InfoPopup
++		:set completepopup=width:60,border:custom:─;│;─;│;┌;┐;┘;└
++<
++	When "align" is set to "item", the popup is positioned near the
++	selected item and moves as the selection changes.
++	When set to "menu", the popup aligns with the top of the menu (if the
++	menu appears below the text) or with the bottom (if it appears above).
++
++	The close button and resize handle are shown on the popup border only
++	when 'mouse' is enabled.
++
++	After creation, the info popup can be located with |popup_findinfo()|
++	and modified using |popup_setoptions()|.  See also: |complete-popup|.
  
- 	    :runtime colors/lists/csscolors.vim
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 836ca7299..f7fe33016 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2025 Oct 12
-+*terminal.txt*	For Vim version 9.1.  Last change: 2025 Oct 14
+ 						*'completeslash'* *'csl'*
+ 'completeslash' 'csl'	string	(default: "")
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 90cd5c4c7..ef7762253 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -41717,6 +41717,7 @@ Options: ~
+   to ">" by default, indicating text that extends beyond the window width.
+ - 'guioptions': New value |'go-C'| to style the title/caption bar on Windows 11
+   (see also the below platform specific change).
++- 'completepopup': Add more values to style popup windows.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1811,9 +1811,9 @@ Change default signs ~
- 							*termdebug_signs*
- Termdebug uses the hex number of the breakpoint ID in the signcolumn to
- represent breakpoints.  If it is greater than "0xFF", then it will be
--displayed as "F+", due to we really only have two screen cells for the sign.
--You may also use decimal breakpoint signs instead, in which case IDs greater
--than 99 will be displayed as "9+".
-+displayed as "F+", because there are only two screen cells available for the
-+sign.  You may also use decimal breakpoint signs instead, in which case IDs
-+greater than 99 will be displayed as "9+".
- 
- If you want to customize the breakpoint signs to show `>>` in the signcolumn: >
- 	let g:termdebug_config['sign'] = '>>'
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index 243bd58a2..108666248 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
-@@ -1,4 +1,4 @@
--*windows.txt*   For Vim version 9.1.  Last change: 2025 Oct 12
-+*windows.txt*   For Vim version 9.1.  Last change: 2025 Oct 14
- 
- 
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -127,11 +127,11 @@ This option can be local to the window, so that you can have a different
- status line in each window.
- 
- Normally, inversion is used to display the status line.  This can be changed
--with the 's' character in the 'highlight' option.  For example, "sb" sets it to
--bold characters.  If no highlighting is used for the status line ("sn"), the
--'^' character is used for the current window, and '=' for other windows.  If
--the mouse is supported and enabled with the 'mouse' option, a status line can
--be dragged to resize windows.
-+with the 's' character in the 'highlight' option.  For example, "sb" sets it
-+to bold characters.  If no highlighting is used for the status line ("sn"),
-+the '^' character is used for the current window, and '=' for other windows.
-+If the mouse is supported and enabled with the 'mouse' option, a status line
-+can be dragged to resize windows.
- 
- Note: If you expect your status line to be in reverse video and it isn't,
- check if the 'highlight' option contains "si".  In version 3.0, this meant to
-@@ -142,7 +142,7 @@ that have termcap codes for italics.
- 
- 							*filler-lines*
- The lines after the last buffer line in a window are called filler lines.  By
--default, these lines start with a tilde (~) character.  The 'eob' item in the
-+default, these lines start with a tilde (~) character.  The "eob" item in the
- 'fillchars' option can be used to change this character.  By default, these
- characters are highlighted as NonText (|hl-NonText|).  The EndOfBuffer
- highlight group (|hl-EndOfBuffer|) can be used to change the highlighting of
+ Ex commands: ~
+ - allow to specify a priority when defining a new sign |:sign-define|
