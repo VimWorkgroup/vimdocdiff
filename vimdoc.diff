@@ -1,23 +1,47 @@
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 78777eef5..c7ed02764 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index c08147c60..1e148f9f3 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*various.txt*   For Vim version 9.1.  Last change: 2025 Oct 14
-+*various.txt*   For Vim version 9.1.  Last change: 2025 Oct 16
+-*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 14
++*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 16
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -380,6 +380,12 @@ N  *+clientserver*	Unix and Win32: Remote invocation |clientserver|
-    *+clipboard*		|clipboard| support compiled-in
- N  *+clipboard_provider*  |clipboard-providers| support compiled-in
-    *+clipboard_working*	|clipboard| support compiled-in and working
-+   *+clipboard_star_avail*
-+			|clipboard| support compiled-in and star "*" register
-+			available
-+   *+clipboard_plus_avail*
-+			|clipboard| support compiled-in and separate plus "+"
-+			register available
- T  *+cmdline_compl*	command line completion |cmdline-completion|
- T  *+cmdline_hist*	command line history |cmdline-history|
- T  *+cmdline_info*	'showcmd' and 'ruler'; Always enabled since
+@@ -1704,6 +1704,36 @@ Notes:
+ <  to your vimrc
+ 
+ 
++VIM							*ft-vim-omni*
++
++Simple completion of Vimscript and Vim9script languages.
++
++Complete:
++
++- set and & options
++- commands and command arguments
++- function names after ->
++- expressions
++- l:, v:, g:, s: and b: variables
++- fallback to command line completion to get candidates
++
++Notes
++
++- It doesn't complete command arguments that rely on 'shellcmd' completion
++  type in Windows and WSL due to general slowness of canditate gathering,
++  e.g.
++>
++     terminal dir
++     !dir
++<
++  These completions might take several seconds to gather candidates.
++
++- 'autocomplete' can't complete "no" options:
++>
++     set noautoindent
++     set nobuflisted
++<
++
+ SYNTAX							*ft-syntax-omni*
+ 
+ Vim has the ability to color syntax highlight nearly 500 languages.  Part of
