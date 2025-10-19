@@ -1,19 +1,48 @@
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 1e148f9f3..b0bd39a28 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 12580eae2..0f81f4d6b 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 16
-+*insert.txt*    For Vim version 9.1.  Last change: 2025 Oct 17
+-*eval.txt*	For Vim version 9.1.  Last change: 2025 Oct 16
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Oct 18
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -1706,7 +1706,7 @@ Notes:
- 
- VIM							*ft-vim-omni*
- 
--Simple completion of Vimscript and Vim9script languages.
-+Simple completion of Vim script and Vim9 script languages.
- 
- Complete:
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5356,30 +5356,30 @@ OSC52 command: >vim
+ 	func Available()
+ 	  return "*"
+ 	endfunc
+-	
++
+ 	func Paste(reg, type)
+ 	  " If implicit access, don't do anything
+ 	  if a:type == "implicit"
+ 	    return "previous"
+ 	  endif
+-	
++
+ 	  augroup OSC
+ 	    autocmd!
+ 	    autocmd TermResponseAll osc ++once call feedkeys("\<F30>", '!')
+ 	  augroup END
+-	
++
+ 	  " Send command
+ 	  call echoraw("\<Esc>]52;;?\<Esc>\\")
+-	
++
+ 	  " Wait until autocmd is triggered
+ 	  while getchar(-1) != "\<F30>"
+ 	  endwhile
+-	
++
+ 	  autocmd! OSC
+-	
++
+ 	  " Extract the base64 stuff
+ 	  let l:stuff = matchstr(v:termosc, '52;.\+;\zs[A-Za-z0-9+/=]\+')
+-	
++
+ 	  return ("", blob2str(base64_decode(l:stuff)))
+ 	endfunc
  
