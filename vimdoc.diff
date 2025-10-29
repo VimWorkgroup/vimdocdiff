@@ -1,22 +1,27 @@
-diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
-index 0f008446e..aa8ed9ec8 100644
---- a/runtime/doc/userfunc.txt
-+++ b/runtime/doc/userfunc.txt
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 9a9788c2f..a3226020a 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*userfunc.txt*	For Vim version 9.1.  Last change: 2025 Oct 27
-+*userfunc.txt*	For Vim version 9.1.  Last change: 2025 Oct 28
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Oct 12
++*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Oct 28
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -189,9 +189,9 @@ See |:verbose-cmd| for more information.
- 			With the ! there is no error if the function does not
- 			exist.
- 							*:retu* *:return* *E133*
--:retu[rn] [expr]	Return from a function.  When "[expr]" is given, it is
-+:retu[rn] [expr]	Return from a function.  When [expr] is given, it is
- 			evaluated and returned as the result of the function.
--			If "[expr]" is not given, the number 0 is returned.
-+			If [expr] is not given, the number 0 is returned.
- 			When a function ends without an explicit ":return",
- 			the number 0 is returned.
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar
+@@ -1724,6 +1724,16 @@ shells and OSes and also does not allow to use other available TeX options,
+ if any.  If your TeX doesn't support "-interaction=nonstopmode", please
+ report it with different means to express \nonstopmode from the command line.
  
++TOMBI					*quickfix-toml* *compiler-tombi*
++
++The tombi compiler plugin does not compile.
++
++It runs "tombi lint" and parses diagnostics into the quickfix list.
++
++Color codes are stripped from the linter output to keep |errorformat|
++parsing reliable.  This may require a working "sed" for old versions of the
++tombi linter.
++
+ TSC COMPILER						*compiler-tsc*
+ 
+ The executable and compiler options can be added to 'makeprg' by setting the
