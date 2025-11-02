@@ -1,20 +1,40 @@
-diff --git a/runtime/doc/index.txt b/runtime/doc/index.txt
-index 2966a6303..0581a8369 100644
---- a/runtime/doc/index.txt
-+++ b/runtime/doc/index.txt
+diff --git a/runtime/doc/mbyte.txt b/runtime/doc/mbyte.txt
+index ea545874c..e7ca6da86 100644
+--- a/runtime/doc/mbyte.txt
++++ b/runtime/doc/mbyte.txt
 @@ -1,4 +1,4 @@
--*index.txt*     For Vim version 9.1.  Last change: 2025 Aug 06
-+*index.txt*     For Vim version 9.1.  Last change: 2025 Oct 31
+-*mbyte.txt*     For Vim version 9.1.  Last change: 2025 Oct 26
++*mbyte.txt*     For Vim version 9.1.  Last change: 2025 Nov 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL    by Bram Moolenaar et al.
+@@ -997,8 +997,8 @@ recommended to test with an alternative one.
+ 
+ For proper integration with Vim's |+multi_byte_ime| system, changes in the
+ input method's status must be detectable by the `ImmGetOpenStatus()` function
+-in Vims source code.  Currently, some input methods that support multi-language
+-input may have internal state changes that gVim cannot capture.
++in Vim's source code.  Currently, some input methods that support
++multi-language input may have internal state changes that gVim cannot capture.
+ 
+ 
+ Cursor color when IME or XIM is on				*CursorIM*
+diff --git a/runtime/doc/wayland.txt b/runtime/doc/wayland.txt
+index 300b9c5b9..9900d9ae3 100644
+--- a/runtime/doc/wayland.txt
++++ b/runtime/doc/wayland.txt
+@@ -1,4 +1,4 @@
+-*wayland.txt*   For Vim version 9.1.  Last change: 2025 Oct 26
++*wayland.txt*   For Vim version 9.1.  Last change: 2025 Nov 01
  
  
  		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -807,7 +807,8 @@ tag		char	      note action in Normal mode	~
- |g@|		g@{motion}	   call 'operatorfunc'
- |g~|		g~{motion}	2  swap case for Nmove text
- |g<Down>|	g<Down>		1  same as "gj"
--|g<End>|	g<End>		1  same as "g$"
-+|g<End>|	g<End>		1  same as "g$" but go to the rightmost
-+				   non-blank character instead
- |g<Home>|	g<Home>		1  same as "g0"
- |g<LeftMouse>|	g<LeftMouse>	   same as <C-LeftMouse>
- 		g<MiddleMouse>	   same as <C-MiddleMouse>
+@@ -73,7 +73,7 @@ selections, see |wayland-primary-selection| for more details.
+ 							*wayland-persist*
+ If you use X11 cut buffers, no such things exist on Wayland.  Instead to
+ emulate such functionality, a separate clipboard manager must be used in order
+-to persist selection data when a Wayland client exists.
++to persist selection data when a Wayland client exits.
+ 
+ 							*wayland-and-x11*
+ If your version of Vim comes compiled with both X11 and Wayland support, then
