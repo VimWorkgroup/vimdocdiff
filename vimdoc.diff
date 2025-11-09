@@ -1,19 +1,250 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e231dedb1..b37a25bf1 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
+index 6bb860fbe..2b06376a6 100644
+--- a/runtime/doc/usr_02.txt
++++ b/runtime/doc/usr_02.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Nov 08
+-*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_02.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
  
  
- 		  VIM REFERENCE MANUAL    by Bram Moolenaar
-@@ -11578,7 +11578,7 @@ synIDtrans({synID})					*synIDtrans()*
+ 		     VIM USER MANUAL      by Bram Moolenaar
+@@ -522,8 +522,8 @@ Summary:					*help-summary*  >
+ <   You can see the user guide topics |03.9| and |usr_27.txt| in the
+    introduction.
+ 
+-3) Options are enclosed in single apostrophes.  To go to the help topic for the
+-   list option: >
++3) Options are enclosed in single apostrophes.  To go to the help topic for
++   the list option: >
+ 	:help 'list'
+ <   If you only know you are looking for a certain option, you can also do: >
+ 	:help options.txt
+diff --git a/runtime/doc/usr_09.txt b/runtime/doc/usr_09.txt
+index 666dbd4e9..a6b2f16b2 100644
+--- a/runtime/doc/usr_09.txt
++++ b/runtime/doc/usr_09.txt
+@@ -1,4 +1,4 @@
+-*usr_09.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_09.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
  
  
- synconcealed({lnum}, {col})				*synconcealed()*
--		The result is a |List| with currently three items:
-+		The result is a |List| with three items:
- 		1. The first item in the list is 0 if the character at the
- 		   position {lnum} and {col} is not part of a concealable
- 		   region, 1 if it is.  {lnum} is used like with |getline()|.
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -132,8 +132,8 @@ select text in a standard manner.  The X Window system also has a standard
+ system for using the mouse.  Unfortunately, these two standards are not the
+ same.
+    Fortunately, you can customize Vim.  You can make the behavior of the mouse
+-work like an X Window system mouse or a Microsoft Windows mouse.  The following
+-command makes the mouse behave like an X Window mouse: >
++work like an X Window system mouse or a Microsoft Windows mouse.  The
++following command makes the mouse behave like an X Window mouse: >
+ 
+ 	:behave xterm
+ 
+diff --git a/runtime/doc/usr_10.txt b/runtime/doc/usr_10.txt
+index ebf4bab40..6d3e89b79 100644
+--- a/runtime/doc/usr_10.txt
++++ b/runtime/doc/usr_10.txt
+@@ -1,4 +1,4 @@
+-*usr_10.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_10.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -296,8 +296,8 @@ five lines before the last line in the file.
+ 
+ USING MARKS
+ 
+-Instead of figuring out the line numbers of certain positions, remembering them
+-and typing them in a range, you can use marks.
++Instead of figuring out the line numbers of certain positions, remembering
++them and typing them in a range, you can use marks.
+    Place the marks as mentioned in chapter 3.  For example, use "mt" to mark
+ the top of an area and "mb" to mark the bottom.  Then you can use this range
+ to specify the lines between the marks (including the lines with the marks): >
+@@ -736,9 +736,10 @@ of the program replaces these lines.
+ 	line 44			      line 55
+ 	last line		      last line
+ 
+-The "!!" command filters the current line through a filter.  In Unix the "date"
+-command prints the current time and date.  "!!date<Enter>" replaces the current
+-line with the output of "date".  This is useful to add a timestamp to a file.
++The "!!" command filters the current line through a filter.  In Unix the
++"date" command prints the current time and date.  "!!date<Enter>" replaces the
++current line with the output of "date".  This is useful to add a timestamp to
++a file.
+ 
+ Note: There is a difference between "!cmd" (e.g. using it without any file
+ range) and "{range}!cmd".  While the former will simply execute the external
+diff --git a/runtime/doc/usr_22.txt b/runtime/doc/usr_22.txt
+index d03cb53fe..8bdabe720 100644
+--- a/runtime/doc/usr_22.txt
++++ b/runtime/doc/usr_22.txt
+@@ -1,4 +1,4 @@
+-*usr_22.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_22.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -30,15 +30,15 @@ Vim has a plugin that makes it possible to edit a directory.  Try this: >
+ 
+ Through the magic of autocommands and Vim scripts, the window will be filled
+ with the contents of the directory.  It looks like this (slightly cleaned up
+-so that it fits within 80 chars): >
++so that it fits within 78 chars): >
+ 
+-  " ===========================================================================
+-  " Netrw Directory Listing                                        (netrw v180)
++  " ==========================================================================
++  " Netrw Directory Listing                                       (netrw v180)
+   "   /path/to/vim/runtime/doc
+   "   Sorted by      name
+   "   Sort sequence: [\/]$,*,\(\.bak\|\~\|\.o\|\.h\|\.info\|\.swp\)[*@]\=$
+   "   Quick Help: <F1>:help -:go up dir D:delete R:rename s:sort-by x:special
+-  " ===========================================================================
++  " ==========================================================================
+   ../
+   ./
+   check/
+diff --git a/runtime/doc/usr_24.txt b/runtime/doc/usr_24.txt
+index 16a706353..04cdc81cd 100644
+--- a/runtime/doc/usr_24.txt
++++ b/runtime/doc/usr_24.txt
+@@ -1,4 +1,4 @@
+-*usr_24.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_24.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -567,8 +567,8 @@ that combination.  Thus CTRL-K dP also works.  Since there is no digraph for
+ 
+ 	Note:
+ 	The digraphs depend on the character set that Vim assumes you are
+-	using.  Always use ":digraphs" to find out which digraphs are currently
+-	available.
++	using.  Always use ":digraphs" to find out which digraphs are
++	currently available.
+ 
+ You can define your own digraphs by specifying the target character with a
+ decimal number.  Example: >
+diff --git a/runtime/doc/usr_30.txt b/runtime/doc/usr_30.txt
+index 8a3873c86..c6c1b443d 100644
+--- a/runtime/doc/usr_30.txt
++++ b/runtime/doc/usr_30.txt
+@@ -1,4 +1,4 @@
+-*usr_30.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_30.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -37,9 +37,9 @@ you give) and captures the results: >
+ 
+ If errors were generated, they are captured and the editor positions you where
+ the first error occurred.
+-   Take a look at an example ":make" session.  (Typical :make sessions generate
+-far more errors and fewer stupid ones.)  After typing ":make" the screen looks
+-like this:
++   Take a look at an example ":make" session.  (Typical :make sessions
++generate far more errors and fewer stupid ones.)  After typing ":make" the
++screen looks like this:
+ 
+ 	:!make | &tee /tmp/vim215953.err ~
+ 	gcc -g -Wall -o prog main.c sub.c ~
+diff --git a/runtime/doc/usr_40.txt b/runtime/doc/usr_40.txt
+index 6517f851e..86a5c69e2 100644
+--- a/runtime/doc/usr_40.txt
++++ b/runtime/doc/usr_40.txt
+@@ -1,4 +1,4 @@
+-*usr_40.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_40.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -385,8 +385,8 @@ Some of the other options and keywords are as follows:
+ 	-count={number}		The command can take a count whose default is
+ 				{number}.  The resulting count can be used
+ 				through the <count> keyword.
+-	-bang			You can use a !.  If present, using <bang> will
+-				result in a !.
++	-bang			You can use a !.  If present, using <bang>
++				will result in a !.
+ 	-register		You can specify a register.  (The default is
+ 				the unnamed register.)
+ 				The register specification is available as
+@@ -563,9 +563,9 @@ for the cprograms group: >
+ 
+ GROUPS
+ 
+-The {group} item, used when defining an autocommand, groups related autocommands
+-together.  This can be used to delete all the autocommands in a certain group,
+-for example.
++The {group} item, used when defining an autocommand, groups related
++autocommands together.  This can be used to delete all the autocommands in a
++certain group, for example.
+    When defining several autocommands for a certain group, use the ":augroup"
+ command.  For example, let's define autocommands for C programs: >
+ 
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 1ac9b14cc..b64290935 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
+@@ -1,4 +1,4 @@
+-*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -764,7 +764,8 @@ String manipulation:					*string-functions*
+ 	charclass()		class of a character
+ 	match()			position where a pattern matches in a string
+ 	matchbufline()		all the matches of a pattern in a buffer
+-	matchend()		position where a pattern match ends in a string
++	matchend()		position where a pattern match ends in a
++				string
+ 	matchfuzzy()		fuzzy matches a string in a list of strings
+ 	matchfuzzypos()		fuzzy matches a string in a list of strings
+ 	matchstr()		match of a pattern in a string
+@@ -841,7 +842,8 @@ List manipulation:					*list-functions*
+ 	indexof()		index in a List where an expression is true
+ 	max()			maximum value in a List
+ 	min()			minimum value in a List
+-	count()			count number of times a value appears in a List
++	count()			count number of times a value appears in a
++				List
+ 	repeat()		repeat a List multiple times
+ 	flatten()		flatten a List
+ 	flattennew()		flatten a copy of a List
+@@ -1246,7 +1248,8 @@ Mappings and Menus:			    *mapping-functions*
+ Testing:				    *test-functions*
+ 	assert_equal()		assert that two expressions values are equal
+ 	assert_equalfile()	assert that two file contents are equal
+-	assert_notequal()	assert that two expressions values are not equal
++	assert_notequal()	assert that two expressions values are not
++				equal
+ 	assert_inrange()	assert that an expression is inside a range
+ 	assert_match()		assert that a pattern matches the value
+ 	assert_notmatch()	assert that a pattern does not match the value
+diff --git a/runtime/doc/usr_44.txt b/runtime/doc/usr_44.txt
+index 12a32e507..4de086132 100644
+--- a/runtime/doc/usr_44.txt
++++ b/runtime/doc/usr_44.txt
+@@ -1,4 +1,4 @@
+-*usr_44.txt*	For Vim version 9.1.  Last change: 2025 Oct 26
++*usr_44.txt*	For Vim version 9.1.  Last change: 2025 Nov 07
+ 
+ 
+ 		     VIM USER MANUAL	  by Bram Moolenaar
+@@ -629,10 +629,10 @@ be included in the next Vim version!
+ 
+ ADDING TO AN EXISTING SYNTAX FILE
+ 
+-We were assuming you were adding a completely new syntax file.  When an existing
+-syntax file works, but is missing some items, you can add items in a separate
+-file.  That avoids changing the distributed syntax file, which will be lost
+-when installing a new version of Vim.
++We were assuming you were adding a completely new syntax file.  When an
++existing syntax file works, but is missing some items, you can add items in a
++separate file.  That avoids changing the distributed syntax file, which will
++be lost when installing a new version of Vim.
+    Write syntax commands in your file, possibly using group names from the
+ existing syntax.  For example, to add new variable types to the C syntax file:
+ >
