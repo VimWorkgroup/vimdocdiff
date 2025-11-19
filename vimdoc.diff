@@ -1,22 +1,20 @@
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 0044ab85d..669e4f29d 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -1281,6 +1281,17 @@ For writing a compiler plugin, see |write-compiler-plugin|.
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 6d9c234b8..5b4e49a4b 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
+@@ -1,4 +1,4 @@
+-*todo.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*todo.txt*	For Vim version 9.1.  Last change: 2025 Nov 18
  
- Use the |compiler-make| plugin to undo the effect of a compiler plugin.
  
-+BIOME				      *compiler-biome* *quickfix-biome*
-+
-+Biome check lints JavaScript, TypeScript, JSX, TSX, JSON, JSONC, HTML, Vue,
-+Svelte, Astro, CSS, GraphQL and GritQL files.
-+
-+Commonly used compiler options can be added to 'makeprg' by setting the
-+b/g:biome_makeprg_params variable.  For example (global default is ""): >
-+
-+  let b:biome_makeprg_params = "--diagnostic-level=error --staged"
-+
-+
- CPPCHECK			*quickfix-cppcheck* *compiler-cppcheck*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -538,9 +538,6 @@ when redirecting to a local variable (function or script) storing the value
+ won't work.  At least give an error.  Is there a way to make it work?
+ #10616
  
- Use g/b:`c_cppcheck_params` to set cppcheck parameters.  The global
+-Completion for ":runtime" should show valid values, not what's in the current
+-directory. (#11447)
+-
+ Add a "description" property to mappings.  #12205
+ 
+ Add an option to start_timer() to return from the input loop with K_IGNORE.
