@@ -64,7 +64,7 @@
       <svg aria-hidden="true" class="d2h-icon d2h-changed" height="16" title="modified" version="1.1"
            viewBox="0 0 14 16" width="14">
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
-      </svg>      <a href="#d2h-070072" class="d2h-file-name">runtime/doc/usr_30.txt</a>
+      </svg>      <a href="#d2h-935668" class="d2h-file-name">runtime/doc/terminal.txt</a>
       <span class="d2h-file-stats">
           <span class="d2h-lines-added">+2</span>
           <span class="d2h-lines-deleted">-2</span>
@@ -73,12 +73,12 @@
 </li>
     </ol>
 </div><div class="d2h-wrapper d2h-auto-color-scheme">
-    <div id="d2h-070072" class="d2h-file-wrapper" data-lang="txt">
+    <div id="d2h-935668" class="d2h-file-wrapper" data-lang="txt">
     <div class="d2h-file-header">
       <span class="d2h-file-name-wrapper">
     <svg aria-hidden="true" class="d2h-icon" height="16" version="1.1" viewBox="0 0 12 16" width="12">
         <path d="M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z"></path>
-    </svg>    <span class="d2h-file-name">runtime/doc/usr_30.txt</span>
+    </svg>    <span class="d2h-file-name">runtime/doc/terminal.txt</span>
     <span class="d2h-tag d2h-changed d2h-changed-tag">CHANGED</span></span>
 <label class="d2h-file-collapse">
     <input class="d2h-file-collapse-input" type="checkbox" name="viewed" value="viewed">
@@ -102,7 +102,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*usr_30.txt*	For Vim version 9.1.  Last change: 2025 Nov <del>09</del></span>
+            <span class="d2h-code-line-ctn">*terminal.txt*	For Vim version 9.1.  Last change: 2025 <del>Oct</del> <del>14</del></span>
         </div>
     </td>
 </tr><tr>
@@ -132,82 +132,82 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		     VIM USER MANUAL	by Bram Moolenaar</span>
+            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -544,7 +544,7 @@ reach the nearest soft tab stop.  The following example uses</div>
+        <div class="d2h-code-side-line">@@ -1877,7 +1877,7 @@ Contributions for termdebug improvements are welcome.</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      544
+      1877
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">	&lt;Tab&gt;&lt;Tab&gt;a&lt;Tab&gt;&lt;BS&gt;	-------&gt;a</span>
+            <span class="d2h-code-line-ctn">However, it is fairly common that during the development process you need some</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      545
+      1878
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">mechanisms like `echo` statements (or similar) to help you in your job.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      546
+      1879
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">  To maintain global coherence, one can `:set softtabstop=-1` so that</span>
+            <span class="d2h-code-line-ctn">For this reason, you can set: &gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      547
+      1880
     </td>
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">the value of &#x27;shiftwidth&#x27; is <del>use</del> for the number of columns between two soft</span>
+            <span class="d2h-code-line-ctn">    let g:termdebug_config[&#x27;debug&#x27;] = true</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      548
+      1881
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">tab stops.</span>
+            <span class="d2h-code-line-ctn">&lt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      549
+      1882
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">This sets the `DEBUG` variable to `true`, which can be referenced in the</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      550
+      1883
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">  If you prefer to have different values for &#x27;shiftwidth&#x27; and &#x27;softtabstop&#x27;,</span>
+            <span class="d2h-code-line-ctn">source code.  An example of its usage follows: &gt;</span>
         </div>
     </td>
 </tr>
@@ -231,7 +231,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*usr_30.txt*	For Vim version 9.1.  Last change: 2025 Nov <ins>28</ins></span>
+            <span class="d2h-code-line-ctn">*terminal.txt*	For Vim version 9.1.  Last change: 2025 <ins>Nov</ins> <ins>28</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -261,7 +261,7 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		     VIM USER MANUAL	by Bram Moolenaar</span>
+            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
         </div>
     </td>
 </tr><tr>
@@ -271,72 +271,72 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      544
+      1877
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">	&lt;Tab&gt;&lt;Tab&gt;a&lt;Tab&gt;&lt;BS&gt;	-------&gt;a</span>
+            <span class="d2h-code-line-ctn">However, it is fairly common that during the development process you need some</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      545
+      1878
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">mechanisms like `echo` statements (or similar) to help you in your job.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      546
+      1879
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">  To maintain global coherence, one can `:set softtabstop=-1` so that</span>
+            <span class="d2h-code-line-ctn">For this reason, you can set: &gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      547
+      1880
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">the value of &#x27;shiftwidth&#x27; is <ins>used</ins> for the number of columns between two soft</span>
+            <span class="d2h-code-line-ctn">    let g:termdebug_config[&#x27;debug&#x27;] = <ins>v:</ins>true</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      548
+      1881
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">tab stops.</span>
+            <span class="d2h-code-line-ctn">&lt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      549
+      1882
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">This sets the `DEBUG` variable to `true`, which can be referenced in the</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      550
+      1883
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">  If you prefer to have different values for &#x27;shiftwidth&#x27; and &#x27;softtabstop&#x27;,</span>
+            <span class="d2h-code-line-ctn">source code.  An example of its usage follows: &gt;</span>
         </div>
     </td>
 </tr>
