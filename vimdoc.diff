@@ -1,28 +1,18 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index a6a7d8663..1190300cc 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 5011b0569..8ec0fa43a 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec 02
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec 06
+-*filetype.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*filetype.txt*	For Vim version 9.1.  Last change: 2025 Dec 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2891,7 +2891,7 @@ exists({expr})						*exists()*
- 		Can also be used as a |method|: >
- 			Varname()->exists()
- <
--		Return type: |String|
-+		Return type: |Number|
+@@ -138,6 +138,7 @@ what kind of file it is.  This doesn't always work.  A number of global
+ variables can be used to overrule the filetype used for certain extensions:
  
- 
- exists_compiled({expr})					*exists_compiled()*
-@@ -2908,7 +2908,7 @@ exists_compiled({expr})					*exists_compiled()*
- 		Can only be used in a |:def| function. *E1233*
- 		This does not work to check for arguments or local variables.
- 
--		Return type: |String|
-+		Return type: |Number|
- 
- 
- exp({expr})						*exp()*
+ 	file name	variable ~
++	*.app		g:filetype_app
+ 	*.asa		g:filetype_asa		|ft-aspperl-syntax|
+ 						|ft-aspvbs-syntax|
+ 	*.asm		g:asmsyntax		|ft-asm-syntax|
