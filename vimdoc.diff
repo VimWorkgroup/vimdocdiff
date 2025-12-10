@@ -1,24 +1,19 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 03c0c547b..d7adf555a 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/message.txt b/runtime/doc/message.txt
+index 2411440f4..cbbd3f4c3 100644
+--- a/runtime/doc/message.txt
++++ b/runtime/doc/message.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2025 Nov 27
-+*options.txt*	For Vim version 9.1.  Last change: 2025 Dec 09
+-*message.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*message.txt*	For Vim version 9.1.  Last change: 2025 Dec 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3202,9 +3202,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		internal	Use the internal diff library.  This is
- 				ignored when 'diffexpr' is set.  *E960*
- 				When running out of memory when writing a
--				buffer this item will be ignored for diffs
--				involving that buffer.  Set the 'verbose'
--				option to see when this happens.
-+				buffer or the diff is larger than 1 GB this
-+				item will be ignored for diffs involving that
-+				buffer.  Set the 'verbose' option to see when
-+				this happens.
+@@ -848,6 +848,8 @@ and the screen is about to be redrawn:
+    like pressing <Space>.  This makes it impossible to select text though.
+ -> For the GUI clicking the left mouse button in the last line works like
+    pressing <Space>.
++-> |q| won't start recording into a register (rationale: it is often used as
++   "quit" prompt key by users)
  
- 		iwhite		Ignore changes in amount of white space.  Adds
- 				the "-b" flag to the "diff" command if
+ If you accidentally hit <Enter> or <Space> and you want to see the displayed
+ text then use |g<|.  This only works when 'more' is set.
