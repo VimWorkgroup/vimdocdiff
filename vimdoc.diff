@@ -1,15 +1,24 @@
-diff --git a/runtime/doc/ft_rust.txt b/runtime/doc/ft_rust.txt
-index 4f4e3a85e..b1789b814 100644
---- a/runtime/doc/ft_rust.txt
-+++ b/runtime/doc/ft_rust.txt
-@@ -60,8 +60,8 @@ g:rust_conceal_pub~
-                                                      *g:rust_recommended_style*
- g:rust_recommended_style~
-         Set this option to enable vim indentation and textwidth settings to
--        conform to style conventions of the rust standard library (i.e. use 4
--        spaces for indents and sets 'textwidth' to 99). This option is enabled
-+        conform to style conventions of the Rust style guide (i.e. use 4
-+        spaces for indents and set 'textwidth' to 100). This option is enabled
- 	by default. To disable it: >
- 	    let g:rust_recommended_style = 0
- <
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 03c0c547b..d7adf555a 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Nov 27
++*options.txt*	For Vim version 9.1.  Last change: 2025 Dec 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3202,9 +3202,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		internal	Use the internal diff library.  This is
+ 				ignored when 'diffexpr' is set.  *E960*
+ 				When running out of memory when writing a
+-				buffer this item will be ignored for diffs
+-				involving that buffer.  Set the 'verbose'
+-				option to see when this happens.
++				buffer or the diff is larger than 1 GB this
++				item will be ignored for diffs involving that
++				buffer.  Set the 'verbose' option to see when
++				this happens.
+ 
+ 		iwhite		Ignore changes in amount of white space.  Adds
+ 				the "-b" flag to the "diff" command if
