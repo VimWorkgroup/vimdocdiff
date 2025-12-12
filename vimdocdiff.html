@@ -54,7 +54,7 @@
     <div id="diff">
       <div class="d2h-file-list-wrapper d2h-auto-color-scheme">
     <div class="d2h-file-list-header">
-        <span class="d2h-file-list-title">Files changed (2)</span>
+        <span class="d2h-file-list-title">Files changed (1)</span>
         <a class="d2h-file-switch d2h-hide">hide</a>
         <a class="d2h-file-switch d2h-show">show</a>
     </div>
@@ -66,20 +66,8 @@
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
       </svg>      <a href="#d2h-229033" class="d2h-file-name">runtime/doc/builtin.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+5</span>
-          <span class="d2h-lines-deleted">-4</span>
-      </span>
-    </span>
-</li>
-<li class="d2h-file-list-line">
-    <span class="d2h-file-name-wrapper">
-      <svg aria-hidden="true" class="d2h-icon d2h-changed" height="16" title="modified" version="1.1"
-           viewBox="0 0 14 16" width="14">
-          <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
-      </svg>      <a href="#d2h-979343" class="d2h-file-name">runtime/doc/version9.txt</a>
-      <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+3</span>
-          <span class="d2h-lines-deleted">-3</span>
+          <span class="d2h-lines-added">+7</span>
+          <span class="d2h-lines-deleted">-7</span>
       </span>
     </span>
 </li>
@@ -114,7 +102,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec <del>06</del></span>
+            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec <del>10</del></span>
         </div>
     </td>
 </tr><tr>
@@ -150,121 +138,11 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -2715,13 +2715,14 @@ executable({expr})					*executable()*</div>
+        <div class="d2h-code-side-line">@@ -8336,24 +8336,24 @@ printf({fmt}, {expr1} ...)				*printf()*</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2715
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		On MS-Windows an executable in the same directory as the Vim</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2716
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		executable is always found.  Since this directory is added to</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2717
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		$PATH it should also work to execute it |win32-PATH|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      2718
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">					*NoDefaultCurrentDirectoryInExePath*</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2719
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		On MS-Windows when using cmd.exe as &#x27;shell&#x27; an executable in</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2720
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		Vim&#x27;s current working directory is also normally found, which</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2721
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		can be disabled by setting the</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2722
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		`$NoDefaultCurrentDirectoryInExePath` environment variable.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      2723
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">		This is always <del>done</del> when executing external<del> commands using</del></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      2724
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">		e.g. |:!|, |:make|, |system()| for security<del> reasons.</del></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2725
+      8336
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -274,22 +152,232 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2726
+      8337
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		The result is a Number:</span>
+            <span class="d2h-code-line-ctn">							*E1502*</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2727
+      8338
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			1	exists</span>
+            <span class="d2h-code-line-ctn">		You can re-use a [field-width] (or [precision]) argument: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8339
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%1$d at width %2$d is: %<del>01</del>$*2$d&quot;, 1, 2)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8340
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;		    1 at width 2 is: 01</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8341
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8342
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		However, you can&#x27;t use it as a different type: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8343
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%1$d at width %2$ld is: %<del>01</del>$*2$d&quot;, 1, 2)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8344
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;		    E1502: Positional argument 2 used as field width reused as</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8345
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		    different type: long int&#x2F;int</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8346
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8347
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">							*E1503*</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8348
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		When a positional argument is used, but not the correct number</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8349
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		or arguments is given, an error is raised: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8350
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%1$d at width %2$d is: %<del>01</del>$*2$.*3$d&quot;, 1, 2)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8351
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;		    E1503: Positional argument 3 out of bounds: %1$d at width</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8352
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		    %2$d is: %<del>01</del>$*2$.*3$d</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8353
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8354
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		Only the first error is reported: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8355
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%<del>01</del>$*2$.*3$d %4$d&quot;, 1, 2)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8356
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">&lt;		    E1503: Positional argument 3 out of bounds: %<del>01</del>$*2$.*3$d</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8357
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		    %4$d</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8358
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8359
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">							*E1504*</span>
         </div>
     </td>
 </tr>
@@ -313,7 +401,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec <ins>10</ins></span>
+            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec <ins>11</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -353,420 +441,177 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2715
+      8336
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		On MS-Windows an executable in the same directory as the Vim</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2716
+      8337
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		executable is always found.  Since this directory is added to</span>
+            <span class="d2h-code-line-ctn">							*E1502*</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2717
+      8338
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		$PATH it should also work to execute it |win32-PATH|.</span>
+            <span class="d2h-code-line-ctn">		You can re-use a [field-width] (or [precision]) argument: &gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      2718
+      8339
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">					*<ins>$</ins>NoDefaultCurrentDirectoryInExePath*</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%1$d at width %2$d is: %<ins>1</ins>$<ins>0</ins>*2$d&quot;, 1, 2)</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2719
+      8340
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		On MS-Windows when using cmd.exe as &#x27;shell&#x27; an executable in</span>
+            <span class="d2h-code-line-ctn">&lt;		    1 at width 2 is: 01</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2720
+      8341
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		Vim&#x27;s current working directory is also normally found, which</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2721
+      8342
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		can be disabled by setting the</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2722
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		`$NoDefaultCurrentDirectoryInExePath` environment variable.</span>
+            <span class="d2h-code-line-ctn">		However, you can&#x27;t use it as a different type: &gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      2723
+      8343
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		This <ins>variable </ins>is always <ins>set</ins> <ins>by Vim </ins>when executing external</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%1$d at width %2$ld is: %<ins>1</ins>$<ins>0</ins>*2$d&quot;, 1, 2)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8344
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;		    E1502: Positional argument 2 used as field width reused as</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8345
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		    different type: long int&#x2F;int</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8346
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8347
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">							*E1503*</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8348
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		When a positional argument is used, but not the correct number</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8349
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		or arguments is given, an error is raised: &gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      2724
+      8350
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		<ins>commands (</ins>e.g.<ins>,</ins> <ins>via </ins>|:!|, |:make|, <ins>or </ins>|system()|<ins>)</ins> for security</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      2725
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		reasons.</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%1$d at width %2$d is: %<ins>1</ins>$<ins>0</ins>*2$.*3$d&quot;, 1, 2)</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      2726
+      8351
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2727
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		The result is a Number:</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2728
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">			1	exists</span>
-        </div>
-    </td>
-</tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="d2h-979343" class="d2h-file-wrapper" data-lang="txt">
-    <div class="d2h-file-header">
-      <span class="d2h-file-name-wrapper">
-    <svg aria-hidden="true" class="d2h-icon" height="16" version="1.1" viewBox="0 0 12 16" width="12">
-        <path d="M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z"></path>
-    </svg>    <span class="d2h-file-name">runtime/doc/version9.txt</span>
-    <span class="d2h-tag d2h-changed d2h-changed-tag">CHANGED</span></span>
-<label class="d2h-file-collapse">
-    <input class="d2h-file-collapse-input" type="checkbox" name="viewed" value="viewed">
-    Viewed
-</label>
-    </div>
-    <div class="d2h-files-diff">
-        <div class="d2h-file-side-diff">
-            <div class="d2h-code-wrapper">
-                <table class="d2h-diff-table">
-                    <tbody class="d2h-diff-tbody">
-                    <tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -1,4 +1,4 @@</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      1
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec <del>09</del></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      3
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -41758,8 +41758,8 @@ Platform specific ~</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41758
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">- MS-Windows: The title bar follows the |hl-TitleBar| and |hl-TitleBarNC|</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41759
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">  highlighting group |gui-w32-title-bar|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41760
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">- MS-Windows: Vim no longer searches the current directory for</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      41761
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">  executables when running external commands; <del>use</del> a relative or absolute<del> path</del></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      41762
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">  if you want the <del>previous</del> behavior |NoDefaultCurrentDirectoryInExePath|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41763
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">- macOS: increase default scheduler priority to TASK_DEFAULT_APPLICATION.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41764
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41765
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">Others: ~</span>
-        </div>
-    </td>
-</tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="d2h-file-side-diff">
-            <div class="d2h-code-wrapper">
-                <table class="d2h-diff-table">
-                    <tbody class="d2h-diff-tbody">
-                    <tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">&nbsp;</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      1
-    </td>
-    <td class="d2h-ins d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec <ins>10</ins></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      3
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">&nbsp;</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41758
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">- MS-Windows: The title bar follows the |hl-TitleBar| and |hl-TitleBarNC|</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41759
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">  highlighting group |gui-w32-title-bar|.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41760
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">- MS-Windows: Vim no longer searches the current directory for</span>
+            <span class="d2h-code-line-ctn">&lt;		    E1503: Positional argument 3 out of bounds: %1$d at width</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      41761
+      8352
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">  executables when running external commands; <ins>prefix</ins> a relative or absolute</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      41762
-    </td>
-    <td class="d2h-ins d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">  <ins>path </ins>if you want the <ins>old</ins> behavior |<ins>$</ins>NoDefaultCurrentDirectoryInExePath|.</span>
+            <span class="d2h-code-line-ctn">		    %2$d is: %<ins>1</ins>$<ins>0</ins>*2$.*3$d</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      41763
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">- macOS: increase default scheduler priority to TASK_DEFAULT_APPLICATION.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      41764
+      8353
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -776,12 +621,62 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      41765
+      8354
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">Others: ~</span>
+            <span class="d2h-code-line-ctn">		Only the first error is reported: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      8355
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">		    echo printf(&quot;%<ins>1</ins>$<ins>0</ins>*2$.*3$d %4$d&quot;, 1, 2)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      8356
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">&lt;		    E1503: Positional argument 3 out of bounds: %<ins>1</ins>$<ins>0</ins>*2$.*3$d</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8357
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		    %4$d</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8358
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8359
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">							*E1504*</span>
         </div>
     </td>
 </tr>
