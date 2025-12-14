@@ -1,19 +1,52 @@
-diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
-index e6aeed045..8526926d5 100644
---- a/runtime/doc/develop.txt
-+++ b/runtime/doc/develop.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 6bd012033..099e343e8 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*develop.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
-+*develop.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
+-*eval.txt*	For Vim version 9.1.  Last change: 2025 Dec 12
++*eval.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -153,7 +153,7 @@ VIM IS... NOT						*design-not*
-   everything but the kitchen sink, but some people say that you can clean one
-   with it.  ;-)"
-   To use Vim with gdb see |terminal-debugger|.  Other (older) tools can be
--  found at http://www.agide.org (link seems dead)  and http://clewn.sf.net.
-+  found at http://clewn.sf.net.
- - Vim is not a fancy GUI editor that tries to look nice at the cost of
-   being less consistent over all platforms.  But functional GUI features are
-   welcomed.
+@@ -2389,7 +2389,7 @@ v:echospace	Number of screen cells that can be used for an `:echo` message
+ 		available above the last line.
+ 
+ 					*v:errmsg* *errmsg-variable*
+-v:errmsg	Last error message that occurred (not neccessarily displayed).
++v:errmsg	Last error message that occurred (not necessarily displayed).
+ 		It's allowed to set this variable.  Example: >
+ 	:let v:errmsg = ""
+ 	:silent! next
+@@ -3841,7 +3841,7 @@ text...
+ 			when the screen is redrawn.
+ 
+ 					*:echow* *:echowin* *:echowindow*
+-:[N]echow[indow] {expr1} ..
++:[N]echow[indow] {expr1} ...
+ 			Like |:echomsg| but when the messages popup window is
+ 			available the message is displayed there.  This means
+ 			it will show for three seconds and avoid a
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index a67864475..010b9a389 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Dec 11
++*options.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4527,11 +4527,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		choices.
+ 								*'go-C'*
+ 	  'C'	Use |hl-TitleBar| and |hl-TitleBarNC| if available.
+-		Currently only works for MS-Window GUI.
++		Currently only works for MS-Windows GUI.
+ 		See |gui-w32-title-bar| for details.
+ 								*'go-d'*
+ 	  'd'	Use dark theme variant if available.  Currently only works for
+-		Win32 and GTK+ GUI.
++		MS-Windows and GTK+ GUI.
+ 								*'go-e'*
+ 	  'e'	Add tab pages when indicated with 'showtabline'.
+ 		'guitablabel' can be used to change the text in the labels.
