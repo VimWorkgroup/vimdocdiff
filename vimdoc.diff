@@ -1,116 +1,33 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 5b143cda8..563cb8791 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec 11
-+*builtin.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -493,6 +493,8 @@ readdirex({dir} [, {expr} [, {dict}]])
- 				List	file info in {dir} selected by {expr}
- readfile({fname} [, {type} [, {max}]])
- 				List	get list of lines from file {fname}
-+redraw_listener_add({opts})	Number	add callbacks to listen for redraws
-+redraw_listener_remove({id})	none	remove a redraw listener
- reduce({object}, {func} [, {initial}])
- 				any	reduce {object} using {func}
- reg_executing()			String	get the executing register name
-@@ -8785,6 +8787,48 @@ readfile({fname} [, {type} [, {max}]])			*readfile()*
- 		Return type: list<string> or list<any>
- 
- 
-+redraw_listener_add({opts})				*redraw_listener_add()*
-+		Add a listener that holds callback functions that will be
-+		called at specific times in the redraw cycle.  {opts} is a
-+		dictionary that contain the callback functions to be defined.
-+		At least one callback must be specified. *E1571*
-+		Returns a unique ID that can be passed to
-+		|redraw_listener_remove()|.
-+
-+		{opts} may have the following entries:
-+
-+		    on_start	Called first on each screen redraw.  Takes no
-+				arguments and returns nothing.
-+		    on_end	Called at the end of each screen redraw.
-+				Takes no arguments and returns nothing.
-+
-+		A good use case for this function is with the |listener_add()|
-+		callback with unbuffered set to TRUE.  This allows you to
-+		modify the state on buffer changes, and finally render that
-+		state just before the next redraw, only if it has changed.
-+		Attempting to render or redraw for every single buffer change
-+		would be very inefficient.
-+
-+		You may not call redraw_listener_add() during any of the
-+		callbacks defined in {opts}. *E1570*
-+
-+		Can also be used as a |method|: >
-+			GetOpts()->redraw_listener_add()
-+<
-+		Return type: |Number|
-+
-+
-+redraw_listener_remove({id})				*redraw_listener_remove()*
-+		Remove a redraw listener previously added with
-+		|redraw_listener_add()|.  Returns FALSE when {id} could not be
-+		found, TRUE when {id} was removed.
-+
-+		Can also be used as a |method|: >
-+			GetRedrawListenerId()->redraw_listener_remove()
-+<
-+		Return type: |Number|
-+
-+
- reduce({object}, {func} [, {initial}])			*reduce()* *E998*
- 		{func} is called for every item in {object}, which can be a
- 		|String|, |List|, |Tuple| or a |Blob|.  {func} is called with
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index 5fe5e575c..869e30ee9 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Nov 27
-+*usr_41.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
- 
- 
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -1473,6 +1473,9 @@ Various:					*various-functions*
- 
- 	debugbreak()		interrupt a program being debugged
- 
-+	redraw_listener_add()   add callbacks to listen for redraws
-+	redraw_listener_remove()    remove a redraw listener
-+
- ==============================================================================
- *41.7*	Defining a function
- 
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index ff6de1dc5..f897b7d19 100644
+index f897b7d19..77a337d44 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec 11
-+*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
+-*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
++*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -41750,6 +41750,8 @@ Functions: ~
- - |sha256()| also accepts a |Blob| as argument.
- - |listener_add()| allows to register un-buffered listeners, so that changes
-   are handled as soon as they happen.
-+- |redraw_listener_add()| and |redraw_listener_remove()| add/remove callbacks
-+  for redrawing events.
+@@ -41721,6 +41721,8 @@ Options: ~
+   to ">" by default, indicating text that extends beyond the window width.
+ - 'guioptions': New value |'go-C'| to style the title/caption bar on Windows 11
+   (see also the below platform specific change).
++- 'guioptions': Support darkmode on MS-Windows for menu and title bar using
++  |'go-d'| (see also the below platform specific change).
+ - 'completepopup': Add more values to style popup windows.
  
- Plugins~
- - |zip| plugin works with PowerShell Core.
-@@ -41826,6 +41828,8 @@ Functions: ~
- |popup_setbuf()|	switch to a different buffer in a popup
- |preinserted()|		whether preinserted text has been inserted during
- 			completion (see 'completeopt')
-+|redraw_listener_add()|	add callbacks to listen for redraws
-+|redraw_listener_remove()|  remove a redraw listener
- |str2blob()|		convert a List of strings into a blob
- |test_null_tuple()|	return a null tuple
- |tuple2list()|		turn a Tuple of items into a List
+ Ex commands: ~
+@@ -41760,10 +41762,12 @@ Platform specific ~
+ - MS-Winodws: Paths like "\Windows" and "/Windows" are now considered to be
+   absolute paths (to the current drive) and no longer relative.
+ - MS-Windows: The title bar follows the |hl-TitleBar| and |hl-TitleBarNC|
+-  highlighting group |gui-w32-title-bar|.
++  highlighting group |gui-w32-title-bar| with |'go-C'|
++- MS-Windows: Support darkmode for menu and title bar using |'go-d'|
+ - MS-Windows: Vim no longer searches the current directory for
+   executables when running external commands; prefix a relative or absolute
+   path if you want the old behavior |$NoDefaultCurrentDirectoryInExePath|.
++
+ - macOS: increase default scheduler priority to TASK_DEFAULT_APPLICATION.
+ 
+ Others: ~
