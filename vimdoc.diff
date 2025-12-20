@@ -1,27 +1,19 @@
-diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
-index aa8ed9ec8..6ecfd2653 100644
---- a/runtime/doc/userfunc.txt
-+++ b/runtime/doc/userfunc.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 19b5e67d5..227b77dac 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*userfunc.txt*	For Vim version 9.1.  Last change: 2025 Oct 28
-+*userfunc.txt*	For Vim version 9.1.  Last change: 2025 Dec 20
+-*starting.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*starting.txt*	For Vim version 9.1.  Last change: 2025 Dec 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -80,11 +80,11 @@ See |:verbose-cmd| for more information.
- 			matching |:endfunction|.
- 								*E1267*
- 			The name must be made of alphanumeric characters and
--			'_', and must start with a capital or "s:" (see
--			above).  Note that using "b:" or "g:" is not allowed.
--			(since patch 7.4.260 E884 is given if the function
--			name has a colon in the name, e.g. for "foo:bar()".
--			Before that patch no error was given).
-+			'_' and must start with a capital or "s:" (see above).
-+			Note that using "b:", "l:", etc. is not allowed (since
-+			patch 7.4.260 E884 is given if the function name has a
-+			colon, e.g. for "foo:bar()"), while a leading "g:" is
-+			skipped and still requires a following capital letter.
+@@ -1287,7 +1287,7 @@ CTRL-Z			Suspend Vim, like ":stop".
+ 			Works in Normal and in Visual mode.  In Insert and
+ 			Command-line mode, the CTRL-Z is inserted as a normal
+ 			character.  In Visual mode Vim goes back to Normal
+-			mode.
++			mode before suspending.
+ 			Note: if CTRL-Z undoes a change see |mswin.vim|.
  
- 			{name} can also be a |Dictionary| entry that is a
- 			|Funcref|: >
+ 
