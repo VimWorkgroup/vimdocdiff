@@ -1,19 +1,26 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 04a3de8ca..7c853795e 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 669e4f29d..d19b26d7f 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2025 Dec 19
-+*eval.txt*	For Vim version 9.1.  Last change: 2025 Dec 21
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Nov 09
++*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Dec 21
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5231,7 +5231,7 @@ $VIMRUNTIME/plugin/openPlugin.vim
- dist#vim9#Open(file: string) ~
+@@ -1654,6 +1654,15 @@ b/g:mypy_makeprg_params variable.  For example: >
  
- Opens `path` with the system default handler (macOS `open`, Windows
--`explorer.exe`, Linux `xdg-open`, …).  If the variable |g:Openprg| exists the
-+`start`, Linux `xdg-open`, …).  If the variable |g:Openprg| exists the
- string specified in the variable is used instead.
+ The global default is "--strict --ignore-missing-imports".
  
- The |:Open| user command uses file completion for its argument.
++TY TYPE CHECKER					*compiler-ty*
++
++Commonly used compiler options and executable can be set by the
++b/g:ty_makeprg variable.  For example: >
++
++	let b:ty_makeprg = "uv run ty"
++
++The global default is "ty --no-progress --color=never".
++
+ RUFF LINTER						*compiler-ruff*
+ 
+ Commonly used compiler options can be added to 'makeprg' by setting the
