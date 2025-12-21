@@ -1,26 +1,86 @@
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 669e4f29d..d19b26d7f 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
+diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
+index 6dc53a044..475b12e96 100644
+--- a/runtime/doc/gui_w32.txt
++++ b/runtime/doc/gui_w32.txt
 @@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Nov 09
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Dec 21
+-*gui_w32.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*gui_w32.txt*	For Vim version 9.1.  Last change: 2025 Dec 21
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1654,6 +1654,15 @@ b/g:mypy_makeprg_params variable.  For example: >
+@@ -504,4 +504,25 @@ To use the system's default title bar colors, set highlighting groups to
+ 	hi TitleBar guibg=NONE guifg=NONE
+ 	hi TitleBarNC guibg=NONE guifg=NONE
+ <
++
++Full Screen						*gui-w32-fullscreen*
++
++To enable fullscreen mode in the Windows GUI version of Vim, add the 's' flag
++to the 'guioptions' setting.
++
++For convenience, you can define a command or mapping to toggle fullscreen mode:
++>
++	command! ToggleFullscreen {
++		if &guioptions =~# 's'
++			set guioptions-=s
++		else
++			set guioptions+=s
++		endif
++	}
++
++	map <expr> <F11> &go =~# 's' ? ":se go-=s<CR>" : ":se go+=s<CR>"
++
++The fullscreen mode will occupy the entire screen area while hiding window
++decorations such as the title bar and borders.
++
+  vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index a8dbab912..5130a2831 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2025 Dec 18
++*options.txt*	For Vim version 9.1.  Last change: 2025 Dec 21
  
- The global default is "--strict --ignore-missing-imports".
  
-+TY TYPE CHECKER					*compiler-ty*
-+
-+Commonly used compiler options and executable can be set by the
-+b/g:ty_makeprg variable.  For example: >
-+
-+	let b:ty_makeprg = "uv run ty"
-+
-+The global default is "ty --no-progress --color=never".
-+
- RUFF LINTER						*compiler-ruff*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4572,6 +4572,12 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 								*'go-T'*
+ 	  'T'	Include Toolbar.  Currently only in Win32, GTK+, Motif and
+ 		Photon GUIs.
++								*'go-s'*
++	  's'	Enable fullscreen mode.  Currently only supported in the
++		MS-Windows GUI version.  When set, the window will occupy the
++		entire screen and remove window decorations.  Define custom
++		mappings to toggle this mode conveniently.  For detailed usage
++		instructions, see |gui-w32-fullscreen|.
+ 								*'go-r'*
+ 	  'r'	Right-hand scrollbar is always present.
+ 								*'go-R'*
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 1071613fe..f1cfd0979 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec 15
++*version9.txt*	For Vim version 9.1.  Last change: 2025 Dec 21
  
- Commonly used compiler options can be added to 'makeprg' by setting the
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -41724,6 +41724,8 @@ Options: ~
+   (see also the below platform specific change).
+ - 'guioptions': Support darkmode on MS-Windows for menu and title bar using
+   |'go-d'| (see also the below platform specific change).
++- 'guioptions': New value |'go-s'| to support fullscreen on MS-Windows GUI
++  (see also the below platform specific change).
+ - 'completepopup': Add more values to style popup windows.
+ 
+ Ex commands: ~
+@@ -41768,6 +41770,7 @@ Platform specific ~
+ - MS-Windows: Vim no longer searches the current directory for
+   executables when running external commands; prefix a relative or absolute
+   path if you want the old behavior |$NoDefaultCurrentDirectoryInExePath|.
++- MS-Windows: New value |'go-s'| to support fullscreen on MS-Windows GUI
+ 
+ - macOS: increase default scheduler priority to TASK_DEFAULT_APPLICATION.
+ 
