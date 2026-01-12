@@ -1,25 +1,25 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 7ba70e307..de3b8d0cb 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index 65d1c8bed..e50fe2e7e 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.1.  Last change: 2025 Dec 27
-+*eval.txt*	For Vim version 9.1.  Last change: 2026 Jan 10
+-*if_pyth.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*if_pyth.txt*	For Vim version 9.1.  Last change: 2026 Jan 11
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -467,7 +467,13 @@ Changing the order of items in a list: >
- 	:call reverse(list)		" reverse the order of items
- 	:call uniq(sort(list))		" sort and remove duplicates
- 
--
-+In a Vim9 script or a def method, a new item can be appended to a List by
-+using the list length as the index: >
-+    vim9script
-+    var l: list<string>
-+    l[0] = 'a'
-+    l[1] = 'b'
-+<
- For loop ~
- 
- The |:for| loop executes commands for each item in a List, Tuple, String or
+ 		  VIM REFERENCE MANUAL	  by Paul Moore
+@@ -183,9 +183,11 @@ vim.eval(str)						*python-eval*
+ 	Evaluates the expression str using the vim internal expression
+ 	evaluator (see |expression|).  Returns the expression result as:
+ 	- a string if the Vim expression evaluates to a string or number
+-	- a list if the Vim expression evaluates to a Vim list
+-	- a tuple if the Vim expression evaluates to a Vim tuple
+-	- a dictionary if the Vim expression evaluates to a Vim dictionary
++	- a list if the Vim expression evaluates to a Vim |list|
++	- a tuple if the Vim expression evaluates to a Vim |tuple|
++	- a dictionary if the Vim expression evaluates to a Vim |dict|
++	- a boolean if Vim exression evaluates to |v:true| or |v:false|
++	- `None` if Vim expression evaluates to |v:null| or |v:none|
+ 	Dictionaries, lists and tuples are recursively expanded.
+ 	Examples: >
+ 	    :" value of the 'textwidth' option
