@@ -1,14 +1,28 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index aa9cff62d..1dfb8d6f8 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -6973,6 +6973,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	|lambda| or a |Funcref|.  See |option-value-function| for more
- 	information.
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index c3364d4fb..c940ee50c 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 03
++*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 17
  
-+	It is not allowed to change text or jump to another window while
-+	evaluating 'qftf' |textlock|.
-+
- 	This option cannot be set from a |modeline| or in the |sandbox|, for
- 	security reasons.
  
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4727,7 +4727,7 @@ getloclist({nr} [, {what}])				*getloclist()*
+ 			:echo getloclist(3, {'all': 0})
+ 			:echo getloclist(5, {'filewinid': 0})
+ <
+-		Return type: list<dict<any>> or list<any>
++		Return type: list<dict<any>> or dict<any>
+ 
+ 
+ getmarklist([{buf}])					*getmarklist()*
+@@ -5008,7 +5008,7 @@ getqflist([{what}])					*getqflist()*
+ 			:echo getqflist({'nr': 2, 'title': 1})
+ 			:echo getqflist({'lines' : ["F1:10:L10"]})
+ <
+-		Return type: list<dict<any>> or list<any>
++		Return type: list<dict<any>> or dict<any>
+ 
+ 
+ getreg([{regname} [, 1 [, {list}]]])			*getreg()*
