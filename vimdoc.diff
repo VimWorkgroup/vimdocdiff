@@ -1,28 +1,39 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c3364d4fb..c940ee50c 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/ft_context.txt b/runtime/doc/ft_context.txt
+index a7400d0b3..737cdee37 100644
+--- a/runtime/doc/ft_context.txt
++++ b/runtime/doc/ft_context.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 03
-+*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 17
+-*ft_context.txt*	For Vim version 9.2.  Last change: 2026 Jan 10
++*ft_context.txt*	For Vim version 9.2.  Last change: 2026 Jan 18
+ 
+ This is the documentation for the ConTeXt filetype plugin.
+ 
+@@ -117,7 +117,7 @@ and this option is not set, standard `make` is used. If this option is set,
+ <
+ NOTE: before using |:make|, ensure that the working directory of the buffer is
+ set to the directory of the file you want to typeset. Additionally, be aware
+-that |:make| searches for `mtxrun in $PATH.
++that |:make| searches for `mtxrun` in $PATH.
+ 
+ 					*'g:context_extra_options'*
+ A list of additional options to pass to `mtxrun`.
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 8b7df8e40..083f013cc 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.1.  Last change: 2026 Jan 08
++*terminal.txt*	For Vim version 9.1.  Last change: 2026 Jan 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4727,7 +4727,7 @@ getloclist({nr} [, {what}])				*getloclist()*
- 			:echo getloclist(3, {'all': 0})
- 			:echo getloclist(5, {'filewinid': 0})
- <
--		Return type: list<dict<any>> or list<any>
-+		Return type: list<dict<any>> or dict<any>
+@@ -1263,7 +1263,8 @@ Alternatively, press "s" to swap the first and second dump.  Do this several
+ times so that you can spot the difference in the context of the text.
  
+ ==============================================================================
+-6. Debugging	*terminal-debug* *terminal-debugger* *package-termdebug* *termdebug*
++6. Debugging				*terminal-debug* *terminal-debugger*
++					*package-termdebug* *termdebug*
  
- getmarklist([{buf}])					*getmarklist()*
-@@ -5008,7 +5008,7 @@ getqflist([{what}])					*getqflist()*
- 			:echo getqflist({'nr': 2, 'title': 1})
- 			:echo getqflist({'lines' : ["F1:10:L10"]})
- <
--		Return type: list<dict<any>> or list<any>
-+		Return type: list<dict<any>> or dict<any>
- 
- 
- getreg([{regname} [, 1 [, {list}]]])			*getreg()*
+ The Terminal debugging plugin can be used to debug a program with gdb and view
+ the source code in a Vim window.  Since this is completely contained inside
