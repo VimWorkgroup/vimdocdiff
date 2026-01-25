@@ -1,25 +1,22 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 9b0f34c3e..501dd9457 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index c014e558c..a020c0ea0 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.1.  Last change: 2026 Jan 23
-+*syntax.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
+-*helphelp.txt*	For Vim version 9.1.  Last change: 2025 Dec 02
++*helphelp.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2712,10 +2712,10 @@ package, arrange for files to be recognized as groff input (see
- GNU troff differs from older AT&T n/troff programs (that you may still find in
- Solaris or Plan 9) by extending the *roff language syntax.  For example, in
- AT&T troff, you access the count of years since 1900 with the escape sequence
--\(yr.  In groff you can do the same, which it recognizes for compatibility, or
--use groff's extended syntax, \[yr].  AT&T troff documented the yr register as
--storing the "last two digits of current year", but had a Y2K problem; in
--groff, you can access the Gregorian year correctly: \[year].  In groff, font,
-+\n(yr.  In groff you can do the same, which it recognizes for compatibility,
-+or use groff's extended syntax, \n[yr].  AT&T troff documented the yr register
-+as storing the "last two digits of current year", but had a Y2K problem; in
-+groff, you can access the Gregorian year correctly: \n[year].  In groff, font,
- register, macro, string, and request names can exceed two characters; for
- example, with groff's mm package, the control lines ".VERBON" and ".VERBOFF"
- call macros of those names to bracket displays of "verbatim" content.
+@@ -418,8 +418,9 @@ STYLE
+ If your Vim has 'modeline' enabled, Vim should follow the preferred style
+ automatically when editing built-in help files.
+ 
+-Vim help files should be formatted for a 'textwidth' of 78 characters, so they
+-look good in a typical 80 x 24 terminal window.
++Vim help files should be formatted for a 'textwidth' of 78 characters (with
++'conceal' enabled), so they look good in a typical 80 x 24 terminal window;
++use `:set colorcolumn=+0` as a visual guide.
+ 
+ Use two spaces between the final dot of a sentence of the first letter of the
+ next sentence.  Like this.
