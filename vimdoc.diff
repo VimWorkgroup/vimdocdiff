@@ -1,22 +1,114 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index c014e558c..a020c0ea0 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
+diff --git a/runtime/doc/russian.txt b/runtime/doc/russian.txt
+index 24b96619d..7c0c06e74 100644
+--- a/runtime/doc/russian.txt
++++ b/runtime/doc/russian.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2025 Dec 02
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
+-*russian.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*russian.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -418,8 +418,9 @@ STYLE
- If your Vim has 'modeline' enabled, Vim should follow the preferred style
- automatically when editing built-in help files.
+ 		  VIM REFERENCE MANUAL	  by Vassily Ragosin
+@@ -11,13 +11,13 @@ Russian language localization and support in Vim	   *russian* *Russian*
+ 3. Localization				  |russian-l18n|
+ 4. Known issues				  |russian-issues|
  
--Vim help files should be formatted for a 'textwidth' of 78 characters, so they
--look good in a typical 80 x 24 terminal window.
-+Vim help files should be formatted for a 'textwidth' of 78 characters (with
-+'conceal' enabled), so they look good in a typical 80 x 24 terminal window;
-+use `:set colorcolumn=+0` as a visual guide.
+-===============================================================================
++==============================================================================
+ 1. Introduction							*russian-intro*
  
- Use two spaces between the final dot of a sentence of the first letter of the
- next sentence.  Like this.
+ Russian language is supported perfectly well in Vim.  You can type and view
+ Russian text just as any other, without the need to tweak the settings.
+ 
+-===============================================================================
++==============================================================================
+ 2. Russian keymaps					       *russian-keymap*
+ 
+ To switch between languages you can use your system native keyboard switcher,
+@@ -41,7 +41,7 @@ This is in utf-8, you cannot read this if your 'encoding' is not utf-8.
+ You have to type this command in one line, it is wrapped for the sake of
+ readability.
+ 
+-===============================================================================
++==============================================================================
+ 3. Localization							 *russian-l18n*
+ 
+ If you wish to use messages, help files, menus and other items translated to
+@@ -60,7 +60,7 @@ $VIMRUNTIME directory.  We recommend using UTF-8 archive.
+ In order to use the Russian documentation, make sure you have set the
+ 'helplang' option to "ru".
+ 
+-===============================================================================
++==============================================================================
+ 4. Known issues						       *russian-issues*
+ 
+ -- If you are using Russian message translations in Win32 console, then
+@@ -69,5 +69,5 @@ In order to use the Russian documentation, make sure you have set the
+    is related to a bug in GNU gettext library and may be fixed in the future
+    releases of gettext.
+ 
+-===============================================================================
++==============================================================================
+  vim:tw=78:ts=8:noet:ft=help:norl:
+diff --git a/runtime/doc/vietnamese.txt b/runtime/doc/vietnamese.txt
+index df6fbf8b5..d878ae16f 100644
+--- a/runtime/doc/vietnamese.txt
++++ b/runtime/doc/vietnamese.txt
+@@ -1,4 +1,4 @@
+-*vietnamese.txt* For Vim version 9.1.  Last change: 2025 Nov 09
++*vietnamese.txt* For Vim version 9.1.  Last change: 2026 Jan 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Phạm Bình An
+@@ -10,7 +10,7 @@ Vietnamese language support in Vim		*vietnamese* *Vietnamese*
+ 2. Vietnamese keymaps			  |vietnamese-keymap|
+ 3. Localization				  |vietnamese-l10n|
+ 
+-===============================================================================
++==============================================================================
+ 1. Introduction
+ 							*vietnamese-intro*
+ Vim supports Vietnamese language in the following ways:
+@@ -19,7 +19,7 @@ Vim supports Vietnamese language in the following ways:
+   in |Insert-mode| and |search-commands| using US keyboard layout.
+ - Localization in Vietnamese. See |vietnamese-l10n|
+ 
+-===============================================================================
++==============================================================================
+ 2. Vietnamese keymaps
+ 							*vietnamese-keymap*
+ To switch between languages you can use your system native keyboard switcher,
+@@ -44,12 +44,12 @@ Since these keymaps were designed to be minimalistic, they do not support all
+ features of the corresponding input methods. The differences are described
+ below:
+ 
+-- You can only type each character individually, entering the base letter first
+-  and then the diacritics later.  For example, to type the word `nến` using
+-  |vietnamese-vni_utf-8|, you must type `ne61n`, not `nen61` or `ne6n1`
+-- For characters with more than 1 diacritic, you need to type vowel mark before
+-  tone mark. For example, to type `ồ` using |vietnamese-telex_utf-8|, you need
+-  to type `oof`, not `ofo`.
++- You can only type each character individually, entering the base letter
++  first and then the diacritics later.  For example, to type the word `nến`
++  using |vietnamese-vni_utf-8|, you must type `ne61n`, not `nen61` or `ne6n1`
++- For characters with more than 1 diacritic, you need to type vowel mark
++  before tone mark. For example, to type `ồ` using |vietnamese-telex_utf-8|, you
++  need to type `oof`, not `ofo`.
+ - With |vietnamese-telex_utf-8|, you need to type all uppercase letters to
+   produce uppercase characters with diacritics. For example, `Ừ` must be typed
+   as `UWF`.
+@@ -61,7 +61,7 @@ below:
+   supported.
+ - Removing diacritics using `z` in Telex or `0` in VNI and VIQR is not supported.
+ 
+-===============================================================================
++==============================================================================
+ 3. Localization
+ 							*vietnamese-l10n*
+ Vim |messages| are also available in Vietnamese.  If you wish to see messages
+@@ -78,5 +78,5 @@ See |mbyte-first| for details.
+ run the following command in terminal: >
+ 	vimtutor vi
+ <
+-===============================================================================
++==============================================================================
+ vim:tw=78:ts=8:noet:ft=help:norl:
