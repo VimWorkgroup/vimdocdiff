@@ -1,18 +1,35 @@
-diff --git a/runtime/doc/ft_rust.txt b/runtime/doc/ft_rust.txt
-index 7426caad6..dd934e188 100644
---- a/runtime/doc/ft_rust.txt
-+++ b/runtime/doc/ft_rust.txt
-@@ -169,10 +169,10 @@ g:rustfmt_detect_version~
- <
-                                                        *g:rustfmt_find_toml*
- g:rustfmt_find_toml~
--    When set to 1, will try to find `rustfmt.toml` file by searching from
--    current path upwards.  Disabled by default for performance reasons
-+	When set to 1, will try to find `rustfmt.toml` file by searching from
-+	current path upwards.  Disabled by default for performance reasons
- >
--        let g:rustfmt_find_toml = 1
-+	    let g:rustfmt_find_toml = 1
- <
-                                                           *g:rust_playpen_url*
- g:rust_playpen_url~
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 501dd9457..cc41a774a 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
++*syntax.txt*	For Vim version 9.1.  Last change: 2026 Jan 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3223,7 +3223,7 @@ Pascal.  Use this if you don't use assembly and Pascal: >
+ 
+ PYTHON						*python.vim* *ft-python-syntax*
+ 
+-There are six options to control Python syntax highlighting.
++There are seven options to control Python syntax highlighting.
+ 
+ For highlighted numbers: >
+ 	:let python_no_number_highlight = 1
+@@ -3243,10 +3243,13 @@ The first option implies the second one.
+ For highlighted trailing whitespace and mix of spaces and tabs: >
+ 	:let python_space_error_highlight = 1
+ 
++For highlighted built-in constants distinguished from other keywords:
++	:let python_constant_highlight = 1
++
+ If you want all possible Python highlighting: >
+ 	:let python_highlight_all = 1
+-This has the same effect as setting python_space_error_highlight and
+-unsetting all the other ones.
++This has the same effect as setting python_space_error_highlight,
++python_constant_highlight and unsetting all the other ones.
+ 
+ If you use Python 2 or straddling code (Python 2 and 3 compatible),
+ you can enforce the use of an older syntax file with support for
