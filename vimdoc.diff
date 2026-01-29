@@ -1,28 +1,29 @@
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 6cafb688a..8e3368518 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 1dfb8d6f8..fb94aec4d 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*pattern.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
-+*pattern.txt*	For Vim version 9.1.  Last change: 2026 Jan 28
+-*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 11
++*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1169,13 +1169,15 @@ x	A single character, with no special meaning, matches itself
- *[:graph:]*	  [:graph:]   isgraph	ASCII printable characters excluding
- 					space
- *[:lower:]*	  [:lower:]   (1)	lowercase letters (all letters when
--					'ignorecase' is used)
-+					'ignorecase' is used and the old
-+					engine is in use |two-engines|)
- *[:print:]*	  [:print:]   (2)	printable characters including space
- *[:punct:]*	  [:punct:]   ispunct	ASCII punctuation characters
- *[:space:]*	  [:space:]		whitespace characters: space, tab, CR,
- 					NL, vertical tab, form feed
- *[:upper:]*	  [:upper:]   (3)	uppercase letters (all letters when
--					'ignorecase' is used)
-+					'ignorecase' is used and the old
-+					engine is in use |two-engines|)
- *[:xdigit:]*	  [:xdigit:]		hexadecimal digits: 0-9, a-f, A-F
- *[:return:]*	  [:return:]		the <CR> character
- *[:tab:]*	  [:tab:]		the <Tab> character
+@@ -8748,7 +8748,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	You can use |g:actual_curtabpage| within a function assigned to
+ 	tabpanel.  |g:actual_curtabpage| represents current tab's label number.
+-	The option value can contain line breaks: >
++	The option value can contain "\n" to force line breaks: >
+ 
+ 		set tabpanel=%!TabPanel()
+ 		function! TabPanel() abort
+@@ -8766,6 +8766,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|           |
+ 	|           |
+ <
++	Note: using "\n" is considered experimental and may change in the
++	future; a %-atom may be used instead.
++
+ 					*'tabpanelopt'* *'tplo'*
+ 'tabpanelopt' 'tplo'	string	(default "")
+ 			global
