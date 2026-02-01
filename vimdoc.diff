@@ -1,21 +1,29 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index fb94aec4d..cdb75dae2 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
+index 475b12e96..e0e3eccf8 100644
+--- a/runtime/doc/gui_w32.txt
++++ b/runtime/doc/gui_w32.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 28
-+*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 29
+-*gui_w32.txt*	For Vim version 9.1.  Last change: 2025 Dec 21
++*gui_w32.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4515,8 +4515,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		by a yank or delete operation for the "* register.
- 		The same applies to the modeless selection.
- 								*'go-P'*
--	  'P'	Like autoselect but using the "+ register instead of the "*
--		register.
-+	  'P'	Like autoselect but only copy to the "+ register instead of
-+		the "* register.
- 								*'go-A'*
- 	  'A'	Autoselect for the modeless selection.  Like 'a', but only
- 		applies to the modeless selection.
+@@ -512,12 +512,12 @@ to the 'guioptions' setting.
+ 
+ For convenience, you can define a command or mapping to toggle fullscreen mode:
+ >
+-	command! ToggleFullscreen {
+-		if &guioptions =~# 's'
+-			set guioptions-=s
+-		else
+-			set guioptions+=s
+-		endif
++	command ToggleFullscreen {
++	  if &guioptions =~# 's'
++	    set guioptions-=s
++	  else
++	    set guioptions+=s
++	  endif
+ 	}
+ 
+ 	map <expr> <F11> &go =~# 's' ? ":se go-=s<CR>" : ":se go+=s<CR>"
