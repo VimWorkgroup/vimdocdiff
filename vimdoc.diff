@@ -1,29 +1,20 @@
-diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
-index 475b12e96..e0e3eccf8 100644
---- a/runtime/doc/gui_w32.txt
-+++ b/runtime/doc/gui_w32.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index c940ee50c..18712b403 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*gui_w32.txt*	For Vim version 9.1.  Last change: 2025 Dec 21
-+*gui_w32.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+-*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 17
++*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 31
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -512,12 +512,12 @@ to the 'guioptions' setting.
+@@ -1389,6 +1389,9 @@ blob2str({blob} [, {options}])				*blob2str()*
+ 		Can also be used as a |method|: >
+ 			GetBlob()->blob2str()
+ <
++		If `iconv` is not available and the encoding cannot be converted
++		using built-in conversion rules, an error will be reported.
++
+ 		Return type: list<string>
  
- For convenience, you can define a command or mapping to toggle fullscreen mode:
- >
--	command! ToggleFullscreen {
--		if &guioptions =~# 's'
--			set guioptions-=s
--		else
--			set guioptions+=s
--		endif
-+	command ToggleFullscreen {
-+	  if &guioptions =~# 's'
-+	    set guioptions-=s
-+	  else
-+	    set guioptions+=s
-+	  endif
- 	}
  
- 	map <expr> <F11> &go =~# 's' ? ":se go-=s<CR>" : ":se go+=s<CR>"
