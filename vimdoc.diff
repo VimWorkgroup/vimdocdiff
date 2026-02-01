@@ -1,20 +1,660 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c940ee50c..18712b403 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 2d743ef7c..5bc72b8fc 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 17
-+*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 31
+-*autocmd.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*autocmd.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1389,6 +1389,9 @@ blob2str({blob} [, {options}])				*blob2str()*
+@@ -874,7 +874,8 @@ FileChangedShell		When Vim notices that the modification time of
+ 				to tell Vim what to do next.
+ 				NOTE: When this autocommand is executed, the
+ 				current buffer "%" may be different from the
+-				buffer that was changed, which is in "<afile>".
++				buffer that was changed, which is in
++				"<afile>".
+ 				NOTE: The commands must not change the current
+ 				buffer, jump to another buffer or delete a
+ 				buffer.  *E246* *E811*
+@@ -1324,9 +1325,9 @@ TermResponseAll			After the response to |t_RV|, |t_RC|, |t_RS|,
+ 				    "osc",
+ 				    "version" (|t_RV|)
+ 				Note that this event may be triggered halfway
+-				executing another event, especially if file I/O,
+-				a shell command or anything else that takes time
+-				is involved.
++				executing another event, especially if file
++				I/O, a shell command or anything else that
++				takes time is involved.
+ 							*TextChanged*
+ TextChanged			After a change was made to the text in the
+ 				current buffer in Normal mode.  That is after
+@@ -1455,8 +1456,9 @@ VimResume			When the Vim instance is resumed after being
+ 	:autocmd VimResume * checktime
+ <							*VimSuspend*
+ VimSuspend			When the Vim instance is suspended.  Only when
+-				CTRL-Z was typed inside Vim, or when the SIGTSTP
+-				signal was sent to Vim, but not for SIGSTOP.
++				CTRL-Z was typed inside Vim, or when the
++				SIGTSTP signal was sent to Vim, but not for
++				SIGSTOP.
+ 							*WinClosed*
+ WinClosed			When closing a window, just before it is
+ 				removed from the window layout.  The pattern
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 18712b403..57f46c3d7 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -7982,8 +7982,8 @@ nr2char({expr} [, {utf8}])				*nr2char()*
+ 		value {expr}.  Examples: >
+ 			nr2char(64)		returns "@"
+ 			nr2char(32)		returns " "
+-<		When {utf8} is omitted or zero, the current 'encoding' is used.
+-		Example for "utf-8": >
++<		When {utf8} is omitted or zero, the current 'encoding' is
++		used.  Example for "utf-8": >
+ 			nr2char(300)		returns I with bow character
+ <		When {utf8} is TRUE, always return UTF-8 characters.
+ 		Note that a NUL character in the file is specified with
+@@ -8866,7 +8866,7 @@ redraw_listener_add({opts})				*redraw_listener_add()*
+ 		Return type: |Number|
+ 
+ 
+-redraw_listener_remove({id})				*redraw_listener_remove()*
++redraw_listener_remove({id})			*redraw_listener_remove()*
+ 		Remove a redraw listener previously added with
+ 		|redraw_listener_add()|.  Returns FALSE when {id} could not be
+ 		found, TRUE when {id} was removed.
+@@ -12659,7 +12659,8 @@ win_gettype([{nr}])					*win_gettype()*
+ win_gotoid({expr})					*win_gotoid()*
+ 		Go to window with ID {expr}.  This may also change the current
+ 		tabpage.
+-		Return TRUE if successful, FALSE if the window cannot be found.
++		Return TRUE if successful, FALSE if the window cannot be
++		found.
+ 
  		Can also be used as a |method|: >
- 			GetBlob()->blob2str()
+ 			GetWinid()->win_gotoid()
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 1750d1cb2..2f76983d7 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1,4 +1,4 @@
+-*channel.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*channel.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1583,8 +1583,8 @@ A LSP request message has the following format (expressed as a Vim Dict).  The
+ 	"params": <list|dict>
+     }
+ 
+-A LSP response message has the following format (expressed as a Vim Dict).  The
+-"result" and "error" fields are optional: >
++A LSP response message has the following format (expressed as a Vim Dict).
++The "result" and "error" fields are optional: >
+ 
+     {
+ 	"jsonrpc": "2.0",
+diff --git a/runtime/doc/develop.txt b/runtime/doc/develop.txt
+index 8526926d5..a678ce220 100644
+--- a/runtime/doc/develop.txt
++++ b/runtime/doc/develop.txt
+@@ -1,4 +1,4 @@
+-*develop.txt*	For Vim version 9.1.  Last change: 2025 Dec 13
++*develop.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -411,12 +411,12 @@ For any non-trivial change, please always create a pull request on github,
+ since this triggers the test suite.
+ 
+ A PR should ideally contain a single commit for a single logical change.
+-However, you can include several commits if you want to group multiple logical,
+-atomic changes in one PR.  This can also make longer PRs easier to review.  Be
+-sure to describe the reasoning for your changes in each commit message, as
+-this greatly helps with the review process.  In cases where each commit
+-handles different logical changes, they will also be applied as separate
+-patches in Vim's repository.
++However, you can include several commits if you want to group multiple
++logical, atomic changes in one PR.  This can also make longer PRs easier to
++review.  Be sure to describe the reasoning for your changes in each commit
++message, as this greatly helps with the review process.  In cases where each
++commit handles different logical changes, they will also be applied as
++separate patches in Vim's repository.
+ 
+ 							*style-clang-format*
+ sound.c and sign.c can be (semi-) automatically formatted using the
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index de3b8d0cb..eaece1a86 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.1.  Last change: 2026 Jan 10
++*eval.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2807,9 +2807,9 @@ v:sizeoflong	Number of bytes in a long.  Depends on how Vim was compiled.
+ 		expected result.
+ 
+ 				*v:sizeofpointer* *sizeofpointer-variable*
+-v:sizeofpointer	Number of bytes in a pointer.  Depends on how Vim was compiled.
+-		This is only useful for deciding whether a test will give the
+-		expected result.
++v:sizeofpointer	Number of bytes in a pointer.  Depends on how Vim was
++		compiled.  This is only useful for deciding whether a test
++		will give the expected result.
+ 
+ 					*v:stacktrace* *stacktrace-variable*
+ v:stacktrace	The stack trace of the exception most recently caught and
+diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
+index e0e3eccf8..5886e80de 100644
+--- a/runtime/doc/gui_w32.txt
++++ b/runtime/doc/gui_w32.txt
+@@ -425,8 +425,8 @@ simulating the keystrokes Alt, F. >
+ This maps Alt-Space to pop down the system menu for the Vim window.  Note that
+ ~ is used by simalt to represent the <Space> character. >
+ 	:map <C-n> :simalt ~n<CR>
+-Maps Control-N to produce the keys Alt-Space followed by N.  This minimizes the
+-Vim window via the system menu.
++Maps Control-N to produce the keys Alt-Space followed by N.  This minimizes
++the Vim window via the system menu.
+ 
+ Note that the key changes depending on the language you are using.
+ 
+@@ -510,7 +510,8 @@ Full Screen						*gui-w32-fullscreen*
+ To enable fullscreen mode in the Windows GUI version of Vim, add the 's' flag
+ to the 'guioptions' setting.
+ 
+-For convenience, you can define a command or mapping to toggle fullscreen mode:
++For convenience, you can define a command or mapping to toggle fullscreen
++mode:
+ >
+ 	command ToggleFullscreen {
+ 	  if &guioptions =~# 's'
+diff --git a/runtime/doc/mbyte.txt b/runtime/doc/mbyte.txt
+index 9c99f22c4..a291785f1 100644
+--- a/runtime/doc/mbyte.txt
++++ b/runtime/doc/mbyte.txt
+@@ -1,4 +1,4 @@
+-*mbyte.txt*	For Vim version 9.1.  Last change: 2025 Dec 17
++*mbyte.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar et al.
+@@ -455,8 +455,8 @@ Useful utilities for converting the charset:
+ 	ftp://ftp.cuhk.hk/pub/chinese/ifcss/software/unix/convert/hc-30.tar.gz
+ 
+     Korean:	    hmconv
+-	Hmconv is Korean code conversion utility especially for E-mail.  It can
+-	convert between EUC-KR and ISO-2022-KR.  Hmconv can be found at:
++	Hmconv is Korean code conversion utility especially for E-mail.  It
++	can convert between EUC-KR and ISO-2022-KR.  Hmconv can be found at:
+ 	https://www.freshports.org/korean/hmconv/
+ 
+     Multilingual:   lv
+@@ -761,9 +761,9 @@ Then add a command to your |gvimrc| file to set 'guifont': >
+ 
+ X INPUT METHOD (XIM) BACKGROUND			*XIM* *xim* *x-input-method*
+ 
+-XIM is an international input module for X.  There are two kinds of structures,
+-Xlib unit type and |IM-server| (Input-Method server) type.  |IM-server| type
+-is suitable for complex input, such as CJK.
++XIM is an international input module for X.  There are two kinds of
++structures, Xlib unit type and |IM-server| (Input-Method server) type.
++|IM-server| type is suitable for complex input, such as CJK.
+ 
+ - IM-server
+ 							*IM-server*
+diff --git a/runtime/doc/netbeans.txt b/runtime/doc/netbeans.txt
+index 53448f25a..c38beca14 100644
+--- a/runtime/doc/netbeans.txt
++++ b/runtime/doc/netbeans.txt
+@@ -1,4 +1,4 @@
+-*netbeans.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
++*netbeans.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Gordon Prieur et al.
+@@ -390,7 +390,8 @@ addAnno serNum typeNum off len
+ 		   typeNum	number	sequence number of the annotation
+ 					defined with defineAnnoType for this
+ 					buffer
+-		   off		number	offset where annotation is to be placed
++		   off		number	offset where annotation is to be
++					placed
+ 		   len		number	not used
+ 		In version 2.1 "lnum/col" can be used instead of "off".
+ 
+@@ -645,7 +646,8 @@ getMark		Not implemented.
+ getAnno serNum
+ 		Return the line number of the annotation in the buffer.
+ 		Argument:
+-			serNum		serial number of this placed annotation
++			serNum		serial number of this placed
++					annotation
+ 		The reply is:
+ 			123 lnum	line number of the annotation
+ 			123 0		invalid annotation serial number
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index cdb75dae2..e629a7a78 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 29
++*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1025,8 +1025,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			 *'autowriteall'* *'awa'* *'noautowriteall'* *'noawa'*
+ 'autowriteall' 'awa'	boolean	(default off)
+ 			global
+-	Like 'autowrite', but also used for commands ":edit", ":enew", ":quit",
+-	":qall", ":exit", ":xit", ":recover" and closing the Vim window.
++	Like 'autowrite', but also used for commands ":edit", ":enew",
++	":quit", ":qall", ":exit", ":xit", ":recover" and closing the Vim
++	window.
+ 	Setting this option also implies that Vim behaves like 'autowrite' has
+ 	been set.
+ 
+@@ -2571,8 +2572,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			This makes "y0" fail in the first column.
+ 								*cpo-f*
+ 		f	When included, a ":read" command with a file name
+-			argument will set the file name for the current buffer,
+-			if the current buffer doesn't have a file name yet.
++			argument will set the file name for the current
++			buffer, if the current buffer doesn't have a file name
++			yet.
+ 								*cpo-F*
+ 		F	When included, a ":write" command with a file name
+ 			argument will set the file name for the current
+@@ -3173,8 +3175,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		hiddenoff	Do not use diff mode for a buffer when it
+ 				becomes hidden.
+ 
+-		iblank		Ignore changes where lines are all blank.  Adds
+-				the "-B" flag to the "diff" command if
++		iblank		Ignore changes where lines are all blank.
++				Adds the "-B" flag to the "diff" command if
+ 				'diffexpr' is empty.  Check the documentation
+ 				of the "diff" command for what this does
+ 				exactly.
+@@ -3804,9 +3806,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  edit a file, a check is done for the <EOL>:
+ 	  1. If all lines end in <CR><NL>, and 'fileformats' includes "dos",
+ 	     'fileformat' is set to "dos".
+-	  2. If a <NL> is found and 'fileformats' includes "unix", 'fileformat'
+-	     is set to "unix".  Note that when a <NL> is found without a
+-	     preceding <CR>, "unix" is preferred over "dos".
++	  2. If a <NL> is found and 'fileformats' includes "unix",
++	     'fileformat' is set to "unix".  Note that when a <NL> is found
++	     without a preceding <CR>, "unix" is preferred over "dos".
+ 	  3. If 'fileformat' has not yet been set, and if a <CR> is found, and
+ 	     if 'fileformats' includes "mac", 'fileformat' is set to "mac".
+ 	     This means that "mac" is only chosen when:
+@@ -4543,8 +4545,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  'e'	Add tab pages when indicated with 'showtabline'.
+ 		'guitablabel' can be used to change the text in the labels.
+ 		When 'e' is missing a non-GUI tab pages line may be used.
+-		The GUI tabs are only supported on some systems, currently GTK,
+-		Motif, Mac OS/X, Haiku, and MS-Windows.
++		The GUI tabs are only supported on some systems, currently
++		GTK, Motif, Mac OS/X, Haiku, and MS-Windows.
+ 								*'go-f'*
+ 	  'f'	Foreground: Don't use fork() to detach the GUI from the shell
+ 		where it was started.  Use this for programs that wait for the
+@@ -5896,8 +5898,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 					*'makeencoding'* *'menc'*
+ 'makeencoding' 'menc'	string	(default "")
+ 			global or local to buffer |global-local|
+-	Encoding used for reading the output of external commands.  When empty,
+-	encoding is not converted.
++	Encoding used for reading the output of external commands.  When
++	empty, encoding is not converted.
+ 	This is used for `:make`, `:lmake`, `:grep`, `:lgrep`, `:grepadd`,
+ 	`:lgrepadd`, `:cfile`, `:cgetfile`, `:caddfile`, `:lfile`, `:lgetfile`,
+ 	and `:laddfile`.
+@@ -6205,8 +6207,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <	If your terminal can't overrule the mouse events going to the
+ 	application, use: >
+ 		:set mouse=nvi
+-<	Then you can press ":", select text for the system, and press Esc to go
+-	back to Vim using the mouse events.
++<	Then you can press ":", select text for the system, and press Esc to
++	go back to Vim using the mouse events.
+ 	In |defaults.vim| "nvi" is used if the 'term' option is not matching
+ 	"xterm".
+ 
+@@ -8501,9 +8503,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	      highlighting is used, also for the statusline of non-current
+ 	      windows.
+ 	* -   Set highlight group to User{N}, where {N} is taken from the
+-	      minwid field, e.g. %1*.  Restore normal highlight with %* or %0*.
+-	      The difference between User{N} and StatusLine will be applied to
+-	      StatusLineNC for the statusline of non-current windows.
++	      minwid field, e.g. %1*.  Restore normal highlight with %* or
++	      %0*.  The difference between User{N} and StatusLine will be
++	      applied to StatusLineNC for the statusline of non-current
++	      windows.
+ 	      The number N must be between 1 and 9.  See |hl-User1..9|
+ 
+ 	When displaying a flag, Vim removes the leading comma, if any, when
+@@ -9537,9 +9540,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			global or local to buffer |global-local|
+ 	Maximum number of changes that can be undone.  Since undo information
+ 	is kept in memory, higher numbers will cause more memory to be used.
+-	Nevertheless, a single change can already use a large amount of memory.
+-	Set to 0 for Vi compatibility: One level of undo and "u" undoes
+-	itself: >
++	Nevertheless, a single change can already use a large amount of
++	memory.  Set to 0 for Vi compatibility: One level of undo and "u"
++	undoes itself: >
+ 		set ul=0
+ <	But you can also get Vi compatibility by including the 'u' flag in
+ 	'cpoptions', and still be able to use CTRL-R to repeat undo.
+@@ -9875,9 +9878,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			*'visualbell'* *'vb'* *'novisualbell'* *'novb'* *beep*
+ 'visualbell' 'vb'	boolean	(default off)
+ 			global
+-	Use a visual bell instead of beeping.  The terminal code to display the
+-	visual bell is given with 't_vb'.  When no beep or flash is wanted,
+-	use: >
++	Use a visual bell instead of beeping.  The terminal code to display
++	the visual bell is given with 't_vb'.  When no beep or flash is
++	wanted, use: >
+ 		:set vb t_vb=
+ <	If you want a short flash, you can use this on many terminals: >
+ 		:set vb t_vb=[?5h$<100>[?5l
+@@ -9885,8 +9888,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	to get a shorter or longer flash.
+ 
+ 	Note: Vim will limit the bell to once per half a second.  This avoids
+-	having to wait for the flashing to finish when there are lots of bells,
+-	e.g. on key repeat.  This also happens without 'visualbell' set.
++	having to wait for the flashing to finish when there are lots of
++	bells, e.g. on key repeat.  This also happens without 'visualbell'
++	set.
+ 
+ 	In the GUI, 't_vb' defaults to "<Esc>|f", which inverts the display
+ 	for 20 msec.  If you want to use a different time, use "<Esc>|40f",
+@@ -9973,10 +9977,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 'wildcharm' 'wcm'	number	(default: none (0))
+ 			global
+ 	'wildcharm' works exactly like 'wildchar', except that it is
+-	recognized when used inside a macro.  You can find "spare" command-line
+-	keys suitable for this option by looking at |ex-edit-index|.  Normally
+-	you'll never actually type 'wildcharm', just use it in mappings that
+-	automatically invoke completion mode, e.g.: >
++	recognized when used inside a macro.  You can find "spare"
++	command-line keys suitable for this option by looking at
++	|ex-edit-index|.  Normally you'll never actually type 'wildcharm',
++	just use it in mappings that automatically invoke completion mode,
++	e.g.: >
+ 		:set wcm=<C-Z>
+ 		:cnoremap ss so $vim/sessions/*.vim<C-Z>
+ <	Then after typing :ss you can use CTRL-P & CTRL-N.
+diff --git a/runtime/doc/pi_getscript.txt b/runtime/doc/pi_getscript.txt
+index ff6177747..0f232a39f 100644
+--- a/runtime/doc/pi_getscript.txt
++++ b/runtime/doc/pi_getscript.txt
+@@ -1,4 +1,4 @@
+-*pi_getscript.txt*  For Vim version 9.1.  Last change: 2025 Aug 10
++*pi_getscript.txt*  For Vim version 9.1.  Last change: 2026 Jan 30
+ >
+ 		GETSCRIPT REFERENCE MANUAL  by Charles E. Campbell
  <
-+		If `iconv` is not available and the encoding cannot be converted
-+		using built-in conversion rules, an error will be reported.
-+
- 		Return type: list<string>
+@@ -57,7 +57,8 @@ The GetLatestVimScripts.dist file serves as an example and a template for your
+ own personal list.  Feel free to remove all the scripts mentioned within it;
+ the "important" part of it is the first two lines.
+ 
+-Your computer needs to have wget or curl for GetLatestVimScripts to do its work.
++Your computer needs to have wget or curl for GetLatestVimScripts to do its
++work.
+ 
+ 	1. if compressed:  gunzip getscript.vmb.gz
+ 	2. Unix:
+diff --git a/runtime/doc/pi_vimball.txt b/runtime/doc/pi_vimball.txt
+index f498e57f9..7e2d412ff 100644
+--- a/runtime/doc/pi_vimball.txt
++++ b/runtime/doc/pi_vimball.txt
+@@ -1,4 +1,4 @@
+-*pi_vimball.txt*	For Vim version 9.1.  Last change: 2025 Aug 06
++*pi_vimball.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 			       ----------------
+ 			       Vimball Archiver
+@@ -9,13 +9,13 @@ Author:  Charles E. Campbell  <NcampObell@SdrPchip.AorgM-NOSPAM>
+ Copyright: (c) 2004-2015 by Charles E. Campbell		*Vimball-copyright*
+ 	The VIM LICENSE (see |copyright|) applies to the files in this
+ 	package, including vimballPlugin.vim, vimball.vim, and pi_vimball.txt.
+-	except use "vimball" instead of "VIM".  Like anything else that's free,
+-	vimball.vim and its associated files are provided *as is* and comes with
+-	no warranty of any kind, either expressed or implied.  No guarantees
+-	of merchantability.  No guarantees of suitability for any purpose.  By
+-	using this plugin, you agree that in no event will the copyright
+-	holder be liable for any damages resulting from the use of this
+-	software. Use at your own risk!
++	except use "vimball" instead of "VIM".  Like anything else that's
++	free, vimball.vim and its associated files are provided *as is* and
++	comes with no warranty of any kind, either expressed or implied.  No
++	guarantees of merchantability.  No guarantees of suitability for any
++	purpose.  By using this plugin, you agree that in no event will the
++	copyright holder be liable for any damages resulting from the use of
++	this software. Use at your own risk!
+ 
+ ==============================================================================
+ 1. Contents				*vba* *vimball* *vimball-contents*
+@@ -248,8 +248,8 @@ WINDOWS							*vimball-windows*
+ 	13 : May 01, 2006 * exists("&acd") used to determine if the acd
+ 			    option exists
+ 	12 : May 01, 2006 * bugfix - the 'acd' option is not always defined
+-	11 : Apr 27, 2006 * VimballList would create missing subdirectories that
+-			    the vimball specified were needed.  Fixed.
++	11 : Apr 27, 2006 * VimballList would create missing subdirectories
++			    that the vimball specified were needed.  Fixed.
+ 	10 : Apr 27, 2006 * moved all setting saving/restoration to a pair of
+ 			    functions.  Included some more settings in them
+ 			    which frequently cause trouble.
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 73e4205d7..cb97fcdc1 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
+@@ -1,4 +1,4 @@
+-*quickfix.txt*  For Vim version 9.1.  Last change: 2025 Dec 27
++*quickfix.txt*  For Vim version 9.1.  Last change: 2026 Jan 30
  
  
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -491,8 +491,8 @@ entries parsed from lines.  The following shows how to use a custom
+ 
+ EXECUTE A COMMAND IN ALL THE BUFFERS IN QUICKFIX OR LOCATION LIST:
+ 							*:cdo*
+-:cdo[!] {cmd}		Execute {cmd} in each valid entry in the quickfix list.
+-			It works like doing this: >
++:cdo[!] {cmd}		Execute {cmd} in each valid entry in the quickfix
++			list.  It works like doing this: >
+ 				:cfirst
+ 				:{cmd}
+ 				:cnext
+@@ -2031,9 +2031,9 @@ case they have to precede the letter, e.g. '%+A' or '%-G':
+ 	%-		do not include the matching multi-line in any output
+ 	%+		include the whole matching line in the %m error string
+ 
+-One prefix is only useful in combination with '+' or '-', namely %G.  It parses
+-over lines containing general information like compiler version strings or
+-other headers that can be skipped.
++One prefix is only useful in combination with '+' or '-', namely %G.  It
++parses over lines containing general information like compiler version strings
++or other headers that can be skipped.
+ 	%-G		ignore this message
+ 	%+G		general message
+ 
+@@ -2201,8 +2201,8 @@ prints information about entering a directory in the form "Making all in dir".
+    Making all in dir2		  ./dir1/dir2
+    Making all in dir2		  ./dir1/dir2
+ 
+-   This can be solved by printing absolute directories in the "enter directory"
+-   message or by printing "leave directory" messages.
++   This can be solved by printing absolute directories in the "enter
++   directory" message or by printing "leave directory" messages.
+ 
+ To avoid this problem, ensure to print absolute directory names and "leave
+ directory" messages.
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index be31c098e..9d9157b00 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*repeat.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1220,7 +1220,8 @@ Additionally, these commands can be used:
+ 							*>bt*
+ 							*>backtrace*
+ 							*>where*
+-	backtrace	Show the call stacktrace for current debugging session.
++	backtrace	Show the call stacktrace for current debugging
++			session.
+ 	bt
+ 	where
+ 							*>frame*
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 227b77dac..3e37b49fe 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*	For Vim version 9.1.  Last change: 2025 Dec 20
++*starting.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -890,8 +890,8 @@ accordingly.  Vim proceeds in this order:
+ 	III The environment variable EXINIT.
+ 	    The value of $EXINIT is used as an Ex command line.
+ 	IV  The user exrc file(s).  Same as for the user vimrc file, but with
+-	    "vimrc" replaced by "exrc".  But only one of ".exrc" and "_exrc" is
+-	    used, depending on the system.  And without the (*)!
++	    "vimrc" replaced by "exrc".  But only one of ".exrc" and "_exrc"
++	    is used, depending on the system.  And without the (*)!
+ 	V   The default vimrc file, $VIMRUNTIME/defaults.vim.  This sets up
+ 	    options values and has "syntax on" and "filetype on" commands,
+ 	    which is what most new users will want.  See |defaults.vim|.
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 741e01ea0..20525f8e5 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.1.  Last change: 2026 Jan 27
++*syntax.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -487,10 +487,10 @@ specifying each command separately.
+ 				    *hl-TOhtmlProgress* *TOhtml-progress-color*
+ When displayed, the progress bar will show colored boxes along the statusline
+ as the HTML conversion proceeds.  By default, the background color as the
+-current "DiffDelete" highlight group is used.  If "DiffDelete" and "StatusLine"
+-have the same background color, TOhtml will automatically adjust the color to
+-differ.  If you do not like the automatically selected colors, you can define
+-your own highlight colors for the progress bar.  Example: >
++current "DiffDelete" highlight group is used.  If "DiffDelete" and
++"StatusLine" have the same background color, TOhtml will automatically adjust
++the color to differ.  If you do not like the automatically selected colors,
++you can define your own highlight colors for the progress bar.  Example: >
+ 
+ 	hi TOhtmlProgress guifg=#c0ffee ctermbg=7
+ <
+@@ -615,9 +615,9 @@ browsers; the <input> tags get pasted with the text.
+ 
+ When "fallback" (default value), the same <input> elements are generated for
+ older browsers, but newer browsers (detected by CSS feature query) hide the
+-<input> elements and instead use generated content in an ::before pseudoelement
+-to display the uncopyable text.  This method should work with the largest
+-number of browsers, both old and new.
++<input> elements and instead use generated content in an ::before
++pseudoelement to display the uncopyable text.  This method should work with
++the largest number of browsers, both old and new.
+ 
+ When "none", the <input> elements are not generated at all.  Only the
+ generated-content method is used.  This means that old browsers, notably
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index 17f723463..983c1c9fe 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
+@@ -1,4 +1,4 @@
+-*tagsrch.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*tagsrch.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -872,9 +872,9 @@ Common arguments for the commands above:
+ 	When excluded, a match is ignored when the line is recognized as a
+ 	comment (according to 'comments'), or the match is in a C comment
+ 	(after "//" or inside /* */).  Note that a match may be missed if a
+-	line is recognized as a comment, but the comment ends halfway the line.
+-	And if the line is a comment, but it is not recognized (according to
+-	'comments') a match may be found in it anyway.  Example: >
++	line is recognized as a comment, but the comment ends halfway the
++	line.  And if the line is a comment, but it is not recognized
++	(according to 'comments') a match may be found in it anyway.  Example: >
+ 		/* comment
+ 		   foobar */
+ <	A match for "foobar" is found, because this line is not recognized as
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 4504c62d3..f3f913766 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -1,4 +1,4 @@
+-*term.txt*	For Vim version 9.1.  Last change: 2025 Nov 11
++*term.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -196,8 +196,8 @@ try the entry ":ku=\233A:".
+ 
+ Some termcap entries have the entry ":ku=\E[A:".  But the Amiga really sends
+ "\233A".  On output "\E[" and "\233" are often equivalent, on input they
+-aren't.  You will have to change the termcap entry, or change the key code with
+-the :set command to fix this.
++aren't.  You will have to change the termcap entry, or change the key code
++with the :set command to fix this.
+ 
+ Many cursor key codes start with an <Esc>.  Vim must find out if this is a
+ single hit of the <Esc> key or the start of a cursor key sequence.  It waits
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index eb9a04b6b..899c06ecf 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
+@@ -1,4 +1,4 @@
+-*vi_diff.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*vi_diff.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -838,7 +838,8 @@ The following Ex commands are supported by Vi: ~
+ `:delete`	delete lines
+ `:edit`		edit a file
+ `:exit`		same as `:xit`
+-`:file`		show or set the current file name; Vi: without the column number
++`:file`		show or set the current file name; Vi: without the column
++		number
+ `:global`	execute commands for matching lines
+ `:insert`	insert text
+ `:join`		join lines; Vi: not :join!
+@@ -1360,7 +1361,8 @@ These are remarks about running the POSIX test suite:
+ - ex test 368 fails because shell command isn't echoed in silent mode.
+ - ex test 394 fails because "=" command output isn't visible in silent mode.
+ - ex test 411 fails because test file is wrong, contains stray ':'.
+-- ex test 475 and 476 fail because reprint output isn't visible in silent mode.
++- ex test 475 and 476 fail because reprint output isn't visible in silent
++  mode.
+ - ex test 480 and 481 fail because the tags file has spaces instead of a tab.
+ - ex test 502 fails because .exrc isn't read in silent mode.
+ - ex test 509 fails because .exrc isn't read in silent mode. and exit code is
