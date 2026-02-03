@@ -1,21 +1,20 @@
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index cb97fcdc1..ab54a7488 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 57f46c3d7..2b2dc92c3 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*quickfix.txt*  For Vim version 9.1.  Last change: 2026 Jan 30
-+*quickfix.txt*  For Vim version 9.1.  Last change: 2026 Feb 01
+-*builtin.txt*	For Vim version 9.1.  Last change: 2026 Jan 31
++*builtin.txt*	For Vim version 9.1.  Last change: 2026 Feb 2
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -625,6 +625,10 @@ can go back to the unfiltered list using the |:colder|/|:lolder| command.
- 			errors.  If the window is already open and there are
- 			no recognized errors, close the window.
+@@ -12612,8 +12612,7 @@ win_findbuf({bufnr})					*win_findbuf()*
+ 		Can also be used as a |method|: >
+ 			GetBufnr()->win_findbuf()
+ <
+-		Return type: list<number> or list<any>
+-
++		Return type: list<number>
  
-+			When opening the window and [height] is given, the
-+			window becomes that high (if there is room).  When
-+			[height] is omitted the window is made ten lines high.
-+
- 							*:lw* *:lwindow*
- :lw[indow] [height]	Same as ":cwindow", except use the window showing the
- 			location list for the current window.
+ win_getid([{win} [, {tab}]])				*win_getid()*
+ 		Get the |window-ID| for the specified window.
