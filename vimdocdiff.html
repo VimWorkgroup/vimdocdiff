@@ -66,8 +66,8 @@
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
       </svg>      <a href="#d2h-979343" class="d2h-file-name">runtime/doc/version9.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+6</span>
-          <span class="d2h-lines-deleted">-0</span>
+          <span class="d2h-lines-added">+8</span>
+          <span class="d2h-lines-deleted">-2</span>
       </span>
     </span>
 </li>
@@ -93,27 +93,7 @@
                     <tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -52461,4 +52461,10 @@ Problem:  heap UAF if autocommands from reloading a file changed outside</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      52461
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">          of Vim wipe its buffer.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      52462
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">Solution: Validate the bufref after buf_reload (Sean Dewar).</span>
-        </div>
+        <div class="d2h-code-side-line">@@ -52463,8 +52463,14 @@ Solution: Validate the bufref after buf_reload (Sean Dewar).</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
@@ -126,6 +106,56 @@
         </div>
     </td>
 </tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      52464
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">Patch 9.1.2129</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      52465
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">Problem:  MS-Windows: font size calculation slightly wrong, causing</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      52466
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"><del>	  </del>vertical line gaps (Maxim Kim, after v9.1.2127)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      52467
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">Solution: Update font size calculation when using DirectX</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      52468
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"><del>	  </del>(Yasuhiro Matsumoto).</span>
+        </div>
+    </td>
+</tr><tr>
     <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
       
     </td>
@@ -187,7 +217,17 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      52464
+      52469
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      52470
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -211,26 +251,6 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      52461
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">          of Vim wipe its buffer.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      52462
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">Solution: Validate the bufref after buf_reload (Sean Dewar).</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
       52463
     </td>
     <td class="d2h-cntx">
@@ -240,53 +260,53 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-cntx">
       52464
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-cntx">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn">Patch 9.1.2129</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-cntx">
       52465
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-cntx">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn">Problem:  MS-Windows: font size calculation slightly wrong, causing</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       52466
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">	  vertical line gaps (Maxim Kim, after v9.1.2127)</span>
+            <span class="d2h-code-line-ctn"><ins>          </ins>vertical line gaps (Maxim Kim, after v9.1.2127)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-cntx">
       52467
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-cntx">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn">Solution: Update font size calculation when using DirectX</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       52468
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">	  (Yasuhiro Matsumoto).</span>
+            <span class="d2h-code-line-ctn"><ins>          </ins>(Yasuhiro Matsumoto).</span>
         </div>
     </td>
 </tr><tr>
@@ -300,8 +320,68 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
+    <td class="d2h-code-side-linenumber d2h-ins">
       52470
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">Patch 9.1.2130</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      52471
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">Problem:  Page scrolling in Insert mode beeps (after 9.1.0211).</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      52472
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">Solution: Fix incorrect return value of pagescroll(). Also invert the</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      52473
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">          return value of scroll_with_sms() to be less confusing and</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      52474
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">          match comments (zeertzjq).</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      52475
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      52476
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">

@@ -1,15 +1,21 @@
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 52d086a87..e0ac515ab 100644
+index e0ac515ab..560c57358 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52461,4 +52461,10 @@ Problem:  heap UAF if autocommands from reloading a file changed outside
-           of Vim wipe its buffer.
- Solution: Validate the bufref after buf_reload (Sean Dewar).
+@@ -52463,8 +52463,14 @@ Solution: Validate the bufref after buf_reload (Sean Dewar).
  
-+Patch 9.1.2129
-+Problem:  MS-Windows: font size calculation slightly wrong, causing
-+	  vertical line gaps (Maxim Kim, after v9.1.2127)
-+Solution: Update font size calculation when using DirectX
-+	  (Yasuhiro Matsumoto).
+ Patch 9.1.2129
+ Problem:  MS-Windows: font size calculation slightly wrong, causing
+-	  vertical line gaps (Maxim Kim, after v9.1.2127)
++          vertical line gaps (Maxim Kim, after v9.1.2127)
+ Solution: Update font size calculation when using DirectX
+-	  (Yasuhiro Matsumoto).
++          (Yasuhiro Matsumoto).
 +
++Patch 9.1.2130
++Problem:  Page scrolling in Insert mode beeps (after 9.1.0211).
++Solution: Fix incorrect return value of pagescroll(). Also invert the
++          return value of scroll_with_sms() to be less confusing and
++          match comments (zeertzjq).
+ 
   vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
