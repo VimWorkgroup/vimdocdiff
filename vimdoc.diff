@@ -1,18 +1,38 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index a020c0ea0..017af0e80 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 083f013cc..c4f227d09 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.1.  Last change: 2026 Jan 25
-+*helphelp.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
+-*terminal.txt*	For Vim version 9.1.  Last change: 2026 Jan 18
++*terminal.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -326,6 +326,7 @@ At this moment translations are available for:
- 	Japanese - multiple authors
- 	Polish   - translated by Mikolaj Machowski
- 	Russian  - translated by Vassily Ragosin
-+	Swedish  - translated by Daniel Nylander
- See the Vim website to find them: http://www.vim.org/translations.php
- 
- A set of translated help files consists of these files:
+@@ -525,10 +525,12 @@ term_dumpdiff({filename}, {filename} [, {options}])
+ 				     of the first file name.
+ 		   "term_rows"	     vertical size to use for the terminal,
+ 				     instead of using 'termwinsize', but
+-				     respecting the minimal size
++				     respecting the minimal size; valid range
++				     is from 0 to 1000
+ 		   "term_cols"	     horizontal size to use for the terminal,
+ 				     instead of using 'termwinsize', but
+-				     respecting the minimal size
++				     respecting the minimal size; valid range
++				     is from 0 to 1000
+ 		   "vertical"	     split the window vertically
+ 		   "curwin"	     use the current window, do not split the
+ 				     window; fails if the current buffer
+@@ -951,9 +953,10 @@ term_start({cmd} [, {options}])			*term_start()*
+ 				     of the command name.
+ 		   "term_rows"	     vertical size to use for the terminal,
+ 				     instead of using 'termwinsize'; valid
+-				     range is from zero to 1000
++				     range is from 0 to 1000
+ 		   "term_cols"	     horizontal size to use for the terminal,
+-				     instead of using 'termwinsize'
++				     instead of using 'termwinsize'; valid
++				     range is from 0 to 1000
+ 		   "vertical"	     split the window vertically; note that
+ 				     other window position can be defined with
+ 				     command modifiers, such as |:belowright|.
