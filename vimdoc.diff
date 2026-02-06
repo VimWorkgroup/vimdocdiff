@@ -1,21 +1,14 @@
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 7ff9cfc07..d9cd7409d 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
-@@ -1,4 +1,4 @@
--*map.txt*	For Vim version 9.1.  Last change: 2026 Feb 02
-+*map.txt*	For Vim version 9.1.  Last change: 2026 Feb 04
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 560c57358..52121472a 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52473,4 +52473,9 @@ Solution: Fix incorrect return value of pagescroll(). Also invert the
+           return value of scroll_with_sms() to be less confusing and
+           match comments (zeertzjq).
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1659,7 +1659,9 @@ completion can be enabled:
- 	-complete=scriptnames	sourced script names
- 	-complete=shellcmd	Shell command
- 	-complete=shellcmdline	First is a shell command and subsequent ones
--				are filenames.  The same behavior as |:!cmd|
-+				are filenames.  The same behavior as |:!cmd|.
-+				To get correct completion, |:command-nargs|
-+				should be '*' or '+'
- 	-complete=sign		|:sign| suboptions
- 	-complete=syntax	syntax file names 'syntax'
- 	-complete=syntime	|:syntime| suboptions
++Patch 9.1.2131
++
++Problem:  tests: Test_diff_screen() fails on BSD
++Solution: Use gdiff on BSD systems if available (zeertzjq).
++
+  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
