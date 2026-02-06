@@ -1,21 +1,24 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 73083398b..05d4da2be 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52490,4 +52490,16 @@ Patch 9.1.2134
- Problem:  Terminal doesn't handle split UTF-8 sequence after ASCII.
- Solution: Only use one UTF-8 encoding state per vterm state (zeertzjq).
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 4c607c917..52c1f4f3b 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
+@@ -1,4 +1,4 @@
+-*cmdline.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
++*cmdline.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
  
-+Patch 9.1.2135
-+Problem:  search() is used to check for the message from tar that
-+          indicates leading slashes found in the tar archive, or to
-+          check for the leading slashes themselves. However, if
-+          'nowrapscan' is in effect these searches are limited to the
-+          last line and don't find any results. This causes the warning
-+          message from tar to be seen in the buffer, the "Path Traversal
-+          Attack Detected" message to be omitted, and editing actions
-+          can fail. This can be seen, for example, when editing
-+          src/testdir/samples/evil.tar.
-+Solution: Use the 'w' flag for search() (Kevin Goodsell)
-+
-  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1381,10 +1381,10 @@ Example: >
+ 	:au CmdwinLeave :  let &cpt = b:cpt_save
+ This sets 'complete' to use completion in the current window for |i_CTRL-N|.
+ Another example: >
+-	:au CmdwinEnter [/\?]  startinsert
++	:au CmdwinEnter [\/\?]  startinsert
+ This will make Vim start in Insert mode in the command-line window.
+-Note: The "?" needs to be escaped, as this is a |file-pattern|.  See also
+-|cmdline-autocompletion|.
++Note: The "\" and "?" needs to be escaped, as this is a |file-pattern|.
++See also |cmdline-autocompletion|.
+ 
+ 						*cmdwin-char*
+ The character used for the pattern indicates the type of command-line:
