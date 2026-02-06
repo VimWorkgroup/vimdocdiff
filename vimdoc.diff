@@ -1,18 +1,19 @@
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 52121472a..64c0882ba 100644
+index 64c0882ba..5b43fa91b 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52474,8 +52474,12 @@ Solution: Fix incorrect return value of pagescroll(). Also invert the
-           match comments (zeertzjq).
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.1.  Last change: 2026 Feb 04
++*version9.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
  
- Patch 9.1.2131
--
- Problem:  tests: Test_diff_screen() fails on BSD
- Solution: Use gdiff on BSD systems if available (zeertzjq).
  
-+Patch 9.1.2132
-+Problem:  [security]: buffer-overflow in 'helpfile' option handling by
-+          using strcpy without bound checks (Rahul Hoysala)
-+Solution: Limit strncpy to the length of the buffer (MAXPATHL)
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52482,4 +52482,8 @@ Problem:  [security]: buffer-overflow in 'helpfile' option handling by
+           using strcpy without bound checks (Rahul Hoysala)
+ Solution: Limit strncpy to the length of the buffer (MAXPATHL)
+ 
++Patch 9.1.2133
++Problem:  Another case of buffer overflow with 'helpfile'.
++Solution: Leave room for "tags" in the buffer (zeertzjq).
 +
   vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
