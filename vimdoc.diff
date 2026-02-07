@@ -1,38 +1,20 @@
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 083f013cc..c4f227d09 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 05d4da2be..3dd3754b1 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.1.  Last change: 2026 Jan 18
-+*terminal.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
+-*version9.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
++*version9.txt*	For Vim version 9.1.  Last change: 2026 Feb 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -525,10 +525,12 @@ term_dumpdiff({filename}, {filename} [, {options}])
- 				     of the first file name.
- 		   "term_rows"	     vertical size to use for the terminal,
- 				     instead of using 'termwinsize', but
--				     respecting the minimal size
-+				     respecting the minimal size; valid range
-+				     is from 0 to 1000
- 		   "term_cols"	     horizontal size to use for the terminal,
- 				     instead of using 'termwinsize', but
--				     respecting the minimal size
-+				     respecting the minimal size; valid range
-+				     is from 0 to 1000
- 		   "vertical"	     split the window vertically
- 		   "curwin"	     use the current window, do not split the
- 				     window; fails if the current buffer
-@@ -951,9 +953,10 @@ term_start({cmd} [, {options}])			*term_start()*
- 				     of the command name.
- 		   "term_rows"	     vertical size to use for the terminal,
- 				     instead of using 'termwinsize'; valid
--				     range is from zero to 1000
-+				     range is from 0 to 1000
- 		   "term_cols"	     horizontal size to use for the terminal,
--				     instead of using 'termwinsize'
-+				     instead of using 'termwinsize'; valid
-+				     range is from 0 to 1000
- 		   "vertical"	     split the window vertically; note that
- 				     other window position can be defined with
- 				     command modifiers, such as |:belowright|.
+@@ -52502,4 +52502,9 @@ Problem:  search() is used to check for the message from tar that
+           src/testdir/samples/evil.tar.
+ Solution: Use the 'w' flag for search() (Kevin Goodsell)
+ 
++Patch 9.1.2136
++Problem:  :tab sbuffer may close old tabpage if BufLeave autocommand
++          splits window (after 9.1.0143).
++Solution: Only close other windows if the buffer will be unloaded (zeertzjq).
++
+  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
