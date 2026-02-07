@@ -1,15 +1,14 @@
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 843868c20..989c7c07b 100644
+index 989c7c07b..e2bc66be0 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52517,4 +52517,10 @@ Problem:  With 'autochdir' win_execute() can corrupt the buffer name, causing
-           :write to use wrong path.
- Solution: Save and restore b_fname when 'autochdir' is active (Ingo Karkat).
+@@ -52523,4 +52523,9 @@ Problem:  Buffer overflow in :wlrestore command, caused by assuming
+ Solution: Use correct buffer size (512 bytes) in vim_vsnprintf()
+           to properly truncate long messages.
  
-+Patch 9.1.2139
-+Problem:  Buffer overflow in :wlrestore command, caused by assuming
-+          wrong buffer length in vwl_log_handler() (Seungyeon Park)
-+Solution: Use correct buffer size (512 bytes) in vim_vsnprintf()
-+          to properly truncate long messages.
++Patch 9.1.2140
++Problem:  tests: Test_wayland_protocol_error_overflow() fails
++          (after v9.1.2139)
++Solution: try/catch the expected error
 +
   vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
