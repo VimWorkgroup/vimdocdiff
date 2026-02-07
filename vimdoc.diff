@@ -1,14 +1,14 @@
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 3dd3754b1..3b9ecffd7 100644
+index 3b9ecffd7..843868c20 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52507,4 +52507,9 @@ Problem:  :tab sbuffer may close old tabpage if BufLeave autocommand
-           splits window (after 9.1.0143).
- Solution: Only close other windows if the buffer will be unloaded (zeertzjq).
+@@ -52512,4 +52512,9 @@ Problem:  Some tests are not valid on OpenBSD.
+ Solution: Add CheckNotOpenBSD, use it to skip certain tests
+           (Kevin Goodsell).
  
-+Patch 9.1.2137
-+Problem:  Some tests are not valid on OpenBSD.
-+Solution: Add CheckNotOpenBSD, use it to skip certain tests
-+          (Kevin Goodsell).
++Patch 9.1.2138
++Problem:  With 'autochdir' win_execute() can corrupt the buffer name, causing
++          :write to use wrong path.
++Solution: Save and restore b_fname when 'autochdir' is active (Ingo Karkat).
 +
   vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
