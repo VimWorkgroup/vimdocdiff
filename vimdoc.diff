@@ -1,19 +1,16 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index e629a7a78..ce4ee6c80 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.1.  Last change: 2026 Jan 30
-+*options.txt*	For Vim version 9.1.  Last change: 2026 Feb 09
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 462a04848..880ea1f70 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52542,4 +52542,11 @@ Problem:  When a popup window partially overlaps a wide character
+ Solution: When a wide character is partially blocked by a popup, clear both
+           cells in the screen buffer to prevent garbage (Yasuhiro Matsumoto).
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7398,6 +7398,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 'scrollfocus' 'scf'	boolean  (default off)
- 			global
- 			{only for MS-Windows GUI}
-+	NOTE: This option is currently not functional.  It may be fixed or
-+	removed in a future version.
- 	When using the scroll wheel and this option is set, the window under
- 	the mouse pointer is scrolled.  With this option off the current
- 	window is scrolled.
++Patch 9.1.2144
++Problem:  When garbage collection runs, the list of recorded buffer
++	  changes may be incorrectly freed (Sainnhe Park). 
++Solution: In garbage_collect(), iterate through all buffers and call
++          set_ref_in_list() for b_recorded_changes to ensure the list
++          and its contents are marked as reachable (Paul Ollis).
++
+  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
