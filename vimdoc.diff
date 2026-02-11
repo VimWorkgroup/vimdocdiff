@@ -1,42 +1,19 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 582712fbb..7c1a53e1e 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 52c1f4f3b..4936b17fd 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*motion.txt*	For Vim version 9.1.  Last change: 2025 Nov 09
-+*motion.txt*	For Vim version 9.1.  Last change: 2026 Feb 09
+-*cmdline.txt*	For Vim version 9.1.  Last change: 2026 Feb 06
++*cmdline.txt*	For Vim version 9.1.  Last change: 2026 Feb 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -429,8 +429,10 @@ These commands move over words or WORDS.
- 							*word*
- A word consists of a sequence of letters, digits and underscores, or a
- sequence of other non-blank characters, separated with white space (spaces,
--tabs, <EOL>).  This can be changed with the 'iskeyword' option.  An empty line
--is also considered to be a word.
-+tabs, <EOL>).  This can be changed with the 'iskeyword' option.  For
-+characters above 255, a word ends when the Unicode character class changes
-+(e.g., between letters, subscripts, emojis, etc).  An empty line is also
-+considered to be a word.
- 							*WORD*
- A WORD consists of a sequence of non-blank characters, separated with white
- space.  An empty line is also considered to be a WORD.
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index ce4ee6c80..4cea34fe9 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -5354,7 +5354,13 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	"w", "*", "[i", etc.  It is also used for "\k" in a |pattern|.  See
- 	'isfname' for a description of the format of this option.  For '@'
- 	characters above 255 check the "word" character class (any character
--	that is not white space or punctuation).
-+	that is categorized as a letter, number or emoji according to the
-+	Unicode general category).
-+
-+	Note that there is a difference between the "\k" character class and
-+	the |word| motion.  The former matches any word character, while the
-+	latter stops at a change of the character class.
-+
- 	For C programs you could use "a-z,A-Z,48-57,_,.,-,>".
- 	For a help file it is set to all non-blank printable characters except
- 	'*', '"' and '|' (so that CTRL-] on a command finds the help for that
+@@ -1383,7 +1383,7 @@ This sets 'complete' to use completion in the current window for |i_CTRL-N|.
+ Another example: >
+ 	:au CmdwinEnter [\/\?]  startinsert
+ This will make Vim start in Insert mode in the command-line window.
+-Note: The "\" and "?" needs to be escaped, as this is a |file-pattern|.
++Note: The "/" and "?" needs to be escaped, as this is a |file-pattern|.
+ See also |cmdline-autocompletion|.
+ 
+ 						*cmdwin-char*
