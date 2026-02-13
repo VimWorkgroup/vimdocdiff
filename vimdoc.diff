@@ -1,14 +1,35 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a34d6c872..4c673bf97 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52561,4 +52561,9 @@ Patch 9.1.2147
- Problem:  Compile warning in strings.c
- Solution: Use const qualifier (John Marriott).
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 7b8248655..d585669f4 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*	For Vim version 9.1.  Last change: 2025 Dec 03
++*windows.txt*	For Vim version 9.1.  Last change: 2026 Feb 13
  
-+Patch 9.1.2148
-+Problem:  [security]: Buffer overflow in netbeans special_keys() handling
-+Solution: Limit writing to max KEYBUFLEN bytes to prevent writing out of
-+          bounds.
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1210,15 +1210,22 @@ list of buffers. |unlisted-buffer|
+ :bd[elete][!] [N]
+ 		Unload buffer [N] (default: current buffer) and delete it from
+ 		the buffer list.  If the buffer was changed, this fails,
+-		unless when [!] is specified, in which case changes are lost.
++		unless [!] is specified, in which case changes are lost.
+ 		The file remains unaffected.  Any windows for this buffer are
+ 		closed.  If buffer [N] is the current buffer, another buffer
+ 		will be displayed instead.  This is the most recent entry in
+ 		the jump list that points into a loaded buffer.
 +
-  vim:tw=78:ts=8:noet:ft=help:norl:fdm=manual:nofoldenable
+ 		Actually, the buffer isn't completely deleted, it is removed
+ 		from the buffer list |unlisted-buffer| and option values,
+ 		variables and mappings/abbreviations for the buffer are
+-		cleared.  Examples: >
++		cleared.  If [N] is the last listed buffer in a window (i.e.,
++		there is no other listed buffer to switch to), the buffer is
++		emptied instead of being unloaded.  The window is not closed,
++		and the buffer may be reused as a new buffer |buffer-reuse|.
++		This ensures every window always has a valid buffer.
++
++		Examples: >
+ 		    :.,$-bdelete    " delete buffers from the current one to
+ 				    " last but one
+ 		    :%bdelete	    " delete all buffers
