@@ -1,20 +1,19 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 7b9ff4074..2c3968853 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index 098a4a0b7..b5c572a07 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
 @@ -1,4 +1,4 @@
--*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 16
+-*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Feb 16
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1140,7 +1140,8 @@ and `~/.vim/vimrc` file.
- When the |xdg-vimrc| is used the 'runtimepath' and 'packpath' options will be
- modified accordingly to respect the |xdg-base-dir|: >
+ 		     VIM USER MANUAL	by Bram Moolenaar
+@@ -38,7 +38,7 @@ language like for example .vim files or configuration files like .vimrc and
+ uses to customize and extend its behavior.
  
--    "$XDG_CONFIG_HOME/vim,$VIMRUNTIME,/after,$XDG_CONFIG_HOME/vim/after"
-+  "$XDG_CONFIG_HOME/vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,
-+   $XDG_CONFIG_HOME/vim/after"
- <
- 
- Avoiding trojan horses ~
+ 						*vim-script-notation*
+-The correct notation is "Vim script" (or "Vim9 script" when refering to the
++The correct notation is "Vim script" (or "Vim9 script" when referring to the
+ new Vim9 language |Vim9-script|), so we will use "Vim script" to refer to the
+ Vim scripting language throughout this documentation. This shorthand helps to
+ streamline explanations and discussions about scripting with Vim.
