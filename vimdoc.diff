@@ -1,90 +1,26 @@
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 5f7d7ab53..021410eb2 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 2c3968853..4d828a1c3 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*popup.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*popup.txt*	For Vim version 9.2.  Last change: 2026 Feb 18
+-*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 16
++*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -21,6 +21,7 @@ Displaying text in a popup window.	*popup* *popup-window* *popupwin*
-    Popup filter			|popup-filter|
-    Popup callback		|popup-callback|
-    Popup scrollbar		|popup-scrollbar|
-+   Popup opacity		|popup-opacity|
-    Popup mask			|popup-mask|
- 4. Examples			|popup-examples|
+@@ -1125,8 +1125,13 @@ This is not an exhaustive list of those directories:
+   `$XDG_DATA_HOME`	$HOME/.local/share	Persistent data files
+   `$XDG_STATE_HOME`	$HOME/.local/state	State data files
  
-@@ -772,6 +773,13 @@ The second argument of |popup_create()| is a dictionary with options:
- 			the popup window.
- 	highlight	Highlight group name to use for the text, stored in
- 			the 'wincolor' option.
-+	opacity		Opacity of the popup, a value between 0 and 100:
-+			0 is fully transparent (background text fully visible)
-+			100 is fully opaque (default, no transparency)
-+			Values in between blend the popup background with the
-+			underlying text, making it partially transparent.
-+			Requires 'termguicolors' to be set.
-+			Also see |popup-opacity|.
- 	padding		List with numbers, defining the padding
- 			above/right/below/left of the popup (similar to CSS).
- 			An empty list uses a padding of 1 all around.  The
-@@ -1046,6 +1054,42 @@ A click in the lower half will scroll the text up one line.  However, this is
- limited so that the popup does not get smaller.
+-Vim will only use the `$XDG_CONFIG_HOME` directory, the others are not
+-(yet) used for its various configuration and state files.
++							*xdg.vim*
++Vim itself will only use the $XDG_CONFIG_HOME directory.  Support for the
++other XDG directories is provided by the "$VIMRUNTIME/xdg.vim" script.
++Note: xdg.vim is only effective if the $XDG_CONFIG_HOME/vim directory (or
++its default fallback) exists.  By default, it only sets the 'viminfofile'
++option.  Other option settings are commented out, see the script for
++details on how to enable them.
  
- 
-+
-+POPUP OPACITY						*popup-opacity*
-+
-+A popup window can be made semi-transparent by setting the "opacity" option.
-+The opacity value ranges from 0 to 100:
-+    0		Fully transparent - the popup background is invisible and the
-+		text behind the popup is fully visible.
-+    100		Fully opaque (default) - the popup is not transparent at all.
-+    1-99	Partially transparent - the popup background is blended with
-+		the underlying text, making both partially visible.
-+
-+The transparency effect requires using the GUI or having 'termguicolors'
-+enabled in the terminal. Without it, the opacity setting has no effect.
-+
-+When a popup is transparent:
-+- The popup's background color is blended with the background text
-+- The popup's text (foreground) remains fully visible and unblended
-+- Text behind the popup is visible through transparent areas
-+- The more transparent the popup (lower opacity), the more clearly the
-+  background text can be seen
-+
-+This can be useful for:
-+- Creating overlay windows that don't completely obscure underlying text
-+- Showing contextual information without blocking the view
-+- Creating visual effects and modern UI designs
-+
-+Example with 50% opacity: >
-+	let winid = popup_create('Semi-transparent text', #{
-+	\ line: 5,
-+	\ col: 10,
-+	\ opacity: 50,
-+	\ })
-+
-+The opacity can be changed dynamically using |popup_setoptions()|: >
-+	call popup_setoptions(winid, #{opacity: 80})
-+
- POPUP MASK						*popup-mask*
- 
- To minimize the text that the popup covers, parts of it can be made
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index d3362f6c8..09a3c8c16 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52582,6 +52582,10 @@ VERSION 9.3				*version-9.3* *version9.3* *vim-9.3*
- This section is about improvements made between version 9.2 and 9.3 and is
- work in progress.
- 
-+Popups ~
-+------
-+- Support for transparency, see |popup-opacity|.
-+
- 							*changed-9.3*
- Changed~
- -------
+ 							*xdg-vimrc*
+ Vim, on Unix systems, will look at `$XDG_CONFIG_HOME/vim/vimrc` for its
