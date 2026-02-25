@@ -1,62 +1,45 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 0798934c2..a26412782 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 21
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9120,8 +9120,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 
- 	|ConPTY| support depends on the platform.  Windows 10 October 2018
- 	Update is the first version that supports ConPTY, however it is still
--	considered unstable.  ConPTY might become stable in the next release
--	of Windows 10.  winpty support needs to be installed.  If neither is
-+	considered unstable.  ConPTY has become stable with the initial release
-+	of Windows 11.  winpty support needs to be installed.  If neither is
- 	supported then you cannot open a terminal window.
- 
- 						*'terse'* *'noterse'*
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index c86fb207e..4a2c4710c 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*terminal.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -490,8 +490,8 @@ On more recent versions of MS-Windows 10 (beginning with the "October 2018
- Update"), winpty is no longer required.  On those versions, |:terminal| will use
- Windows' built-in support for hosting terminal applications, "ConPTY".  When
- ConPTY is in use, there may be rendering artifacts regarding ambiguous-width
--characters.  If you encounter any such issues, install "winpty".  Until the
--ConPTY problems have been fixed "winpty" will be preferred.
-+characters.  If you encounter any such issues, install "winpty".  ConPTY
-+support is considered stable with the first release of Windows 11.
- 
- Environment variables are used to pass information to the running job:
-     VIM_SERVERNAME	v:servername
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index bd93f1bb3..5c35f3a84 100644
+index 5c35f3a84..6c8726696 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Feb 16
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52588,7 +52588,8 @@ Popups ~
+@@ -52585,6 +52585,8 @@ work in progress.
+ Popups ~
+ ------
+ - Support for transparency, see |popup-opacity|.
++- 'previewpopup' supports the same values as 'completepopup' (except for
++  "align").
  
  Other ~
  -----
--The new |xdg.vim| script for full XDG compatibility is included
-+- The new |xdg.vim| script for full XDG compatibility is included.
-+- |ConPTY| support is considered stable as of Windows 11.
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index af220e868..eee53cbdd 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*windows.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
  
- 							*changed-9.3*
- Changed~
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -954,11 +954,20 @@ windows.
+ Alternatively, a popup window can be used by setting the 'previewpopup'
+ option.  When set, it overrules the 'previewwindow' and 'previewheight'
+ settings.  The option is a comma-separated list of values:
++	border		border style (see 'pumborder')
++	borderhighlight	highlight group for the popup border characters
++	close		show close button: "on" (default) or "off", and if
++			the value is "on", it must be set after border.
+ 	height		maximum height of the popup
+-	width		maximum width of the popup
+ 	highlight	highlight group of the popup (default is Pmenu)
++	resize		show resize handle: "on" (default) or "off"
++	shadow		"off" (default) or "on" using |hl-PmenuShadow|
++	width		maximum width of the popup
++
+ Example: >
+ 	:set previewpopup=height:10,width:60
++	:set previewpopup=border:single,borderhilight:PmenuBorder
++	:set previewpopup=border:custom:─;│;─;│;┌;┐;┘;└
+ 
+ A few peculiarities:
+ - If the file is in a buffer already, it will be re-used.  This will allow for
