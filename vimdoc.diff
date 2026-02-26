@@ -1,152 +1,83 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index 5c1de248d..36694af9f 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 23d604a32..eba6e4354 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*channel.txt*	For Vim version 9.2.  Last change: 2026 Feb 18
-+*channel.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
+-*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -26,6 +26,7 @@ The Netbeans interface also uses a channel. |netbeans|
- 13. Controlling a job			|job-control|
- 14. Using a prompt buffer		|prompt-buffer|
- 15. Language Server Protocol		|language-server-protocol|
-+16. Debug Adapter Protocol		|debug-adapter-protocol|
+@@ -435,6 +435,7 @@ Name			triggered by ~
+ |QuickFixCmdPre|	before a quickfix command is run
+ |QuickFixCmdPost|	after a quickfix command is run
  
- 							*E1277*
- {only when compiled with the |+channel| feature for channel stuff}
-@@ -56,6 +57,7 @@ NL	every message ends in a NL (newline) character
- JSON	JSON encoding |json_encode()|
- JS	JavaScript style JSON-like encoding |js_encode()|
- LSP	Language Server Protocol encoding |language-server-protocol|
-+DAP	Debug Adapter Protocol encoding |debug-adapter-protocol|
++|SessionLoadPre|	before loading a session file
+ |SessionLoadPost|	after loading a session file
  
- Common combination are:
- - Using a job connected through pipes in NL mode.  E.g., to run a style
-@@ -143,6 +145,7 @@ unreachable on the network.
- 	"nl"   - Use messages that end in a NL character
- 	"raw"  - Use raw messages
- 	"lsp"  - Use language server protocol encoding
-+	"dap"  - Use debug adapter protocol encoding
- 						*channel-callback* *E921*
- "callback"	A function that is called when a message is received that is
- 		not handled otherwise (e.g. a JSON message with ID zero).  It
-@@ -153,8 +156,9 @@ unreachable on the network.
- 	endfunc
- 	let channel = ch_open("localhost:8765", {"callback": "Handle"})
- <
--		When "mode" is "json" or "js" or "lsp" the "msg" argument is
--		the body of the received message, converted to Vim types.
-+		When "mode" is any of "json", "js", "lsp" or "dap" the "msg"
-+		argument is the body of the received message, converted to Vim
-+		types.
- 		When "mode" is "nl" the "msg" argument is one message,
- 		excluding the NL.
- 		When "mode" is "raw" the "msg" argument is the whole message
-@@ -537,7 +541,8 @@ ch_evalexpr({handle}, {expr} [, {options}])			*ch_evalexpr()*
- 		according to the type of channel.  The function cannot be used
- 		with a raw channel.  See |channel-use|.
- 		{handle} can be a Channel or a Job that has a Channel.
--		When using the "lsp" channel mode, {expr} must be a |Dict|.
-+		When using the "lsp" or "dap" channel mode, {expr} must be a
-+		|Dict|.
- 								*E917*
- 		{options} must be a Dictionary.  It must not have a "callback"
- 		entry.  It can have a "timeout" entry to specify the timeout
-@@ -545,8 +550,8 @@ ch_evalexpr({handle}, {expr} [, {options}])			*ch_evalexpr()*
+ |SessionWritePost|	after writing the session file using
+@@ -1182,6 +1183,9 @@ SafeStateAgain			Like SafeState but after processing any
+ 				triggered often, don't do something that takes
+ 				time.
  
- 		ch_evalexpr() waits for a response and returns the decoded
- 		expression.  When there is an error or timeout it returns an
--		empty |String| or, when using the "lsp" channel mode, returns an
--		empty |Dict|.
-+		empty |String| or, when using the "lsp" or "dap" channel mode,
-+		returns an empty |Dict|.
++							*SessionLoadPre*
++SessionLoadPre			Before loading the session file created using
++				the |:mksession| command.
+ 							*SessionLoadPost*
+ SessionLoadPost			After loading the session file created using
+ 				the |:mksession| command.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index a26412782..47948bdf7 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
++*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
  
- 		Note that while waiting for the response, Vim handles other
- 		messages.  You need to make sure this doesn't cause trouble.
-@@ -627,7 +632,7 @@ ch_info({handle})						*ch_info()*
- 		   "err_io"	  "out", "null", "pipe", "file" or "buffer"
- 		   "err_timeout"  timeout in msec
- 		   "in_status"	  "open" or "closed"
--		   "in_mode"	  "NL", "RAW", "JSON", "JS" or "LSP"
-+		   "in_mode"	  "NL", "RAW", "JSON", "JS" or "LSP" or "DAP"
- 		   "in_io"	  "null", "pipe", "file" or "buffer"
- 		   "in_timeout"	  timeout in msec
  
-@@ -733,14 +738,15 @@ ch_sendexpr({handle}, {expr} [, {options}])			*ch_sendexpr()*
- 		with a raw channel.
- 		See |channel-use|.				*E912*
- 		{handle} can be a Channel or a Job that has a Channel.
--		When using the "lsp" channel mode, {expr} must be a |Dict|.
-+		When using the "lsp" or "dap" channel mode, {expr} must be a
-+		|Dict|.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3595,6 +3595,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		|SafeState|,
+ 		|SafeStateAgain|,
+ 		|SessionLoadPost|,
++		|SessionLoadPre|,
+ 		|SessionWritePost|,
+ 		|ShellCmdPost|,
+ 		|SigUSR1|,
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 4d828a1c3..8aa6241d5 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
+@@ -1,4 +1,4 @@
+-*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 18
++*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
  
--		If the channel mode is "lsp", then returns a Dict.  Otherwise
--		returns an empty String.  If the "callback" item is present in
--		{options}, then the returned Dict contains the ID of the
--		request message.  The ID can be used to send a cancellation
--		request to the LSP server (if needed).  Returns an empty Dict
--		on error.
-+		If the channel mode is "lsp" or "dap", then returns a Dict.
-+		Otherwise returns an empty String.  If the "callback" item is
-+		present in {options}, then the returned Dict contains the ID
-+		of the request message.  The ID can be used to send a
-+		cancellation request to the LSP server or debug adapter (if
-+		needed).  Returns an empty Dict on error.
  
- 		If a response message is not expected for {expr}, then don't
- 		specify the "callback" item in {options}.
-@@ -1607,5 +1613,33 @@ The "params" field is optional: >
- 	"params": <list|dict>
-     }
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1468,8 +1468,8 @@ This saves the current Session, and starts off the command to load another.
+ A session includes all tab pages, unless "tabpages" was removed from
+ 'sessionoptions'. |tab-page|
  
--<
-+==============================================================================
-+16. Debug Adapter Protocol			*debug-adapter-protocol*
-+
-+The debug adapter protocol is very similar to the language server protocol,
-+with the main difference being that it does not use the JSON-RPC format. The
-+specification can be found here:
-+
-+    https://microsoft.github.io/debug-adapter-protocol/specification
-+
-+The protocol uses the same header format as the LSP protocol.
-+
-+To encode and send a DAP request/notification message in a Vim |Dict| into a
-+JSON message and to receive and decode a DAP JSON response/notification
-+message into a Vim |Dict|, connect to the debug adapter with the
-+|channel-mode| set to "dap".
-+
-+For messages received on a channel with |channel-mode| set to "dap", Vim will
-+process the HTTP header and decode the JSON payload into a Vim |Dict| type.
-+When sending messages on a channel using the |ch_evalexpr()| or
-+|ch_sendexpr()| functions, Vim will add the HTTP header and encode the Vim
-+expression into JSON.
-+
-+Vim will automatically add the "seq" field to the JSON DAP message, and manage
-+the "request_seq" field as well for responses. However it will not add the
-+"type" field, it should be manually specified in the |Dict|.
-+
-+Otherwise the behaviour is the same as how Vim handles the "lsp" channel mode
-+|language-server-protocol|.
-+
-  vim:tw=78:ts=8:noet:ft=help:norl:
+-The |SessionLoadPost| autocmd event is triggered after a session file is
+-loaded/sourced.
++The |SessionLoadPre| autocmd event is triggered before a session file is
++loaded/sourced and |SessionLoadPost| autocmd event is triggered after.
+ 						*SessionLoad-variable*
+ While the session file is loading, the SessionLoad global variable is set to
+ 1.  Plugins can use this to postpone some work until the SessionLoadPost event
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 6c8726696..17535bdbd 100644
+index 17535bdbd..8261c32ef 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52592,6 +52592,7 @@ Other ~
+@@ -52601,6 +52601,11 @@ Changed~
+ 							*added-9.3*
+ Added ~
  -----
- - The new |xdg.vim| script for full XDG compatibility is included.
- - |ConPTY| support is considered stable as of Windows 11.
-+- Support for "dap" channel mode for the |debug-adapter-protocol|.
++Various syntax, indent and other plugins were added.
++
++Autocommands: ~
++
++|SessionLoadPre|	before loading a |Session| file
  
- 							*changed-9.3*
- Changed~
+ ==============================================================================
+ PATCHES						*patches-9.3* *bug-fixes-9.3*
