@@ -1,83 +1,146 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 23d604a32..eba6e4354 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
-@@ -1,4 +1,4 @@
--*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -435,6 +435,7 @@ Name			triggered by ~
- |QuickFixCmdPre|	before a quickfix command is run
- |QuickFixCmdPost|	after a quickfix command is run
- 
-+|SessionLoadPre|	before loading a session file
- |SessionLoadPost|	after loading a session file
- 
- |SessionWritePost|	after writing the session file using
-@@ -1182,6 +1183,9 @@ SafeStateAgain			Like SafeState but after processing any
- 				triggered often, don't do something that takes
- 				time.
- 
-+							*SessionLoadPre*
-+SessionLoadPre			Before loading the session file created using
-+				the |:mksession| command.
- 							*SessionLoadPost*
- SessionLoadPost			After loading the session file created using
- 				the |:mksession| command.
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a26412782..47948bdf7 100644
+index 47948bdf7..e1239855b 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
++*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3595,6 +3595,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		|SafeState|,
- 		|SafeStateAgain|,
- 		|SessionLoadPost|,
-+		|SessionLoadPre|,
- 		|SessionWritePost|,
- 		|ShellCmdPost|,
- 		|SigUSR1|,
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 4d828a1c3..8aa6241d5 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+@@ -8519,6 +8519,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	      applied to StatusLineNC for the statusline of non-current
+ 	      windows.
+ 	      The number N must be between 1 and 9.  See |hl-User1..9|
++								*stl-%@*
++	@ -   Insert a line break (for the |tabpanel| or when the status line
++	      'statuslineopt' has a "maxheight" value greater than 1).
+ 
+ 	When displaying a flag, Vim removes the leading comma, if any, when
+ 	that flag comes right after plaintext.  This will make a nice display
+@@ -8576,6 +8579,34 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  :function VarExists(var, val)
+ 	  :    if exists(a:var) | return a:val | else | return '' | endif
+ 	  :endfunction
++<
++						*'statuslineopt'* *'stlo'*
++'statuslineopt' 'stlo'	string	(default "")
++			global
++			{not available when compiled without the |+statusline|
++			feature}
++	Optional settings for |status-line|.  It can consist of the following
++	items.  All are optional.  Items must be separated by a comma.
++
++		maxheight:{n}	Set the maximum status line height to {n}.
++				{n} must be 1 or greater.
++				If not present, 1 is used.
++				Check whether {n} is applicable to all windows
++				on all tab pages, and if not, set it to the
++				closest possible value.
++				The option value is updated to the actual
++				applied value.  For example, setting
++				maxheight:999 may result in a smaller value
++				depending on the available space.
++				When {n} is set to 2 or more, you can use "@"
++				in 'statusline' to display information on
++				multiple lines in the status line.
++				See |stl-%@|.
++
++	Examples: >
++		:set stlo=
++		:set stlo=maxheight:2
++		:set stlo+=maxheight:3
+ <
+ 						*'suffixes'* *'su'*
+ 'suffixes' 'su'		string	(default ".bak,~,.o,.h,.info,.swp,.obj")
+@@ -8762,11 +8793,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	You can use |g:actual_curtabpage| within a function assigned to
+ 	tabpanel.  |g:actual_curtabpage| represents current tab's label number.
+-	The option value can contain "\n" to force line breaks: >
++	You can use "%@" or "\n" to insert a new line: >
+ 
+ 		set tabpanel=%!TabPanel()
+ 		function! TabPanel() abort
+-		  return printf("(%2d)\n  %%f", g:actual_curtabpage)
++		  return "(" .. g:actual_curtabpage .. ")%@  %f"
+ 		endfunction
+ <
+ 	The result is:
+@@ -8780,8 +8811,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|           |
+ 	|           |
+ <
+-	Note: using "\n" is considered experimental and may change in the
+-	future; a %-atom may be used instead.
++	Note: using "\n" is considered experimental and deprecated, prefer
++	the |stl-%@| atom instead.
+ 
+ 					*'tabpanelopt'* *'tplo'*
+ 'tabpanelopt' 'tplo'	string	(default "")
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 6fff5cfc1..2d4cf57e7 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
 @@ -1,4 +1,4 @@
--*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 18
-+*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
+-*quickref.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1468,8 +1468,8 @@ This saves the current Session, and starts off the command to load another.
- A session includes all tab pages, unless "tabpages" was removed from
- 'sessionoptions'. |tab-page|
- 
--The |SessionLoadPost| autocmd event is triggered after a session file is
--loaded/sourced.
-+The |SessionLoadPre| autocmd event is triggered before a session file is
-+loaded/sourced and |SessionLoadPost| autocmd event is triggered after.
- 						*SessionLoad-variable*
- While the session file is loading, the SessionLoad global variable is set to
- 1.  Plugins can use this to postpone some work until the SessionLoadPost event
+@@ -939,6 +939,7 @@ Short explanation of each option:		*option-list*
+ 'splitright'	  'spr'     new window is put right of the current one
+ 'startofline'	  'sol'     commands move cursor to first non-blank in line
+ 'statusline'	  'stl'     custom format for the status line
++'statuslineopt'	  'stlo'    additional options for the |status-line|
+ 'suffixes'	  'su'	    suffixes that are ignored with multiple match
+ 'suffixesadd'	  'sua'     suffixes added when searching for a file
+ 'swapfile'	  'swf'     whether to use a swapfile for a buffer
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 17535bdbd..8261c32ef 100644
+index 8261c32ef..614051bc2 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52601,6 +52601,11 @@ Changed~
- 							*added-9.3*
- Added ~
- -----
-+Various syntax, indent and other plugins were added.
-+
-+Autocommands: ~
-+
-+|SessionLoadPre|	before loading a |Session| file
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
  
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52593,6 +52593,7 @@ Other ~
+ - The new |xdg.vim| script for full XDG compatibility is included.
+ - |ConPTY| support is considered stable as of Windows 11.
+ - Support for "dap" channel mode for the |debug-adapter-protocol|.
++- |status-line| can use several lines, see 'statuslineopt'.
+ 
+ 							*changed-9.3*
+ Changed~
+@@ -52607,6 +52608,11 @@ Autocommands: ~
+ 
+ |SessionLoadPre|	before loading a |Session| file
+ 
++Options: ~
++
++'statuslineopt'		Extra options for the 'statusline', e.g. use the
++			"maxheight" suboption to use several lines.
++
  ==============================================================================
  PATCHES						*patches-9.3* *bug-fixes-9.3*
+ 						*patches-after-9.2*
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index eee53cbdd..37b7289b2 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -1,4 +1,4 @@
+-*windows.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
++*windows.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -125,6 +125,7 @@ when the last window also has a status line:
+ You can change the contents of the status line with the 'statusline' option.
+ This option can be local to the window, so that you can have a different
+ status line in each window.
++You can change the height of the status line with the 'statuslineopt' option.
+ 
+ Normally, inversion is used to display the status line.  This can be changed
+ with the 's' character in the 'highlight' option.  For example, "sb" sets it
