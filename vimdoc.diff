@@ -1,126 +1,100 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 6986fde86..327494d68 100644
+index 327494d68..c7e010d59 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -4810,6 +4810,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	|hl-PmenuBorder|   j  popup menu border characters
- 	|hl-PmenuShadow|   H  popup menu shadow
- 	|hl-PreInsert|	 I  text inserted when "preinsert" is in 'completeopt'
-+	|hl-Normal|	 (  Window color (supersedes 'wincolor' option)
-+
-+	Note that the "(" occasion is not set by default.
- 
- 	The display modes are:
- 		r	reverse		(termcap entry "mr" and "me")
-@@ -10246,8 +10249,19 @@ A jump table for the options with a short description can be found at |Q_op|.
- 						*'wincolor'* *'wcr'*
- 'wincolor' 'wcr' string (default empty)
- 			local to window
-+	DEPRECATED: Use 'winhighlight' if possible, this option uses
-+	'winhighlight' internally by setting it to: >vim
-+	    set winhighlight=!(:HighlightGroup
-+<	If this option is set and 'winhighlight' is changed, then it will not
-+	update the option value.  For example, if 'wincolor' is set to "A" and
-+	then 'winhighlight' is to an empty value, then 'wincolor' will still
-+	remain as "A".  Additionally, the existing value in 'winhighlight' will
-+	be discarded when this option is set.
-+
- 	Highlight group name to use for this window instead of the Normal
--	color |hl-Normal|.
-+	color |hl-Normal|.  For other |highlight-groups|, see 'winhighlight'.
-+	Note that it is not recommended to set this and 'winhighlight' at the
-+	same time.
- 
- 						*'window'* *'wi'*
- 'window' 'wi'		number  (default screen height - 1)
-@@ -10306,6 +10320,35 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	'winheight' applies to the current window.  Use 'winminheight' to set
- 	the minimal height for other windows.
- 
-+						*'winhighlight'* *'whl'*
-+'winhighlight' 'whl'	string (default empty)
-+			local to window
-+	Window-local highlight group mappings.  Comma-delimited list of
-+	highlight |group-name| pairs "{hl-from}:{hl-to},..." where each
-+	{hl-from} is a |highlight-groups| item to be overridden by {hl-to}
-+	group in the window.  If {hl-from} is "Normal", then it will always
-+	map to the "(" (window color) value in 'highlight'.
-+
-+	If a highlight group name starts with "!", then it is assumed to map
-+	to a value in 'highlight'.  For example, this will override the
-+	visual mode setting: >vim
-+	    set winhighlight=!v:SomeHighlightGroup
-+<	This will map the occasion "v" to occasion "l" >vim
-+	    set winhighlight=!v:!l
-+<
-+	Highlights of vertical separators are determined by the window to the
-+	left of the separator.  The 'tabline' highlight of a tabpage is
-+	decided by the last-focused window of the tabpage.  Highlights of
-+	the popupmenu are determined by the current window.  Highlights in the
-+	message area cannot be overridden.
-+
-+	When handling highlight group links, if a highlight group (which may
-+	be a link as well) is overridden by 'winhighlight', then all highlight
-+	groups that link to it will be affected.  For example, if highlight
-+	group C links to B which links to A, then >vim
-+	    set winhighlight=B:SomeHighlightGroup
-+<	will make SomeHighlightGroup override groups B and C, but not A.
-+
- 						*'winminheight'* *'wmh'*
- 'winminheight' 'wmh'	number	(default 1)
- 			global
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 021410eb2..e968a2107 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
 @@ -1,4 +1,4 @@
--*popup.txt*	For Vim version 9.2.  Last change: 2026 Feb 18
-+*popup.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
++*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -773,6 +773,8 @@ The second argument of |popup_create()| is a dictionary with options:
- 			the popup window.
- 	highlight	Highlight group name to use for the text, stored in
- 			the 'wincolor' option.
-+	highlights	Highlight group overrides, stored in the
-+			'winhighlight' option (same format).
- 	opacity		Opacity of the popup, a value between 0 and 100:
- 			0 is fully transparent (background text fully visible)
- 			100 is fully opaque (default, no transparency)
+@@ -9096,6 +9096,24 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <
+ 	NOTE: This option is reset when 'compatible' is set.
+ 
++						*'termsync'* *'tsy'*
++'termsync' 'tsy'	boolean (default off)
++			global
++	If the host terminal supports it, buffer all screen updates made
++	during a redraw cycle so that each screen is displayed in the terminal
++	all at once.  This can prevent tearing or flickering when the terminal
++	updates faster than Vim can redraw.  If the host terminal does not
++	support it or if Vim is running graphically, then this option does
++	nothing.
++
++	The specification can be found at:
++	https://github.com/contour-terminal/vt-extensions/blob/master/synchronized-output.md
++
++	Vim may set this option automatically at startup time when Vim is
++	compiled with the |+termresponse| feature, by querying the terminal
++	for DEC mode 2026 support.  The terminal codes used are |t_BS| and
++	|t_ES|.
++
+ 						*'termwinkey'* *'twk'*
+ 'termwinkey' 'twk'	string	(default "")
+ 			local to window
 diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 2d4cf57e7..e7b2068b0 100644
+index e7b2068b0..fd2775764 100644
 --- a/runtime/doc/quickref.txt
 +++ b/runtime/doc/quickref.txt
 @@ -1,4 +1,4 @@
--*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
-+*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
+-*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
++*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1017,6 +1017,7 @@ Short explanation of each option:		*option-list*
- 'wildoptions'	  'wop'     specifies how command line completion is done
- 'winaltkeys'	  'wak'     when the windows system handles ALT keys
- 'wincolor'	  'wcr'	    window-local highlighting
-+'winhighlight'	  'whl'	    window-local highlighting mappings
- 'window'	  'wi'	    nr of lines to scroll for CTRL-F and CTRL-B
- 'winfixbuf'	  'wfb'     keep window focused on a single buffer
- 'winfixheight'	  'wfh'     keep window height when opening/closing windows
+@@ -963,6 +963,7 @@ Short explanation of each option:		*option-list*
+ 'termbidi'	  'tbidi'   terminal takes care of bi-directionality
+ 'termencoding'	  'tenc'    character encoding used by the terminal
+ 'termguicolors'	  'tgc'     use GUI colors for the terminal
++'termsync'	  'tsy'     enable terminal sync mode for redraw
+ 'termwinkey'	  'twk'	    key that precedes a Vim command in a terminal
+ 'termwinscroll'   'twsl'    max number of scrollback lines in a terminal window
+ 'termwinsize'	  'tws'	    size of a terminal window
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index 826f015fa..7d7466f1d 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
+@@ -1,4 +1,4 @@
+-*term.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*term.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -510,6 +510,10 @@ Added by Vim (there are no standard codes for these):
+ 		|xterm-focus-event|
+ 	t_fd	disable focus-event tracking			*t_fd* *'t_fd'*
+ 		|xterm-focus-event|
++	t_BS	begin synchronized update			*t_BS* *'t_BS'*
++		see 'termsync'
++	t_ES	end synchronized update				*t_ES* *'t_ES'*
++		see 'termsync'
+ 
+ Some codes have a start, middle and end part.  The start and end are defined
+ by the termcap option, the middle part is text.
+@@ -528,6 +532,11 @@ t_SH must take one argument:
+ t_RS is sent only if the response to t_RV has been received.  It is not used
+ on Mac OS when Terminal.app could be recognized from the termresponse.
+ 
++The t_BS and t_ES are not stored in the termcap, but are instead set to the
++following default values on startup:
++	t_BS		"\033[?2026h"
++	t_ES		"\033[?2026l"
++
+ 							*mouse-reporting*
+ Many terminals can report mouse clicks and some can report mouse movement and
+ dragging.  Vim needs to know what codes are being used for this.
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 85a6c8032..120c1960d 100644
+index 120c1960d..db13c27f9 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52613,6 +52613,7 @@ Options: ~
+@@ -52613,6 +52613,9 @@ Options: ~
  
  'statuslineopt'		Extra options for the 'statusline', e.g. use the
  			"maxheight" suboption to use several lines.
-+'winhighlight'		Window-local highlight group mappings.
++'t_BS'			Begin synchronized update.
++'t_ES'			End synchronized update.
++'termsync'		Enable support for terminal DEC 2026 sync mode.
+ 'winhighlight'		Window-local highlight group mappings.
  
  ==============================================================================
- PATCHES						*patches-9.3* *bug-fixes-9.3*
