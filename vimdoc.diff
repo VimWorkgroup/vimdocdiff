@@ -1,100 +1,18 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 327494d68..c7e010d59 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 32484bebf..6f936a01c 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
+-*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Mar 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9096,6 +9096,24 @@ A jump table for the options with a short description can be found at |Q_op|.
- <
- 	NOTE: This option is reset when 'compatible' is set.
+@@ -1354,7 +1354,6 @@ the restrictions?
  
-+						*'termsync'* *'tsy'*
-+'termsync' 'tsy'	boolean (default off)
-+			global
-+	If the host terminal supports it, buffer all screen updates made
-+	during a redraw cycle so that each screen is displayed in the terminal
-+	all at once.  This can prevent tearing or flickering when the terminal
-+	updates faster than Vim can redraw.  If the host terminal does not
-+	support it or if Vim is running graphically, then this option does
-+	nothing.
-+
-+	The specification can be found at:
-+	https://github.com/contour-terminal/vt-extensions/blob/master/synchronized-output.md
-+
-+	Vim may set this option automatically at startup time when Vim is
-+	compiled with the |+termresponse| feature, by querying the terminal
-+	for DEC mode 2026 support.  The terminal codes used are |t_BS| and
-+	|t_ES|.
-+
- 						*'termwinkey'* *'twk'*
- 'termwinkey' 'twk'	string	(default "")
- 			local to window
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index e7b2068b0..fd2775764 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -1,4 +1,4 @@
--*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
-+*quickref.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
+ Thoughts:
+ - Generics for a class: `class <Tkey, Tentry>`
+-- Generics for a function: `def <Tkey> GetLast(key: Tkey)`
+ - Mixins: not sure if that is useful, leave out for simplicity.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -963,6 +963,7 @@ Short explanation of each option:		*option-list*
- 'termbidi'	  'tbidi'   terminal takes care of bi-directionality
- 'termencoding'	  'tenc'    character encoding used by the terminal
- 'termguicolors'	  'tgc'     use GUI colors for the terminal
-+'termsync'	  'tsy'     enable terminal sync mode for redraw
- 'termwinkey'	  'twk'	    key that precedes a Vim command in a terminal
- 'termwinscroll'   'twsl'    max number of scrollback lines in a terminal window
- 'termwinsize'	  'tws'	    size of a terminal window
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index 826f015fa..7d7466f1d 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
-@@ -1,4 +1,4 @@
--*term.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*term.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -510,6 +510,10 @@ Added by Vim (there are no standard codes for these):
- 		|xterm-focus-event|
- 	t_fd	disable focus-event tracking			*t_fd* *'t_fd'*
- 		|xterm-focus-event|
-+	t_BS	begin synchronized update			*t_BS* *'t_BS'*
-+		see 'termsync'
-+	t_ES	end synchronized update				*t_ES* *'t_ES'*
-+		see 'termsync'
- 
- Some codes have a start, middle and end part.  The start and end are defined
- by the termcap option, the middle part is text.
-@@ -528,6 +532,11 @@ t_SH must take one argument:
- t_RS is sent only if the response to t_RV has been received.  It is not used
- on Mac OS when Terminal.app could be recognized from the termresponse.
- 
-+The t_BS and t_ES are not stored in the termcap, but are instead set to the
-+following default values on startup:
-+	t_BS		"\033[?2026h"
-+	t_ES		"\033[?2026l"
-+
- 							*mouse-reporting*
- Many terminals can report mouse clicks and some can report mouse movement and
- dragging.  Vim needs to know what codes are being used for this.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 120c1960d..db13c27f9 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52613,6 +52613,9 @@ Options: ~
- 
- 'statuslineopt'		Extra options for the 'statusline', e.g. use the
- 			"maxheight" suboption to use several lines.
-+'t_BS'			Begin synchronized update.
-+'t_ES'			End synchronized update.
-+'termsync'		Enable support for terminal DEC 2026 sync mode.
- 'winhighlight'		Window-local highlight group mappings.
- 
- ==============================================================================
+ Some things that look like good additions:
