@@ -1,36 +1,27 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index db13c27f9..5d122ef41 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
+index 0d552fb79..f26d49d73 100644
+--- a/runtime/doc/intro.txt
++++ b/runtime/doc/intro.txt
 @@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
+-*intro.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*intro.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52599,6 +52599,7 @@ Other ~
- 							*changed-9.3*
- Changed~
- -------
-+- Support for NeXTStep was dropped with patch v9.2.0122
+@@ -313,11 +313,11 @@ Elvis	Another Vi clone, made by Steve Kirkendall.  Very compact but isn't
+ 	as flexible as Vim.  Development has stalled, Elvis has left the
+ 	building!  Source code is freely available.
+ 							*Neovim*
+-Neovim	A Vim clone.  Forked the Vim source in 2014 and went a different way.
+-	Very much bound to github and has many more dependencies, making
+-	development more complex and limiting portability.  Code has been
+-	refactored, resulting in patches not being exchangeable with Vim.
+-	Supports a remote GUI and integration with scripting languages.
++Neovim	A fork of Vim from 2014 that went a different way.  Very much bound
++	to GitHub and has many more dependencies, making development more
++	complex and limiting portability.  Code has been refactored, resulting
++	in patches not being exchangeable with Vim.  Supports remote UIs and
++	first-class Lua scripting.
  
- 							*added-9.3*
- Added ~
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index 23dd30493..d87db7cc5 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
-@@ -1,4 +1,4 @@
--*vi_diff.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*vi_diff.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1401,6 +1401,6 @@ MS-DOS:				| support was dropped with v7.4.1399
- MS-Windows XP and Vista:	| support was dropped with v9.0.0496
- OS/2:				| support was dropped with v7.4.1008
- RISC OS:			| support was dropped with v7.3.0187
--NeXTSTEP:			| support was deprecated with v9.1.1727
-+NeXTSTEP:			| support was dropped with v9.2.0122
- 
-  vim:tw=78:ts=8:noet:ft=help:norl:
+ ==============================================================================
+ 4. Notation						*notation*
