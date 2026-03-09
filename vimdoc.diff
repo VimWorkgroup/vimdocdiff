@@ -1,18 +1,36 @@
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 32484bebf..6f936a01c 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index db13c27f9..5d122ef41 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Mar 07
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 02
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1354,7 +1354,6 @@ the restrictions?
+@@ -52599,6 +52599,7 @@ Other ~
+ 							*changed-9.3*
+ Changed~
+ -------
++- Support for NeXTStep was dropped with patch v9.2.0122
  
- Thoughts:
- - Generics for a class: `class <Tkey, Tentry>`
--- Generics for a function: `def <Tkey> GetLast(key: Tkey)`
- - Mixins: not sure if that is useful, leave out for simplicity.
+ 							*added-9.3*
+ Added ~
+diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
+index 23dd30493..d87db7cc5 100644
+--- a/runtime/doc/vi_diff.txt
++++ b/runtime/doc/vi_diff.txt
+@@ -1,4 +1,4 @@
+-*vi_diff.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*vi_diff.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
  
- Some things that look like good additions:
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1401,6 +1401,6 @@ MS-DOS:				| support was dropped with v7.4.1399
+ MS-Windows XP and Vista:	| support was dropped with v9.0.0496
+ OS/2:				| support was dropped with v7.4.1008
+ RISC OS:			| support was dropped with v7.3.0187
+-NeXTSTEP:			| support was deprecated with v9.1.1727
++NeXTSTEP:			| support was dropped with v9.2.0122
+ 
+  vim:tw=78:ts=8:noet:ft=help:norl:
