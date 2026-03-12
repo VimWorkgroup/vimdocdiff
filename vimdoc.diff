@@ -1,27 +1,53 @@
-diff --git a/runtime/doc/intro.txt b/runtime/doc/intro.txt
-index 0d552fb79..f26d49d73 100644
---- a/runtime/doc/intro.txt
-+++ b/runtime/doc/intro.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index c7e010d59..7131e7efa 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*intro.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*intro.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
++*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 11
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -313,11 +313,11 @@ Elvis	Another Vi clone, made by Steve Kirkendall.  Very compact but isn't
- 	as flexible as Vim.  Development has stalled, Elvis has left the
- 	building!  Source code is freely available.
- 							*Neovim*
--Neovim	A Vim clone.  Forked the Vim source in 2014 and went a different way.
--	Very much bound to github and has many more dependencies, making
--	development more complex and limiting portability.  Code has been
--	refactored, resulting in patches not being exchangeable with Vim.
--	Supports a remote GUI and integration with scripting languages.
-+Neovim	A fork of Vim from 2014 that went a different way.  Very much bound
-+	to GitHub and has many more dependencies, making development more
-+	complex and limiting portability.  Code has been refactored, resulting
-+	in patches not being exchangeable with Vim.  Supports remote UIs and
-+	first-class Lua scripting.
+@@ -9096,6 +9096,24 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <
+ 	NOTE: This option is reset when 'compatible' is set.
  
- ==============================================================================
- 4. Notation						*notation*
++						*'termresize* *'trz'*
++'termresize' 'trz'	number	(default "")
++			global
++			{only available in Unix, does not work in the GUI}
++	Determines the method to use for detecting window resize events,
++	possible values are:
++	    "sigwinch":	    Use the SIGWINCH signal.
++	    "inband":	    Receive resize events from the terminal via escape
++			    sequences (recommended if supported by terminal).
++	    "":		    Automatically choose depending on terminal.
++
++	The SIGWINCH handler is always available.  If set to "inband" and the
++	terminal does not support in-band window resize events, then the
++	SIGWINCH handler will be used instead as a fallback.  If set to ""
++	(empty option), then "inband" will be used if Vim detects that the
++	terminal supports it, otherwise "sigwinch".
++
++
+ 						*'termsync'* *'tsy'*
+ 'termsync' 'tsy'	boolean (default off)
+ 			global
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 5d122ef41..6bbb700e9 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 11
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52616,6 +52616,7 @@ Options: ~
+ 			"maxheight" suboption to use several lines.
+ 't_BS'			Begin synchronized update.
+ 't_ES'			End synchronized update.
++'termresize'		Method for handling terminal resize events.
+ 'termsync'		Enable support for terminal DEC 2026 sync mode.
+ 'winhighlight'		Window-local highlight group mappings.
+ 
