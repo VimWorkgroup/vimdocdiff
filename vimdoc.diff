@@ -1,39 +1,130 @@
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 4a2c4710c..b46899cea 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index bc4c68abe..3542eb345 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -8532,8 +8532,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	      windows.
+ 	      The number N must be between 1 and 9.  See |hl-User1..9|
+ 								*stl-%@*
+-	@ -   Insert a line break (for the |tabpanel| or when the status line
+-	      'statuslineopt' has a "maxheight" value greater than 1).
++	@ -   Inserts a newline.  This only takes effect when the "maxheight"
++	      value of 'statuslineopt' is greater than 1, or for |tabpanel|.
+ 
+ 	When displaying a flag, Vim removes the leading comma, if any, when
+ 	that flag comes right after plaintext.  This will make a nice display
+@@ -8594,31 +8594,48 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <
+ 						*'statuslineopt'* *'stlo'*
+ 'statuslineopt' 'stlo'	string	(default "")
+-			global
++			global or local to window |global-local|
+ 			{not available when compiled without the |+statusline|
+ 			feature}
+ 	Optional settings for |status-line|.  It can consist of the following
+ 	items.  All are optional.  Items must be separated by a comma.
+ 
+-		maxheight:{n}	Set the maximum status line height to {n}.
+-				{n} must be 1 or greater.
+-				If not present, 1 is used.
+-				Check whether {n} is applicable to all windows
+-				on all tab pages, and if not, set it to the
+-				closest possible value.
+-				The option value is updated to the actual
+-				applied value.  For example, setting
+-				maxheight:999 may result in a smaller value
+-				depending on the available space.
+-				When {n} is set to 2 or more, you can use "@"
+-				in 'statusline' to display information on
+-				multiple lines in the status line.
+-				See |stl-%@|.
+-
++	    fixedheight     Fix the status line height to "maxheight".
++			    Without this, the height varies from 1 to
++			    "maxheight" based on the number of newline
++			    |stl-%@| in 'statusline'.
++
++	    maxheight:{n}   Set the maximum status line height to {n}.
++			    {n} must be 1 or greater.  If not specified, the
++			    height is 1.
++			    When {n} is 2 or more, you can use newline
++			    |stl-%@| in 'statusline' to display information on
++			    multiple lines.
++
++			    If {n} cannot be set due to insufficient window
++			    height or other constraints, a best-effort
++			    approach will be taken to set the closest possible
++			    value that does not exceed {n}.  No error will be
++			    shown even if the setting cannot be changed.
++
++			    For the global value, a value applicable to all
++			    windows on all tab pages is used.  For a
++			    window-local value, a value applicable to that
++			    window is used.
++			    Note: When the applied value differs from {n}, the
++			    option is updated to reflect it.
++			    Example of updated options: >vim
++				:set statuslineopt=maxheight:999,fixedheight
++				" Only 20 lines could be applied, so
++				" maxheight is updated to 20.
++				:set statuslineopt?
++				  statuslineopt=maxheight:20,fixedheight
++<
+ 	Examples: >
++		:set statuslineopt=fixedheight
+ 		:set stlo=
+-		:set stlo=maxheight:2
+-		:set stlo+=maxheight:3
++		:set stlo=maxheight:2,fixedheight
++		:set stlo-=fixedheight
+ <
+ 						*'suffixes'* *'su'*
+ 'suffixes' 'su'		string	(default ".bak,~,.o,.h,.info,.swp,.obj")
+@@ -8805,7 +8822,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 
+ 	You can use |g:actual_curtabpage| within a function assigned to
+ 	tabpanel.  |g:actual_curtabpage| represents current tab's label number.
+-	You can use "%@" or "\n" to insert a new line: >
++	You can use "%@" or "\n" to insert a newline: >
+ 
+ 		set tabpanel=%!TabPanel()
+ 		function! TabPanel() abort
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 6bbb700e9..1e7dcf70c 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
-+*terminal.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 11
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1427,11 +1427,25 @@ gdb:
-  `:Arguments` {args}  set arguments for the next `:Run`
+@@ -52612,8 +52612,8 @@ Autocommands: ~
  
-  *:Break*	set a breakpoint at the cursor position
-- :Break {position}
-+ :Break [{position}] [thread {nr}] [if {expr}]
- 		set a breakpoint at the specified position
-+		if {position} is omitted, use the current file and line
-+		thread {nr} limits the breakpoint to one thread
-+		if {expr} sets a conditional breakpoint
-+		Examples: >
-+			:Break if argc == 1
-+			:Break 42 thread 3 if x > 10
-+			:Break main
-+<
-  *:Tbreak*	set a temporary breakpoint at the cursor position
-- :Tbreak {position}
--		set a temporary breakpoint at the specified position
-+ :Tbreak [{position}] [thread {nr}] [if {expr}]
-+		like `:Break`, but the breakpoint is deleted after
-+		it is hit once
-+		Examples: >
-+			:Tbreak if argc == 1
-+			:Tbreak 42 thread 3 if x > 10
-+			:Tbreak main
-+<
-  *:Clear*	delete the breakpoint at the cursor position
-  *:ToggleBreak*	set a breakpoint at the cursor position or delete all
- 		breakpoints at the cursor position
+ Options: ~
+ 
+-'statuslineopt'		Extra options for the 'statusline', e.g. use the
+-			"maxheight" suboption to use several lines.
++'statuslineopt'		Extra window-local options for the 'statusline', to
++			configure the height.
+ 't_BS'			Begin synchronized update.
+ 't_ES'			End synchronized update.
+ 'termresize'		Method for handling terminal resize events.
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index 37b7289b2..f27cc6b05 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
+@@ -122,10 +122,9 @@ when the last window also has a status line:
+ 	'laststatus' = 1	status line if there is more than one window
+ 	'laststatus' = 2	always a status line
+ 
+-You can change the contents of the status line with the 'statusline' option.
+-This option can be local to the window, so that you can have a different
+-status line in each window.
+-You can change the height of the status line with the 'statuslineopt' option.
++You can change the contents and height of the status line with the
++'statusline' and 'statuslineopt' options.  Both can be local to the window,
++allowing each window to have a unique status line appearance and height.
+ 
+ Normally, inversion is used to display the status line.  This can be changed
+ with the 's' character in the 'highlight' option.  For example, "sb" sets it
