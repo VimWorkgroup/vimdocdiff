@@ -1,21 +1,39 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7131e7efa..bc4c68abe 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 4a2c4710c..b46899cea 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 11
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
+-*terminal.txt*	For Vim version 9.2.  Last change: 2026 Feb 24
++*terminal.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9096,8 +9096,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- <
- 	NOTE: This option is reset when 'compatible' is set.
+@@ -1427,11 +1427,25 @@ gdb:
+  `:Arguments` {args}  set arguments for the next `:Run`
  
--						*'termresize* *'trz'*
--'termresize' 'trz'	number	(default "")
-+						*'termresize'* *'trz'*
-+'termresize' 'trz'	string	(default "")
- 			global
- 			{only available in Unix, does not work in the GUI}
- 	Determines the method to use for detecting window resize events,
+  *:Break*	set a breakpoint at the cursor position
+- :Break {position}
++ :Break [{position}] [thread {nr}] [if {expr}]
+ 		set a breakpoint at the specified position
++		if {position} is omitted, use the current file and line
++		thread {nr} limits the breakpoint to one thread
++		if {expr} sets a conditional breakpoint
++		Examples: >
++			:Break if argc == 1
++			:Break 42 thread 3 if x > 10
++			:Break main
++<
+  *:Tbreak*	set a temporary breakpoint at the cursor position
+- :Tbreak {position}
+-		set a temporary breakpoint at the specified position
++ :Tbreak [{position}] [thread {nr}] [if {expr}]
++		like `:Break`, but the breakpoint is deleted after
++		it is hit once
++		Examples: >
++			:Tbreak if argc == 1
++			:Tbreak 42 thread 3 if x > 10
++			:Tbreak main
++<
+  *:Clear*	delete the breakpoint at the cursor position
+  *:ToggleBreak*	set a breakpoint at the cursor position or delete all
+ 		breakpoints at the cursor position
