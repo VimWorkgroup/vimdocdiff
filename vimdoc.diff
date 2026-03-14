@@ -1,165 +1,22 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index d95f459a9..45072ab16 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 3542eb345..245089a3b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
++*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -106,6 +106,8 @@ ch_evalraw({handle}, {string} [, {options}])
- ch_getbufnr({handle}, {what})	Number	get buffer number for {handle}/{what}
- ch_getjob({channel})		Job	get the Job of {channel}
- ch_info({handle})		String	info about channel {handle}
-+ch_listen({address} [, {options}])
-+				Channel	listen on {address}
- ch_log({msg} [, {handle}])	none	write {msg} in the channel log file
- ch_logfile({fname} [, {mode}])	none	start logging channel activity
- ch_open({address} [, {options}])
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index 36694af9f..7ad10fa0c 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -1,4 +1,4 @@
--*channel.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
-+*channel.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
+@@ -9144,10 +9144,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The specification can be found at:
+ 	https://github.com/contour-terminal/vt-extensions/blob/master/synchronized-output.md
  
+-	Vim may set this option automatically at startup time when Vim is
+-	compiled with the |+termresponse| feature, by querying the terminal
+-	for DEC mode 2026 support.  The terminal codes used are |t_BS| and
+-	|t_ES|.
++	The terminal codes used are |t_BS| and |t_ES|.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -114,6 +114,32 @@ Vim to write lines in log file: >
- 	call ch_logfile('channellog', 'w')
- See |ch_logfile()|.
- 
-+You can also make Vim act as a server using |ch_listen()|.  This does not
-+require an external server program.
-+
-+							*channel-listen-demo*
-+Start Vim and create a listening channel: >
-+	func OnAccept(channel, clientaddr)
-+	  " Log the connection
-+	  echomsg "Accepted connection from " .. a:clientaddr
-+
-+	  " Get current time and send it to the client
-+	  let current_time = strftime("%Y-%m-%d %H:%M:%S")
-+	  call ch_sendraw(a:channel, "Vim Server Time: " .. current_time .. "\n")
-+
-+	  " Optional: close immediately if you only want to provide the time
-+	  call ch_close(a:channel)
-+	endfunc
-+
-+	" Start listening on port 8765
-+	let server = ch_listen('localhost:8765', {"callback": "OnAccept"})
-+
-+From another Vim instance (or any program) you can connect to it: >
-+	let channel = ch_open('localhost:8765')
-+
-+When done, close the server channel: >
-+	call ch_close(server)
-+
- ==============================================================================
- 3. Opening a channel					*channel-open*
- 
-@@ -641,6 +667,33 @@ ch_info({handle})						*ch_info()*
- <
- 		Return type: dict<any>
- 
-+ch_listen({address} [, {options}])		*E1573* *E1574* *ch_listen()*
-+		Listen on {address} for incoming channel connections.
-+		This creates a server-side channel, unlike |ch_open()|
-+		which connects to an existing server.
-+		Returns a Channel.  Use |ch_status()| to check for failure.
-+
-+		{address} is a String, see |channel-address| for the possible
-+		accepted forms.  Note: IPv6 is not yet supported.
-+
-+		If {options} is given it must be a |Dictionary|.
-+		See |channel-open-options|.
-+		The "callback" in {options} is invoked when a new
-+		connection is accepted.  It receives two arguments: the
-+		new Channel and the client address as a String (e.g.
-+		"127.0.0.1:12345").
-+
-+		Use |ch_open()| to connect to an existing server instead.
-+
-+		See |channel-listen-demo| for an example.
-+
-+		Can also be used as a |method|: >
-+			GetAddress()->ch_listen()
-+<
-+		{only available when compiled with the |+channel| feature}
-+
-+		Return type: channel
-+
- ch_log({msg} [, {handle}])					*ch_log()*
- 		Write String {msg} in the channel log file, if it was opened
- 		with |ch_logfile()|.
-@@ -695,6 +748,9 @@ ch_open({address} [, {options}])				*ch_open()*
- 		If {options} is given it must be a |Dictionary|.
- 		See |channel-open-options|.
- 
-+		Use |ch_listen()| to listen for incoming connections
-+		instead.
-+
- 		Can also be used as a |method|: >
- 			GetAddress()->ch_open()
- <
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index b5c572a07..e6ca80457 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1287,23 +1287,24 @@ Testing:				    *test-functions*
- 
- Inter-process communication:		    *channel-functions*
- 	ch_canread()		check if there is something to read
--	ch_open()		open a channel
- 	ch_close()		close a channel
- 	ch_close_in()		close the in part of a channel
-+	ch_evalexpr()		evaluate an expression over channel
-+	ch_evalraw()		evaluate a raw string over channel
-+	ch_getbufnr()		get the buffer number for a channel
-+	ch_getjob()		get the Job of a channel
-+	ch_info()		get information about a channel
-+	ch_listen()		listen on a channel
-+	ch_log()		write a message in the channel log
-+	ch_logfile()		start logging channel activity
-+	ch_open()		open a channel
- 	ch_read()		read a message from a channel
- 	ch_readblob()		read a Blob from a channel
- 	ch_readraw()		read a raw message from a channel
- 	ch_sendexpr()		send a JSON message over a channel
- 	ch_sendraw()		send a raw message over a channel
--	ch_evalexpr()		evaluate an expression over channel
--	ch_evalraw()		evaluate a raw string over channel
-+	ch_setoptions()		set channel options
- 	ch_status()		get status of a channel
--	ch_getbufnr()		get the buffer number of a channel
--	ch_getjob()		get the job associated with a channel
--	ch_info()		get channel information
--	ch_log()		write a message in the channel log file
--	ch_logfile()		set the channel log file
--	ch_setoptions()		set the options for a channel
- 	json_encode()		encode an expression to a JSON string
- 	json_decode()		decode a JSON string to Vim types
- 	js_encode()		encode an expression to a JSON string
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 1e7dcf70c..cee00a282 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52606,6 +52606,10 @@ Added ~
- -----
- Various syntax, indent and other plugins were added.
- 
-+Functions: ~
-+
-+|ch_listen()|		listen on {address}
-+
- Autocommands: ~
- 
- |SessionLoadPre|	before loading a |Session| file
+ 						*'termwinkey'* *'twk'*
+ 'termwinkey' 'twk'	string	(default "")
