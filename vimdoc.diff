@@ -1,22 +1,35 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 3542eb345..245089a3b 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 45072ab16..21dc56c33 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 12
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Mar 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9144,10 +9144,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	The specification can be found at:
- 	https://github.com/contour-terminal/vt-extensions/blob/master/synchronized-output.md
+@@ -11713,7 +11713,11 @@ system({expr} [, {input}])				*system()* *E677*
+ 		When prepended by |:silent| the terminal will not be set to
+ 		cooked mode.  This is meant to be used for commands that do
+ 		not need the user to type.  It avoids stray characters showing
+-		up on the screen which require |CTRL-L| to remove. >
++		up on the screen which require |CTRL-L| to remove.
++		When calling system() from a |statusline| expression, an
++		|autocommand| or a |timer| callback, you should use |:silent|
++		to avoid terminal responses (e.g. from cursor style queries)
++		being echoed on the screen. >
+ 			:silent let f = system('ls *.vim')
+ <
+ 		Note: Use |shellescape()| or |::S| with |expand()| or
+@@ -11771,6 +11775,11 @@ systemlist({expr} [, {input}])				*systemlist()*
+ <
+ 		Returns an empty string on error.
  
--	Vim may set this option automatically at startup time when Vim is
--	compiled with the |+termresponse| feature, by querying the terminal
--	for DEC mode 2026 support.  The terminal codes used are |t_BS| and
--	|t_ES|.
-+	The terminal codes used are |t_BS| and |t_ES|.
- 
- 						*'termwinkey'* *'twk'*
- 'termwinkey' 'twk'	string	(default "")
++		Like |system()|, prepend |:silent| when the command does not
++		need user interaction and is called from a |statusline|
++		expression, an |autocommand| or a |timer| callback.  See
++		|system()| for details.
++
+ 		Can also be used as a |method|: >
+ 			:echo GetCmd()->systemlist()
+ <
