@@ -1,22 +1,46 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 21dc56c33..a327ba6c5 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -11714,7 +11714,7 @@ system({expr} [, {input}])				*system()* *E677*
- 		cooked mode.  This is meant to be used for commands that do
- 		not need the user to type.  It avoids stray characters showing
- 		up on the screen which require |CTRL-L| to remove.
--		When calling system() from a |statusline| expression, an
-+		When calling system() from a 'statusline' expression, an
- 		|autocommand| or a |timer| callback, you should use |:silent|
- 		to avoid terminal responses (e.g. from cursor style queries)
- 		being echoed on the screen. >
-@@ -11776,7 +11776,7 @@ systemlist({expr} [, {input}])				*systemlist()*
- 		Returns an empty string on error.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 245089a3b..bddfa9921 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
++*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 16
  
- 		Like |system()|, prepend |:silent| when the command does not
--		need user interaction and is called from a |statusline|
-+		need user interaction and is called from a 'statusline'
- 		expression, an |autocommand| or a |timer| callback.  See
- 		|system()| for details.
  
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3210,7 +3210,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 					difference.  Non-alphanumeric
+ 					multi-byte characters such as emoji
+ 					and CJK characters are considered
+-					individual words.
++					individual words.  Small gaps of
++					non-word characters (5 bytes or less)
++					between changes are merged into a
++					single highlight block.
+ 
+ 		internal	Use the internal diff library.  This is
+ 				ignored when 'diffexpr' is set.  *E960*
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index cee00a282..3a722afde 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 13
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 16
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52588,6 +52588,13 @@ Popups ~
+ - 'previewpopup' supports the same values as 'completepopup' (except for
+   "align").
+ 
++Diff mode ~
++---------
++When using inline word diffs, adjacent changes are now merged if the gap
++between them is small (5 bytes or less) and contains only non-word characters.
++This prevents fragmented highlighting when only whitespace or punctuation
++separates changes.
++
+ Other ~
+ -----
+ - The new |xdg.vim| script for full XDG compatibility is included.
