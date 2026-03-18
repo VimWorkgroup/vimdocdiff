@@ -1,19 +1,43 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 9ee3a25d8..4a0729d0e 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 8aa6241d5..46a47b7e2 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Mar 17
+-*starting.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
++*starting.txt*	For Vim version 9.2.  Last change: 2026 Mar 17
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1101,7 +1101,7 @@ Note: these are typed literally, they are not special keys!
- 		   It differs from <slnum> in that <sflnum> is replaced with
- 		   the script line number in any situation.  *E961*
- 							*:<client>* *<client>*
--	<client>   is replaced with the {clinetid} of the last received
-+	<client>   is replaced with the {clientid} of the last received
- 		   message in |server2client()|
+@@ -252,7 +252,8 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ 		":sh", filtering, the |system()| function, backtick expansion
+ 		and libcall().
+ 		Also disallowed are |delete()|, |rename()|, |mkdir()|,
+-		|job_start()|, |setenv()| etc.
++		|job_start()|, |setenv()| and setting environment variables,
++		etc.
+ 		Interfaces, such as Python, Ruby and Lua, are also disabled,
+ 		since they could be used to execute shell commands.  Perl uses
+ 		the Safe module.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 81b4f7d8f..2106a1e40 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 16
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 17
  
- 							 *filename-modifiers*
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52595,8 +52595,10 @@ between them is small (5 bytes or less) and contains only non-word characters.
+ This prevents fragmented highlighting when only whitespace or punctuation
+ separates changes.
+ 
+-Using external diff mode is no longer allowed when Vim is running in
+-|restricted-mode|.
++Restricted mode~
++---------------
++Using external diff mode or setting environment variables is no longer allowed
++when Vim is running in |restricted-mode|.
+ 
+ Other ~
+ -----
