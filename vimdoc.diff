@@ -1,35 +1,19 @@
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 3fa7d14a5..fbe4231c7 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
-@@ -141,9 +141,9 @@ prop_add({lnum}, {col}, {props})
- 				the current buffer is used
- 		   id		user defined ID for the property; must be a
- 				number, should be positive |E1510|;
--				when using "text" then "id" must not be
--				present and will be set automatically to a
--				negative number; otherwise zero is used
-+				when using "text" then any "id" value is
-+				ignored and a negative number is assigned
-+				automatically; otherwise zero is used
- 							*E1305*
- 		   text		text to be displayed before {col}, or
- 				above/below the line if {col} is zero; prepend
-@@ -224,14 +224,9 @@ prop_add({lnum}, {col}, {props})
- 		is difficult to compute).
- 		A negative "id" will be chosen and is returned.
+diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
+index bdf86a51c..321b37773 100644
+--- a/runtime/doc/if_pyth.txt
++++ b/runtime/doc/if_pyth.txt
+@@ -1,4 +1,4 @@
+-*if_pyth.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*if_pyth.txt*	For Vim version 9.2.  Last change: 2026 Mar 18
  
--		Before text properties with text were supported it was
--		possible to use a negative "id", even though this was very
--		rare.  Now that negative "id"s are reserved for text
--		properties with text an error is given when using a negative
--		"id".  When a text property with text already exists using a
--		negative "id" results in *E1293* .  If a negative "id" was
--		used and later a text property with text is added results in
--		*E1339* .
-+		Negative "id"s are reserved for text properties with "text"
-+		and cannot be used otherwise.  Using a negative "id" results
-+		in *E1293* .
  
- 		Can also be used as a |method|: >
- 			GetLnum()->prop_add(col, props)
+ 		  VIM REFERENCE MANUAL	  by Paul Moore
+@@ -186,7 +186,7 @@ vim.eval(str)						*python-eval*
+ 	- a list if the Vim expression evaluates to a Vim |list|
+ 	- a tuple if the Vim expression evaluates to a Vim |tuple|
+ 	- a dictionary if the Vim expression evaluates to a Vim |dict|
+-	- a boolean if Vim exression evaluates to |v:true| or |v:false|
++	- a boolean if Vim expression evaluates to |v:true| or |v:false|
+ 	- `None` if Vim expression evaluates to |v:null| or |v:none|
+ 	Dictionaries, lists and tuples are recursively expanded.
+ 	Examples: >
