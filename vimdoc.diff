@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/if_pyth.txt b/runtime/doc/if_pyth.txt
-index bdf86a51c..321b37773 100644
---- a/runtime/doc/if_pyth.txt
-+++ b/runtime/doc/if_pyth.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 2106a1e40..79536bc98 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*if_pyth.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*if_pyth.txt*	For Vim version 9.2.  Last change: 2026 Mar 18
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 17
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 18
  
  
- 		  VIM REFERENCE MANUAL	  by Paul Moore
-@@ -186,7 +186,7 @@ vim.eval(str)						*python-eval*
- 	- a list if the Vim expression evaluates to a Vim |list|
- 	- a tuple if the Vim expression evaluates to a Vim |tuple|
- 	- a dictionary if the Vim expression evaluates to a Vim |dict|
--	- a boolean if Vim exression evaluates to |v:true| or |v:false|
-+	- a boolean if Vim expression evaluates to |v:true| or |v:false|
- 	- `None` if Vim expression evaluates to |v:null| or |v:none|
- 	Dictionaries, lists and tuples are recursively expanded.
- 	Examples: >
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52600,6 +52600,8 @@ Restricted mode~
+ Using external diff mode or setting environment variables is no longer allowed
+ when Vim is running in |restricted-mode|.
+ 
++Using |:cscope| is no longer allowed.
++
+ Other ~
+ -----
+ - The new |xdg.vim| script for full XDG compatibility is included.
