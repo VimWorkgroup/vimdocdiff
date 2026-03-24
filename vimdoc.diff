@@ -1,72 +1,24 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index bddfa9921..d28646778 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 16756c22f..c771a400a 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 16
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 22
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Mar 22
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -97,6 +97,17 @@ achieve special effects.  These options come in three forms:
- 			If the option is a list of flags, superfluous flags
- 			are removed.  When adding a flag that was already
- 			present the option value doesn't change.
-+			When the option supports "key:value" items and {value}
-+			contains a "key:value" item or multiple
-+			comma-separated items, each item is processed
-+			individually:
-+			- A "key:value" item where the key already exists with
-+			  a different value: the old item is removed and the
-+			  new item is appended to the end.
-+			- A "key:value" item that is an exact duplicate is
-+			  left unchanged.
-+			- Other items that already exist are left unchanged.
-+			- New items are appended to the end.
- 			Also see |:set-args| above.
+@@ -2285,11 +2285,11 @@ cycles for such a feature to become either integrated into the platform or
+ withdrawn from this effort.  To cater for early adopters, there is optional
+ support in Vim for syntax related preview features that are implemented.  You
+ can request it by specifying a list of preview feature numbers as follows: >
+-	:let g:java_syntax_previews = [507]
++	:let g:java_syntax_previews = [530]
  
- :se[t] {option}^={value}				*:set^=*
-@@ -104,6 +115,11 @@ achieve special effects.  These options come in three forms:
- 			the {value} to a string option.  When the option is a
- 			comma-separated list, a comma is added, unless the
- 			value was empty.
-+			When the option supports "key:value" items and {value}
-+			contains a "key:value" item or multiple
-+			comma-separated items, each item is processed
-+			individually.  Works like |:set+=| but new items are
-+			prepended to the beginning instead of appended.
- 			Also see |:set-args| above.
+ The supported JEP numbers are to be drawn from this table:
+ 	`430`: String Templates [JDK 21]
+-	`507`: Primitive types in Patterns, instanceof, and switch
++	`530`: Primitive types in Patterns, instanceof, and switch
  
- :se[t] {option}-={value}				*:set-=*
-@@ -116,6 +132,12 @@ achieve special effects.  These options come in three forms:
- 			When the option is a list of flags, {value} must be
- 			exactly as they appear in the option.  Remove flags
- 			one by one to avoid problems.
-+			When the option supports "key:value" items and {value}
-+			contains a "key:value" item or multiple
-+			comma-separated items, each item is processed
-+			individually.  A "key:value" item removes the existing
-+			item with that key regardless of its value.  A "key:"
-+			item also removes by key match.
- 			The individual values from a comma separated list or
- 			list of flags can be inserted by typing 'wildchar'.
- 			See |complete-set-option|.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index e9a949e37..316899485 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 19
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Mar 22
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52609,6 +52609,8 @@ Other ~
- - Support for "dap" channel mode for the |debug-adapter-protocol|.
- - |status-line| can use several lines, see 'statuslineopt'.
- - New "leadtab" value for the 'listchars' setting.
-+- Improved |:set+=|, |:set^=| and |:set-=| handling of comma-separated "key:value"
-+  pairs individually (e.g. 'listchars', 'fillchars', 'diffopt').
- 
- xxd ~
- ---
+ Note that as soon as the particular preview feature will have been integrated
+ into the Java platform, its entry will be removed from the table and related
