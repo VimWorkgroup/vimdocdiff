@@ -1,20 +1,21 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index d28646778..5f30fb715 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 8dbe4e68c..6a7fa3b59 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 22
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 23
+-*filetype.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*filetype.txt*	For Vim version 9.2.  Last change: 2026 Mar 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6026,7 +6026,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Increasing this limit above 200 also changes the maximum for Ex
- 	command recursion, see |E169|.
- 	See also |:function|.
--	Also used for maximum depth of callback functions.
-+	Also used for maximum depth of callback functions and encoding and
-+	decoding of deeply nested json data.
- 
- 						*'maxmapdepth'* *'mmd'* *E223*
- 'maxmapdepth' 'mmd'	number	(default 1000)
+@@ -161,8 +161,10 @@ variables can be used to overrule the filetype used for certain extensions:
+ 						|ft-cpp-syntax|
+ 	*.i		g:filetype_i		|ft-progress-syntax|
+ 	*.inc		g:filetype_inc
++	*.int		g:filetype_int
+ 	*.lsl		g:filetype_lsl
+ 	*.m		g:filetype_m		|ft-mathematica-syntax|
++	*.mac		g:filetype_mac
+ 	*[mM]makefile,*.mk,*.mak,[mM]akefile*
+ 			g:make_flavor		|ft-make-syntax|
+ 	*.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md
