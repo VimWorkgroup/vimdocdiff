@@ -1,22 +1,36 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 0b1b4c3cf..d197ead5c 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index f17f6259d..604d41206 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*change.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*change.txt*	For Vim version 9.2.  Last change: 2026 Mar 31
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 29
++*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1157,9 +1157,9 @@ inside of strings can change!  Also see 'softtabstop' option. >
- 			current line).
+@@ -2226,6 +2226,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Note: The match limit takes effect only during forward completion
+ 	(CTRL-N) and is ignored during backward completion (CTRL-P).
  
- 							*:ip* *:iput*
--:[line]ip[ut] [x]	like |:put|, but adjust indent to the current line
-+:[line]ip[ut] [x]	Like |:put|, but adjust indent to the current line.
++	This option cannot be set in a modeline when 'modelineexpr' is off.
++
+ 						*'completefunc'* *'cfu'*
+ 'completefunc' 'cfu'	string	(default: empty)
+ 			local to buffer
+@@ -4686,6 +4688,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	You can include a line break.  Simplest method is to use |:let|: >
+ 		:let &guitabtooltip = "line one\nline two"
+ <
++	This option cannot be set in a modeline when 'modelineexpr' is off.
  
--:[line]ip[ut]! [x]	like |:put|!, but adjust indent to the current line
-+:[line]ip[ut]! [x]	Like |:put|!, but adjust indent to the current line.
+ 						*'helpfile'* *'hf'*
+ 'helpfile' 'hf'		string	(default (MS-Windows) "$VIMRUNTIME\doc\help.txt"
+@@ -6847,6 +6850,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The format of the header produced in |:hardcopy| output.
+ 	See |pheader-option|.
  
- ["x]]p		    or					*]p* *]<MiddleMouse>*
- ["x]]<MiddleMouse>	Like "p", but adjust the indent to the current line.
++	This option cannot be set in a modeline when 'modelineexpr' is off.
++
+ 						*'printmbcharset'* *'pmbcs'*
+ 'printmbcharset' 'pmbcs'  string (default "")
+ 			global
