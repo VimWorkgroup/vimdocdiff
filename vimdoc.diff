@@ -1,19 +1,22 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 5f30fb715..f17f6259d 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 0b1b4c3cf..d197ead5c 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 23
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Mar 29
+-*change.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*change.txt*	For Vim version 9.2.  Last change: 2026 Mar 31
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1031,7 +1031,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			global
- 	Write the contents of the file, if it has been modified, on each
- 	`:next`, `:rewind`, `:last`, `:first`, `:previous`, `:stop`,
--	`:suspend`, `:tag`, `:!`, `:make`, CTRL-] and CTRL-^ command; and when
-+	`:suspend`, `:tag`, `:!`, `:make`, `:terminal`, CTRL-] and CTRL-^ command; and when
- 	a `:buffer`, CTRL-O, CTRL-I, '{A-Z0-9}, or `{A-Z0-9} command takes one
- 	to another file.
- 	A buffer is not written if it becomes hidden, e.g. when 'bufhidden' is
+@@ -1157,9 +1157,9 @@ inside of strings can change!  Also see 'softtabstop' option. >
+ 			current line).
+ 
+ 							*:ip* *:iput*
+-:[line]ip[ut] [x]	like |:put|, but adjust indent to the current line
++:[line]ip[ut] [x]	Like |:put|, but adjust indent to the current line.
+ 
+-:[line]ip[ut]! [x]	like |:put|!, but adjust indent to the current line
++:[line]ip[ut]! [x]	Like |:put|!, but adjust indent to the current line.
+ 
+ ["x]]p		    or					*]p* *]<MiddleMouse>*
+ ["x]]<MiddleMouse>	Like "p", but adjust the indent to the current line.
