@@ -64,21 +64,21 @@
       <svg aria-hidden="true" class="d2h-icon d2h-changed" height="16" title="modified" version="1.1"
            viewBox="0 0 14 16" width="14">
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
-      </svg>      <a href="#d2h-437141" class="d2h-file-name">runtime/doc/pi_zip.txt</a>
+      </svg>      <a href="#d2h-328675" class="d2h-file-name">runtime/doc/pi_vimball.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+5</span>
-          <span class="d2h-lines-deleted">-1</span>
+          <span class="d2h-lines-added">+1</span>
+          <span class="d2h-lines-deleted">-16</span>
       </span>
     </span>
 </li>
     </ol>
 </div><div class="d2h-wrapper d2h-auto-color-scheme">
-    <div id="d2h-437141" class="d2h-file-wrapper" data-lang="txt">
+    <div id="d2h-328675" class="d2h-file-wrapper" data-lang="txt">
     <div class="d2h-file-header">
       <span class="d2h-file-name-wrapper">
     <svg aria-hidden="true" class="d2h-icon" height="16" version="1.1" viewBox="0 0 12 16" width="12">
         <path d="M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z"></path>
-    </svg>    <span class="d2h-file-name">runtime/doc/pi_zip.txt</span>
+    </svg>    <span class="d2h-file-name">runtime/doc/pi_vimball.txt</span>
     <span class="d2h-tag d2h-changed d2h-changed-tag">CHANGED</span></span>
 <label class="d2h-file-collapse">
     <input class="d2h-file-collapse-input" type="checkbox" name="viewed" value="viewed">
@@ -102,7 +102,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*pi_zip.txt*	For Vim version 9.2.  Last change: 2026 <del>Feb</del> <del>14</del></span>
+            <span class="d2h-code-line-ctn">*pi_vimball.txt*	For Vim version 9.2.  Last change: 2026 <del>Feb</del> <del>14</del></span>
         </div>
     </td>
 </tr><tr>
@@ -122,7 +122,7 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">				+====================+</span>
+            <span class="d2h-code-line-ctn">			       ----------------</span>
         </div>
     </td>
 </tr><tr>
@@ -132,37 +132,27 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">				| Zip File Interface |</span>
+            <span class="d2h-code-line-ctn">			       Vimball Archiver</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -33,6 +33,10 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*</div>
+        <div class="d2h-code-side-line">@@ -93,21 +93,6 @@ MAKING A VIMBALL						*:MkVimball*</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      33
+      93
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   also write to the file.  Currently, one may not make a new file in</span>
+            <span class="d2h-code-line-ctn">	make.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      34
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   zip archives via the plugin.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      35
+      94
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -171,73 +161,193 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      95
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del">
+      96
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">MAKING DIRECTORIES VIA VIMBALLS				*g:vimball_mkdir*</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      97
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
             <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del">
+      98
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	First, the |mkdir()| command is tried (not all systems support it).</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      99
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
             <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del">
+      100
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	If it doesn&#x27;t exist, then if g:vimball_mkdir doesn&#x27;t exist, it is set</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      101
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	as follows: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      102
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	  |g:netrw_localmkdir|, if it exists</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      103
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	  &quot;mkdir&quot;             , if it is executable</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      104
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	  &quot;makedir&quot;           , if it is executable</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      105
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	  Otherwise           , it is undefined.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      106
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">&lt;	One may explicitly specify the directory making command using</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      107
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	g:vimball_mkdir.  This command is used to make directories that</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      108
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">	are needed as indicated by the vimball.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      109
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del">
+      110
+    </td>
+    <td class="d2h-del">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      111
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">CONTROLLING THE VIMBALL EXTRACTION DIRECTORY		*g:vimball_home*</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      112
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      36
+      113
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   COMMANDS~</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      37
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">								*zip-x*</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      38
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   x : extract a listed file when the cursor is atop it</span>
+            <span class="d2h-code-line-ctn">	You may override the use of the &#x27;runtimepath&#x27; by specifying a</span>
         </div>
     </td>
 </tr>
@@ -261,7 +371,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*pi_zip.txt*	For Vim version 9.2.  Last change: 2026 <ins>Apr</ins> <ins>05</ins></span>
+            <span class="d2h-code-line-ctn">*pi_vimball.txt*	For Vim version 9.2.  Last change: 2026 <ins>Apr</ins> <ins>05</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -281,7 +391,7 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">				+====================+</span>
+            <span class="d2h-code-line-ctn">			       ----------------</span>
         </div>
     </td>
 </tr><tr>
@@ -291,7 +401,7 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">				| Zip File Interface |</span>
+            <span class="d2h-code-line-ctn">			       Vimball Archiver</span>
         </div>
     </td>
 </tr><tr>
@@ -301,27 +411,17 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      33
+      93
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   also write to the file.  Currently, one may not make a new file in</span>
+            <span class="d2h-code-line-ctn">	make.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      34
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   zip archives via the plugin.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      35
+      94
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -330,73 +430,193 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      36
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      95
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-cntx">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">   The zip plugin tries to detect some common path traversal attack</span>
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      37
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
     </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">   patterns, but it may not catch all possible cases.  Please be very</span>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      38
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
     </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">   careful when using this plugin with untrusted input.</span>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      39
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
     </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      40
+      96
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   COMMANDS~</span>
+            <span class="d2h-code-line-ctn">CONTROLLING THE VIMBALL EXTRACTION DIRECTORY		*g:vimball_home*</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      41
+      97
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">								*zip-x*</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      42
+      98
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">   x : extract a listed file when the cursor is atop it</span>
+            <span class="d2h-code-line-ctn">	You may override the use of the &#x27;runtimepath&#x27; by specifying a</span>
         </div>
     </td>
 </tr>
