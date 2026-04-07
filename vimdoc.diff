@@ -1,15 +1,20 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index f458c1369..55b95c632 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
-@@ -674,7 +674,9 @@ ch_listen({address} [, {options}])		*E1573* *E1574* *ch_listen()*
- 		Returns a Channel.  Use |ch_status()| to check for failure.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 824692fe4..064d66c9d 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 03
++*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
  
- 		{address} is a String, see |channel-address| for the possible
--		accepted forms.  Note: IPv6 is not yet supported.
-+		accepted forms, however binding to all interfaces is not
-+		allowed for security reasons.
-+		Note: IPv6 is not yet supported.
  
- 		If {options} is given it must be a |Dictionary|.
- 		See |channel-open-options|.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -5212,7 +5212,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	command line has no uppercase characters, the added character is
+ 	converted to lowercase.
+ 	CTRL-R CTRL-W can be used to add the word at the end of the current
+-	match, excluding the characters that were already typed.
++	match, excluding the characters that were already typed (starting from
++	the beginning of the word).
+ 	NOTE: This option is reset when 'compatible' is set.
+ 
+ 						*'indentexpr'* *'inde'*
