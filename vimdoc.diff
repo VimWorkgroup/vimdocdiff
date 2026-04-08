@@ -1,34 +1,55 @@
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index f57a238e2..9fd5ff668 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index a255af48b..9965e3dd4 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
 @@ -1,4 +1,4 @@
--*textprop.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
-+*textprop.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
+-*gui.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*gui.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -511,7 +511,9 @@ will move accordingly.
+@@ -1150,11 +1150,22 @@ For the Win32 GUI					*E244* *E245*
+ 	      NONANTIALIASED, CLEARTYPE and DEFAULT.  Normally you would use
+ 	      "qDEFAULT".
+ 	      Some quality values are not supported in legacy OSs.
++	fXX - OpenType font feature.  Specify a single feature as
++	      tag=value, where tag is a 4-character OpenType feature
++	      tag and value is the parameter (0 to disable, 1 or
++	      higher to enable/select variant).  Multiple features
++	      can be specified by repeating the ":f" option.
++	      This only takes effect when 'renderoptions' is set to use
++	      DirectWrite (type:directx).  Default features (calt, liga,
++	      etc.) are preserved unless explicitly overridden.
++	      Example: ":fss19=1:fcalt=0" enables Stylistic Set 19
++	      and disables Contextual Alternates.
+ - A '_' can be used in the place of a space, so you don't need to use
+   backslashes to escape the spaces.
+ Examples: >
+     :set guifont=courier_new:h12:w5:b:cRUSSIAN
+     :set guifont=Andale_Mono:h7.5:w4.5
++    :set guifont=Cascadia_Code:h14:fss19=1:fcalt=1:fliga=1
  
- When text is deleted and a text property no longer includes any text, it is
- deleted.  However, a text property that was defined as zero-width will remain,
--unless the whole line is deleted.
-+unless the whole line is deleted.  When lines are joined by a multi-line
-+substitute command, virtual text properties on the deleted lines are moved to
-+the resulting joined line.
- 								*E275*
- When a buffer is unloaded, all the text properties are gone.  There is no way
- to store the properties in a file.  You can only re-create them.  When a
+ See also |font-sizes|.
+ 
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 31d467e0a..8adff066f 100644
+index 8adff066f..acce37226 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52625,6 +52625,8 @@ Changed~
- - |json_decode()| is stricter: keywords must be lowercase, lone surrogates are
-   now invalid
- - |js_decode()| rejects lone surrogates
-+- virtual text properties on lines deleted by a multi-line substitute
-+  are moved to the resulting joined line instead of being dropped.
+@@ -52614,12 +52614,16 @@ Other ~
+ - |system()| and |systemlist()| functions accept a list as first argument,
+   bypassing the shell completely.
  
- 							*added-9.3*
- Added ~
++Platform specific ~
++-----------------
++- support OpenType font features in 'guifont' for DirectWrite (Win32)
++
+ xxd ~
+ ---
+ Add "-t" option to append a terminating NUL byte to C include output (-i).
+ 
+ 							*changed-9.3*
+-Changed~
++Changed ~
+ -------
+ - Support for NeXTStep was dropped with patch v9.2.0122
+ - |json_decode()| is stricter: keywords must be lowercase, lone surrogates are
