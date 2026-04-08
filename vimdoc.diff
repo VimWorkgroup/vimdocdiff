@@ -1,19 +1,24 @@
-diff --git a/runtime/doc/netbeans.txt b/runtime/doc/netbeans.txt
-index d56d31fe5..d20ae5190 100644
---- a/runtime/doc/netbeans.txt
-+++ b/runtime/doc/netbeans.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 6a7fa3b59..3aa41db21 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*netbeans.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*netbeans.txt*	For Vim version 9.2.  Last change: 2026 Mar 07
+-*filetype.txt*	For Vim version 9.2.  Last change: 2026 Mar 24
++*filetype.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
  
  
- 		  VIM REFERENCE MANUAL	  by Gordon Prieur et al.
-@@ -849,7 +849,7 @@ REJECT		Not used.
- These errors occur when a message violates the protocol:
- *E627* *E628* *E629* *E632* *E633* *E634* *E635* *E636*
- *E637* *E638* *E639* *E640* *E641* *E642* *E643* *E644* *E645* *E646*
--*E647* *E648* *E650* *E651* *E652*
-+*E647* *E648* *E649* *E650* *E651* *E652*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -652,6 +652,13 @@ One command, :DiffGitCached, is provided to show a diff of the current commit
+ in the preview window.  It is equivalent to calling "git diff --cached" plus
+ any arguments given to the command.
  
++
++The length of the first line of the commit message used for
++syntax highlighting can be configured via `g:gitcommit_summary_length`.
++The default is 50.  Example: >
++
++        let g:gitcommit_summary_length = 70
++
+ GIT REBASE						*ft-gitrebase-plugin*
  
- ==============================================================================
+ The gitrebase filetype defines the following buffer-local commands, to help
