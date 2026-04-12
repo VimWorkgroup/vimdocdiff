@@ -1,30 +1,18 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 24776535c..eb802ed75 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index e0976453d..2b3decac7 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 10
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 09
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -13300,6 +13300,7 @@ spell			Compiled with spell checking support |spell|.
- startuptime		Compiled with |--startuptime| support.
- statusline		Compiled with support for 'statusline', 'rulerformat'
- 			and special formats of 'titlestring' and 'iconstring'.
-+statusline_click	Click handlers in 'statusline' |stl-%[FuncName]|
- sun			SunOS version of Vim.
- sun_workshop		Support for Sun |workshop| has been removed.
- syntax			Compiled with syntax highlighting support |syntax|.
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 9de661452..880feb634 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -496,7 +496,6 @@ N  *+spell*		spell checking support, see |spell|
- N  *+startuptime*	|--startuptime| argument
- N  *+statusline*	Options 'statusline', 'rulerformat' and special
- 			formats of 'titlestring' and 'iconstring'
--N  *+statusline_click*	Click handlers in 'statusline' |stl-%[FuncName]|
- -  *+sun_workshop*	Removed: |workshop|
- N  *+syntax*		Syntax highlighting |syntax|
-    *+system()*		Unix only: opposite of |+fork|
+@@ -52615,6 +52615,7 @@ Other ~
+   bypassing the shell completely.
+ - Allow mouse clickable regions in the |status-line| using the
+   |stl-%[FuncName]| atom.
++- Enable reflow support in the |:terminal|.
+ 
+ Platform specific ~
+ -----------------
