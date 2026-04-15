@@ -1,70 +1,70 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index eb802ed75..f929b9e4c 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 5f8b4292b..4d40b8aa5 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -4757,7 +4757,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 				     l:Search,m:MoreMsg,M:ModeMsg,n:LineNr,
+ 				     a:LineNrAbove,b:LineNrBelow,
+ 				     N:CursorLineNr,r:Question,s:StatusLine,
+-				     S:StatusLineNC,c:VertSplit,t:Title,
++				     S:StatusLineNC,c:VertSplit,
++				     |:VertSplitNC,t:Title,
+ 				     v:Visual,V:VisualNOS,w:WarningMsg,
+ 				     W:WildMenu,f:Folded,F:FoldColumn,
+ 				     A:DiffAdd,C:DiffChange,D:DiffDelete,
+@@ -4805,6 +4806,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	|hl-StatusLineNC|  S  status lines of not-current windows
+ 	|hl-Title|	 t  Titles for output from ":set all", ":autocmd" etc.
+ 	|hl-VertSplit|	 c  column used to separate vertically split windows
++	|hl-VertSplitNC| |  column separating non-current vertically split
++			    windows
+ 	|hl-Visual|	 v  Visual mode
+ 	|hl-VisualNOS|	 V  Visual mode when Vim is "Not Owning the
+ 			    Selection" Only X11 Gui's |gui-x11|,
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index c771a400a..2102debf2 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 10
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Mar 22
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -107,7 +107,8 @@ ch_getbufnr({handle}, {what})	Number	get buffer number for {handle}/{what}
- ch_getjob({channel})		Job	get the Job of {channel}
- ch_info({handle})		Dict	info about channel {handle}
- ch_listen({address} [, {options}])
--				Channel	listen on {address}
-+				Channel	listen on {address} - port on loopback
-+					or UNIX domain socket
- ch_log({msg} [, {handle}])	none	write {msg} in the channel log file
- ch_logfile({fname} [, {mode}])	none	start logging channel activity
- ch_open({address} [, {options}])
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index 55b95c632..b8aaa9276 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
+@@ -5978,7 +5978,14 @@ EndOfBuffer	Filler lines (~) after the last line in the buffer.
+ 							*hl-ErrorMsg*
+ ErrorMsg	Error messages on the command line.
+ 							*hl-VertSplit*
+-VertSplit	Column separating vertically split windows.
++VertSplit	Column separating vertically split windows that are adjacent
++		to the current window.  On the current window's status line
++		rows, the separator cell is drawn as a space with the
++		|hl-StatusLine| highlight so it blends into the status line
++		without a stray fillchar glyph.
++							*hl-VertSplitNC*
++VertSplitNC	Column separating vertically split windows of non-current
++		windows.  By default, highlighted like |hl-VertSplit|.
+ 							*hl-Folded*
+ Folded		Line used for closed folds.
+ 							*hl-FoldColumn*
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 2b3decac7..54449a542 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
-+*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 10
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -132,7 +132,7 @@ Start Vim and create a listening channel: >
- 	endfunc
+@@ -52659,6 +52659,10 @@ Options: ~
+ 'termsync'		Enable support for terminal DEC 2026 sync mode.
+ 'winhighlight'		Window-local highlight group mappings.
  
- 	" Start listening on port 8765
--	let server = ch_listen('localhost:8765', {"callback": "OnAccept"})
-+	let server = ch_listen('8765', {"callback": "OnAccept"})
- 
- From another Vim instance (or any program) you can connect to it: >
- 	let channel = ch_open('localhost:8765')
-@@ -637,8 +637,7 @@ ch_info({handle})						*ch_info()*
- 		   "status"	  "open", "buffered" or "closed", like
- 				  ch_status()
- 		When opened with ch_open():
--		   "hostname"	  the hostname of the address
--		   "port"	  the port of the address
-+		   "port"	  the port on loopback
- 		   "path"	  the path of the Unix-domain socket
- 		   "sock_status"  "open" or "closed"
- 		   "sock_mode"	  "NL", "RAW", "JSON" or "JS"
-@@ -668,14 +667,15 @@ ch_info({handle})						*ch_info()*
- 		Return type: dict<any>
- 
- ch_listen({address} [, {options}])		*E1573* *E1574* *ch_listen()*
--		Listen on {address} for incoming channel connections.
--		This creates a server-side channel, unlike |ch_open()|
--		which connects to an existing server.
-+		Listen on {address} - port on loopback or UNIX domain socket
-+		for incoming channel connections. This creates a server-side
-+		channel, unlike |ch_open()|which connects to an existing server.
- 		Returns a Channel.  Use |ch_status()| to check for failure.
- 
- 		{address} is a String, see |channel-address| for the possible
--		accepted forms, however binding to all interfaces is not
--		allowed for security reasons.
-+		accepted forms, however in case of TCP sockets it allows to
-+		set only a port and binds to loopback address for
-+		security reasons.
- 		Note: IPv6 is not yet supported.
- 
- 		If {options} is given it must be a |Dictionary|.
++Highlighting: ~
++
++|hl-VertSplitNC|	Column separator of non-current window.
++
+ ==============================================================================
+ PATCHES						*patches-9.3* *bug-fixes-9.3*
+ 						*patches-after-9.2*
