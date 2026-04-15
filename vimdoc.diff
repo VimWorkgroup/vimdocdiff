@@ -1,41 +1,83 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index b8aaa9276..ce0ceb45b 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 627d96540..31a9629c0 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
-+*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
++*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -668,22 +668,22 @@ ch_info({handle})						*ch_info()*
+@@ -7577,8 +7577,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Minimal number of screen lines to keep above and below the cursor.
+ 	This will make some context visible around where you are working.  If
+ 	you set it to a very large value (999) the cursor line will always be
+-	in the middle of the window (except at the start or end of the file or
+-	when long lines wrap).
++	in the middle of the window (except at the start or end of the file,
++	see 'scrolloffpad', or when long lines wrap).
+ 	After using the local value, go back the global value with one of
+ 	these two: >
+ 		setlocal scrolloff<
+@@ -7586,7 +7586,24 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <	For scrolling horizontally see 'sidescrolloff'.
+ 	NOTE: This option is set to 0 when 'compatible' is set.
  
- ch_listen({address} [, {options}])		*E1573* *E1574* *ch_listen()*
- 		Listen on {address} - port on loopback or UNIX domain socket
--		for incoming channel connections. This creates a server-side
--		channel, unlike |ch_open()|which connects to an existing server.
-+		for incoming channel connections.  This creates a server-side
-+		channel, unlike |ch_open()| which connects to an existing
-+		server.
- 		Returns a Channel.  Use |ch_status()| to check for failure.
+-						*'scrollopt'* *'sbo'*
++						*'scrolloffpad'* *'sop'*
++'scrolloffpad' 'sop'	number	(default 0)
++			global or local to window |global-local|
++	When 'scrolloff' and 'scrolloffpad' are greater than zero, allow
++	the cursor to remain centered when at the end of the file.
++	Normally, 'scrolloff' will not keep the cursor centered at the
++	end of the file.
++
++	A value of 0 disables this feature.  Any value above 0 enables it.
++	For a window-local value, -1 means to use the global value.
++	Values below -1 are invalid.
++
++	After using the local value, go back the global value with one of
++	these two: >
++		setlocal scrolloffpad<
++		setlocal scrolloffpad=-1
++
++<						*'scrollopt'* *'sbo'*
+ 'scrollopt' 'sbo'	string	(default "ver,jump")
+ 			global
+ 	This is a comma-separated list of words that specifies how
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 8f6aca046..1ada2bf9b 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 09
++*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
  
- 		{address} is a String, see |channel-address| for the possible
- 		accepted forms, however in case of TCP sockets it allows to
--		set only a port and binds to loopback address for
--		security reasons.
-+		set only a port and binds to loopback address for security
-+		reasons.
- 		Note: IPv6 is not yet supported.
  
- 		If {options} is given it must be a |Dictionary|.
- 		See |channel-open-options|.
--		The "callback" in {options} is invoked when a new
--		connection is accepted.  It receives two arguments: the
--		new Channel and the client address as a String (e.g.
--		"127.0.0.1:12345").
-+		The "callback" in {options} is invoked when a new connection
-+		is accepted.  It receives two arguments: the new Channel and
-+		the client address as a String (e.g. "127.0.0.1:12345").
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -895,6 +895,7 @@ Short explanation of each option:		*option-list*
+ 'scrollfocus'	  'scf'     scroll wheel applies to window under pointer
+ 'scrolljump'	  'sj'	    minimum number of lines to scroll
+ 'scrolloff'	  'so'	    minimum nr. of lines above and below cursor
++'scrolloffpad'	  'sop'	    keep 'scrolloff' context at end of file
+ 'scrollopt'	  'sbo'     how 'scrollbind' should behave
+ 'sections'	  'sect'    nroff macros that separate sections
+ 'secure'		    secure mode for reading .vimrc in current dir
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index fa8c5355c..ee24e2901 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
  
- 		Use |ch_open()| to connect to an existing server instead.
  
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52654,6 +52654,7 @@ Options: ~
+ 
+ 'modelinestrict'	Only allow safe options to be set from a modeline.
+ 'pumopt'		Additional options for the popup menu
++'scrolloffpad'		Keep 'scrolloff' context at end of file
+ 'statuslineopt'		Extra window-local options for the 'statusline', to
+ 			configure the height.
+ 't_BS'			Begin synchronized update.
