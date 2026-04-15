@@ -1,33 +1,70 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f083d6ff1..5f8b4292b 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index eb802ed75..f929b9e4c 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 11
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 10
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8620,11 +8620,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	      applied to StatusLineNC for the statusline of non-current
- 	      windows.
- 	      The number N must be between 1 and 9.  See |hl-User1..9|
--								*stl-%@*
-+							*stl-%@*
- 	@ -   Inserts a newline.  This only takes effect when the "maxheight"
- 	      value of 'statuslineopt' is greater than 1, or for |tabpanel|.
+@@ -107,7 +107,8 @@ ch_getbufnr({handle}, {what})	Number	get buffer number for {handle}/{what}
+ ch_getjob({channel})		Job	get the Job of {channel}
+ ch_info({handle})		Dict	info about channel {handle}
+ ch_listen({address} [, {options}])
+-				Channel	listen on {address}
++				Channel	listen on {address} - port on loopback
++					or UNIX domain socket
+ ch_log({msg} [, {handle}])	none	write {msg} in the channel log file
+ ch_logfile({fname} [, {mode}])	none	start logging channel activity
+ ch_open({address} [, {options}])
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 55b95c632..b8aaa9276 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -1,4 +1,4 @@
+-*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
++*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
  
--						*stl-%[FuncName]*
-+							*stl-%[FuncName]*
- 	%[ defines clickable regions in the statusline.  When the user clicks
- 	on a region with the mouse, the specified function is called.  The
- 	same syntax can also be used in 'tabline'.
-@@ -8655,7 +8655,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Dragging the statusline to resize the window still works even when
- 	click handlers are defined.  When used in 'tabline', clicks in
- 	%[FuncName] regions are dispatched to the callback instead of the
--	default tab-selection behavior.
-+	default tab page selection behavior.
  
- 	Example: >
- 	    func! ClickFile(info)
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -132,7 +132,7 @@ Start Vim and create a listening channel: >
+ 	endfunc
+ 
+ 	" Start listening on port 8765
+-	let server = ch_listen('localhost:8765', {"callback": "OnAccept"})
++	let server = ch_listen('8765', {"callback": "OnAccept"})
+ 
+ From another Vim instance (or any program) you can connect to it: >
+ 	let channel = ch_open('localhost:8765')
+@@ -637,8 +637,7 @@ ch_info({handle})						*ch_info()*
+ 		   "status"	  "open", "buffered" or "closed", like
+ 				  ch_status()
+ 		When opened with ch_open():
+-		   "hostname"	  the hostname of the address
+-		   "port"	  the port of the address
++		   "port"	  the port on loopback
+ 		   "path"	  the path of the Unix-domain socket
+ 		   "sock_status"  "open" or "closed"
+ 		   "sock_mode"	  "NL", "RAW", "JSON" or "JS"
+@@ -668,14 +667,15 @@ ch_info({handle})						*ch_info()*
+ 		Return type: dict<any>
+ 
+ ch_listen({address} [, {options}])		*E1573* *E1574* *ch_listen()*
+-		Listen on {address} for incoming channel connections.
+-		This creates a server-side channel, unlike |ch_open()|
+-		which connects to an existing server.
++		Listen on {address} - port on loopback or UNIX domain socket
++		for incoming channel connections. This creates a server-side
++		channel, unlike |ch_open()|which connects to an existing server.
+ 		Returns a Channel.  Use |ch_status()| to check for failure.
+ 
+ 		{address} is a String, see |channel-address| for the possible
+-		accepted forms, however binding to all interfaces is not
+-		allowed for security reasons.
++		accepted forms, however in case of TCP sockets it allows to
++		set only a port and binds to loopback address for
++		security reasons.
+ 		Note: IPv6 is not yet supported.
+ 
+ 		If {options} is given it must be a |Dictionary|.
