@@ -1,92 +1,41 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 4d40b8aa5..627d96540 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -6199,6 +6199,48 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	NOTE: 'modeline' is set to the Vi default value when 'compatible' is
- 	set and to the Vim default value when 'compatible' is reset.
- 
-+		    *'modelinestrict'* *'mlst'* *'nomodelinestrict'* *'nomlst'*
-+'modelinestrict' 'mlst'	boolean (default: on)
-+			global
-+	When on, only a safe subset of options can be set from a |modeline|.
-+	The following options are allowed:
-+		'autoindent'
-+		'cindent'
-+		'commentstring'
-+		'expandtab'
-+		'filetype'
-+		'foldcolumn'
-+		'foldenable'
-+		'foldmethod'
-+		'modifiable'
-+		'readonly'
-+		'rightleft'
-+		'shiftwidth'
-+		'smartindent'
-+		'softtabstop'
-+		'spell'
-+		'spelllang'
-+		'tabstop'
-+		'textwidth'
-+		'varsofttabstop'
-+		'vartabstop'
-+
-+	Any other option set from a modeline will be silently ignored.
-+	This option cannot be set from a |modeline| or in the |sandbox|, for
-+	security reasons.
-+
-+	The behaviour of 'modeline', 'modelinestrict' and 'modelineexpr' is
-+	as follows:
-+
-+	'modeline'| 'modelinestrict'| 'modelineexpr' | Meaning
-+	----------+-----------------+-------------------+--------~
-+	   on     |    off          |   on           | All options can be set
-+	   on     |    on           |   any          | Only whitelisted
-+		  |                 |                | options can be set
-+	   on     |    off          |   off          | All options except for
-+		  |                 |                | expr options can be set
-+	   off    |    any          |   any          | No options can be set
-+
- 				*'modifiable'* *'ma'* *'nomodifiable'* *'noma'*
- 				*E21*
- 'modifiable' 'ma'	boolean	(default on)
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 770983780..8f6aca046 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index b8aaa9276..ce0ceb45b 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
 @@ -1,4 +1,4 @@
--*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
-+*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 09
+-*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
++*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -823,6 +823,7 @@ Short explanation of each option:		*option-list*
- 'modeline'	  'ml'	    recognize modelines at start or end of file
- 'modelineexpr'	  'mle'	    allow setting expression options from a modeline
- 'modelines'	  'mls'     number of lines checked for modelines
-+'modelinestrict'  'mlst'    only allow safe options in modelines
- 'modifiable'	  'ma'	    changes to the text are not possible
- 'modified'	  'mod'     buffer has been modified
- 'more'			    pause listings when the whole screen is filled
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 54449a542..fa8c5355c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52634,6 +52634,8 @@ Changed ~
- - |js_decode()| rejects lone surrogates
- - virtual text properties on lines deleted by a multi-line substitute
-   are moved to the resulting joined line instead of being dropped.
-+- Only a few whitelisted options are allowed to be set by a modeline to
-+  improve overall security, see for details: 'modelinestrict'
+@@ -668,22 +668,22 @@ ch_info({handle})						*ch_info()*
  
- 							*added-9.3*
- Added ~
-@@ -52650,6 +52652,7 @@ Autocommands: ~
+ ch_listen({address} [, {options}])		*E1573* *E1574* *ch_listen()*
+ 		Listen on {address} - port on loopback or UNIX domain socket
+-		for incoming channel connections. This creates a server-side
+-		channel, unlike |ch_open()|which connects to an existing server.
++		for incoming channel connections.  This creates a server-side
++		channel, unlike |ch_open()| which connects to an existing
++		server.
+ 		Returns a Channel.  Use |ch_status()| to check for failure.
  
- Options: ~
+ 		{address} is a String, see |channel-address| for the possible
+ 		accepted forms, however in case of TCP sockets it allows to
+-		set only a port and binds to loopback address for
+-		security reasons.
++		set only a port and binds to loopback address for security
++		reasons.
+ 		Note: IPv6 is not yet supported.
  
-+'modelinestrict'	Only allow safe options to be set from a modeline.
- 'pumopt'		Additional options for the popup menu
- 'statuslineopt'		Extra window-local options for the 'statusline', to
- 			configure the height.
+ 		If {options} is given it must be a |Dictionary|.
+ 		See |channel-open-options|.
+-		The "callback" in {options} is invoked when a new
+-		connection is accepted.  It receives two arguments: the
+-		new Channel and the client address as a String (e.g.
+-		"127.0.0.1:12345").
++		The "callback" in {options} is invoked when a new connection
++		is accepted.  It receives two arguments: the new Channel and
++		the client address as a String (e.g. "127.0.0.1:12345").
+ 
+ 		Use |ch_open()| to connect to an existing server instead.
+ 
