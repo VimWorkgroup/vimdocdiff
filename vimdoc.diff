@@ -1,83 +1,29 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 627d96540..31a9629c0 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/pi_tar.txt b/runtime/doc/pi_tar.txt
+index 0bba3c37d..5a4dae8f3 100644
+--- a/runtime/doc/pi_tar.txt
++++ b/runtime/doc/pi_tar.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
+-*pi_tar.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*pi_tar.txt*	For Vim version 9.2.  Last change: 2026 Apr 16
  
+ 		       +====================+
+ 		       | Tar File Interface |
+@@ -101,10 +101,17 @@ Copyright 2005-2017:					*tar-copyright*
+ 4. History						*tar-history*
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7577,8 +7577,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Minimal number of screen lines to keep above and below the cursor.
- 	This will make some context visible around where you are working.  If
- 	you set it to a very large value (999) the cursor line will always be
--	in the middle of the window (except at the start or end of the file or
--	when long lines wrap).
-+	in the middle of the window (except at the start or end of the file,
-+	see 'scrolloffpad', or when long lines wrap).
- 	After using the local value, go back the global value with one of
- 	these two: >
- 		setlocal scrolloff<
-@@ -7586,7 +7586,24 @@ A jump table for the options with a short description can be found at |Q_op|.
- <	For scrolling horizontally see 'sidescrolloff'.
- 	NOTE: This option is set to 0 when 'compatible' is set.
- 
--						*'scrollopt'* *'sbo'*
-+						*'scrolloffpad'* *'sop'*
-+'scrolloffpad' 'sop'	number	(default 0)
-+			global or local to window |global-local|
-+	When 'scrolloff' and 'scrolloffpad' are greater than zero, allow
-+	the cursor to remain centered when at the end of the file.
-+	Normally, 'scrolloff' will not keep the cursor centered at the
-+	end of the file.
-+
-+	A value of 0 disables this feature.  Any value above 0 enables it.
-+	For a window-local value, -1 means to use the global value.
-+	Values below -1 are invalid.
-+
-+	After using the local value, go back the global value with one of
-+	these two: >
-+		setlocal scrolloffpad<
-+		setlocal scrolloffpad=-1
-+
-+<						*'scrollopt'* *'sbo'*
- 'scrollopt' 'sbo'	string	(default "ver,jump")
- 			global
- 	This is a comma-separated list of words that specifies how
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 8f6aca046..1ada2bf9b 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -1,4 +1,4 @@
--*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 09
-+*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -895,6 +895,7 @@ Short explanation of each option:		*option-list*
- 'scrollfocus'	  'scf'     scroll wheel applies to window under pointer
- 'scrolljump'	  'sj'	    minimum number of lines to scroll
- 'scrolloff'	  'so'	    minimum nr. of lines above and below cursor
-+'scrolloffpad'	  'sop'	    keep 'scrolloff' context at end of file
- 'scrollopt'	  'sbo'     how 'scrollbind' should behave
- 'sections'	  'sect'    nroff macros that separate sections
- 'secure'		    secure mode for reading .vimrc in current dir
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index fa8c5355c..ee24e2901 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52654,6 +52654,7 @@ Options: ~
- 
- 'modelinestrict'	Only allow safe options to be set from a modeline.
- 'pumopt'		Additional options for the popup menu
-+'scrolloffpad'		Keep 'scrolloff' context at end of file
- 'statuslineopt'		Extra window-local options for the 'statusline', to
- 			configure the height.
- 't_BS'			Begin synchronized update.
+ 	unreleased:
++		Apr 16, 2026	* add missing g:tar_secure into tar#Extract
++		Apr 15, 2026	* add path traversal checks in tar#Extract()
++		Apr 09, 2026	* fix zstd support and dotted filename support
++		Apr 06, 2026	* fix lz4 support
++		Feb 07, 2026	* make path traversal detection more robust
++		Feb 06, 2026	* fix bug with nowrapscan
++		Jul 16, 2025	* update minimum required Vim version
+ 		Jul 13, 2025	* drop leading /
+ 		May 19, 2025	* restore working directory after read/write
+ 		Apr 16, 2025	* decouple from netrw by adding s:WinPath()
+-				instead of shelling out to file(1)
++				  instead of shelling out to file(1)
+ 		Mar 02, 2025	* determine the compression using readblob()
+ 		Mar 02, 2025	* escape the filename before using :read
+ 		Mar 01, 2025	* fix syntax error in tar#Read()
