@@ -1,29 +1,29 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 62d7ef8df..2670535fb 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 4a0729d0e..bf47c5199 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 16
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Apr 17
+-*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Mar 17
++*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Apr 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -324,12 +324,12 @@ that was last closed are used again.  If this buffer has been edited in this
- window, the values from back then are used.  Otherwise the values from the
- last closed window where the buffer was edited last are used.
+@@ -466,14 +466,15 @@ CTRL-L		A match is done on the pattern in front of the cursor.  If
+ 	                                            *c_CTRL-G* */_CTRL-G*
+ CTRL-G		When 'incsearch' is set, entering a search pattern for "/" or
+ 		"?" and the current match is displayed then CTRL-G will move
+-		to the next match (does not take |search-offset| into account)
++		to the next match.  The |search-offset| is applied when <CR>
++		is pressed, but does not affect the match highlighting.
+ 		Use CTRL-T to move to the previous match.  Hint: on a regular
+ 		keyboard G is below T.
+ 	                                            *c_CTRL-T* */_CTRL-T*
+ CTRL-T		When 'incsearch' is set, entering a search pattern for "/" or
+ 		"?" and the current match is displayed then CTRL-T will move
+-		to the previous match (does not take |search-offset| into
+-		account).
++		to the previous match.  The |search-offset| is applied when
++		<CR> is pressed, but does not affect the match highlighting.
+ 		Use CTRL-G to move to the next match.  Hint: on a regular
+ 		keyboard T is above G.
  
--It's possible to set a local window option specifically for a type of buffer.
--When you edit another buffer in the same window, you don't want to keep
--using these local window options.  Therefore Vim keeps a global value of the
--local window options, which is used when editing another buffer.  Each window
--has its own copy of these values.  Thus these are local to the window, but
--global to all buffers in the window.  With this you can do: >
-+":setlocal" can be used to set a local window option specifically for a type
-+of buffer.  When you edit another buffer in the same window, you don't want to
-+keep using these local window options.  Meanwhile ":set" also sets a global
-+value of a local window option, which is used when editing another buffer.
-+Each window has its own copy of these global values, making them local to the
-+window, but global to all buffers in the window.  With this you can do: >
- 	:e one
- 	:set list
- 	:e two
