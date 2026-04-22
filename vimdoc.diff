@@ -1,15 +1,40 @@
-diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
-index a86cac36b..2d98a8407 100644
---- a/runtime/doc/pi_netrw.txt
-+++ b/runtime/doc/pi_netrw.txt
-@@ -2854,10 +2854,6 @@ your browsing preferences.  (see also: |netrw-settings|)
- 				such as listing, file removal, etc.
- 				 default: ssh
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 1ada2bf9b..acc5dbdd0 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
++*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 21
  
--  *g:netrw_tmpfile_escape*	=' &;'
--				escape() is applied to all temporary files
--				to escape these characters.
--
-   *g:netrw_timefmt*		specify format string to vim's strftime().
- 				The default, "%c", is "the preferred date
- 				and time representation for the current
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -895,7 +895,7 @@ Short explanation of each option:		*option-list*
+ 'scrollfocus'	  'scf'     scroll wheel applies to window under pointer
+ 'scrolljump'	  'sj'	    minimum number of lines to scroll
+ 'scrolloff'	  'so'	    minimum nr. of lines above and below cursor
+-'scrolloffpad'	  'sop'	    keep 'scrolloff' context at end of file
++'scrolloffpad'	  'sop'	    vertically center cursor at end of file
+ 'scrollopt'	  'sbo'     how 'scrollbind' should behave
+ 'sections'	  'sect'    nroff macros that separate sections
+ 'secure'		    secure mode for reading .vimrc in current dir
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 12d46cffb..90d563c90 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 20
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52656,8 +52656,8 @@ Autocommands: ~
+ Options: ~
+ 
+ 'modelinestrict'	Only allow safe options to be set from a modeline.
+-'pumopt'		Additional options for the popup menu
+-'scrolloffpad'		Keep 'scrolloff' context at end of file
++'pumopt'		Additional options for the popup menu.
++'scrolloffpad'		Vertically center cursor at end of file.
+ 'statuslineopt'		Extra window-local options for the 'statusline', to
+ 			configure the height.
+ 't_BS'			Begin synchronized update.
