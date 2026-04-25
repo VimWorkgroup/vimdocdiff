@@ -1,28 +1,24 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 0fe02ac94..9ea0ae82c 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 1a625b350..c22cef3cc 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 20
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 21
+-*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 20
++*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -11990,6 +11990,7 @@ terminalprops()						*terminalprops()*
- 		   underline_rgb	whether |t_8u| works **
- 		   mouse		mouse type supported
- 		   kitty		whether Kitty terminal was detected
-+		   decrqm		whether sending DECRQM sequences work
+@@ -60,10 +60,9 @@ ga			Print the ascii value of the character under the
+ 			but printable according to the 'isprint' option, the
+ 			non-printable version is also given.
  
- 		** value 'u' for unknown, 'y' for yes, 'n' for no
+-			When the character is larger than 127, the <M-x> form
+-			is also printed.  For example:
+-				<~A>  <M-^A>  129,  Hex 81,  Octal 201 ~
+-				<p>  <|~>  <M-~>  254,  Hex fe,  Octal 376 ~
++			When the character is larger than 127:
++				<<81>>  129,  Hex 0081,  Octal 201 ~
++				 <p>    254,  Hex 00fe,  Octal 376 ~
+ 			(where <p> is a special character)
  
-@@ -12009,6 +12010,9 @@ terminalprops()						*terminalprops()*
- 
- 		For "mouse" the value 'u' is unknown
- 
-+		If "decrqm" is 'y', then Vim will query support for the
-+		'termsync' and 'termresize' ("inband") options.
-+
- 		Also see:
- 		- 'ambiwidth' - detected by using |t_u7|.
- 		- |v:termstyleresp| and |v:termblinkresp| for the response to
+ 			The <Nul> character in a file is stored internally as
