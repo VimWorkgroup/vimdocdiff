@@ -1,31 +1,27 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 2102debf2..c18c2b5e3 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
+index 508361891..7fc09c545 100644
+--- a/runtime/doc/tabpage.txt
++++ b/runtime/doc/tabpage.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.2.  Last change: 2026 Apr 14
-+*syntax.txt*	For Vim version 9.2.  Last change: 2026 Apr 23
+-*tabpage.txt*	For Vim version 9.2.  Last change: 2026 Apr 25
++*tabpage.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -849,6 +849,20 @@ ADA
- See |ft-ada-syntax|
+@@ -513,6 +513,16 @@ The scrollbar uses the |hl-PmenuSbar| highlight group for the track and
+ The scroll offset is remembered across redraws but is reset when "scroll" or
+ "scrollbar" is toggled off and back on.
  
++MOUSE CLICKS IN THE TABPANEL:				*tabpanel-mouse*
++
++A left click on a row in the tabpanel selects the tab page that the row
++belongs to.  Unlike the tabline, a double click in the tabpanel does not
++open a new, empty tab page; it is treated the same as a single click.
++
++For finer-grained control, the 'tabpanel' value may contain |stl-%[FuncName]|
++click regions.  Clicks on those regions are dispatched to the callback
++function instead of falling through to tab selection.
++
+ ==============================================================================
+ 6. Setting 'guitablabel'				*setting-guitablabel*
  
-+ALGOL 68					*algol68* *ft-algol68-syntax*
-+
-+This syntax file currently targets the Algol 68 Genie project using the
-+default UPPER stropping regime.  It should also be usuable in other
-+environments using the UPPER stropping regime, though somewhat less complete.
-+
-+Highlighting can be further configured with the following variables.
-+
-+Variable			Highlight ~
-+*algol68_no_preludes*		no prelude identifiers, procedures or
-+				bold word operators
-+*algol68_symbolic_operators*	all prelude symbolic operators
-+
-+
- ANT						*ant.vim* *ft-ant-syntax*
- 
- The ant syntax file provides syntax highlighting for javascript and python
