@@ -1,27 +1,41 @@
-diff --git a/runtime/doc/tabpage.txt b/runtime/doc/tabpage.txt
-index 508361891..7fc09c545 100644
---- a/runtime/doc/tabpage.txt
-+++ b/runtime/doc/tabpage.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 9ea0ae82c..371de4b2c 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*tabpage.txt*	For Vim version 9.2.  Last change: 2026 Apr 25
-+*tabpage.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 21
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -513,6 +513,16 @@ The scrollbar uses the |hl-PmenuSbar| highlight group for the track and
- The scroll offset is remembered across redraws but is reset when "scroll" or
- "scrollbar" is toggled off and back on.
+@@ -11317,7 +11317,12 @@ strptime({format}, {timestring})			*strptime()*
+ 		can try different {format} values until you get a non-zero
+ 		result.
  
-+MOUSE CLICKS IN THE TABPANEL:				*tabpanel-mouse*
++		Note: On MS-Windows, where the C runtime does not provide
++		strptime(), Vim uses a built-in fallback that always uses
++		English locale names regardless of the active locale.
 +
-+A left click on a row in the tabpanel selects the tab page that the row
-+belongs to.  Unlike the tabline, a double click in the tabpanel does not
-+open a new, empty tab page; it is treated the same as a single click.
+ 		See also |strftime()|.
 +
-+For finer-grained control, the 'tabpanel' value may contain |stl-%[FuncName]|
-+click regions.  Clicks on those regions are dispatched to the callback
-+function instead of falling through to tab selection.
-+
- ==============================================================================
- 6. Setting 'guitablabel'				*setting-guitablabel*
+ 		Examples: >
+ 		  :echo strptime("%Y %b %d %X", "1997 Apr 27 11:49:23")
+ <		  862156163 >
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 16ed792f9..43106ef30 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 25
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
  
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52622,6 +52622,7 @@ Other ~
+ Platform specific ~
+ -----------------
+ - support OpenType font features in 'guifont' for DirectWrite (Win32)
++- Include strptime() fallback for MS-Windows
+ 
+ xxd ~
+ ---
