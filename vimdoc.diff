@@ -1,14 +1,20 @@
-diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
-index eb2cb1b3f..cad4caf1a 100644
---- a/runtime/doc/tagsrch.txt
-+++ b/runtime/doc/tagsrch.txt
-@@ -579,6 +579,9 @@ ctags).
- 		have an absolute or relative path.  It may contain environment
- 		variables and wildcards (although the use of wildcards is
- 		doubtful).  It cannot contain a <Tab>.
-+								*E1576*
-+		Using a remote file via network protocol (e.g. using
-+		http://remote/file.txt) is not allowed.
- {tagaddress}	The Ex command that positions the cursor on the tag.  It can
- 		be any Ex command, although restrictions apply (see
- 		|tag-security|).  Posix only allows line numbers and search
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index c18c2b5e3..34eba55fd 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Apr 23
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Apr 27
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -6155,7 +6155,8 @@ TitleBarNC	Title bar for inactive Gui's window.
+ Visual		Visual mode selection.
+ 							*hl-VisualNOS*
+ VisualNOS	Visual mode selection when vim is "Not Owning the Selection".
+-		Only X11 Gui's |gui-x11| and |xterm-clipboard| supports this.
++		Only X11 Gui's |gui-x11|, |xterm-clipboard| and |wayland-selections|
++		supports this.
+ 							*hl-WarningMsg*
+ WarningMsg	Warning messages.
+ 							*hl-WildMenu*
