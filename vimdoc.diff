@@ -1,41 +1,21 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 9ea0ae82c..371de4b2c 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 4403b6c6e..e60a557df 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 21
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
+-*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
++*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -11317,7 +11317,12 @@ strptime({format}, {timestring})			*strptime()*
- 		can try different {format} values until you get a non-zero
- 		result.
+@@ -184,8 +184,8 @@ g8			Print the hex values of the bytes used in the
+ 			If the mark is "=", a line of dashes is printed
+ 			around the current line.
  
-+		Note: On MS-Windows, where the C runtime does not provide
-+		strptime(), Vim uses a built-in fallback that always uses
-+		English locale names regardless of the active locale.
-+
- 		See also |strftime()|.
-+
- 		Examples: >
- 		  :echo strptime("%Y %b %d %X", "1997 Apr 27 11:49:23")
- <		  862156163 >
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 16ed792f9..43106ef30 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 25
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
+-			If the 'number' or 'relativenumber' option is set,
+-			absolute line numbers will be included in the output.
++			If the 'number' option is set, absolute line numbers
++			will be included in the output.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52622,6 +52622,7 @@ Other ~
- Platform specific ~
- -----------------
- - support OpenType font features in 'guifont' for DirectWrite (Win32)
-+- Include strptime() fallback for MS-Windows
- 
- xxd ~
- ---
+ 							*:z!*
+ :[range]z![+-^.=][count]
