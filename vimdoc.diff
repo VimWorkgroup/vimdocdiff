@@ -1,21 +1,46 @@
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index 4403b6c6e..e60a557df 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 371de4b2c..67ebc70f9 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
-+*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 27
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 26
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -184,8 +184,8 @@ g8			Print the hex values of the bytes used in the
- 			If the mark is "=", a line of dashes is printed
- 			around the current line.
+@@ -6863,6 +6863,8 @@ listener_add({callback} [, {buf} [, {unbuffered}]])	*listener_add()*
+ 		second argument: >
+ 			GetBuffer()->listener_add(callback)
+ <
++		This function is not available in the |sandbox|.
++
+ 		Return type: |Number|
  
--			If the 'number' or 'relativenumber' option is set,
--			absolute line numbers will be included in the output.
-+			If the 'number' option is set, absolute line numbers
-+			will be included in the output.
  
- 							*:z!*
- :[range]z![+-^.=][count]
+@@ -6877,6 +6879,8 @@ listener_flush([{buf}])					*listener_flush()*
+ 		Can also be used as a |method|: >
+ 			GetBuffer()->listener_flush()
+ <
++		This function is not available in the |sandbox|.
++
+ 		Return type: void
+ 
+ 
+@@ -6888,6 +6892,8 @@ listener_remove({id})					*listener_remove()*
+ 		Can also be used as a |method|: >
+ 			GetListenerId()->listener_remove()
+ <
++		This function is not available in the |sandbox|.
++
+ 		Return type: |Number|
+ 
+ 
+@@ -8867,6 +8873,8 @@ redraw_listener_add({opts})				*redraw_listener_add()*
+ 		Can also be used as a |method|: >
+ 			GetOpts()->redraw_listener_add()
+ <
++		This function is not available in the |sandbox|.
++
+ 		Return type: |Number|
+ 
+ 
