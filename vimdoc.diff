@@ -1,90 +1,35 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 67ebc70f9..b294b6388 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index ce0ceb45b..26cdc6a00 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 27
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Apr 28
+-*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
++*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -705,6 +705,8 @@ tabpagebuflist([{arg}])		List	list of buffer numbers in tab page
- tabpagenr([{arg}])		Number	number of current or last tab page
- tabpagewinnr({tabarg} [, {arg}])
- 				Number	number of current window in tab page
-+tabpanel_getinfo()		Dict	get current state of the tabpanel
-+tabpanel_scroll({n} [, {opts}])	Bool	scroll the tabpanel
- tagfiles()			List	tags files used
- taglist({expr} [, {filename}])	List	list of tags matching {expr}
- tan({expr})			Float	tangent of {expr}
-@@ -11884,6 +11886,38 @@ tabpagewinnr({tabarg} [, {arg}])			*tabpagewinnr()*
- 		Return type: |Number|
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 6c9430dc8..01fd88ca6 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -965,6 +965,20 @@ term_start({cmd} [, {options}])			*term_start()*
+ 		input and one output handle, with no separate handle for
+ 		stderr.
  
- 
-+tabpanel_getinfo()					*tabpanel_getinfo()*
-+		Return a |Dictionary| describing the current state of the
-+		tabpanel (see |tabpanel|).  The dictionary has these keys:
-+			align		"left" or "right"
-+			columns		width in screen columns
-+			scrollbar	|TRUE| if a scrollbar is shown
-+			offset		current scroll offset in rows
-+			total		total number of rows rendered
-+			max_offset	largest valid value for "offset"
-+
-+		The "total" and "max_offset" values are only accurate after
-+		the tabpanel has been drawn at least once.
-+
-+		Return type: dict<any>
-+
-+
-+tabpanel_scroll({n} [, {opts}])				*tabpanel_scroll()*
-+		Scroll the tabpanel by {n} rows.  Positive values scroll down
-+		(later tabs become visible), negative values scroll up.  The
-+		new offset is clamped to the valid range.
-+
-+		When {opts} is a |Dictionary| and its "absolute" entry is
-+		|TRUE|, {n} is used as the new absolute scroll offset
-+		instead of a delta.
-+
-+		Returns |TRUE| if the scroll offset changed, |FALSE|
-+		otherwise (for example when the tabpanel is not shown, or
-+		the offset is already at the requested value).
-+
-+		Return type: |vim9-boolean|
-+
-+
- tagfiles()						*tagfiles()*
- 		Returns a |List| with the file names used to search for tags
- 		for the current buffer.  This is the 'tags' option expanded.
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index e6ca80457..560f01c70 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
-@@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Feb 16
-+*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Apr 28
- 
- 
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -1081,6 +1081,8 @@ Buffers, windows and the argument list:
- 	tabpagebuflist()	return List of buffers in a tab page
- 	tabpagenr()		get the number of a tab page
- 	tabpagewinnr()		like winnr() for a specified tab page
-+	tabpanel_getinfo()	get current state of the tabpanel
-+	tabpanel_scroll()	scroll the tabpanel
- 	winnr()			get the window number for the current window
- 	bufwinid()		get the window ID of a specific buffer
- 	bufwinnr()		get the window number of a specific buffer
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index cc2f5f2de..6b8d97b41 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52651,6 +52651,8 @@ Various syntax, indent and other plugins were added.
- Functions: ~
- 
- |ch_listen()|		listen on {address}
-+|tabpanel_getinfo()|	get current state of the |tabpanel|
-+|tabpanel_scroll()|	scroll the |tabpanel|
- 
- Autocommands: ~
- 
++		Note: term_start() always uses RAW mode for its callbacks.
++		"out_cb" and "err_cb" receive the raw chunk of data as read
++		from the OS.  A single callback invocation may contain
++		multiple lines separated by NL, and (for stdout via a pty)
++		each line may have a trailing CR from the line discipline
++		(ONLCR).  If per-line handling is desired, the callback must
++		split "msg" on NL and strip the trailing CR itself.
++		Example: >
++			func Handle(ch, msg)
++			  for line in split(a:msg, "\n")
++			    echom substitute(line, '\r$', '', '')
++			  endfor
++			endfunc
++<
+ 		There are extra options:
+ 		   "term_name"	     name to use for the buffer name, instead
+ 				     of the command name.
