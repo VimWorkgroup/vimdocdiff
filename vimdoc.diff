@@ -1,35 +1,33 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index ce0ceb45b..26cdc6a00 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index beddbea4c..34dacefd6 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 15
-+*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 28
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Apr 29
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 6c9430dc8..01fd88ca6 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -965,6 +965,20 @@ term_start({cmd} [, {options}])			*term_start()*
- 		input and one output handle, with no separate handle for
- 		stderr.
+@@ -421,8 +421,6 @@ more information.
  
-+		Note: term_start() always uses RAW mode for its callbacks.
-+		"out_cb" and "err_cb" receive the raw chunk of data as read
-+		from the OS.  A single callback invocation may contain
-+		multiple lines separated by NL, and (for stdout via a pty)
-+		each line may have a trailing CR from the line discipline
-+		(ONLCR).  If per-line handling is desired, the callback must
-+		split "msg" on NL and strip the trailing CR itself.
-+		Example: >
-+			func Handle(ch, msg)
-+			  for line in split(a:msg, "\n")
-+			    echom substitute(line, '\r$', '', '')
-+			  endfor
-+			endfunc
-+<
- 		There are extra options:
- 		   "term_name"	     name to use for the buffer name, instead
- 				     of the command name.
+ Add an option to restrict 'incsearch' to not scroll the view. (Tavis Ormandy)
+ 
+-Remove SPACE_IN_FILENAME ? It is only used for completion.
+-
+ When 'term' starts with "foot" then default t_TI and t_TE to the values used
+ for the builtin xterm termcap.
+ 
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 6b8d97b41..f3bea36e1 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52642,6 +52642,9 @@ Changed ~
+ - Removed the Wayland focus steal feature 'wlsteal', since it causes too many
+   issues and can now be re-implemted using the |clipboard-providers| feature
+   if needed, see |wayland-primary-selection| for an example.
++- On Unix, filename completion for single-file Ex commands now treats embedded
++  whitespace as part of the filename, like on other platforms.
++
+ 
+ 							*added-9.3*
+ Added ~
