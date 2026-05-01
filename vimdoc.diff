@@ -1,36 +1,62 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index d9dbcd833..b0f3f1c72 100644
+index b0f3f1c72..7e1d4cb67 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -7007,7 +7007,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 				of 'fillchars' option.
- 	  opacity:{n}		opacity percentage 0-100 (default 100).
- 				When less than 100, background content shows
--				through the popup menu.
-+				through the popup menu.  Requires the GUI,
-+				'termguicolors', or a 256-color terminal.
+@@ -2393,6 +2393,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		close		show close button: "on" (default) or "off"
+ 		height		maximum height of the popup
+ 		highlight	popup highlight group (default: PmenuSel)
++		opacity		opacity percentage 0-100 (default 100, fully
++				opaque).  When less than 100, content beneath
++				the popup shows through.
+ 		resize		show resize handle: "on" (default) or "off"
+ 		shadow		"off" (default) or "on" using |hl-PmenuShadow|
+ 		width		maximum width of the popup
+@@ -2400,6 +2403,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	Example: >
+ 		:set completepopup=height:10,border:single,highlight:InfoPopup
+ 		:set completepopup=width:60,border:custom:─;│;─;│;┌;┐;┘;└
++		:set completepopup=border:round,opacity:80
+ <
+ 	When "align" is set to "item", the popup is positioned near the
+ 	selected item and moves as the selection changes.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index ca69850e0..c9ede397b 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52587,6 +52587,7 @@ Popups ~
+ - Support for transparency, see |popup-opacity|.
+ - 'previewpopup' supports the same values as 'completepopup' (except for
+   "align").
++- Support "opacity" setting for 'completepopup' option.
  
- 	Flags (no value):
- 	  margin		adds one-cell spacing inside the left and
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 6b99ac47e..250127b9b 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
+ Diff mode ~
+ ---------
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index f27cc6b05..f0d9afaf1 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
 @@ -1,4 +1,4 @@
--*popup.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
-+*popup.txt*	For Vim version 9.2.  Last change: 2026 May 01
+-*windows.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
++*windows.txt*	For Vim version 9.2.  Last change: 2026 May 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1067,8 +1067,9 @@ The opacity value ranges from 0 to 100:
-     1-99	Partially transparent - the popup background is blended with
- 		the underlying text, making both partially visible.
+@@ -960,6 +960,9 @@ settings.  The option is a comma-separated list of values:
+ 			the value is "on", it must be set after border.
+ 	height		maximum height of the popup
+ 	highlight	highlight group of the popup (default is Pmenu)
++	opacity		opacity percentage 0-100 (default 100, fully opaque).
++			When less than 100, content beneath the popup shows
++			through.
+ 	resize		show resize handle: "on" (default) or "off"
+ 	shadow		"off" (default) or "on" using |hl-PmenuShadow|
+ 	width		maximum width of the popup
+@@ -968,6 +971,7 @@ Example: >
+ 	:set previewpopup=height:10,width:60
+ 	:set previewpopup=border:single,borderhilight:PmenuBorder
+ 	:set previewpopup=border:custom:─;│;─;│;┌;┐;┘;└
++	:set previewpopup=border:round,opacity:80
  
--The transparency effect requires using the GUI or having 'termguicolors'
--enabled in the terminal. Without it, the opacity setting has no effect.
-+The transparency effect requires using the GUI, having 'termguicolors'
-+enabled, or running in a 256-color terminal.  On terminals with fewer
-+than 256 colors the opacity setting has no effect.
- 
- When a popup is transparent:
- - The popup's background color is blended with the background text
+ A few peculiarities:
+ - If the file is in a buffer already, it will be re-used.  This will allow for
