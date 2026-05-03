@@ -1,62 +1,52 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index b0f3f1c72..7e1d4cb67 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -2393,6 +2393,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		close		show close button: "on" (default) or "off"
- 		height		maximum height of the popup
- 		highlight	popup highlight group (default: PmenuSel)
-+		opacity		opacity percentage 0-100 (default 100, fully
-+				opaque).  When less than 100, content beneath
-+				the popup shows through.
- 		resize		show resize handle: "on" (default) or "off"
- 		shadow		"off" (default) or "on" using |hl-PmenuShadow|
- 		width		maximum width of the popup
-@@ -2400,6 +2403,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	Example: >
- 		:set completepopup=height:10,border:single,highlight:InfoPopup
- 		:set completepopup=width:60,border:custom:─;│;─;│;┌;┐;┘;└
-+		:set completepopup=border:round,opacity:80
- <
- 	When "align" is set to "item", the popup is positioned near the
- 	selected item and moves as the selection changes.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index ca69850e0..c9ede397b 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52587,6 +52587,7 @@ Popups ~
- - Support for transparency, see |popup-opacity|.
- - 'previewpopup' supports the same values as 'completepopup' (except for
-   "align").
-+- Support "opacity" setting for 'completepopup' option.
- 
- Diff mode ~
- ---------
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index f27cc6b05..f0d9afaf1 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 118e2d44e..a79c0388c 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*windows.txt*	For Vim version 9.2.  Last change: 2026 Mar 01
-+*windows.txt*	For Vim version 9.2.  Last change: 2026 May 01
+-*map.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*map.txt*	For Vim version 9.2.  Last change: 2026 May 02
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -960,6 +960,9 @@ settings.  The option is a comma-separated list of values:
- 			the value is "on", it must be set after border.
- 	height		maximum height of the popup
- 	highlight	highlight group of the popup (default is Pmenu)
-+	opacity		opacity percentage 0-100 (default 100, fully opaque).
-+			When less than 100, content beneath the popup shows
-+			through.
- 	resize		show resize handle: "on" (default) or "off"
- 	shadow		"off" (default) or "on" using |hl-PmenuShadow|
- 	width		maximum width of the popup
-@@ -968,6 +971,7 @@ Example: >
- 	:set previewpopup=height:10,width:60
- 	:set previewpopup=border:single,borderhilight:PmenuBorder
- 	:set previewpopup=border:custom:─;│;─;│;┌;┐;┘;└
-+	:set previewpopup=border:round,opacity:80
+@@ -1693,7 +1693,21 @@ For the "custom" argument, the function should return the completion
+ candidates one per line in a newline separated string.
+ 							*E1303*
+ For the "customlist" argument, the function should return the completion
+-candidates as a Vim List.  Non-string items in the list are ignored.
++candidates as a Vim List.  Each item may be either a string or a |Dictionary|.
++A Dictionary item may have the following keys:
++	word	(required) the text inserted into the command line when the
++		item is selected
++	abbr	alternative text shown in the popup menu in place of "word",
++		when 'wildoptions' contains "pum"; useful when the inserted
++		text and the displayed text should differ
++	kind	short kind text (one or two characters), shown in the popup
++		menu when 'wildoptions' contains "pum"
++	menu	extra text shown after the match in the popup menu
++	info	long description shown in the info popup; the |+popupwin|
++		feature is required to display it
++Items that are neither a string nor a Dictionary, and Dictionary items without
++a "word" key, are ignored.  When 'wildoptions' does not contain "pum", only
++"word" is shown.
  
- A few peculiarities:
- - If the file is in a buffer already, it will be re-used.  This will allow for
+ The function arguments are:
+ 	ArgLead		the leading portion of the argument currently being
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index c9ede397b..114bdf7da 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 May 01
++*version9.txt*	For Vim version 9.2.  Last change: 2026 May 02
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52623,6 +52623,8 @@ Other ~
+   'completeopt' option
+ - Channel can handle |Blob| messages |channel-open-options|.
+ - Added the "u" flag to 'shortmess' to silence undo/redo messages: |shm-u|
++- |:command-completion-customlist| can return a list of dictionaries with
++  kind/menu/info/abbr for the popup menu.
+ 
+ Platform specific ~
+ -----------------
