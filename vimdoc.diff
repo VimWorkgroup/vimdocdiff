@@ -1,52 +1,20 @@
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 118e2d44e..a79c0388c 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 7e1d4cb67..4628a1624 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*map.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*map.txt*	For Vim version 9.2.  Last change: 2026 May 02
+-*options.txt*	For Vim version 9.2.  Last change: 2026 May 01
++*options.txt*	For Vim version 9.2.  Last change: 2026 May 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1693,7 +1693,21 @@ For the "custom" argument, the function should return the completion
- candidates one per line in a newline separated string.
- 							*E1303*
- For the "customlist" argument, the function should return the completion
--candidates as a Vim List.  Non-string items in the list are ignored.
-+candidates as a Vim List.  Each item may be either a string or a |Dictionary|.
-+A Dictionary item may have the following keys:
-+	word	(required) the text inserted into the command line when the
-+		item is selected
-+	abbr	alternative text shown in the popup menu in place of "word",
-+		when 'wildoptions' contains "pum"; useful when the inserted
-+		text and the displayed text should differ
-+	kind	short kind text (one or two characters), shown in the popup
-+		menu when 'wildoptions' contains "pum"
-+	menu	extra text shown after the match in the popup menu
-+	info	long description shown in the info popup; the |+popupwin|
-+		feature is required to display it
-+Items that are neither a string nor a Dictionary, and Dictionary items without
-+a "word" key, are ignored.  When 'wildoptions' does not contain "pum", only
-+"word" is shown.
+@@ -6799,6 +6799,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <	Replace the ';' with a ':' or whatever separator is used.  Note that
+ 	this doesn't work when $INCL contains a comma or white space.
  
- The function arguments are:
- 	ArgLead		the leading portion of the argument currently being
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index c9ede397b..114bdf7da 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 May 01
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 May 02
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52623,6 +52623,8 @@ Other ~
-   'completeopt' option
- - Channel can handle |Blob| messages |channel-open-options|.
- - Added the "u" flag to 'shortmess' to silence undo/redo messages: |shm-u|
-+- |:command-completion-customlist| can return a list of dictionaries with
-+  kind/menu/info/abbr for the popup menu.
- 
- Platform specific ~
- -----------------
++	This option cannot be set from a |modeline| or in the |sandbox|, for
++	security reasons.
++
+ 						*'perldll'*
+ 'perldll'		string	(default depends on the build)
+ 			global
