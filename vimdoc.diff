@@ -1,14 +1,18 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index c4b2df144..2baf8a01a 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -6799,9 +6799,6 @@ A jump table for the options with a short description can be found at |Q_op|.
- <	Replace the ';' with a ':' or whatever separator is used.  Note that
- 	this doesn't work when $INCL contains a comma or white space.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 114bdf7da..a1b9afce7 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 May 02
++*version9.txt*	For Vim version 9.2.  Last change: 2026 May 05
  
--	This option cannot be set from a |modeline| or in the |sandbox|, for
--	security reasons.
--
- 						*'perldll'*
- 'perldll'		string	(default depends on the build)
- 			global
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52625,6 +52625,7 @@ Other ~
+ - Added the "u" flag to 'shortmess' to silence undo/redo messages: |shm-u|
+ - |:command-completion-customlist| can return a list of dictionaries with
+   kind/menu/info/abbr for the popup menu.
++- |C-indenting| detects comments better.
+ 
+ Platform specific ~
+ -----------------
