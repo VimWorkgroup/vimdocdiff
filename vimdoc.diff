@@ -1,20 +1,19 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7e1d4cb67..4628a1624 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/ft_mp.txt b/runtime/doc/ft_mp.txt
+index 7106edf98..f4ea04257 100644
+--- a/runtime/doc/ft_mp.txt
++++ b/runtime/doc/ft_mp.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 May 01
-+*options.txt*	For Vim version 9.2.  Last change: 2026 May 03
+-*ft_mp.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*ft_mp.txt*	For Vim version 9.2.  Last change: 2026 May 04
  
+ This is the documentation for the METAFONT and MetaPost filetype plugins.
+ Unless otherwise specified, the commands, settings and mappings defined below
+@@ -25,7 +25,7 @@ MetaPost documents, including syntax coloring, indentation, and completion.
+ Defining indentation rules for METAFONT and MetaPost code is tricky and
+ somewhat subjective, because the syntax is quite liberal. The plugin uses some
+ heuristics that work well most of the time, but in particular cases you may
+-want to to override the automatic rules, so that the manually defined
++want to override the automatic rules, so that the manually defined
+ indentation is preserved by commands like `gg=G`.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6799,6 +6799,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- <	Replace the ';' with a ':' or whatever separator is used.  Note that
- 	this doesn't work when $INCL contains a comma or white space.
- 
-+	This option cannot be set from a |modeline| or in the |sandbox|, for
-+	security reasons.
-+
- 						*'perldll'*
- 'perldll'		string	(default depends on the build)
- 			global
+ This can be achieved by appending `%>`, `%<`, `%=` or `%!` to a line to
