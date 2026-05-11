@@ -1,76 +1,78 @@
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 250127b9b..2afa93a75 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index eba6e4354..62cd761e1 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*popup.txt*	For Vim version 9.2.  Last change: 2026 May 01
-+*popup.txt*	For Vim version 9.2.  Last change: 2026 May 10
+-*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Feb 25
++*autocmd.txt*	For Vim version 9.2.  Last change: 2026 May 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -712,6 +712,15 @@ The second argument of |popup_create()| is a dictionary with options:
- 			when "textprop" is present.
- 	textpropid	Used to identify the text property when "textprop" is
- 			present.  Use zero to reset.
-+	clipwindow	Only used when "textprop" is set.  When TRUE the popup
-+			is kept within the window containing the text
-+			property: if the text property scrolls past that
-+			window's top, bottom, left or right edge, the popup
-+			is clipped at that edge instead of being drawn
-+			outside it.  Once the text property has scrolled out
-+			of the window the popup is hidden.
-+			Default FALSE.
-+			See |popup-clipwindow|.
- 	fixed		When FALSE (the default), and:
- 			 - "pos" is "botleft" or "topleft", and
- 			 - the popup would be truncated at the right edge of
-@@ -949,6 +958,31 @@ If the window for which the popup was defined is closed, the popup is closed.
- If the popup cannot fit in the desired position, it may show at a nearby
- position.
+@@ -421,6 +421,8 @@ Name			triggered by ~
+ |TextChangedP|		after a change was made to the text in Insert mode
+ 			when popup menu visible
+ |TextChangedT|		after a change was made to the text in Terminal mode
++|TextPutPost|		after text has been put
++|TextPutPre|		before text is put
+ |TextYankPost|		after text has been yanked or deleted
  
-+
-+CLIP TEXTPROP POPUP TO HOST WINDOW			*popup-clipwindow*
-+
-+When the popup is anchored to a text property in a split window, the popup is
-+by default drawn relative to the whole screen and may extend past the edges of
-+the window that contains the text property (the "host window").  Setting
-+"clipwindow" to TRUE keeps the popup within window's content area:
-+parts of the popup that fall outside the window are clipped, and the popup is
-+hidden once the text property has scrolled entirely past one of the edges.
-+
-+Example: a tall popup anchored above the cursor that should never spill into
-+the window below the split: >
-+	call popup_create(body, #{
-+		\ textprop: 'marker',
-+		\ textpropid: id,
-+		\ pos: 'topleft',
-+		\ line: -1, col: 0,
-+		\ posinvert: v:false,
-+		\ clipwindow: v:true,
-+		\ })
-+<
-+With "posinvert" left at its default (TRUE) the popup may be flipped to the
-+opposite side of the text property when there is no room; set it to FALSE to
-+keep the requested side and rely on "clipwindow" to clip the overflow.
-+
- Some hints:
- - To avoid collision with other plugins the text property type name has to be
-   unique.  You can also use the "bufnr" item to make it local to a buffer.
+ |SafeState|		nothing pending, going to wait for the user to type a
+@@ -1359,6 +1361,45 @@ TextChangedP			After a change was made to the text in the
+ TextChangedT			After a change was made to the text in the
+ 				current buffer in Terminal mode.
+ 				Otherwise the same as TextChanged.
++							*TextPutPost*
++TextPutPost			After text has been put in the current buffer.
++				The following values in |v:event| are mostly
++				the same as |TextYankPost|:
++				   operator	The operation performed,
++						either 'p' or 'P'.
++				   regcontents	Text that was put. For
++						|quote_=|, this is the result
++						of the expression.
++				   regname	Name of the register or empty
++						string for the unnamed
++						register.
++				   regtype	Type of the register, see
++						|getregtype()|.
++				   visual	True if the operation is
++						performed in |Visual| mode.
++				Not triggered when |quote_| is used nor when
++				called recursively.
++				It is not allowed to change the buffer text,
++				see |textlock|.
++				Note that for the |quote_.| register, since
++				the last inserted text is buffered into the
++				input buffer (buffer isn't modified directly),
++				this autocommand is called directly after
++				|TextPutPre|.
++				{only when compiled with the +eval feature}
++							*TextPutPre*
++TextPutPre			Before text has been put in the current buffer.
++				Same values as |TextPutPost| in |v:event|.  It
++				is valid to call |setreg()| in this
++				autocommand, allowing you to process and
++				modify the text in "regcontents" before it is
++				put.  However this does not apply to |quote_#|,
++				|quote_=|, |quote_%|, |quote_:|, |quote_/| or |quote_.|.
++				Not triggered when |quote_| is used nor when
++				called recursively.
++				It is not allowed to change the buffer text,
++				see |textlock|.
++				{only when compiled with the +eval feature}
+ 							*TextYankPost*
+ TextYankPost			After text has been yanked or deleted in the
+ 				current buffer.  The following values of
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a1b9afce7..f4cdc702b 100644
+index f4cdc702b..45a25b08b 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 May 05
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 May 10
+@@ -52669,6 +52669,8 @@ Functions: ~
+ Autocommands: ~
  
+ |SessionLoadPre|	before loading a |Session| file
++|TextPutPost|		after putting text
++|TextPutPre|		before putting text
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52588,6 +52588,7 @@ Popups ~
- - 'previewpopup' supports the same values as 'completepopup' (except for
-   "align").
- - Support "opacity" setting for 'completepopup' option.
-+- Support for clipping textproperty popups |popup-clipwindow|.
+ Options: ~
  
- Diff mode ~
- ---------
