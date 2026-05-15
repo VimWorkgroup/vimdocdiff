@@ -1,15 +1,27 @@
-diff --git a/runtime/doc/recover.txt b/runtime/doc/recover.txt
-index c52910c1f..d52aacd88 100644
---- a/runtime/doc/recover.txt
-+++ b/runtime/doc/recover.txt
-@@ -195,6 +195,10 @@ recovered file.  Or use |:DiffOrig|.
- Once you are sure the recovery is ok delete the swap file.  Otherwise, you
- will continue to get warning messages that the ".swp" file already exists.
- 
-+Note: Recovering swap files is best-effort.  Vim attempts to validate fields
-+and skip corrupted sections, but the swap file format is intended for files
-+you trust.  A crafted swap file may trigger parser bugs; such reports are
-+treated as robustness issues rather than security vulnerabilities.
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 6c3888508..c74f95e80 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -1,4 +1,4 @@
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 May 08
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 May 15
  
  
- ENCRYPTION AND THE SWAP FILE				*:recover-crypt*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -6115,9 +6115,14 @@ SpellRare	Word that is recognized by the spellchecker as one that is
+ 		hardly ever used. |spell|
+ 		This will be combined with the highlighting used otherwise.
+ 							*hl-StatusLine*
+-StatusLine	Status line of current window.
++StatusLine	Status line of current window.  The highlight at the status
++		line's edge (StatusLine, or any %#... / %N* in 'statusline')
++		also extends into the adjacent vertical separator cell when
++		the status lines are connected (no 'vert' character drawn).
+ 							*hl-StatusLineNC*
+-StatusLineNC	status lines of not-current windows.
++StatusLineNC	status lines of not-current windows.  Like |hl-StatusLine|,
++		the edge highlight also extends into the adjacent vertical
++		separator cell.
+ 		Note: If this is equal to "StatusLine", Vim will use "^^^" in
+ 		the status line of the current window.
+ 							*hl-StatusLineTerm*
