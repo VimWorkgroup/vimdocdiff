@@ -1,46 +1,20 @@
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index 56e7fb9e7..4a3444b61 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index a73055b09..71585da89 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*usr_05.txt*	For Vim version 9.2.  Last change: 2026 May 11
- 
- 
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -509,6 +509,16 @@ To highlight in visual mode, use: >
- To disable the effect of the plugin after it has been loaded: >
- 	au! hlyank
- 
-+Additionally, the plugin can also highlight regions that are put using the
-+|TextPutPost| autocommand.  This is by default disabled and can be enabled
-+using: >
-+	:let g:hlput_enable = v:true
-+<
-+The following configuration variables can be used are "g:hlput_hlgroup" and
-+"g:hlput_duration", which have the same effect as their yank counterparts: >
-+	:let g:hlput_hlgroup = 'IncSearch'
-+	:let g:hlput_duration = 300
-+
- ------------------------------------------------------------------------------
- Adding the osc52 package		*osc52-install* *package-osc52*
- ------------------------------------------------------------------------------
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 45a25b08b..5121fe90c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 May 10
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 May 11
+-*eval.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*eval.txt*	For Vim version 9.2.  Last change: 2026 May 15
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52627,6 +52627,8 @@ Other ~
- - |:command-completion-customlist| can return a list of dictionaries with
-   kind/menu/info/abbr for the popup menu.
- - |C-indenting| detects comments better.
-+- The |package-hlyank| can now optionally highlight the last put region as
-+  well.
+@@ -5367,6 +5367,9 @@ order:
+ 	   is an empty string, then the type is automatically chosen.
+ 	2. A |list| of strings to return to Vim, each representing a line.
  
- Platform specific ~
- -----------------
++If an invalid value is returned, then this is not an error.  Instead the
++register will be left unchanged (not cleared).
++
+ 						*clipboard-providers-copy*
+ The "copy" callback returns nothing and takes the following arguments in the
+ following order:
