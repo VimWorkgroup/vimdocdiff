@@ -1,14 +1,15 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 71585da89..2bcad93a3 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -5346,6 +5346,9 @@ a |lambda| expression.
- With the exception of the "available" callback if a callback is not provided,
- Vim will not invoke anything, and this is not an error.
+diff --git a/runtime/doc/recover.txt b/runtime/doc/recover.txt
+index c52910c1f..d52aacd88 100644
+--- a/runtime/doc/recover.txt
++++ b/runtime/doc/recover.txt
+@@ -195,6 +195,10 @@ recovered file.  Or use |:DiffOrig|.
+ Once you are sure the recovery is ok delete the swap file.  Otherwise, you
+ will continue to get warning messages that the ".swp" file already exists.
  
-+If the "paste" or "copy" callbacks are triggered recursively, then they will
-+not be called.
-+
- 						*clipboard-providers-textlock*
- In both the "paste" and "copy" callbacks, it is not allowed to change the
- buffer text, see |textlock|.
++Note: Recovering swap files is best-effort.  Vim attempts to validate fields
++and skip corrupted sections, but the swap file format is intended for files
++you trust.  A crafted swap file may trigger parser bugs; such reports are
++treated as robustness issues rather than security vulnerabilities.
+ 
+ 
+ ENCRYPTION AND THE SWAP FILE				*:recover-crypt*
