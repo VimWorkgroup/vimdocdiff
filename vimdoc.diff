@@ -1,133 +1,60 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 99e4e70a3..1c1100a98 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index a79c0388c..5d9bed83b 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 May 10
-+*options.txt*	For Vim version 9.2.  Last change: 2026 May 17
+-*map.txt*	For Vim version 9.2.  Last change: 2026 May 02
++*map.txt*	For Vim version 9.2.  Last change: 2026 May 17
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4774,7 +4774,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 				     [:PmenuKind,]:PmenuKindSel,
- 				     {:PmenuExtra,}:PmenuExtraSel,
- 				     x:PmenuSbar,X:PmenuThumb,j:PmenuBorder,
--				     H:PmenuShadow,*:TabLine,
-+				     H:PmenuShadow,p:Popup,J:PopupBorder,
-+				     Q:PopupTitle,*:TabLine,
- 				     #:TabLineSel,_:TabLineFill,!:CursorColumn,
- 				     .:CursorLine,o:ColorColumn,q:QuickFixLine,
- 				     z:StatusLineTerm,Z:StatusLineTermNC,
-@@ -4845,6 +4846,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	|hl-PmenuMatchSel| <  popup menu matched text in selected line
- 	|hl-PmenuBorder|   j  popup menu border characters
- 	|hl-PmenuShadow|   H  popup menu shadow
-+	|hl-Popup|	 p  popup window body
-+	|hl-PopupBorder|   J  popup window border characters
-+	|hl-PopupTitle|	 Q  popup window title
- 	|hl-PreInsert|	 I  text inserted when "preinsert" is in 'completeopt'
- 	|hl-Normal|	 (  Window color (supersedes 'wincolor' option)
+@@ -1593,7 +1593,10 @@ reported if any are supplied).  However, it is possible to specify that the
+ command can take arguments, using the -nargs attribute.  Valid cases are:
  
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index 2afa93a75..2e9124477 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
-@@ -1,4 +1,4 @@
--*popup.txt*	For Vim version 9.2.  Last change: 2026 May 10
-+*popup.txt*	For Vim version 9.2.  Last change: 2026 May 17
+ 	-nargs=0    No arguments are allowed (the default)
+-	-nargs=1    Exactly one argument is required, it includes spaces
++	-nargs=1    Exactly one argument is required, it includes spaces;
++		    completion treats white spaces as argument separation
++	-nargs=_    Exactly one argument is required, it includes spaces;
++		    completion treats white spaces as part of the argument
+ 	-nargs=*    Any number of arguments are allowed (0, 1, or many),
+ 		    separated by white space
+ 	-nargs=?    0 or 1 arguments are allowed
+@@ -1601,7 +1604,23 @@ command can take arguments, using the -nargs attribute.  Valid cases are:
  
+ Arguments are considered to be separated by (unescaped) spaces or tabs in this
+ context, except when there is one argument, then the white space is part of
+-the argument.
++the argument. The difference between the "-nargs=1" and "-nargs=_": >
++
++	func MyComplete(ArgLead, CmdLine, CursorPos)
++	  return ["one value", "two values", "three values"]
++		\->matchfuzzy(a:ArgLead)
++	endfunc
++	:command -nargs=1 -complete=customlist,MyComplete MyCmd1 echo <q-args>
++	:command -nargs=_ -complete=customlist,MyComplete MyCmd2 echo <q-args>
++
++Completing ":MyCmd1 two va<tab>" will complete with: >
++
++	:MyCmd1 two one value
++
++Completing ":MyCmd2 two va<tab>" will complete with: >
++
++	:MyCmd2 two values
++
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -44,8 +44,11 @@ A popup window can be used for such things as:
- The text in the popup window can be colored with |text-properties|.  It is
- also possible to use syntax highlighting.
- 
--The default color used is "Pmenu".  If you prefer something else use the
--"highlight" argument or the 'wincolor' option, e.g.: >
-+The default colors are taken from |hl-Popup| (body), |hl-PopupBorder|
-+(border) and |hl-PopupTitle| (title), which all link to |hl-Pmenu| by
-+default for backward compatibility.  Override them to give general popup
-+windows a different look than the popup completion menu, or use the
-+"highlight" argument or the 'wincolor' option for a per-popup override: >
- 	hi MyPopupColor ctermbg=lightblue guibg=lightblue
- 	call setwinvar(winid, '&wincolor', 'MyPopupColor')
- 
-@@ -760,6 +763,10 @@ The second argument of |popup_create()| is a dictionary with options:
- 			border one line of padding is added to put the title
- 			on.  You might want to add one or more spaces at the
- 			start and end as padding.
-+			The title uses |hl-PopupTitle| by default; if
-+			"borderhighlight" is set the top border highlight is
-+			used instead, and if "highlight"/'wincolor' is set
-+			that is used.
- 	wrap		TRUE to make the lines wrap (default TRUE).
- 	drag		TRUE to allow the popup to be dragged with the mouse
- 			by grabbing at the border.  Has no effect if the
-@@ -808,6 +815,8 @@ The second argument of |popup_create()| is a dictionary with options:
- 			the highlight for the top/right/bottom/left border.
- 			Example: ['TopColor', 'RightColor', 'BottomColor,
- 			'LeftColor']
-+			When not given and "highlight"/'wincolor' is also not
-+			set, |hl-PopupBorder| is used.
- 	borderchars	List with characters, defining the character to use
- 			for the top/right/bottom/left border.  Optionally
- 			followed by the character to use for the
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index c74f95e80..428e8a552 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.2.  Last change: 2026 May 15
-+*syntax.txt*	For Vim version 9.2.  Last change: 2026 May 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6077,6 +6077,18 @@ PmenuShadow	Popup menu: Used for shadow.
- ComplMatchIns	Matched text of the currently inserted completion.
- 							*hl-PreInsert*
- PreInsert	Text inserted when "preinsert" is in 'completeopt'.
-+							*hl-Popup*
-+Popup		Popup window body, used when neither the popup's 'wincolor'
-+		nor explicit "highlight" argument is set.  Linked to |hl-Pmenu|
-+		by default.
-+							*hl-PopupBorder*
-+PopupBorder	Popup window border characters, used when "borderhighlight" is
-+		not set and the popup's 'wincolor' is also not set.
-+		Linked to |hl-Pmenu| by default.
-+							*hl-PopupTitle*
-+PopupTitle	Popup window title, used when "borderhighlight" is not set and
-+		the popup's 'wincolor' is also not set.  Linked to
-+		|hl-Pmenu| by default.
- 							*hl-PopupSelected*
- PopupSelected	Popup window created with |popup_menu()|.  Linked to
- 		|hl-PmenuSel| by default.
+ Note that arguments are used as text, not as expressions.  Specifically,
+ "s:var" will use the script-local variable in the script where the command was
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 5121fe90c..5b4bb1990 100644
+index 5b4bb1990..a8ea821f4 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 May 11
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 May 17
+@@ -52632,6 +52632,8 @@ Other ~
+ - |C-indenting| detects comments better.
+ - The |package-hlyank| can now optionally highlight the last put region as
+   well.
++- New argument handling for user commands |:command-nargs| using the "-nars=_"
++  attribute to handle completion of single arguments with spaces as expected.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -41880,6 +41880,9 @@ Highlighting: ~
- |hl-PmenuMatchSel|	Popup menu: highlighting of matched text in selected
- 			line
- |hl-PmenuShadow|	Popup menu: highlighting of the popup shadow
-+|hl-Popup|		Popup window: body, default link |hl-Pmenu|
-+|hl-PopupBorder|	Popup window: border characters, default link |hl-Pmenu|
-+|hl-PopupTitle|		Popup window: title, default link |hl-Pmenu|
- |hl-PreInsert|		highlighting for completion preinserted text
- |hl-TabPanel|		|tabpanel|: not active tab page label
- |hl-TabPanelFill|	|tabpanel|: filler space
-@@ -52690,6 +52693,9 @@ Options: ~
- Highlighting: ~
- 
- |hl-VertSplitNC|	Column separator of non-current window.
-+|hl-Popup|		Popup window body.
-+|hl-PopupBorder|	Popup window border.
-+|hl-PopupTitle|		Popup window title.
- 
- ==============================================================================
- PATCHES						*patches-9.3* *bug-fixes-9.3*
+ Platform specific ~
+ -----------------
