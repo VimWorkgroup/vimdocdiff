@@ -1,77 +1,22 @@
 diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 1c1100a98..2ba59824f 100644
+index 2ba59824f..b7d74e9f8 100644
 --- a/runtime/doc/options.txt
 +++ b/runtime/doc/options.txt
-@@ -9223,6 +9223,22 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	file names from the list.  This avoids problems when a future version
- 	uses another default.
- 
-+			*'tagsecure'* *'tsc'* *'notagsecure'* *'notsc'*
-+'tagsecure' 'tsc'	boolean	(default on)
-+			global
-+	When on, Vim refuses to follow tag entries whose file field looks like
-+	a URL ("scheme://..."), aborting the jump with error |E1576|.  This
-+	prevents tag files from causing Vim to open URLs through |netrw|, which
-+	would trigger a network request and expose netrw's URL-handling code to
-+	attacker-controlled input or lead to environment exfiltration.
-+
-+	Tag files might be distributed alongside source code (e.g. via Git
-+	repositories) and may therefore be untrustworthy.  Only disable
-+	this option if you fully control the tag files Vim will read.
-+
-+	This option cannot be set from a |modeline| or in the |sandbox|, for
-+	security reasons.
-+
- 				*'tagstack'* *'tgst'* *'notagstack'* *'notgst'*
- 'tagstack' 'tgst'	boolean	(default on)
- 			global
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index acc5dbdd0..96bfdb7e1 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
 @@ -1,4 +1,4 @@
--*quickref.txt*	For Vim version 9.2.  Last change: 2026 Apr 21
-+*quickref.txt*	For Vim version 9.2.  Last change: 2026 May 17
+-*options.txt*	For Vim version 9.2.  Last change: 2026 May 17
++*options.txt*	For Vim version 9.2.  Last change: 2026 May 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -960,6 +960,7 @@ Short explanation of each option:		*option-list*
- 'taglength'	  'tl'	    number of significant characters for a tag
- 'tagrelative'	  'tr'	    file names in tag file are relative
- 'tags'		  'tag'     list of file names used by the tag command
-+'tagsecure'	  'tsc'	    do not open remote files using tag commands
- 'tagstack'	  'tgst'    push tags onto the tag stack
- 'tcldll'		    name of the Tcl dynamic library
- 'term'			    name of the terminal
-diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
-index cad4caf1a..d27838386 100644
---- a/runtime/doc/tagsrch.txt
-+++ b/runtime/doc/tagsrch.txt
-@@ -1,4 +1,4 @@
--*tagsrch.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*tagsrch.txt*	For Vim version 9.2.  Last change: 2026 May 17
+@@ -6239,6 +6239,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	This option cannot be set from a |modeline| or in the |sandbox|, for
+ 	security reasons.
  
++	As an exception, `set nomodeline` is honored from within a modeline
++	even when 'modelinestrict' is on.  Other forms (`set modeline=0`,
++	`set modeline!`, `set invmodeline`) are still silently ignored.
++	This lets a file disable further modeline processing for itself.
++
+ 	The behaviour of 'modeline', 'modelinestrict' and 'modelineexpr' is
+ 	as follows:
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -581,7 +581,8 @@ ctags).
- 		doubtful).  It cannot contain a <Tab>.
- 								*E1576*
- 		Using a remote file via network protocol (e.g. using
--		http://remote/file.txt) is not allowed.
-+		http://remote/file.txt) is not allowed unless 'tagsecure'
-+		is unset.
- {tagaddress}	The Ex command that positions the cursor on the tag.  It can
- 		be any Ex command, although restrictions apply (see
- 		|tag-security|).  Posix only allows line numbers and search
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a8ea821f4..846d2dfa2 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52688,6 +52688,7 @@ Options: ~
- 			configure the height.
- 't_BS'			Begin synchronized update.
- 't_ES'			End synchronized update.
-+'tagsecure'		Do not open remote files using tag commands
- 'termresize'		Method for handling terminal resize events.
- 'termsync'		Enable support for terminal DEC 2026 sync mode.
- 'winhighlight'		Window-local highlight group mappings.
