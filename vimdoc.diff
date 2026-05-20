@@ -1,22 +1,22 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 2ba59824f..b7d74e9f8 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 846d2dfa2..1e7d1c713 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 May 17
-+*options.txt*	For Vim version 9.2.  Last change: 2026 May 18
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 May 17
++*version9.txt*	For Vim version 9.2.  Last change: 2026 May 19
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6239,6 +6239,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	This option cannot be set from a |modeline| or in the |sandbox|, for
- 	security reasons.
+@@ -52585,6 +52585,11 @@ VERSION 9.3				*version-9.3* *version9.3* *vim-9.3*
+ This section is about improvements made between version 9.2 and 9.3 and is
+ work in progress.
  
-+	As an exception, `set nomodeline` is honored from within a modeline
-+	even when 'modelinestrict' is on.  Other forms (`set modeline=0`,
-+	`set modeline!`, `set invmodeline`) are still silently ignored.
-+	This lets a file disable further modeline processing for itself.
++GUI ~
++-----
++- Added support for the GTK 4 GUI (via patch 9.2.0501).  Enable with
++  `--enable-gui=gtk4` configure switch at build time.
 +
- 	The behaviour of 'modeline', 'modelinestrict' and 'modelineexpr' is
- 	as follows:
- 
+ Popups ~
+ ------
+ - Support for transparency, see |popup-opacity|.
