@@ -1,19 +1,42 @@
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index e60a557df..761dba1c6 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index b7d74e9f8..bfab0a87b 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*various.txt*	For Vim version 9.2.  Last change: 2026 Apr 27
-+*various.txt*	For Vim version 9.2.  Last change: 2026 May 21
+-*options.txt*	For Vim version 9.2.  Last change: 2026 May 18
++*options.txt*	For Vim version 9.2.  Last change: 2026 May 22
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -296,7 +296,7 @@ g8			Print the hex values of the bytes used in the
- 			name does not contain a single quote: >
- 				:!ls '%'
- <			This should always work, but it's more typing: >
--				:exe "!ls " .. shellescape(expand("%"))
-+				:exe "!ls " .. shellescape(expand("%"),1)
- <			To get a literal "%" or "#" prepend it with a
- 			backslash.  For example, to list all files starting
- 			with "%": >
+@@ -6369,7 +6369,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			be acted upon, i.e. no cursor move.  This implies of
+ 			course, that right clicking outside a selection will
+ 			end Visual mode.
+-	Overview of what button does what for each model:
++
++	For a detailed description of 'mousemodel' behaviour see
++	|mouse-mode-table|.  Overview of what button does what for each model:
++
+ 	mouse		    extend		popup(_setpos) ~
+ 	left click	    place cursor	place cursor
+ 	left drag	    start selection	start selection
+diff --git a/runtime/doc/visual.txt b/runtime/doc/visual.txt
+index 67f32c4df..3f3c68708 100644
+--- a/runtime/doc/visual.txt
++++ b/runtime/doc/visual.txt
+@@ -1,4 +1,4 @@
+-*visual.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*visual.txt*	For Vim version 9.2.  Last change: 2026 May 22
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -157,6 +157,9 @@ gN			Like |gn| but searches backward, like with `N`.
+ 			You cannot use these, but they might show up in some
+ 			places.
+ 
++<A-LeftMouse>		Starts or extends the Visual area blockwise, see
++			|<A-LeftMouse>|.
++
+ If Visual mode is not active and the "v", "V" or CTRL-V is preceded with a
+ count, the size of the previously highlighted area is used for a start.  You
+ can then move the end of the highlighted area and give an operator.  The type
