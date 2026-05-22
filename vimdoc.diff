@@ -1,19 +1,104 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index bf47c5199..6427507d7 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index e9036c18f..0268d158e 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Apr 20
-+*cmdline.txt*	For Vim version 9.2.  Last change: 2026 May 20
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 May 04
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 May 21
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -56,7 +56,7 @@ history tables:
- These are completely separate.  Each history can only be accessed when
- entering the same type of line.
- Use the 'history' option to set the number of lines that are remembered
--(default: 50).
-+(default: 200).
- Notes:
- - When you enter a command-line that is exactly the same as an older one, the
-   old one is removed (to avoid repeated commands moving older commands out of
+@@ -6259,7 +6259,7 @@ insert({object}, {item} [, {idx}])			*insert()*
+ 		Return type: |Number|
+ 
+ 
+-instanceof({object}, {class})			*instanceof()* *E614* *E616* *E693*
++instanceof({object}, {class})			*instanceof()* *E616* *E693*
+ 		The result is a Number, which is |TRUE| when the {object}
+ 		argument is a direct or indirect instance of a |Class|,
+ 		|Interface|, or class |:type| alias specified by {class}.
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index 2bcad93a3..a451c9f2f 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.2.  Last change: 2026 May 15
++*eval.txt*	For Vim version 9.2.  Last change: 2026 May 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -170,8 +170,8 @@ Note that " " and "0" are also non-empty strings, thus considered to be TRUE.
+ A List, Dictionary or Float is not a Number or String, thus evaluate to FALSE.
+ 
+ 		*E611* *E745* *E728* *E703* *E729* *E730* *E731* *E908* *E910*
+-		*E913* *E974* *E975* *E976* *E1319* *E1320* *E1321* *E1322*
+-		*E1323* *E1324* *E1520* *E1522*
++		*E913* *E974* *E975* *E976* *E1320* *E1322* *E1324* *E1520*
++		*E1522*
+ |List|, |Tuple|, |Dictionary|, |Funcref|, |Job|, |Channel|, |Blob|, |Class|
+ and |object| types are not automatically converted.
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 5d6b71b5c..84502f19c 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 May 04
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 May 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -1117,7 +1117,7 @@ should be used.
+ 			*false* *true* *null* *null_blob* *null_channel*
+ 			*null_class* *null_dict* *null_function* *null_job*
+ 			*null_list* *null_object* *null_partial* *null_string*
+-			*E1034*
++			*E1034* *E1395*
+ In Vim9 script one can use the following predefined values: >
+ 	true
+ 	false
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 6f936a01c..7c92c455c 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
+@@ -1,4 +1,4 @@
+-*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Mar 07
++*vim9class.txt*	For Vim version 9.2.  Last change: 2026 May 21
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -110,14 +110,14 @@ referred to with the "this." prefix.  This is different from languages like
+ Java and TypeScript.  The naming convention makes the object members easy to
+ spot.  Also, when a variable does not have the "this." prefix you know it is
+ not an object variable.
+-								*E1411*
++							*E1411*
+ From outside the class definition, access an object's methods and variables by
+ using the object name followed by a dot following by the member: >
+ 
+ 	pos.lnum
+ 	pos.SetCol(10)
+ <
+-							*E1405* *E1406*
++							*E1405*
+ A class name cannot be used as an expression.  A class name cannot be used in
+ the left-hand-side of an assignment.
+ 
+@@ -921,7 +921,7 @@ methods defined in a class: >
+ 
+ 7.  Type definition				*typealias* *Vim9-type* *:type*
+ 
+-					*E1393* *E1395* *E1396* *E1397* *E1398*
++						*E1393* *E1396* *E1397* *E1398*
+ A type definition is giving a name to a type specification.  This is also
+ known as a "type alias".  The type alias can be used wherever a built-in type
+ can be used.  Example: >
+@@ -942,7 +942,7 @@ types can be aliased.
+ A type alias can be created only at the script level and not inside a
+ function.  A type alias can be exported and used across scripts.
+ 
+-					*E1400* *E1401* *E1402* *E1403* *E1407*
++							*E1403* *E1407*
+ A type alias cannot be used as an expression.  A type alias cannot be used in
+ the left-hand-side of an assignment.
+ 
