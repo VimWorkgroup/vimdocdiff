@@ -1,13 +1,19 @@
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 7c92c455c..58458b627 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
-@@ -635,7 +635,7 @@ once.  They can appear in any order, although this order is recommended: >
- <
- The "specifies" feature is currently not implemented.
+diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
+index 5d9bed83b..58f27d099 100644
+--- a/runtime/doc/map.txt
++++ b/runtime/doc/map.txt
+@@ -1,4 +1,4 @@
+-*map.txt*	For Vim version 9.2.  Last change: 2026 May 17
++*map.txt*	For Vim version 9.2.  Last change: 2026 May 21
  
--							*E1355* *E1369*
-+						*E1355* *E1369* *E1406*
- Each variable and method name can be used only once.  It is not possible to
- define a method with the same name and different type of arguments.  It is not
- possible to use a public and protected member variable with the same name.  An
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -208,7 +208,7 @@ be effective in the current buffer only.  Example: >
+ Then you can map ",w" to something else in another buffer: >
+ 	:map <buffer>  ,w  /[#&!]<CR>
+ The local buffer mappings are used before the global ones.  See <nowait> below
+-to make a short local mapping not taking effect when a longer global one
++to make a short local mapping taking effect when a longer global one
+ exists.
+ The "<buffer>" argument can also be used to clear mappings: >
+ 	:unmap <buffer> ,w
