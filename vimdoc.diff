@@ -1,23 +1,36 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 816849fb9..db37cae18 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*	For Vim version 9.2.  Last change: 2026 Apr 29
-+*starting.txt*	For Vim version 9.2.  Last change: 2026 May 24
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 6dc518cc7..0ef255210 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -8670,7 +8670,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	{ NF  Evaluate expression between '%{' and '}' and substitute result.
+ 	      Note that there is no '%' before the closing '}'.  The
+ 	      expression cannot contain a '}' character, call a function to
+-	      work around that.  See |stl-%{| below.
++	      work around that.  See |stl-%{| below.  Use '%0{' to insert the
++	      result verbatim.
+ 	{% -  This is almost same as { except the result of the expression is
+ 	      re-evaluated as a statusline format string.  Thus if the
+ 	      return value of expr contains % items they will get expanded.
+@@ -8797,6 +8798,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	A result of all digits is regarded a number for display purposes.
+ 	Otherwise the result is taken as flag text and applied to the rules
+ 	described above.
++								*stl-%0{*
++	With %0{ neither applies: the result is inserted as a literal string.
  
+ 	Watch out for errors in expressions.  They may render Vim unusable!
+ 	If you are stuck, hold down ':' or 'Q' to get a prompt, then quit and
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 2bea93a32..7c2ace84e 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52640,6 +52640,8 @@ Other ~
+   well.
+ - New argument handling for user commands |:command-nargs| using the "-nars=_"
+   attribute to handle completion of single arguments with spaces as expected.
++- Support %0{} in 'statusline' to insert the expression result verbatim and
++  not drop leading spaces |stl-%0{|.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -642,6 +642,12 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 		of the output is: >
- 			WID: 12345\n
- 
-+--display {display}					*--display*
-+		Run Vim on {display}, connecting to that X server instead of
-+		the one in $DISPLAY.  The "--display" long form is accepted
-+		only by the GTK+ 2 or GTK+ 3 GUI, see also |-display|.
-+		{requires the |+xterm_clipboard| feature}
-+
- --role {role}						*--role*
- 		GTK+ 2 GUI only.  Set the role of the main window to {role}.
- 		The window role can be used by a window manager to uniquely
+ Platform specific ~
+ -----------------
