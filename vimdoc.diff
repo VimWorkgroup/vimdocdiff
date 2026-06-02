@@ -1,22 +1,18 @@
-diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
-index 27f97548b..774f0777c 100644
---- a/runtime/doc/spell.txt
-+++ b/runtime/doc/spell.txt
-@@ -1,4 +1,4 @@
--*spell.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*spell.txt*	For Vim version 9.2.  Last change: 2026 May 23
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index 6f20073d5..fd9339f1d 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -2284,9 +2284,10 @@ Set the marked file copy/move-to target (see |netrw-mc| and |netrw-mm|):
+     displayed directory is used for the copy/move-to target.
  
+   * Also, if the cursor is in the banner, then the netrw window's currently
+-    displayed directory is used for the copy/move-to target.
+-    Unless the target already is the current directory.  In which case,
+-    typing "mf" clears the target.
++    displayed directory is used for the copy/move-to target - unless that
++    directory is already the target, in which case typing "mt" again clears
++    it.  Repeating "mt" in the banner thus toggles the current directory as
++    the target.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -562,6 +562,11 @@ then Vim will try to guess.
- 			avoid running out of memory compression will be done
- 			now and then.  This can be tuned with the 'mkspellmem'
- 			option.
-+								*E1578*
-+			There is a limit on how many postponed prefix and
-+			compound flags can be stored for one word.  Reduce the
-+			number of affix/compound flags on a word in the .dic
-+			file that exceeds it.
- 
- 			After the spell file was written and it was being used
- 			in a buffer it will be reloaded automatically.
+   * However, if the cursor is atop a directory name, then that directory is
+     used for the copy/move-to target
