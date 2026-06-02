@@ -1,19 +1,18 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 29882b4d5..2496d1b69 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index ca5daf1b7..e668de970 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 May 25
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 May 31
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 May 23
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Jun 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52644,6 +52644,8 @@ Other ~
-   attribute to handle completion of single arguments with spaces as expected.
- - Support %0{} in 'statusline' to insert the expression result verbatim and
-   not drop leading spaces |stl-%0{|.
-+- Generated Session and View files are written in Vim9 script, see |:mksession|,
-+  |:mkview| and |:mkvimrc|
+@@ -1260,6 +1260,7 @@ cpp_no_cpp11		don't highlight C++11 standard items
+ cpp_no_cpp14		don't highlight C++14 standard items
+ cpp_no_cpp17		don't highlight C++17 standard items
+ cpp_no_cpp20		don't highlight C++20 standard items
++cpp_no_cpp23		don't highlight C++23 standard items
  
- Platform specific ~
- -----------------
+ 
+ CSH						*csh.vim* *ft-csh-syntax*
