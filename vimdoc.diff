@@ -1,26 +1,21 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 80c3bb810..a9a0e9220 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
-@@ -976,7 +976,20 @@ By default the following options are set, in accordance with PEP8: >
- To disable this behavior, set the following variable in your vimrc: >
+diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
+index 9fd5ff668..ce2867791 100644
+--- a/runtime/doc/textprop.txt
++++ b/runtime/doc/textprop.txt
+@@ -1,4 +1,4 @@
+-*textprop.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
++*textprop.txt*	For Vim version 9.2.  Last change: 2026 May 31
  
- 	let g:python_recommended_style = 0
--
-+<
-+Python omni-completion |compl-omni| is provided by python3complete.vim (or
-+pythoncomplete.vim) for Vim builds with the |+python|/|+python3| interpreter.
-+By default it does not inspect the import / from statements found in the
-+buffer. This means completion of names defined in the buffer itself (classes,
-+functions, variables) works, but completion of members of imported modules is
-+not offered.
-+
-+To enable completion of imported module members, set: >
-+	let g:pythoncomplete_allow_import = 1
-+<
-+WARNING: enabling this causes omni-completion to execute the import statements
-+found in the buffer through Python's import machinery, which runs the imported
-+modules' top-level code. Only enable this for code you trust.
  
- QF QUICKFIX					    *qf.vim* *ft-qf-plugin*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -177,7 +177,9 @@ prop_add({lnum}, {col}, {props})
+ 				When omitted "truncate" is used.
+ 				Note that this applies to the individual text
+ 				property, the 'wrap' option sets the overall
+-				behavior
++				behavior.  "wrap" only takes effect when the
++				'wrap' option is set; with 'nowrap' the text
++				is truncated at the right edge of the window.
+ 		All fields except "type" are optional.
  
+ 		It is an error when both "length" and "end_lnum" or "end_col"
