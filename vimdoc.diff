@@ -1,122 +1,23 @@
-diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
-index 9965e3dd4..3a9feac71 100644
---- a/runtime/doc/gui.txt
-+++ b/runtime/doc/gui.txt
+diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
+index 816849fb9..db37cae18 100644
+--- a/runtime/doc/starting.txt
++++ b/runtime/doc/starting.txt
 @@ -1,4 +1,4 @@
--*gui.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
-+*gui.txt*	For Vim version 9.2.  Last change: 2026 May 25
+-*starting.txt*	For Vim version 9.2.  Last change: 2026 Apr 29
++*starting.txt*	For Vim version 9.2.  Last change: 2026 May 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1254,6 +1254,32 @@ A recommended Japanese font is MS Mincho.  You can find info here:
- https://learn.microsoft.com/en-us/typography/font-list/ms-mincho
- It should be distributed with Windows.
+@@ -642,6 +642,12 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
+ 		of the output is: >
+ 			WID: 12345\n
  
++--display {display}					*--display*
++		Run Vim on {display}, connecting to that X server instead of
++		the one in $DISPLAY.  The "--display" long form is accepted
++		only by the GTK+ 2 or GTK+ 3 GUI, see also |-display|.
++		{requires the |+xterm_clipboard| feature}
 +
-+Full Screen						*gui-fullscreen*
-+
-+Fullscreen mode is currently only supported in the Windows and GTK GUI
-+versions of Vim.
-+
-+To enable fullscreen mode in the GUI version of Vim, add the 's' flag
-+to the 'guioptions' setting.
-+
-+For convenience, you can define a command or mapping to toggle fullscreen
-+mode:
-+>
-+	command ToggleFullscreen {
-+	  if &guioptions =~# 's'
-+	    set guioptions-=s
-+	  else
-+	    set guioptions+=s
-+	  endif
-+	}
-+
-+	map <expr> <F11> &go =~# 's' ? ":se go-=s<CR>" : ":se go+=s<CR>"
-+
-+The fullscreen mode will occupy the entire screen area while hiding window
-+decorations such as the title bar and borders.
-+
-+
- ==============================================================================
- 8. Shell Commands					*gui-shell*
- 
-diff --git a/runtime/doc/gui_w32.txt b/runtime/doc/gui_w32.txt
-index 2e2e2601d..26c516d89 100644
---- a/runtime/doc/gui_w32.txt
-+++ b/runtime/doc/gui_w32.txt
-@@ -1,4 +1,4 @@
--*gui_w32.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*gui_w32.txt*	For Vim version 9.2.  Last change: 2026 May 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -505,25 +505,4 @@ To use the system's default title bar colors, set highlighting groups to
- 	hi TitleBarNC guibg=NONE guifg=NONE
- <
- 
--Full Screen						*gui-w32-fullscreen*
--
--To enable fullscreen mode in the Windows GUI version of Vim, add the 's' flag
--to the 'guioptions' setting.
--
--For convenience, you can define a command or mapping to toggle fullscreen
--mode:
-->
--	command ToggleFullscreen {
--	  if &guioptions =~# 's'
--	    set guioptions-=s
--	  else
--	    set guioptions+=s
--	  endif
--	}
--
--	map <expr> <F11> &go =~# 's' ? ":se go-=s<CR>" : ":se go+=s<CR>"
--
--The fullscreen mode will occupy the entire screen area while hiding window
--decorations such as the title bar and borders.
--
-  vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index bfab0a87b..6dc518cc7 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 May 22
-+*options.txt*	For Vim version 9.2.  Last change: 2026 May 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4613,10 +4613,10 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		Photon GUIs.
- 								*'go-s'*
- 	  's'	Enable fullscreen mode.  Currently only supported in the
--		MS-Windows GUI version.  When set, the window will occupy the
--		entire screen and remove window decorations.  Define custom
--		mappings to toggle this mode conveniently.  For detailed usage
--		instructions, see |gui-w32-fullscreen|.
-+		MS-Windows and GTK GUI version.  When set, the window will
-+		occupy the entire screen and remove window decorations.
-+		Define custom mappings to toggle this mode conveniently.
-+		For detailed usage instructions, see |gui-fullscreen|.
- 								*'go-r'*
- 	  'r'	Right-hand scrollbar is always present.
- 								*'go-R'*
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 4f7b9b62d..2bea93a32 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 May 22
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 May 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52589,6 +52589,7 @@ GUI ~
- -----
- - Added support for the GTK 4 GUI (via patch 9.2.0501).  Enable with
-   `--enable-gui=gtk4` configure switch at build time.
-+- Add support for fullscreen mode in the GTK UI |'go-s'|.
- 
- Popups ~
- ------
+ --role {role}						*--role*
+ 		GTK+ 2 GUI only.  Set the role of the main window to {role}.
+ 		The window role can be used by a window manager to uniquely
