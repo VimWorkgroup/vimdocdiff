@@ -1,21 +1,250 @@
-diff --git a/runtime/doc/textprop.txt b/runtime/doc/textprop.txt
-index 9fd5ff668..ce2867791 100644
---- a/runtime/doc/textprop.txt
-+++ b/runtime/doc/textprop.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 0268d158e..b415fc039 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*textprop.txt*	For Vim version 9.2.  Last change: 2026 Apr 07
-+*textprop.txt*	For Vim version 9.2.  Last change: 2026 May 31
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 May 21
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 May 31
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -177,7 +177,9 @@ prop_add({lnum}, {col}, {props})
- 				When omitted "truncate" is used.
- 				Note that this applies to the individual text
- 				property, the 'wrap' option sets the overall
--				behavior
-+				behavior.  "wrap" only takes effect when the
-+				'wrap' option is set; with 'nowrap' the text
-+				is truncated at the right edge of the window.
- 		All fields except "type" are optional.
+@@ -3672,14 +3672,22 @@ fullcommand({name} [, {vim9}])				*fullcommand()*
+ 		ambiguous (for user-defined commands) or cannot be shortened
+ 		this way. |vim9-no-shorten|
  
- 		It is an error when both "length" and "end_lnum" or "end_col"
+-		Without the {vim9} argument uses the current script version.
+-		If {vim9} is present and FALSE then legacy script rules are
+-		used.  When {vim9} is present and TRUE then Vim9 rules are
+-		used, e.g. "en" is not a short form of "endif".
+-
+-		For example `fullcommand('s')`, `fullcommand('sub')`,
+-		`fullcommand(':%substitute')` all return "substitute".
++		Without the {vim9} argument, the current script version is
++		used.  When {vim9} is present and FALSE, legacy script rules
++		are used.  When {vim9} is present and TRUE, Vim9 rules are
++		used (e.g., "en" is not a short form of "endif").
+ 
++		Note: Command validation is not performed.  Results depend on
++		Vim's internal command-specific identification rules.
++		Examples:
++>vim
++		  echo [fullcommand('s')]		|" ['substitute']
++		  echo [fullcommand('sub')]		|" ['substitute']
++		  echo [fullcommand(': mark word')]	|" ['mark']
++		  echo [fullcommand(': markword')]	|" ['']
++		  echo [fullcommand('en')]		|" ['endif']
++		  echo [fullcommand('en', v:true)]	|" ['']
++<
+ 		Can also be used as a |method|: >
+ 			GetName()->fullcommand()
+ <
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index d197ead5c..b3448bf89 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
+@@ -1,4 +1,4 @@
+-*change.txt*	For Vim version 9.2.  Last change: 2026 Mar 31
++*change.txt*	For Vim version 9.2.  Last change: 2026 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -75,18 +75,21 @@ For inserting text see |insert.txt|.
+ 					*:d* *:de* *:del* *:delete* *:dl* *:dp*
+ :[range]d[elete] [x]	Delete [range] lines (default: current line) [into
+ 			register x].
+-			Note these weird abbreviations:
+-			   :dl		delete and list
+-			   :dell	idem
+-			   :delel	idem
+-			   :deletl	idem
+-			   :deletel	idem
+-			   :dp		delete and print
+-			   :dep		idem
+-			   :delp	idem
+-			   :delep	idem
+-			   :deletp	idem
+-			   :deletep	idem
++			Note these weird abbreviations applicable only to
++			legacy Vim script:
++			  :dl		delete and list
++			  :dell		idem
++			  :delel	idem
++			  :deletl	idem
++			  :deletel	idem
++			  :dp		delete and print
++			  :dep		idem
++			  :delp		idem
++			  :delep	idem
++			  :deletp	idem
++			  :deletep	idem
++			Warning: These give |E492| in |Vim9| script and `:dl`
++			executes as `:dlist`.
+ 
+ :[range]d[elete] [x] {count}
+ 			Delete {count} lines, starting with [range]
+@@ -798,7 +801,8 @@ out then.  Example: >
+ 	:%s/TESTING
+ This deletes "TESTING" from all lines, but only one per line.
+ 								*E1270*
+-For compatibility with Vi these two exceptions are allowed in legacy script:
++For compatibility with Vi these two exceptions are allowed in legacy Vim
++script:
+ "\/{string}/" and "\?{string}?" do the same as "//{string}/r".
+ "\&{string}&" does the same as "//{string}/".
+ 				*pattern-delimiter* *E146* *E1241* *E1242*
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index a451c9f2f..dffeb3859 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
+@@ -1,4 +1,4 @@
+-*eval.txt*	For Vim version 9.2.  Last change: 2026 May 21
++*eval.txt*	For Vim version 9.2.  Last change: 2026 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3384,7 +3384,7 @@ text...
+ 			  s:	script-local variables
+ 			  l:	local function variables
+ 			  v:	Vim variables.
+-			This does not work in Vim9 script. |vim9-declaration|
++			This does not work in Vim9 script.  |vim9-declaration|
+ 
+ :let			List the values of all variables.  The type of the
+ 			variable is indicated before the value:
+@@ -3660,7 +3660,7 @@ text...
+ 			all nested `:try`s inside the loop.  The outermost
+ 			`:endtry` then jumps back to the start of the loop.
+ 
+-			In |Vim9| script `:cont` is the shortest form, to
++			In |Vim9| script `:continue` cannot be shortened, to
+ 			improve script readability.
+ 						*:break* *:brea* *E587*
+ :brea[k]		When used inside a `:while` or `:for` loop, skips to
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index ac7c78712..95ccbb668 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*repeat.txt*	For Vim version 9.2.  Last change: 2026 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -454,6 +454,9 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			nested ":try"s in the script.  The outermost ":endtry"
+ 			then stops sourcing the script.
+ 
++			In |Vim9| script `:finish` cannot be shortened, to
++			improve script readability.
++
+ All commands and command sequences can be repeated by putting them in a named
+ register and then executing it.  There are two ways to get the commands in the
+ register:
+diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
+index d27838386..e381d5fc0 100644
+--- a/runtime/doc/tagsrch.txt
++++ b/runtime/doc/tagsrch.txt
+@@ -1,4 +1,4 @@
+-*tagsrch.txt*	For Vim version 9.2.  Last change: 2026 May 17
++*tagsrch.txt*	For Vim version 9.2.  Last change: 2026 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -833,8 +833,9 @@ CTRL-W i		Open a new window, with the cursor on the first line
+ 			Like `[D`  and `]D`, but search in [range] lines
+ 			(default: whole file).
+ 			See |:search-args| for [/] and [!].
+-			Note that `:dl` works like `:delete` with the "l"
+-			flag, not `:dlist`.
++			Note: In legacy Vim script, `:dl` works like
++			`:delete` with the "l" flag, not `:dlist`, whereas in
++			|Vim9| script `:dl` does work like `:dlist`.
+ 
+ 							*[_CTRL-D*
+ [ CTRL-D		Jump to the first macro definition that contains the
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 6388d12e1..b0051fb27 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*userfunc.txt*	For Vim version 9.2.  Last change: 2026 May 31
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -27,13 +27,13 @@ make them script-local.  If you do use a global function then avoid obvious,
+ short names.  A good habit is to start the function name with the name of the
+ script, e.g., "HTMLcolor()".
+ 
+-In legacy script it is also possible to use curly braces, see
++In legacy Vim script it is also possible to use curly braces, see
+ |curly-braces-names|.
+ 
+ The |autoload| facility is useful to define a function only when it's called.
+ 
+ 							*local-function*
+-A function local to a legacy script must start with "s:".  A local script
++A function local to a legacy Vim script must start with "s:".  A local script
+ function can only be called from within the script and from functions, user
+ commands and autocommands defined in the script.  It is also possible to call
+ the function from a mapping defined in the script, but then |<SID>| must be
+@@ -195,9 +195,19 @@ See |:verbose-cmd| for more information.
+ 			When a function ends without an explicit ":return",
+ 			the number 0 is returned.
+ 
+-			In a :def function *E1095* is given if unreachable
+-			code follows after the `:return`.
+-			In legacy script there is no check for unreachable
++			In |Vim9| script:
++			- `:return` cannot be shortened, and
++			- *E1095* is given if unreachable code follows after
++			  the `:return`.  For example:
++>vim9
++			  vim9script
++			  var L: func = (): bool => {
++			    return false
++			    echo 'no'  # E1095: Unreachable code after :return
++			  }
++			  echo L()
++<
++			In legacy Vim script there is no check for unreachable
+ 			lines, thus there is no warning if commands follow
+ 			`:return`.  Also, there is no check if the following
+ 			line contains a valid command.  Forgetting the line
+diff --git a/runtime/doc/usr_20.txt b/runtime/doc/usr_20.txt
+index 2a2839541..f4cc5dd64 100644
+--- a/runtime/doc/usr_20.txt
++++ b/runtime/doc/usr_20.txt
+@@ -1,9 +1,7 @@
+-*usr_20.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
+-
++*usr_20.txt*	For Vim version 9.2.  Last change: 2026 May 31
+ 
+ 		     VIM USER MANUAL	by Bram Moolenaar
+ 
+-
+ 		     Typing command-line commands quickly
+ 
+ 
+@@ -116,9 +114,18 @@ command.  It's like deleting the ":" or "/" that the line starts with.
+ *20.2*	Command line abbreviations
+ 
+ Some of the ":" commands are really long.  We already mentioned that
+-":substitute" can be abbreviated to ":s".  This is a generic mechanism, all
+-":" commands can be abbreviated.
+-
++":substitute" can be abbreviated to ":s".  This is a generic mechanism, and
++most ":" commands can be abbreviated.  However, in Vim9 script some commands
++cannot be shortened to improve readability - see |vim9-no-shorten|.
++
++The builtin function |fullcommand()| can be used to return an abbreviated
++command's full name.  For example, the following commands echo "edit", "echo",
++and "echowindow":
++>vim
++	:echo fullcommand('e')
++	:echo fullcommand('ec')
++	:echo fullcommand('echow')
++<
+ How short can a command get?  There are 26 letters, and many more commands.
+ For example, ":set" also starts with ":s", but ":s" doesn't start a ":set"
+ command.  Instead ":set" can be abbreviated to ":se".
