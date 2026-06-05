@@ -1,40 +1,22 @@
-diff --git a/runtime/doc/usr_51.txt b/runtime/doc/usr_51.txt
-index 82bb0faf2..e8fb68bce 100644
---- a/runtime/doc/usr_51.txt
-+++ b/runtime/doc/usr_51.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 0ef255210..0df50ff60 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*usr_51.txt*	For Vim version 9.2.  Last change: 2026 Jun 02
-+*usr_51.txt*	For Vim version 9.2.  Last change: 2026 Jun 03
+-*options.txt*	For Vim version 9.2.  Last change: 2026 May 25
++*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 04
  
  
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -250,6 +250,9 @@ difference between using <SID> and <Plug>:
- 	only conventions to keep the name readable and unlikely to clash with
- 	other plugins.  None of them are required: all that matters is that
- 	the sequence starts with "<Plug>" and is unique.
-+	A mapping whose {lhs} starts with <Plug> is always applied to the
-+	{rhs} of another mapping, even if remapping is explicitly disallowed.
-+	|:nore|
- 
- <SID>	is the script ID, a unique identifier for a script.
- 	Internally Vim translates <SID> to "<SNR>123_", where "123" can be any
-@@ -258,6 +261,8 @@ difference between using <SID> and <Plug>:
- 	you use the ":function" command to get a list of functions.  The
- 	translation of <SID> in mappings is exactly the same, that's how you
- 	can call a script-local function from a mapping.
-+	Note: when <SID> appears in the {rhs} of a mapping, you might consider
-+	using <script>. |:map-<script>|
- 
- 
- USER COMMAND
-@@ -416,8 +421,8 @@ hasmapto()		Function to test if the user already defined a mapping
- 
- map <unique>		Give a warning if a mapping already exists.
- 
--noremap <script>	Use only mappings local to the script, not global
--			mappings.
-+noremap <script>	Only remap mappings defined in this script that start
-+			with <SID>.
- 
- exists(":Cmd")		Check if a user command already exists.
- 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -10523,7 +10523,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			is not supported for file and directory names and
+ 			instead wildcard expansion is used.
+ 	  pum		Display the completion matches using the popup menu in
+-			the same style as the |ins-completion-menu|.
++			the same style as the |ins-completion-menu|.  When an
++			info popup is shown next to the menu, it can be
++			scrolled by moving the mouse pointer on top of it and
++			using the scroll wheel.
+ 	  tagfile	When using CTRL-D to list matching tags, the kind of
+ 			tag and the file of the tag is listed.	Only one match
+ 			is displayed per line.  Often used tag kinds are:
