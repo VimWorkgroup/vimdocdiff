@@ -1,29 +1,20 @@
-diff --git a/runtime/doc/remote.txt b/runtime/doc/remote.txt
-index 260fc864f..d33c14eb5 100644
---- a/runtime/doc/remote.txt
-+++ b/runtime/doc/remote.txt
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index 761dba1c6..34815811f 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
 @@ -1,4 +1,4 @@
--*remote.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*remote.txt*	For Vim version 9.2.  Last change: 2026 Jun 05
+-*various.txt*	For Vim version 9.2.  Last change: 2026 May 21
++*various.txt*	For Vim version 9.2.  Last change: 2026 Jun 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -80,11 +80,17 @@ The following command line arguments are available:
-    --clientserver {method}	Use the specified method {method} as the
- 				backend for clientserver functionality.  Can
- 				either be "socket", "x11", or "mswin".
-+							    *$VIM_CLIENTSERVER*
-+				If the "$VIM_CLIENTSERVER" environment
-+				variable is set, then Vim will interpret the
-+				value just like the --clientserver argument.
-+				If it is set and --clientserver is provided in
-+				the command line, then --clientserver takes
-+				priority.
- 				{only available when compiled with both |+X11|
- 				and |+socketserver| features, or
- 				|+socketserver| on MS-Windows}
- 
--
- Examples ~
- 
- Edit "file.txt" in an already running GVIM server: >
+@@ -454,7 +454,8 @@ N  *+mouse_sysmouse*	Unix only: *BSD console mouse handling |sysmouse|
+ N  *+mouse_sgr*		Unix only: sgr mouse handling |sgr-mouse|
+ N  *+mouse_urxvt*	Unix only: urxvt mouse handling |urxvt-mouse|
+ N  *+mouse_xterm*	Unix only: xterm mouse handling |xterm-mouse|
+-T  *+multi_byte*	Unicode support, 16 and 32 bit characters |multibyte|
++T  *+multi_byte*	Unicode support, 16 and 32 bit characters |multibyte|.
++			Always enabled since 8.1.0811
+    *+multi_byte_ime*	Win32 input method for multibyte chars |multibyte-ime|
+ N  *+multi_lang*	non-English language support |multi-lang|
+ m  *+mzscheme*		Mzscheme interface |mzscheme|
