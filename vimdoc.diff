@@ -1,28 +1,19 @@
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index fce4fb47c..5f8056beb 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
+diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
+index db0cd3660..0e803bc33 100644
+--- a/runtime/doc/uganda.txt
++++ b/runtime/doc/uganda.txt
 @@ -1,4 +1,4 @@
--*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 07
+-*uganda.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*uganda.txt*	For Vim version 9.2.  Last change: 2026 Jun 07
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -356,6 +356,17 @@ for more information.
- If you are using GTK3 and Vim appears to be slow, try setting the environment
- variable $GDK_RENDERING to "image".
+@@ -234,7 +234,7 @@ Check the Kuwasha web site for the latest information!
+ Credit Card:	You can use PayPal to send money with a Credit card.  This is
+ 		the most widely used Internet based payment system.  It's
+ 		really simple to use.  Use this link to find more info:
+-		    https://www.paypal.com/en_US/mrb/pal=XAC62PML3GF8Q
++		    https://www.paypal.com/ncp/payment/ZZPJ7XEYD3CZ2
+ 		The e-mail address for sending the money to is:
+ 		    info@kuwasha.net
  
-+							*gtk4-slow*
-+If the GTK4 GUI is slow, freezes, or does not accept keyboard input right
-+after startup, it may be caused by the OpenGL renderer or GPU driver.  Try
-+starting gvim with one of the following environment variables.  Setting
-+$GSK_RENDERER to "cairo" disables the GSK OpenGL renderer.  Setting
-+$LIBGL_ALWAYS_SOFTWARE to "true" retains the OpenGL renderer but forces Mesa
-+to use software rendering: >
-+
-+    $ GSK_RENDERER=cairo gvim
-+    $ LIBGL_ALWAYS_SOFTWARE=true gvim
-+
- 
- Tooltip Colors ~
- 							*gtk-tooltip-colors*
