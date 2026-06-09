@@ -1,19 +1,72 @@
-diff --git a/runtime/doc/uganda.txt b/runtime/doc/uganda.txt
-index db0cd3660..0e803bc33 100644
---- a/runtime/doc/uganda.txt
-+++ b/runtime/doc/uganda.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 13f2d89a2..5946f26e7 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*uganda.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*uganda.txt*	For Vim version 9.2.  Last change: 2026 Jun 07
+-*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 02
++*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -234,7 +234,7 @@ Check the Kuwasha web site for the latest information!
- Credit Card:	You can use PayPal to send money with a Credit card.  This is
- 		the most widely used Internet based payment system.  It's
- 		really simple to use.  Use this link to find more info:
--		    https://www.paypal.com/en_US/mrb/pal=XAC62PML3GF8Q
-+		    https://www.paypal.com/ncp/payment/ZZPJ7XEYD3CZ2
- 		The e-mail address for sending the money to is:
- 		    info@kuwasha.net
+@@ -1449,6 +1449,22 @@ CTRL-E		  End completion, go back to what was there before selecting a
+ 		  insert it.
+ <Down>		  Select the next match, as if CTRL-N was used, but don't
+ 		  insert it.
++CTRL-SHIFT-<Up>
++		  Scroll the info popup up one line, when it is shown, see
++		  |complete-popup|.
++		  Note: these CTRL-SHIFT keys need the GUI or a terminal that
++		  reports key modifiers; the Linux console does not.
++CTRL-SHIFT-<Down>
++		  Scroll the info popup down one line.
++CTRL-SHIFT-<PageUp>
++		  Scroll the info popup up one page.
++CTRL-SHIFT-<PageDown>
++		  Scroll the info popup down one page.
++CTRL-SHIFT-P	  Like CTRL-SHIFT-<Up>, scroll the info popup up one line.
++CTRL-SHIFT-N	  Like CTRL-SHIFT-<Down>, scroll the info popup down one line.
++		  Note: CTRL-SHIFT-N and CTRL-SHIFT-P additionally need the
++		  terminal to report modifiers for letter keys, see
++		  |modifyOtherKeys|.
+ <Space> or <Tab>  Stop completion without changing the match and insert the
+ 		  typed character.
  
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 0df50ff60..244a7510f 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 04
++*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -10526,7 +10526,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			the same style as the |ins-completion-menu|.  When an
+ 			info popup is shown next to the menu, it can be
+ 			scrolled by moving the mouse pointer on top of it and
+-			using the scroll wheel.
++			using the scroll wheel, or with the keyboard like in
++			Insert mode completion, see |popupmenu-keys|.
+ 	  tagfile	When using CTRL-D to list matching tags, the kind of
+ 			tag and the file of the tag is listed.	Only one match
+ 			is displayed per line.  Often used tag kinds are:
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 2496d1b69..b0c95e50f 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 May 31
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52598,6 +52598,8 @@ Popups ~
+   "align").
+ - Support "opacity" setting for 'completepopup' option.
+ - Support for clipping textproperty popups |popup-clipwindow|.
++- Completion popup menu can be scrolled with the mouse or using keys
++  |popupmenu-keys|.
+ 
+ Diff mode ~
+ ---------
