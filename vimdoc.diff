@@ -1,107 +1,40 @@
-diff --git a/runtime/doc/map.txt b/runtime/doc/map.txt
-index 38de46c65..98b381990 100644
---- a/runtime/doc/map.txt
-+++ b/runtime/doc/map.txt
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index 600ce647c..a78ee204e 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
 @@ -1,4 +1,4 @@
--*map.txt*	For Vim version 9.2.  Last change: 2026 May 23
-+*map.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+-*motion.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*motion.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1620,6 +1620,11 @@ Completing ":MyCmd2 two va<tab>" will complete with: >
+@@ -1294,9 +1294,13 @@ remembered.
+ 			quotes).  Note that this works fine for C, but not for
+ 			Perl, where single quotes are used for strings.
  
- 	:MyCmd2 two values
+-			Nothing special is done for matches in comments.  You
+-			can either use the matchit plugin |matchit-install| or
+-			put quotes around matches.
++			When in addition 'comments' defines C-style "//" or
++			"/*" comments, parens and braces inside such comments
++			are skipped, like the |=| operator does.  This does
++			not happen when the cursor is inside a comment, so a
++			match inside that comment can still be found.
++			Otherwise you can use the matchit plugin
++			|matchit-install| or put quotes around matches.
  
-+Use -nargs=_ when the whole argument area should be taken as a single value
-+as-is.  When you need several arguments and an individual argument may itself
-+contain spaces (so the splitter must keep running), use -nargs=+/* together
-+with |:command-completeopt| (-completeopt=escape) instead.
-+
- 
- Note that arguments are used as text, not as expressions.  Specifically,
- "s:var" will use the script-local variable in the script where the command was
-@@ -1758,6 +1763,50 @@ the 'path' option: >
- <
- This example does not work for file names with spaces!
- 
-+							*:command-completeopt*
-+For the "custom" and "customlist" types you can further opt into specific
-+behaviors with the -completeopt= attribute.  It takes a comma-separated list
-+of option names; currently only "escape" is recognized:
-+
-+	-completeopt=escape
-+		The completion function may return matches containing spaces,
-+		tabs or backslashes.  When such a match is inserted into the
-+		command line each space, tab and backslash is preceded by a
-+		backslash so the value is preserved as a single argument.  The
-+		unescaped form is used for display (popup menu / wildmenu /
-+		|getcompletion()|).  The ArgLead passed to the completion
-+		function is also unescaped: when the user types
-+		`:Cmd foo\ b<Tab>` the function is called with `foo b`, not
-+		`foo\ b` .  In the command's replacement text |<q-args>| and
-+		|<f-args>| likewise yield the unescaped value.
-+
-+Example: >
-+    :func MyComplete(ArgLead, CmdLine, CursorPos)
-+    :    return filter(['hello world', 'good morning'],
-+    :    \              {_, v -> stridx(v, a:ArgLead) ==# 0})
-+    :endfunc
-+    :com! -nargs=1 -complete=customlist,MyComplete -completeopt=escape MyCmd
-+		\ echo <q-args>
-+<
-+After `:MyCmd <Tab>` the popup shows `hello world` and `good morning`.  Typing
-+`:MyCmd hello\ w<Tab>` calls MyComplete with ArgLead set to `hello w` (the
-+backslash before the space is removed), the filter finds `hello world`, and
-+`<Tab>` inserts it as `:MyCmd hello\ world`.  `<q-args>` then evaluates to the
-+logical `hello world`.
-+
-+Without -completeopt=escape the literal string `hello world` would be inserted
-+into the command line, so Vim's argument splitter would treat it as two
-+arguments.
-+
-+-completeopt=escape and -nargs=_ (see |:command-nargs|) target different
-+shapes; they are not competing solutions for the same one:
-+	"whole line as one argument, no escaping"
-+			use -nargs=_
-+	"multiple arguments, each may contain spaces"
-+			use -nargs=+ or -nargs=* with -completeopt=escape
-+Because -nargs=_ disables the argument splitter, escaping has no effect there,
-+so combining -nargs=_ with -completeopt=escape is an error (E1579).
-+
- 
- Range handling ~
- 				*E177* *E178* *:command-range* *:command-count*
+ 			No count is allowed, {count}% jumps to a line {count}
+ 			percentage down the file |N%|.  Using '%' on
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index df216fae1..c7fb72cdd 100644
+index c7fb72cdd..a7778b5fe 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52617,6 +52617,15 @@ when Vim is running in |restricted-mode|.
- 
- Using |:cscope| is no longer allowed.
- 
-+Commands ~
-+--------
-+- |:command-completion-customlist| can return a list of dictionaries with
-+  kind/menu/info/abbr for the popup menu.
-+- New argument handling for user commands |:command-nargs| using the "-nars=_"
-+  attribute to handle completion of single arguments with spaces as expected.
-+- New :command attribute |:command-completeopt| escapes spaces in
-+  custom completion matches so they survive as a single argument.
-+
- Other ~
- -----
- - The new |xdg.vim| script for full XDG compatibility is included.
-@@ -52639,13 +52648,9 @@ Other ~
-   'completeopt' option
+@@ -52649,6 +52649,8 @@ Other ~
  - Channel can handle |Blob| messages |channel-open-options|.
  - Added the "u" flag to 'shortmess' to silence undo/redo messages: |shm-u|
--- |:command-completion-customlist| can return a list of dictionaries with
--  kind/menu/info/abbr for the popup menu.
  - |C-indenting| detects comments better.
++- The |%| command skips parens inside comments when 'comments' defines
++  C-style "//" or "/*" comments.
  - The |package-hlyank| can now optionally highlight the last put region as
    well.
--- New argument handling for user commands |:command-nargs| using the "-nars=_"
--  attribute to handle completion of single arguments with spaces as expected.
  - Support %0{} in 'statusline' to insert the expression result verbatim and
-   not drop leading spaces |stl-%0{|.
- - Generated Session and View files are written in Vim9 script, see |:mksession|,
