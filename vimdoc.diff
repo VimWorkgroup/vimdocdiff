@@ -1,20 +1,64 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 40a961f32..66b8f96ed 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index e8b9518e5..caad78ceb 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Apr 29
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Jun 12
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1999,9 +1999,6 @@ Dominique can't reproduce it.
- ":function f(x) keepjumps" creates a function where every command is executed
- like it has ":keepjumps" before it.
+@@ -1986,6 +1986,14 @@ complete({startcol}, {matches})				*complete()* *E785*
+ 		The match can be selected with CTRL-N and CTRL-P as usual with
+ 		Insert mode completion.  The popup menu will appear if
+ 		specified, see |ins-completion-menu|.
++		Unlike with other |ins-completion| modes, the CTRL-N and
++		CTRL-P keys can be mapped while this completion is active.
++		For example, to make CTRL-N move the selection without
++		inserting the match: >
++
++		inoremap <expr> <C-N> complete_info().mode ==# 'eval'
++			\ ? '<Down>' : '<C-N>'
++<
  
--Coverity: Check if there are new reported defects:
--https://scan.coverity.com/projects/241
--
- Problem with editing file in binary mode. (Ingo Krabbe, 2009 Oct 8)
+ 		Example (using legacy Vim script): >
  
- Display error when 'tabline' that includes a file name with double-width
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 5946f26e7..688d65fb3 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
+@@ -1,4 +1,4 @@
+-*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
++*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -690,7 +690,8 @@ When the popup menu is displayed there are a few more special keys, see
+ Note: The keys that are valid in CTRL-X mode are not mapped.  This allows for
+ `:map <C-F> <C-X><C-F>` to work (assuming "<" is not in 'cpo').  The key that
+ ends CTRL-X mode (any key that is not a valid CTRL-X mode command) is mapped.
+-Also, when doing completion with 'complete' mappings apply as usual.
++Also, when doing completion with 'complete' or when completion was started
++with |complete()| mappings apply as usual.
+ 
+ 								*E565*
+ Note: While completion is active Insert mode can't be used recursively and
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 937bf4f21..b78a3738a 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52677,6 +52677,8 @@ Changed ~
+ - On Unix, filename completion for single-file Ex commands now treats embedded
+   whitespace as part of the filename, like on other platforms.
+ - Rewrite the clientserver socketserver backend to use channels and JSON.
++- During |complete()|-triggered completion, CTRL-N and CTRL-P are now subject
++  to insert-mode mappings.
+ 
+ 
+ 							*added-9.3*
