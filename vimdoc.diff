@@ -1,64 +1,93 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e8b9518e5..caad78ceb 100644
+index caad78ceb..06c258eaf 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
+@@ -13310,8 +13310,9 @@ hurd			GNU/Hurd version of Vim
+ iconv			Can use iconv() for conversion.
+ image			Compiled with the popup window "image" attribute.
+ 			See |popup-image|.
+-image_cairo		Compiled with the Cairo image backend (GTK GUI).
++image_cairo		Compiled with the Cairo image backend (GTK2 and GTK3 GUI).
+ image_gdi		Compiled with the GDI image backend (Windows GUI).
++image_gdk		Compiled with the GDK image backend (GTK4 GUI).
+ image_kitty		Compiled with the kitty graphics protocol image backend
+ 			(terminal).
+ image_sixel		Compiled with the DEC sixel image backend (terminal).
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 5f8056beb..2e558d8a0 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+-*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 07
++*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1986,6 +1986,14 @@ complete({startcol}, {matches})				*complete()* *E785*
- 		The match can be selected with CTRL-N and CTRL-P as usual with
- 		Insert mode completion.  The popup menu will appear if
- 		specified, see |ins-completion-menu|.
-+		Unlike with other |ins-completion| modes, the CTRL-N and
-+		CTRL-P keys can be mapped while this completion is active.
-+		For example, to make CTRL-N move the selection without
-+		inserting the match: >
-+
-+		inoremap <expr> <C-N> complete_info().mode ==# 'eval'
-+			\ ? '<Down>' : '<C-N>'
+@@ -366,7 +366,14 @@ to use software rendering: >
+ 
+     $ GSK_RENDERER=cairo gvim
+     $ LIBGL_ALWAYS_SOFTWARE=true gvim
+-
 +<
++							*gtk4-hwaccel*
++If Vim is compiled with the configure option "--enable-gtk4-hwaccel" set, then
++the GTK4 GUI will use GtkSnapshot instead of Cairo, allowing for hardware
++accelerated rendering, which is much faster.  Enabling this configure option
++also makes the GTK4 GUI use |+image_gdk| instead of |+image_cairo| for
++rendering popup window images.  Note that this feature is currently
++experimental.
  
- 		Example (using legacy Vim script): >
- 
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 5946f26e7..688d65fb3 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+ Tooltip Colors ~
+ 							*gtk-tooltip-colors*
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index a06924b99..cf4e9e254 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
 @@ -1,4 +1,4 @@
--*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
-+*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+-*popup.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
++*popup.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -690,7 +690,8 @@ When the popup menu is displayed there are a few more special keys, see
- Note: The keys that are valid in CTRL-X mode are not mapped.  This allows for
- `:map <C-F> <C-X><C-F>` to work (assuming "<" is not in 'cpo').  The key that
- ends CTRL-X mode (any key that is not a valid CTRL-X mode command) is mapped.
--Also, when doing completion with 'complete' mappings apply as usual.
-+Also, when doing completion with 'complete' or when completion was started
-+with |complete()| mappings apply as usual.
+@@ -1186,6 +1186,8 @@ whichever backend is available at runtime:
+ 	    |+image_gdi|.
+     Cairo   composite onto a cairo_image_surface_t on the GTK GUI
+ 	    (covers GTK 2 and GTK 3).  |+image_cairo|.
++    GDK	    Use GdkTexture, which uploads the image onto the GPU for faster
++	    rendering (only for GTK 4).	|+image_gdk|
  
- 								*E565*
- Note: While completion is active Insert mode can't be used recursively and
+ Vim itself does NOT link against libpng, libjpeg, libwebp or any image
+ decoder.  Format decoding is left to the caller, who can pipe the file
+diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
+index cc3ef1075..4a4bd6955 100644
+--- a/runtime/doc/various.txt
++++ b/runtime/doc/various.txt
+@@ -1,4 +1,4 @@
+-*various.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
++*various.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -424,8 +424,9 @@ m  *+hangul_input*	Hangul input support |hangul|
+    *+iconv*		Compiled with the |iconv()| function
+    *+iconv/dyn*		Likewise |iconv-dynamic| |/dyn|
+ H  *+image*		popup window image attribute, see |popup-image|
+-H  *+image_cairo*	|+image| Cairo backend (GTK GUI)
++H  *+image_cairo*	|+image| Cairo backend (GTK2 and GTK3 GUI)
+ H  *+image_gdi*		|+image| GDI backend (Windows GUI)
++H  *+image_gdk*		|+image| GDK backend (GTK4 GUI)
+ H  *+image_kitty*	|+image| kitty graphics protocol backend (terminal)
+ H  *+image_sixel*	|+image| DEC sixel backend (terminal)
+ T  *+insert_expand*	|insert_expand| Insert mode completion
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 937bf4f21..b78a3738a 100644
+index b78a3738a..df216fae1 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+@@ -52655,6 +52655,7 @@ Platform specific ~
+ -----------------
+ - support OpenType font features in 'guifont' for DirectWrite (Win32)
+ - Include strptime() fallback for MS-Windows
++- Hardware-accelerated rendering for the GTK4 GUI via |gtk4-hwaccel|.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52677,6 +52677,8 @@ Changed ~
- - On Unix, filename completion for single-file Ex commands now treats embedded
-   whitespace as part of the filename, like on other platforms.
- - Rewrite the clientserver socketserver backend to use channels and JSON.
-+- During |complete()|-triggered completion, CTRL-N and CTRL-P are now subject
-+  to insert-mode mappings.
- 
- 
- 							*added-9.3*
+ xxd ~
+ ---
