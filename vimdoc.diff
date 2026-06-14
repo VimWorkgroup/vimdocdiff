@@ -1,93 +1,76 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index caad78ceb..06c258eaf 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -13310,8 +13310,9 @@ hurd			GNU/Hurd version of Vim
- iconv			Can use iconv() for conversion.
- image			Compiled with the popup window "image" attribute.
- 			See |popup-image|.
--image_cairo		Compiled with the Cairo image backend (GTK GUI).
-+image_cairo		Compiled with the Cairo image backend (GTK2 and GTK3 GUI).
- image_gdi		Compiled with the GDI image backend (Windows GUI).
-+image_gdk		Compiled with the GDK image backend (GTK4 GUI).
- image_kitty		Compiled with the kitty graphics protocol image backend
- 			(terminal).
- image_sixel		Compiled with the DEC sixel image backend (terminal).
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 5f8056beb..2e558d8a0 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index a9a0e9220..36edcaab2 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 07
-+*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+-*filetype.txt*	For Vim version 9.2.  Last change: 2026 May 29
++*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -366,7 +366,14 @@ to use software rendering: >
+@@ -482,6 +482,65 @@ Support for features specific to GNU Awk, like @include, can be enabled by
+ setting: >
+ 	:let g:awk_is_gawk = 1
  
-     $ GSK_RENDERER=cairo gvim
-     $ LIBGL_ALWAYS_SOFTWARE=true gvim
--
-+<
-+							*gtk4-hwaccel*
-+If Vim is compiled with the configure option "--enable-gtk4-hwaccel" set, then
-+the GTK4 GUI will use GtkSnapshot instead of Cairo, allowing for hardware
-+accelerated rendering, which is much faster.  Enabling this configure option
-+also makes the GTK4 GUI use |+image_gdk| instead of |+image_cairo| for
-+rendering popup window images.  Note that this feature is currently
-+experimental.
++BEANCOUNT						*ft-beancount-plugin*
++
++Beancount omni-completion |compl-omni| is provided by beancountcomplete.vim,
++if enabled with |g:beancount_completion_enable|.
++
++To enable completion of account names, set: >
++	let g:beancount_completion_enable = 1
++
++< Note enabling this may cause beancount to load additional plugin files.
++Only enable for code you trust.
++
++Variables:
++*g:beancount_account_completion*
++			Can be either 'default' or 'chunks'.
++
++			Default value: 'default'
++
++*g:beancount_completion_enable*
++			Enable omni-completion |compl-omni| for accounts.
++
++			Default value: 0
++
++*g:beancount_detailed_first*
++			If non-zero, accounts higher down the hierarchy will be
++			listed first as completions.
++
++			Default value: 0
++
++*g:beancount_separator_col*
++			The column that the decimal separator is aligned to.
++
++			Default value: 50
++
++*b:beancount_root*
++			Set the root Beancount file. This is used to gather
++			values for the completion.
++			If not set, the current file will be used.
++
++			Default value: not set
++
++
++Commands:
++:AlignCommodity		Adds spaces between an account and commodity so that the
++			decimal points of the commodities all occur in the column
++			given by |g:beancount_separator_col|.  If an amount has no
++			decimal point, the imaginary decimal point to the right
++			of the least significant digit will align.
++
++			The command acts on a range, with the default being the
++			current line. If the cursor happens to be inside that
++			range and to the right of the account name, the cursor
++			will be pushed to the right the appropriate amount, so
++			that it remains on the same character.
++
++			The script assumes the use of spaces for alignment. It
++			does not understand tabs.
++
++:GetContext		Uses bean-doctor context to display the context of the
++			current line.
  
- Tooltip Colors ~
- 							*gtk-tooltip-colors*
-diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
-index a06924b99..cf4e9e254 100644
---- a/runtime/doc/popup.txt
-+++ b/runtime/doc/popup.txt
-@@ -1,4 +1,4 @@
--*popup.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
-+*popup.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+ CHANGELOG						*ft-changelog-plugin*
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1186,6 +1186,8 @@ whichever backend is available at runtime:
- 	    |+image_gdi|.
-     Cairo   composite onto a cairo_image_surface_t on the GTK GUI
- 	    (covers GTK 2 and GTK 3).  |+image_cairo|.
-+    GDK	    Use GdkTexture, which uploads the image onto the GPU for faster
-+	    rendering (only for GTK 4).	|+image_gdk|
- 
- Vim itself does NOT link against libpng, libjpeg, libwebp or any image
- decoder.  Format decoding is left to the caller, who can pipe the file
-diff --git a/runtime/doc/various.txt b/runtime/doc/various.txt
-index cc3ef1075..4a4bd6955 100644
---- a/runtime/doc/various.txt
-+++ b/runtime/doc/various.txt
-@@ -1,4 +1,4 @@
--*various.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
-+*various.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -424,8 +424,9 @@ m  *+hangul_input*	Hangul input support |hangul|
-    *+iconv*		Compiled with the |iconv()| function
-    *+iconv/dyn*		Likewise |iconv-dynamic| |/dyn|
- H  *+image*		popup window image attribute, see |popup-image|
--H  *+image_cairo*	|+image| Cairo backend (GTK GUI)
-+H  *+image_cairo*	|+image| Cairo backend (GTK2 and GTK3 GUI)
- H  *+image_gdi*		|+image| GDI backend (Windows GUI)
-+H  *+image_gdk*		|+image| GDK backend (GTK4 GUI)
- H  *+image_kitty*	|+image| kitty graphics protocol backend (terminal)
- H  *+image_sixel*	|+image| DEC sixel backend (terminal)
- T  *+insert_expand*	|insert_expand| Insert mode completion
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index b78a3738a..df216fae1 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52655,6 +52655,7 @@ Platform specific ~
- -----------------
- - support OpenType font features in 'guifont' for DirectWrite (Win32)
- - Include strptime() fallback for MS-Windows
-+- Hardware-accelerated rendering for the GTK4 GUI via |gtk4-hwaccel|.
- 
- xxd ~
- ---
