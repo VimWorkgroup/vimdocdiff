@@ -1,40 +1,18 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index 600ce647c..a78ee204e 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 36edcaab2..231562758 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*motion.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*motion.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
+-*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
++*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1294,9 +1294,13 @@ remembered.
- 			quotes).  Note that this works fine for C, but not for
- 			Perl, where single quotes are used for strings.
- 
--			Nothing special is done for matches in comments.  You
--			can either use the matchit plugin |matchit-install| or
--			put quotes around matches.
-+			When in addition 'comments' defines C-style "//" or
-+			"/*" comments, parens and braces inside such comments
-+			are skipped, like the |=| operator does.  This does
-+			not happen when the cursor is inside a comment, so a
-+			match inside that comment can still be found.
-+			Otherwise you can use the matchit plugin
-+			|matchit-install| or put quotes around matches.
- 
- 			No count is allowed, {count}% jumps to a line {count}
- 			percentage down the file |N%|.  Using '%' on
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index c7fb72cdd..a7778b5fe 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52649,6 +52649,8 @@ Other ~
- - Channel can handle |Blob| messages |channel-open-options|.
- - Added the "u" flag to 'shortmess' to silence undo/redo messages: |shm-u|
- - |C-indenting| detects comments better.
-+- The |%| command skips parens inside comments when 'comments' defines
-+  C-style "//" or "/*" comments.
- - The |package-hlyank| can now optionally highlight the last put region as
-   well.
- - Support %0{} in 'statusline' to insert the expression result verbatim and
+@@ -183,6 +183,7 @@ variables can be used to overrule the filetype used for certain extensions:
+ 	*.sys		g:filetype_sys
+ 	*.sh		g:bash_is_sh		|ft-sh-syntax|
+ 	*.tex		g:tex_flavor		|ft-tex-plugin|
++	*.tf		g:filetype_tf
+ 	*.typ		g:filetype_typ
+ 	*.v		g:filetype_v
+ 	*.w		g:filetype_w		|ft-cweb-syntax|
