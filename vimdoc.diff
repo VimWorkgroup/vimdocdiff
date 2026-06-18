@@ -1,18 +1,20 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 36edcaab2..231562758 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 244a7510f..9743dea43 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
-+*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 14
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 09
++*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -183,6 +183,7 @@ variables can be used to overrule the filetype used for certain extensions:
- 	*.sys		g:filetype_sys
- 	*.sh		g:bash_is_sh		|ft-sh-syntax|
- 	*.tex		g:tex_flavor		|ft-tex-plugin|
-+	*.tf		g:filetype_tf
- 	*.typ		g:filetype_typ
- 	*.v		g:filetype_v
- 	*.w		g:filetype_w		|ft-cweb-syntax|
+@@ -9697,7 +9697,8 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		icons		Toolbar buttons are shown with icons.
+ 		text		Toolbar buttons shown with text.
+ 		horiz		Icon and text of a toolbar button are
+-				horizontally arranged.  {only in GTK+ 2 GUI}
++				horizontally arranged.
++				{only in GTK+ 2 and GTK 4 GUI}
+ 		tooltips	Tooltips are active for toolbar buttons.
+ 	Tooltips refer to the popup help text which appears after the mouse
+ 	cursor is placed over a toolbar button for a brief moment.
