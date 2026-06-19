@@ -1,23 +1,60 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 61c72fffa..73ce826c1 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index b3448bf89..afcdca16b 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
-+*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 18
+-*change.txt*	For Vim version 9.2.  Last change: 2026 May 31
++*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -890,6 +890,12 @@ For example, to use Lua 5.1, set the variables like this: >
- 	let g:lua_version = 5
- 	let g:lua_subversion = 1
- <
-+LUAU					*ft-luau-plugin* *g:luau_folding*
+@@ -1334,19 +1334,19 @@ and ":put" commands and with CTRL-R.
+ 		feature}
+ 							*quote_#* *quote#*
+ 6. Alternate file register "#
+-Contains the name of the alternate file for the current window.  It will
+-change how the |CTRL-^| command works.
+-This register is writable, mainly to allow for restoring it after a plugin has
+-changed it.  It accepts buffer number: >
+-    let altbuf = bufnr(@#)
+-    ...
+-    let @# = altbuf
+-It will give error |E86| if you pass buffer number and this buffer does not
+-exist.
+-It can also accept a match with an existing buffer name: >
++Contains the |alternate-file| name for current window
++This register is writeable and changes which buffer CTRL-^ enters.
++A String is matched against existing buffer names, like |:buffer|: >
+     let @# = 'buffer_name'
+-Error |E93| if there is more than one buffer matching the given name or |E94|
+-if none of buffers matches the given name.
++Also supports using buffer number and |file-pattern|.
 +
-+You can enable folding of Luau block constructs using |fold-expr| by: >
++Throws
++  |E86| when the buffer number does not exist
++  |E93| when more than one buffer matches
++  |E94| when none match
 +
-+	let g:luau_folding = 1
-+<
- MAIL							*ft-mail-plugin*
++Clear the register with empty String: >
++    let @# = ''
  
- Options:
+ 7. Expression register "=			*quote_=* *quote=* *@=*
+ This is not really a register that stores text, but is a way to use an
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index a7778b5fe..a515589de 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 18
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52687,6 +52687,7 @@ Changed ~
+ - Rewrite the clientserver socketserver backend to use channels and JSON.
+ - During |complete()|-triggered completion, CTRL-N and CTRL-P are now subject
+   to insert-mode mappings.
++- It is possible to clear the alternate file register |quote#|.
+ 
+ 
+ 							*added-9.3*
