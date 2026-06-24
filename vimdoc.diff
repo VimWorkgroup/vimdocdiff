@@ -1,18 +1,20 @@
-diff --git a/runtime/doc/vi_diff.txt b/runtime/doc/vi_diff.txt
-index d87db7cc5..7b85800ad 100644
---- a/runtime/doc/vi_diff.txt
-+++ b/runtime/doc/vi_diff.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 66b8f96ed..f265b3968 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*vi_diff.txt*	For Vim version 9.2.  Last change: 2026 Mar 08
-+*vi_diff.txt*	For Vim version 9.2.  Last change: 2026 Jun 22
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Jun 12
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1388,6 +1388,7 @@ macOS:				| fully supported up until v10.6 (?)
- MS-Windows 7, 8, 10, 11:	| fully supported
- OpenVMS:			| supported
- QNX:				| still supported (?)
-+Solaris:			| supported (on maintained versions)
- UNIX:				| supported (on maintained versions)
- zOS/OS390:			| still supported (?)
+@@ -1999,6 +1999,9 @@ Dominique can't reproduce it.
+ ":function f(x) keepjumps" creates a function where every command is executed
+ like it has ":keepjumps" before it.
  
++Coverity: Check if there are new reported defects:
++https://scan.coverity.com/projects/241
++
+ Problem with editing file in binary mode. (Ingo Krabbe, 2009 Oct 8)
+ 
+ Display error when 'tabline' that includes a file name with double-width
