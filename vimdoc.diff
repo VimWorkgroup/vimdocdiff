@@ -1,20 +1,19 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 66b8f96ed..f265b3968 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 9743dea43..7339133c6 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Jun 12
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
++*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1999,6 +1999,9 @@ Dominique can't reproduce it.
- ":function f(x) keepjumps" creates a function where every command is executed
- like it has ":keepjumps" before it.
+@@ -6458,7 +6458,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	  x	<number>	any X11 pointer number (see X11/cursorfont.h)
  
-+Coverity: Check if there are new reported defects:
-+https://scan.coverity.com/projects/241
-+
- Problem with editing file in binary mode. (Ingo Krabbe, 2009 Oct 8)
+ 	The "avail" column contains a 'w' if the shape is available for Win32,
+-	x for X11 (including GTK+ 2), g for GTK+ 3.
++	x for X11 (including GTK+ 2), g for GTK+ 3 and GTK 4.
+ 	Any modes not specified or shapes not available use the normal mouse
+ 	pointer.
  
- Display error when 'tabline' that includes a file name with double-width
