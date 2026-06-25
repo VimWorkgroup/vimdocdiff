@@ -1,51 +1,44 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index d362273f4..47d320a73 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 01fd88ca6..99d9f3a4a 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
+-*terminal.txt*	For Vim version 9.2.  Last change: 2026 Apr 06
++*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9865,15 +9865,25 @@ server2client({clientid}, {string})			*server2client()*
- 		Return type: |Number|
+@@ -232,7 +232,7 @@ Command syntax ~
+ 			keys in the terminal window.  For MS-Windows see the
+ 			++eof argument below.
  
- 
--serverlist()						*serverlist()*
-+serverlist([{dict}])					*serverlist()*
- 		Return a list of available server names, one per line.
- 		When there are no servers or the information is not available
--		an empty string is returned.  See also |clientserver|.
-+		an empty string is returned.
- 		{only available when compiled with the |+clientserver| feature}
-+
-+		If {dict} is given, then it is a |Dictionary| supporting the
-+		following options:
-+		    key		type		meaning ~
-+		    list	|Boolean|	Return a list of strings,
-+						where each string is a server
-+						name.
-+
-+		See also |clientserver|.
-+
- 		Example: >
- 			:echo serverlist()
- <
--		Return type: |String|
-+		Return type: |String| or list<string>
- 
- 
- setbufline({buf}, {lnum}, {text})			*setbufline()*
+-						*term++close* *term++open*
++					    *term++close* *term++noclose* *term++open*
+ 			Supported [options] are:
+ 			++close		The terminal window will close
+ 					automatically when the job terminates.
+@@ -1001,9 +1001,11 @@ term_start({cmd} [, {options}])			*term_start()*
+ 				     terminal window, see |term_setkill()|
+ 		   "term_finish"     What to do when the job is finished:
+ 					"close": close any windows
++					"noclose": window will not be opened
+ 					"open": open window if needed
+ 				     Note that "open" can be interruptive.
+-				     See |term++close| and |term++open|.
++				     See |term++close|, |term++noclose| and
++				     |term++open|.
+ 		   "term_opencmd"    command to use for opening the window
+ 				     when "open" is used for "term_finish";
+ 				     must have "%d" where the buffer number
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a515589de..ecde25876 100644
+index ecde25876..310e9e695 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -52688,6 +52688,7 @@ Changed ~
- - During |complete()|-triggered completion, CTRL-N and CTRL-P are now subject
-   to insert-mode mappings.
- - It is possible to clear the alternate file register |quote#|.
-+- |serverlist()| can return a list of all available server names.
+@@ -52657,6 +52657,7 @@ Other ~
+   not drop leading spaces |stl-%0{|.
+ - Generated Session and View files are written in Vim9 script, see |:mksession|,
+   |:mkview| and |:mkvimrc|
++- The "term_finish" option of term_start() supports a "noclose" value.
  
- 
- 							*added-9.3*
+ Platform specific ~
+ -----------------
