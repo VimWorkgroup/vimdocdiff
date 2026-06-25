@@ -1,27 +1,51 @@
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 2e558d8a0..8a084505e 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index d362273f4..47d320a73 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
-+*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -782,5 +782,16 @@ Most newer applications will provide their current selection via PRIMARY ("*)
- and use CLIPBOARD ("+) for cut/copy/paste operations.  You thus have access to
- both by choosing to use either of the "* or "+ registers.
+@@ -9865,15 +9865,25 @@ server2client({clientid}, {string})			*server2client()*
+ 		Return type: |Number|
  
-+							*gtk4-menu-navigation*
-+In the GTK 4 GUI, you may also navigate the menu items with these keyboard
-+mappings:
-+    key			meaning ~
-+    <Tab> <Down>	Go to next item
-+    <S-Tab> <Up>	Go to previous item
-+    <Left>		Go to parent submenu
-+    <Right>		Go to current item's submenu
-+    <C-Left>		Go to next menu bar item
-+    <C-Right>		Go to previous menu bar item
+ 
+-serverlist()						*serverlist()*
++serverlist([{dict}])					*serverlist()*
+ 		Return a list of available server names, one per line.
+ 		When there are no servers or the information is not available
+-		an empty string is returned.  See also |clientserver|.
++		an empty string is returned.
+ 		{only available when compiled with the |+clientserver| feature}
 +
++		If {dict} is given, then it is a |Dictionary| supporting the
++		following options:
++		    key		type		meaning ~
++		    list	|Boolean|	Return a list of strings,
++						where each string is a server
++						name.
++
++		See also |clientserver|.
++
+ 		Example: >
+ 			:echo serverlist()
+ <
+-		Return type: |String|
++		Return type: |String| or list<string>
  
-  vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
+ 
+ setbufline({buf}, {lnum}, {text})			*setbufline()*
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index a515589de..ecde25876 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52688,6 +52688,7 @@ Changed ~
+ - During |complete()|-triggered completion, CTRL-N and CTRL-P are now subject
+   to insert-mode mappings.
+ - It is possible to clear the alternate file register |quote#|.
++- |serverlist()| can return a list of all available server names.
+ 
+ 
+ 							*added-9.3*
