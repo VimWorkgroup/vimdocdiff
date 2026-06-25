@@ -1,19 +1,27 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 9743dea43..7339133c6 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 2e558d8a0..8a084505e 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
+-*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
++*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -6458,7 +6458,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  x	<number>	any X11 pointer number (see X11/cursorfont.h)
+@@ -782,5 +782,16 @@ Most newer applications will provide their current selection via PRIMARY ("*)
+ and use CLIPBOARD ("+) for cut/copy/paste operations.  You thus have access to
+ both by choosing to use either of the "* or "+ registers.
  
- 	The "avail" column contains a 'w' if the shape is available for Win32,
--	x for X11 (including GTK+ 2), g for GTK+ 3.
-+	x for X11 (including GTK+ 2), g for GTK+ 3 and GTK 4.
- 	Any modes not specified or shapes not available use the normal mouse
- 	pointer.
++							*gtk4-menu-navigation*
++In the GTK 4 GUI, you may also navigate the menu items with these keyboard
++mappings:
++    key			meaning ~
++    <Tab> <Down>	Go to next item
++    <S-Tab> <Up>	Go to previous item
++    <Left>		Go to parent submenu
++    <Right>		Go to current item's submenu
++    <C-Left>		Go to next menu bar item
++    <C-Right>		Go to previous menu bar item
++
  
+  vim:tw=78:sw=4:ts=8:noet:ft=help:norl:
