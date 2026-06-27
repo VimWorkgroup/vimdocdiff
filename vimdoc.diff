@@ -1,24 +1,51 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 310e9e695..dc4f28d91 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 639484e33..bc0979c5f 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 18
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
+-*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 22
++*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52664,6 +52664,13 @@ Platform specific ~
- - support OpenType font features in 'guifont' for DirectWrite (Win32)
- - Include strptime() fallback for MS-Windows
- - Hardware-accelerated rendering for the GTK4 GUI via |gtk4-hwaccel|.
-+- The NSIS installer has been reworked (Win32): 
-+  - Support per-user and per-machine install.
-+  - Change the install directory structure.
-+  - Replace the batch files with the Vim launchers.
-+  - Support adding the Vim directory to PATH.
-+  - Support selecting install components from the command line options.
-+  - Move the source code to the vim/vim-win32-installer repository.
+@@ -1334,9 +1334,9 @@ and ":put" commands and with CTRL-R.
+ 		feature}
  
- xxd ~
- ---
+ 6. Alternate file register "#			*quote_#* *quote#* *@#*
+-Contains the |alternate-file| name for current window
+-This register is writable with `:let` and |setreg()|.  This changes which buffer
+-CTRL-^ enters.  You can't yank or delete into this register.
++Contains the |alternate-file| name for current window.
++This register is writable with `:let` and |setreg()|.  This changes which
++buffer CTRL-^ enters.  You can't yank or delete into this register.
+ A String is matched against existing buffer names, like |:buffer|: >
+     let @# = 'buffer_name'
+ Also supports using buffer number and |file-pattern|.
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 99d9f3a4a..a16c123d1 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
+@@ -1,4 +1,4 @@
+-*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
++*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -232,7 +232,7 @@ Command syntax ~
+ 			keys in the terminal window.  For MS-Windows see the
+ 			++eof argument below.
+ 
+-					    *term++close* *term++noclose* *term++open*
++				    *term++close* *term++noclose* *term++open*
+ 			Supported [options] are:
+ 			++close		The terminal window will close
+ 					automatically when the job terminates.
+@@ -1001,7 +1001,7 @@ term_start({cmd} [, {options}])			*term_start()*
+ 				     terminal window, see |term_setkill()|
+ 		   "term_finish"     What to do when the job is finished:
+ 					"close": close any windows
+-					"noclose": window will not be opened
++					"noclose": window will not be closed
+ 					"open": open window if needed
+ 				     Note that "open" can be interruptive.
+ 				     See |term++close|, |term++noclose| and
