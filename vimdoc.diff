@@ -1,51 +1,25 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 639484e33..bc0979c5f 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 8a084505e..d55f35aba 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 22
-+*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
+-*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
++*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 June 29
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1334,9 +1334,9 @@ and ":put" commands and with CTRL-R.
- 		feature}
+@@ -353,8 +353,12 @@ to the GTK documentation, however little there is, on how to do this.
+ See https://www.manpagez.com/html/gtk2/gtk2-2.24.24/gtk2-Resource-Files.php
+ for more information.
+ 							*gtk3-slow*
+-If you are using GTK3 and Vim appears to be slow, try setting the environment
+-variable $GDK_RENDERING to "image".
++If the GTK3 GUI is slow, try: >
++
++    $ GDK_RENDERING=image gvim
++
++Small font, high resolution, many 'lines' (vertical screen) and UI scaling all
++contribute to a slower redraw.
  
- 6. Alternate file register "#			*quote_#* *quote#* *@#*
--Contains the |alternate-file| name for current window
--This register is writable with `:let` and |setreg()|.  This changes which buffer
--CTRL-^ enters.  You can't yank or delete into this register.
-+Contains the |alternate-file| name for current window.
-+This register is writable with `:let` and |setreg()|.  This changes which
-+buffer CTRL-^ enters.  You can't yank or delete into this register.
- A String is matched against existing buffer names, like |:buffer|: >
-     let @# = 'buffer_name'
- Also supports using buffer number and |file-pattern|.
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index 99d9f3a4a..a16c123d1 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
-@@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
-+*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -232,7 +232,7 @@ Command syntax ~
- 			keys in the terminal window.  For MS-Windows see the
- 			++eof argument below.
- 
--					    *term++close* *term++noclose* *term++open*
-+				    *term++close* *term++noclose* *term++open*
- 			Supported [options] are:
- 			++close		The terminal window will close
- 					automatically when the job terminates.
-@@ -1001,7 +1001,7 @@ term_start({cmd} [, {options}])			*term_start()*
- 				     terminal window, see |term_setkill()|
- 		   "term_finish"     What to do when the job is finished:
- 					"close": close any windows
--					"noclose": window will not be opened
-+					"noclose": window will not be closed
- 					"open": open window if needed
- 				     Note that "open" can be interruptive.
- 				     See |term++close|, |term++noclose| and
+ 							*gtk4-slow*
+ If the GTK4 GUI is slow, freezes, or does not accept keyboard input right
