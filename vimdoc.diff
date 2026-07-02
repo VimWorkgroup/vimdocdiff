@@ -1,25 +1,24 @@
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 8a084505e..d55f35aba 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 73ce826c1..f37865ee5 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
-+*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 June 29
+-*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 18
++*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jul 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -353,8 +353,12 @@ to the GTK documentation, however little there is, on how to do this.
- See https://www.manpagez.com/html/gtk2/gtk2-2.24.24/gtk2-Resource-Files.php
- for more information.
- 							*gtk3-slow*
--If you are using GTK3 and Vim appears to be slow, try setting the environment
--variable $GDK_RENDERING to "image".
-+If the GTK3 GUI is slow, try: >
-+
-+    $ GDK_RENDERING=image gvim
-+
-+Small font, high resolution, many 'lines' (vertical screen) and UI scaling all
-+contribute to a slower redraw.
+@@ -1134,6 +1134,13 @@ Currently no other formats are recognized.
  
- 							*gtk4-slow*
- If the GTK4 GUI is slow, freezes, or does not accept keyboard input right
+ TYPST							*ft-typst-plugin*
+ 
++						   *g:typst_recommended_style*
++By default, the Typst filetype plugin enables the following options: >
++	setlocal expandtab shiftwidth=2 softtabstop=2
++
++To disable this, set the following variable: >
++	let g:typst_recommended_style = 0
++<
+ 							*g:typst_conceal*
+ When |TRUE| the Typst filetype plugin will set the 'conceallevel' option to 2.
+ 
