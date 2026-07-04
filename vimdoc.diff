@@ -1,24 +1,30 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 73ce826c1..f37865ee5 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 7339133c6..7b3713b0d 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jun 18
-+*filetype.txt*	For Vim version 9.2.  Last change: 2026 Jul 01
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
++*options.txt*	For Vim version 9.2.  Last change: 2026 Jul 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1134,6 +1134,13 @@ Currently no other formats are recognized.
+@@ -4948,6 +4948,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	restored if possible |X11|.  See |X11-icon| for changing the icon on
+ 	X11.
+ 	For MS-Windows the icon can be changed, see |windows-icon|.
++	NOTE: Some terminals treat the icon text as an alias for the window
++	title.  On those, setting the icon text may also change the terminal
++	window title; see 'title'.
  
- TYPST							*ft-typst-plugin*
+ 						*'iconstring'*
+ 'iconstring'		string	(default "")
+@@ -9635,6 +9638,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	then the WINDOWID environment variable should be inherited and the
+ 	title of the window should change back to what it should be after
+ 	exiting Vim.
++	NOTE: Some terminals treat the icon text as an alias for the window
++	title (see 'icon').  On those, the interaction between 'title' and
++	'icon' depend on the specific behavior of the terminal.
  
-+						   *g:typst_recommended_style*
-+By default, the Typst filetype plugin enables the following options: >
-+	setlocal expandtab shiftwidth=2 softtabstop=2
-+
-+To disable this, set the following variable: >
-+	let g:typst_recommended_style = 0
-+<
- 							*g:typst_conceal*
- When |TRUE| the Typst filetype plugin will set the 'conceallevel' option to 2.
- 
+ 								*'titlelen'*
+ 'titlelen'		number	(default 85)
