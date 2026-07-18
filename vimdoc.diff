@@ -1,30 +1,31 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7339133c6..7b3713b0d 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index 6427507d7..0f1fa50db 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Jul 03
+-*cmdline.txt*	For Vim version 9.2.  Last change: 2026 May 20
++*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Jul 18
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4948,6 +4948,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	restored if possible |X11|.  See |X11-icon| for changing the icon on
- 	X11.
- 	For MS-Windows the icon can be changed, see |windows-icon|.
-+	NOTE: Some terminals treat the icon text as an alias for the window
-+	title.  On those, setting the icon text may also change the terminal
-+	window title; see 'title'.
+@@ -1428,16 +1428,15 @@ For example, you can turn the native |:find| command into a fuzzy, interactive
+ file picker: >
  
- 						*'iconstring'*
- 'iconstring'		string	(default "")
-@@ -9635,6 +9638,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	then the WINDOWID environment variable should be inherited and the
- 	title of the window should change back to what it should be after
- 	exiting Vim.
-+	NOTE: Some terminals treat the icon text as an alias for the window
-+	title (see 'icon').  On those, the interaction between 'title' and
-+	'icon' depend on the specific behavior of the terminal.
+ 	set findfunc=Find
++	let s:filescache = []
+ 	func Find(arg, _)
+ 	  if empty(s:filescache)
+-	    let s:filescache = globpath('.', '**', 1, 1)
++	    autocmd CmdlineLeave : ++once let s:filescache = []
++	    let s:filescache = expand('**', 1, 1)
+ 	    call filter(s:filescache, '!isdirectory(v:val)')
+-	    call map(s:filescache, "fnamemodify(v:val, ':.')")
+ 	  endif
+-	  return a:arg == '' ? s:filescache : matchfuzzy(s:filescache, a:arg)
++	  return empty(a:arg) ? s:filescache : matchfuzzy(s:filescache, a:arg)
+ 	endfunc
+-	let s:filescache = []
+-	autocmd CmdlineEnter : let s:filescache = []
  
- 								*'titlelen'*
- 'titlelen'		number	(default 85)
+ The `:Grep` command searches for lines matching a pattern and updates the
+ results dynamically as you type (triggered after two characters; note: needs
