@@ -1,21 +1,24 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 47d320a73..43b19c488 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 84502f19c..a0357ce94 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jul 19
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 May 21
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Jul 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9416,6 +9416,10 @@ screenpos({winid}, {lnum}, {col})			*screenpos()*
- 		The "curscol" value is where the cursor would be placed.  For
- 		a Tab it would be the same as "endcol", while for a double
- 		width character it would be the same as "col".
-+		With 'rightleft' set, "col" and "endcol" are still counted
-+		from the start of the line, while "curscol" is the actual
-+		screen column, thus counted from the left side of the
-+		window.
- 		The |conceal| feature is ignored here, the column numbers are
- 		as if 'conceallevel' is zero.  You can set the cursor to the
- 		right position and use |screencol()| to get the value with
+@@ -404,6 +404,13 @@ and variables are deleted, thus you start with a clean slate.  This is useful
+ if you are developing a plugin and want to try a new version.  If you renamed
+ something you don't have to worry about the old name still hanging around.
+ 
++The exported functions and variables of an autoload script live in the global
++namespace with the autoload prefix.  When such a script is sourced again they
++are likewise given a clean slate, so an autoload script can be sourced more
++than once.  A class or enum is an exception: it cannot be redefined this way
++and |E1041| is given, because objects created from the previous definition
++would keep referring to it.  Restart Vim to load a changed class or enum.
++
+ If you do want to keep items, use: >
+ 	vim9script noclear
+ 
