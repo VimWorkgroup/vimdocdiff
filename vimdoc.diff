@@ -1,31 +1,21 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index 6427507d7..0f1fa50db 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 47d320a73..43b19c488 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*	For Vim version 9.2.  Last change: 2026 May 20
-+*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Jul 18
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jun 24
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jul 19
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1428,16 +1428,15 @@ For example, you can turn the native |:find| command into a fuzzy, interactive
- file picker: >
- 
- 	set findfunc=Find
-+	let s:filescache = []
- 	func Find(arg, _)
- 	  if empty(s:filescache)
--	    let s:filescache = globpath('.', '**', 1, 1)
-+	    autocmd CmdlineLeave : ++once let s:filescache = []
-+	    let s:filescache = expand('**', 1, 1)
- 	    call filter(s:filescache, '!isdirectory(v:val)')
--	    call map(s:filescache, "fnamemodify(v:val, ':.')")
- 	  endif
--	  return a:arg == '' ? s:filescache : matchfuzzy(s:filescache, a:arg)
-+	  return empty(a:arg) ? s:filescache : matchfuzzy(s:filescache, a:arg)
- 	endfunc
--	let s:filescache = []
--	autocmd CmdlineEnter : let s:filescache = []
- 
- The `:Grep` command searches for lines matching a pattern and updates the
- results dynamically as you type (triggered after two characters; note: needs
+@@ -9416,6 +9416,10 @@ screenpos({winid}, {lnum}, {col})			*screenpos()*
+ 		The "curscol" value is where the cursor would be placed.  For
+ 		a Tab it would be the same as "endcol", while for a double
+ 		width character it would be the same as "col".
++		With 'rightleft' set, "col" and "endcol" are still counted
++		from the start of the line, while "curscol" is the actual
++		screen column, thus counted from the left side of the
++		window.
+ 		The |conceal| feature is ignored here, the column numbers are
+ 		as if 'conceallevel' is zero.  You can set the cursor to the
+ 		right position and use |screencol()| to get the value with
