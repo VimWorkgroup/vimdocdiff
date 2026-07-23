@@ -1,35 +1,19 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7b3713b0d..549b22a85 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/os_win32.txt b/runtime/doc/os_win32.txt
+index 694e0fe75..666f265ec 100644
+--- a/runtime/doc/os_win32.txt
++++ b/runtime/doc/os_win32.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Jul 03
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
+-*os_win32.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*os_win32.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4948,9 +4948,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	restored if possible |X11|.  See |X11-icon| for changing the icon on
- 	X11.
- 	For MS-Windows the icon can be changed, see |windows-icon|.
--	NOTE: Some terminals treat the icon text as an alias for the window
--	title.  On those, setting the icon text may also change the terminal
--	window title; see 'title'.
-+	NOTE: GNU screen is not consistent in handling icon-title and title escape
-+	sequences between versions.   See 'title'.
+ 		  VIM REFERENCE MANUAL	  by George Reilly
+@@ -48,7 +48,7 @@ For compiling see "src/INSTALLpc.txt".			*win32-compiling*
+ 							*WSL*
+ When using Vim on WSL (Windows Subsystem for Linux) the remarks here do not
+ apply, `has('win32')` will return false then.  In case you need to know
+-whether Vim is running on WSL you can use `exists('$WSLENV')`.
++whether Vim is running on WSL you can use `exists('$WSL_DISTRO_NAME')`.
  
- 						*'iconstring'*
- 'iconstring'		string	(default "")
-@@ -9638,9 +9637,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	then the WINDOWID environment variable should be inherited and the
- 	title of the window should change back to what it should be after
- 	exiting Vim.
--	NOTE: Some terminals treat the icon text as an alias for the window
--	title (see 'icon').  On those, the interaction between 'title' and
--	'icon' depend on the specific behavior of the terminal.
-+	NOTE: GNU screen is not consistent in handling icon-title and title escape
-+	sequences between versions. In particular, screen 5 may swap title and
-+	icon-title.
- 
- 								*'titlelen'*
- 'titlelen'		number	(default 85)
+ ==============================================================================
+ 1. Known problems					*win32-problems*
