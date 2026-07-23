@@ -1,33 +1,12 @@
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 688d65fb3..f581d50cf 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -1,4 +1,4 @@
--*insert.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
-+*insert.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 440c616a4..a5d3e0034 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52698,6 +52698,7 @@ Changed ~
+ - It is possible to clear the alternate file register |quote#|.
+ - |serverlist()| can return a list of all available server names.
+ - Improve visual appearance when the terminal does not support colors.
++- Improve diff highlighting for terminals with 256 or less colors.
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1389,7 +1389,6 @@ Vim can display the matches in a simplistic popup menu.
- 
- The menu is used when:
- - The 'completeopt' option contains "menu" or "menuone".
--- The terminal supports at least 8 colors.
- - There are at least two matches.  One if "menuone" is used.
- 
- The 'pumheight' option can be used to set a maximum height.  The default is to
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 549b22a85..15e26e448 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -2302,8 +2302,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    See also |preinserted()|.
- 
- 	   menu	    Use a popup menu to show the possible completions.  The
--		    menu is only shown when there is more than one match and
--		    sufficient colors are available.  |ins-completion-menu|
-+		    menu is only shown when there is more than one match.
-+		    |ins-completion-menu|
- 
- 	   menuone  Use the popup menu also when there is only one match.
- 		    Useful when there is additional information about the
+ 							*added-9.3*
