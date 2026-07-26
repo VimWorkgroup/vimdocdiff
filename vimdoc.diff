@@ -1,23 +1,19 @@
-diff --git a/runtime/doc/tagsrch.txt b/runtime/doc/tagsrch.txt
-index e381d5fc0..2615cef9e 100644
---- a/runtime/doc/tagsrch.txt
-+++ b/runtime/doc/tagsrch.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 43b19c488..dc668c3a9 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*tagsrch.txt*	For Vim version 9.2.  Last change: 2026 May 31
-+*tagsrch.txt*	For Vim version 9.2.  Last change: 2026 Jul 24
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jul 19
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jul 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -936,7 +936,11 @@ include the following entries and each value must be a string:
- 			either relative to the current directory or a full
- 			path.
- 	cmd		Ex command used to locate the tag in the file.  This
--			can be either an Ex search pattern or a line number.
-+			can be a line number, a search pattern or any other
-+			Ex command, like in a tags file (see
-+			|tags-file-format|).  A search pattern must start and
-+			end with "/" or "?".  An invalid value results in
-+			|E987|.
- Note that the format is similar to that of |taglist()|, which makes it possible
- to use its output to generate the result.
- The following fields are optional:
+@@ -7023,7 +7023,7 @@ map({expr1}, {expr2})					*map()*
+ 		Note that {expr2} is the result of an expression and is then
+ 		used as an expression again.  Often it is good to use a
+ 		|literal-string| to avoid having to double backslashes.  You
+-		still have to double ' quotes
++		still have to double single (') quotes, though.
+ 
+ 		If {expr2} is a |Funcref| it is called with two arguments:
+ 			1. The key or the index of the current item.
