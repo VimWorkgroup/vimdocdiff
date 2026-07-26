@@ -1,51 +1,15 @@
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index d55f35aba..58467023a 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
-@@ -1,4 +1,4 @@
--*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 June 29
-+*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 29
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index dc668c3a9..1f14e7528 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -3099,6 +3099,10 @@ expandcmd({string} [, {options}])			*expandcmd()*
+ 		like with |expand()|, and environment variables, anywhere in
+ 		{string}.  "~user" and "~/path" are only expanded at the
+ 		start.
++		The expansion is done in two steps: the special keywords are
++		evaluated first, then "~" and environment variables are
++		expanded in the result.  Thus `expand('%:~')` keeps the "~",
++		while `expandcmd('%:~')` returns the full path.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 15e26e448..84e4f30ae 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -4948,8 +4948,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	restored if possible |X11|.  See |X11-icon| for changing the icon on
- 	X11.
- 	For MS-Windows the icon can be changed, see |windows-icon|.
--	NOTE: GNU screen is not consistent in handling icon-title and title escape
--	sequences between versions.   See 'title'.
-+	NOTE: GNU screen is not consistent in handling icon-title and title
-+	escape sequences between versions.   See 'title'.
- 
- 						*'iconstring'*
- 'iconstring'		string	(default "")
-@@ -9637,9 +9637,9 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	then the WINDOWID environment variable should be inherited and the
- 	title of the window should change back to what it should be after
- 	exiting Vim.
--	NOTE: GNU screen is not consistent in handling icon-title and title escape
--	sequences between versions. In particular, screen 5 may swap title and
--	icon-title.
-+	NOTE: GNU screen is not consistent in handling icon-title and title
-+	escape sequences between versions. In particular, screen 5 may swap
-+	title and icon-title.
- 
- 								*'titlelen'*
- 'titlelen'		number	(default 85)
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index a5d3e0034..efe88e949 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52664,7 +52664,7 @@ Platform specific ~
- - support OpenType font features in 'guifont' for DirectWrite (Win32)
- - Include strptime() fallback for MS-Windows
- - Hardware-accelerated rendering for the GTK4 GUI via |gtk4-hwaccel|.
--- The NSIS installer has been reworked (Win32): 
-+- The NSIS installer has been reworked (Win32):
-   - Support per-user and per-machine install.
-   - Change the install directory structure.
-   - Replace the batch files with the Vim launchers.
+ 		The following items are supported in the {options} Dict
+ 		argument:
