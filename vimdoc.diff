@@ -1,35 +1,25 @@
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index 7d7466f1d..a20143efa 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
+diff --git a/runtime/doc/spell.txt b/runtime/doc/spell.txt
+index 774f0777c..df8f4e9c8 100644
+--- a/runtime/doc/spell.txt
++++ b/runtime/doc/spell.txt
 @@ -1,4 +1,4 @@
--*term.txt*	For Vim version 9.2.  Last change: 2026 Mar 04
-+*term.txt*	For Vim version 9.2.  Last change: 2026 Jul 25
+-*spell.txt*	For Vim version 9.2.  Last change: 2026 May 23
++*spell.txt*	For Vim version 9.2.  Last change: 2026 Jul 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -690,18 +690,20 @@ work the 'termguicolors' option needs to be set.
- See https://github.com/termstandard/colors for a list of terminals that
- support true colors.
+@@ -221,10 +221,10 @@ The 'spellsuggest' option influences how the list of suggestions is generated
+ and sorted.  See 'spellsuggest'.
  
--For telling the terminal what RGB color to use the |t_8f| and |t_8b| termcap
--entries are used.  These are set by default to values that work for most
--terminals.  If that does not work for your terminal you can set them manually.
--The default values are set like this: >
-+For telling the terminal what RGB color to use the |t_8f|, |t_8b|, and |t_8u|
-+termcap entries are used.  These are set by default to values that work for
-+most terminals.  If that does not work for your terminal you can set them
-+manually.  The default values are set like this: >
- 	 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
- 	 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-+	 let &t_8u = "\<Esc>[58;2;%lu;%lu;%lum"
+ The 'spellcapcheck' option is used to check the first word of a sentence
+-starts with a capital.  This doesn't work for the first word in the file.
+-When there is a line break right after a sentence the highlighting of the next
+-line may be postponed.  Use |CTRL-L| when needed.  Also see |set-spc-auto| for
+-how it can be set automatically when 'spelllang' is set.
++starts with a capital.  When there is a line break right after a sentence the
++highlighting of the next line may be postponed.  Use |CTRL-L| when needed.
++Also see |set-spc-auto| for how it can be set automatically when 'spelllang'
++is set.
  
- Some terminals accept similar sequences, with semicolons replaced by colons
- and an extra colon after the number 2 (this is conformant to the ISO 8613-6
- standard, but less widely supported): >
- 	 let &t_8f = "\<Esc>[38:2::%lu:%lu:%lum"
- 	 let &t_8b = "\<Esc>[48:2::%lu:%lu:%lum"
-+	 let &t_8u = "\<Esc>[58:2::%lu:%lu:%lum"
- 
- These options contain printf strings, with |printf()| (actually, its C
- equivalent hence `l` modifier) invoked with the t_ option value and three
+ The 'spelloptions' option has a few more flags that influence the way spell
+ checking works.  For example, "camel" splits CamelCased words so that each
