@@ -1,43 +1,21 @@
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 58467023a..8f37a154c 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
+diff --git a/runtime/doc/mlang.txt b/runtime/doc/mlang.txt
+index 6f0bb3fe6..0c1747eed 100644
+--- a/runtime/doc/mlang.txt
++++ b/runtime/doc/mlang.txt
 @@ -1,4 +1,4 @@
--*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jun 29
-+*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jul 27
+-*mlang.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*mlang.txt*	For Vim version 9.2.  Last change: 2026 Jul 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -371,14 +371,6 @@ to use software rendering: >
-     $ GSK_RENDERER=cairo gvim
-     $ LIBGL_ALWAYS_SOFTWARE=true gvim
- <
--							*gtk4-hwaccel*
--If Vim is compiled with the configure option "--enable-gtk4-hwaccel" set, then
--the GTK4 GUI will use GtkSnapshot instead of Cairo, allowing for hardware
--accelerated rendering, which is much faster.  Enabling this configure option
--also makes the GTK4 GUI use |+image_gdk| instead of |+image_cairo| for
--rendering popup window images.  Note that this feature is currently
--experimental.
--
- Tooltip Colors ~
- 							*gtk-tooltip-colors*
- Example, which sets the tooltip colors to black on light-yellow: >
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index efe88e949..738e95bdb 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Jul 27
+@@ -122,6 +122,10 @@ If you write your own translations you need to generate the .po file and
+ convert it to a .mo file.  You need to get the source distribution and read
+ the file "src/po/README.txt".
  
++The language of the messages comes from the display language of Windows, not
++from the regional format.  The other locale categories, such as the one used
++for |strftime()|, do follow the regional format.
++
+ To overrule the automatic choice of the language, set the $LANG variable to
+ the language of your choice.  use "en" to disable translations. >
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52663,7 +52663,6 @@ Platform specific ~
- -----------------
- - support OpenType font features in 'guifont' for DirectWrite (Win32)
- - Include strptime() fallback for MS-Windows
--- Hardware-accelerated rendering for the GTK4 GUI via |gtk4-hwaccel|.
- - The NSIS installer has been reworked (Win32):
-   - Support per-user and per-machine install.
-   - Change the install directory structure.
