@@ -1,21 +1,21 @@
-diff --git a/runtime/doc/mlang.txt b/runtime/doc/mlang.txt
-index 6f0bb3fe6..0c1747eed 100644
---- a/runtime/doc/mlang.txt
-+++ b/runtime/doc/mlang.txt
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 897246b5b..be987bf02 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*mlang.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*mlang.txt*	For Vim version 9.2.  Last change: 2026 Jul 28
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Jul 29
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -122,6 +122,10 @@ If you write your own translations you need to generate the .po file and
- convert it to a .mo file.  You need to get the source distribution and read
- the file "src/po/README.txt".
+@@ -724,6 +724,10 @@ characters, e.g.: >
+ 	   })
+ No command can follow the "{", only a comment can be used there.
  
-+The language of the messages comes from the display language of Windows, not
-+from the regional format.  The other locale categories, such as the one used
-+for |strftime()|, do follow the regional format.
++Since the block ends at the first line starting with "}", the closing "}" of a
++dictionary inside the block must not be at the start of a line.  See
++|command-block| for an example and the workaround.
 +
- To overrule the automatic choice of the language, set the $LANG variable to
- the language of your choice.  use "en" to disable translations. >
- 
+ 						*command-block* *E1026*
+ The block can also be used for defining a user command.  Inside the block Vim9
+ syntax will be used.
