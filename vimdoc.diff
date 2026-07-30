@@ -1,21 +1,25 @@
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 897246b5b..be987bf02 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
+diff --git a/runtime/doc/popup.txt b/runtime/doc/popup.txt
+index ef3310638..d002df11d 100644
+--- a/runtime/doc/popup.txt
++++ b/runtime/doc/popup.txt
 @@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
-+*vim9.txt*	For Vim version 9.2.  Last change: 2026 Jul 29
+-*popup.txt*	For Vim version 9.2.  Last change: 2026 Jun 17
++*popup.txt*	For Vim version 9.2.  Last change: 2026 Jul 29
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -724,6 +724,10 @@ characters, e.g.: >
- 	   })
- No command can follow the "{", only a comment can be used there.
+@@ -79,9 +79,11 @@ wrapping, lines in the buffer.  It can be limited with the "maxheight"
+ property.  You can use empty lines to increase the height or the "minheight"
+ property.
  
-+Since the block ends at the first line starting with "}", the closing "}" of a
-+dictionary inside the block must not be at the start of a line.  See
-+|command-block| for an example and the workaround.
-+
- 						*command-block* *E1026*
- The block can also be used for defining a user command.  Inside the block Vim9
- syntax will be used.
+-The width of the window is normally equal to the longest visible line in the
+-buffer.  It can be limited with the "maxwidth" property.  You can use spaces
+-to increase the width or use the "minwidth" property.
++The width of the window is normally equal to the longest line in the buffer,
++also when that line is not displayed.  This keeps the width the same while
++scrolling through the popup.  It can be limited with the "maxwidth" property,
++which is a good idea when the buffer may contain long lines.  You can use
++spaces to increase the width or use the "minwidth" property.
+ 
+ By default the 'wrap' option is set, so that no text disappears.  Otherwise,
+ if there is not enough space then the window is shifted left in order to
