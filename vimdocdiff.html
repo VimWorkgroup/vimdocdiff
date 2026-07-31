@@ -66,8 +66,8 @@
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
       </svg>      <a href="#d2h-509354" class="d2h-file-name">runtime/doc/todo.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+5</span>
-          <span class="d2h-lines-deleted">-5</span>
+          <span class="d2h-lines-added">+7</span>
+          <span class="d2h-lines-deleted">-4</span>
       </span>
     </span>
 </li>
@@ -93,52 +93,7 @@
                     <tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -1,4 +1,4 @@</div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      1
-    </td>
-    <td class="d2h-del d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*todo.txt*	For Vim version 9.2.  Last change: 2026 <del>Jun</del> <del>23</del></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      3
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -40,10 +40,10 @@ Mapping with modifier is not recognized after a partial mapping.  Probably</div>
+        <div class="d2h-code-side-line">@@ -40,10 +40,13 @@ Mapping with modifier is not recognized after a partial mapping.  Probably</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
@@ -177,7 +132,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>Windows</del> <del>scroll</del> <del>when</del> <del>using</del> the <del>autocmd</del> <del>window.  #12085</del></span>
+            <span class="d2h-code-line-ctn"><del>Using</del> the <del>autocmd</del> <del>window</del> <del>resets</del> <del>w_skipcol</del> when <del>the</del> <del>cursor</del> is <del>in a long</del></span>
         </div>
     </td>
 </tr><tr>
@@ -187,7 +142,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>in</del> restore_snapshot_rec() restore more values from the<del> snapshot, instead of</del></span>
+            <span class="d2h-code-line-ctn"><del>wrapped</del> <del>line.  In</del> <del>restore_snapshot_rec()</del> <del>restore</del> <del>more</del> <del>values</del> <del>from</del> <del>the</del></span>
         </div>
     </td>
 </tr><tr>
@@ -197,7 +152,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">calling frame_new_height() and frame_new_width(),<del> especially w_topline and</del></span>
+            <span class="d2h-code-line-ctn"><del>snapshot,</del> <del>instead</del> <del>of</del> <del>calling</del> <del>frame_new_height()</del> <del>and</del> <del>frame_new_width()</del>,</span>
         </div>
     </td>
 </tr><tr>
@@ -207,7 +162,37 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">w_skipcol.</span>
+            <span class="d2h-code-line-ctn">especially w_skipcol.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
@@ -255,51 +240,6 @@
         <div class="d2h-code-side-line">&nbsp;</div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      1
-    </td>
-    <td class="d2h-ins d2h-change">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*todo.txt*	For Vim version 9.2.  Last change: 2026 <ins>Jul</ins> <ins>30</ins></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      2
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      3
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
-      4
-    </td>
-    <td class="d2h-cntx">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-info"></td>
-    <td class="d2h-info">
-        <div class="d2h-code-side-line">&nbsp;</div>
-    </td>
-</tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
       40
     </td>
@@ -336,7 +276,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>Using</ins> <ins>the</ins> <ins>autocmd</ins> <ins>window</ins> <ins>resets w_skipcol when </ins>the <ins>cursor</ins> <ins>is in a long</ins></span>
+            <span class="d2h-code-line-ctn"><ins>With</ins> <ins>&#x27;smoothscroll&#x27; </ins>the <ins>scroll</ins> <ins>position</ins> <ins>is</ins> <ins>lost</ins> when <ins>a</ins> <ins>window</ins> is <ins>temporarily</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -346,7 +286,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>wrapped</ins> <ins>line.  In </ins>restore_snapshot_rec() restore more values from the</span>
+            <span class="d2h-code-line-ctn"><ins>squeezed</ins> <ins>to</ins> <ins>a</ins> <ins>couple</ins> <ins>of</ins> <ins>lines,</ins> <ins>for</ins> <ins>example &quot;:help&quot; followed by &quot;:close&quot;.  In</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -356,7 +296,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>snapshot, instead of </ins>calling frame_new_height() and frame_new_width(),</span>
+            <span class="d2h-code-line-ctn"><ins>restore_snapshot_rec()</ins> <ins>restore</ins> <ins>more</ins> <ins>values</ins> <ins>from</ins> <ins>the</ins> <ins>snapshot</ins>,<ins> instead of</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -366,12 +306,42 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>especially </ins>w_skipcol.</span>
+            <span class="d2h-code-line-ctn"><ins>calling frame_new_height() and frame_new_width(), </ins>especially w_skipcol.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      47
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      48
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">With &#x27;splitkeep&#x27; &quot;screen&quot; the scroll position is lost when splitting and</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      49
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">closing a window, win_fix_cursor() moves the cursor to another line.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      47
+      50
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -381,7 +351,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      48
+      51
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -391,7 +361,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      49
+      52
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
