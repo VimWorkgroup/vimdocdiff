@@ -1,54 +1,48 @@
-diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
-index 5edf1abcb..89fdb0137 100644
---- a/runtime/doc/gui.txt
-+++ b/runtime/doc/gui.txt
-@@ -25,7 +25,7 @@ Other GUI documentation:
+diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
+index dc462cfef..271fc11e9 100644
+--- a/runtime/doc/pi_zip.txt
++++ b/runtime/doc/pi_zip.txt
+@@ -1,4 +1,4 @@
+-*pi_zip.txt*	For Vim version 9.2.  Last change: 2026 Jun 20
++*pi_zip.txt*	For Vim version 9.2.  Last change: 2026 Jul 30
  
- First you must make sure you actually have a version of Vim with the GUI code
- included.  You can check this with the ":version" command, it says "with xxx
--GUI", where "xxx" is X11-Motif, Photon, GTK2, GTK3, etc., or
-+GUI", where "xxx" is X11-Motif, Photon, GTK2, GTK3, GTK4, etc., or
- "MS-Windows 32 bit GUI version".
+ 				+====================+
+ 				| Zip File Interface |
+@@ -71,16 +71,22 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
+    "0": >
+ 	let g:zip_exec=0
+ <
+-   FALLBACK TO POWERSHELL CORE~
++   FALLBACK TO POWERSHELL~
  
- How to start the GUI depends on the system used.  Mostly you can run the
-diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
-index 8f37a154c..3bb469cec 100644
---- a/runtime/doc/gui_x11.txt
-+++ b/runtime/doc/gui_x11.txt
-@@ -321,11 +321,24 @@ stuff like -bg, -fg, etc).  The ones that are supported are:
-     -fg -foreground {color}			foreground color
-     -bg -background {color}			background color
++							*g:zip_pwsh*
+    This plugin will first attempt to use the (more capable) GNU zip/unzip
+    commands.  If these commands are not available or fail, and the user is
+-   using PowerShell Core (i.e., the 'shell' option matches "pwsh"), the
+-   plugin will fall back to a PowerShell Core cmdlet.  The PowerShell Core
+-   cmdlets are limited: they cannot write or extract files within
+-   subdirectories of a zip archive.  The advantage, however, is that no
+-   separate unzip binary needs to be installed.
+-
++   using PowerShell, the plugin will fall back to a PowerShell cmdlet.
++   The PowerShell cmdlets are limited: they cannot write or extract files
++   within subdirectories of a zip archive.  The advantage, however, is that
++   no separate unzip binary needs to be installed.  The 'shell' option will
++   be checked whether to choose "pwsh" or "powershell", or set `g:zip_pwsh`.
++   If both are available, this plugin will prefer pwsh. Default value of
++   "g:zip_pwsh" is an empty string, which would not overwrite the 'shell'
++   option configuration.  This functionality is not turned on by default on
++   MS-Windows, since the default 'shell' is "cmd.exe". For example: >
++	let g:zip_pwsh='powershell'
++<
+    PREVENTING LOADING~
  
-+If using the GTK4 GUI, then only the following are supported:
-+    -fn  or  -font
-+    -geom  or  -geometry    (window positioning is NOT supported)
-+    -fg -foreground {color}
-+    -bg -background {color}
-+
-+Command line arguments specific to GTK4:
-+    command line argument   meaning ~
-+    --prg-name {name}	    Argument passed to g_set_prgname(), otherwise
-+			    "gvim" is used.  On Wayland this will set the app
-+			    id, which is equivalent to the X11 WM_CLASS
-+
- To set the font, see 'guifont'.  For GTK, there's also a menu option that does
- this.
- 
- Additionally, there are these command line arguments, which are handled by GTK
--internally.  Look in the GTK documentation for how they are used:
-+internally (except GTK4, see below).  Look in the GTK documentation for how
-+they are used:
- 	--sync
- 	--gdk-debug
- 	--gdk-no-debug
-@@ -343,6 +356,10 @@ These arguments are ignored when the |+netbeans_intg| feature is used:
- 	-xrm
- 	-mf
- 
-+If using the GTK4 GUI, then no GTK specific command line arguments are
-+supported. Instead configure GTK via environment variables:
-+https://docs.gtk.org/gtk4/running.html
-+
- As for colors, Vim's color settings (for syntax highlighting) is still
- done the traditional Vim way.  See |:highlight| for more help.
- 
+    If for some reason you do not wish to use vim to examine zipped files,
+@@ -116,6 +122,7 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
+ ==============================================================================
+ 4. History							*zip-history* {{{1
+    unreleased:
++       Jul 25, 2026 * support both Windows PowerShell 5 and pwsh 7+
+        Sep 19, 2025 * support PowerShell Core
+        Jul 12, 2025 * drop ../ on write to prevent path traversal attacks
+        Mar 11, 2025 * handle filenames with leading '-' correctly
