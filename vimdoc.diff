@@ -1,48 +1,25 @@
-diff --git a/runtime/doc/pi_zip.txt b/runtime/doc/pi_zip.txt
-index dc462cfef..271fc11e9 100644
---- a/runtime/doc/pi_zip.txt
-+++ b/runtime/doc/pi_zip.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index f265b3968..9c8c0f493 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*pi_zip.txt*	For Vim version 9.2.  Last change: 2026 Jun 20
-+*pi_zip.txt*	For Vim version 9.2.  Last change: 2026 Jul 30
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Jun 23
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Jul 30
  
- 				+====================+
- 				| Zip File Interface |
-@@ -71,16 +71,22 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
-    "0": >
- 	let g:zip_exec=0
- <
--   FALLBACK TO POWERSHELL CORE~
-+   FALLBACK TO POWERSHELL~
  
-+							*g:zip_pwsh*
-    This plugin will first attempt to use the (more capable) GNU zip/unzip
-    commands.  If these commands are not available or fail, and the user is
--   using PowerShell Core (i.e., the 'shell' option matches "pwsh"), the
--   plugin will fall back to a PowerShell Core cmdlet.  The PowerShell Core
--   cmdlets are limited: they cannot write or extract files within
--   subdirectories of a zip archive.  The advantage, however, is that no
--   separate unzip binary needs to be installed.
--
-+   using PowerShell, the plugin will fall back to a PowerShell cmdlet.
-+   The PowerShell cmdlets are limited: they cannot write or extract files
-+   within subdirectories of a zip archive.  The advantage, however, is that
-+   no separate unzip binary needs to be installed.  The 'shell' option will
-+   be checked whether to choose "pwsh" or "powershell", or set `g:zip_pwsh`.
-+   If both are available, this plugin will prefer pwsh. Default value of
-+   "g:zip_pwsh" is an empty string, which would not overwrite the 'shell'
-+   option configuration.  This functionality is not turned on by default on
-+   MS-Windows, since the default 'shell' is "cmd.exe". For example: >
-+	let g:zip_pwsh='powershell'
-+<
-    PREVENTING LOADING~
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -40,10 +40,10 @@ Mapping with modifier is not recognized after a partial mapping.  Probably
+ because the typeahead was simplified when looking for a matching mapping.
+ Need to somehow undo the simplification.  #12002
  
-    If for some reason you do not wish to use vim to examine zipped files,
-@@ -116,6 +122,7 @@ Copyright: Copyright (C) 2005-2015 Charles E Campbell	 *zip-copyright*
- ==============================================================================
- 4. History							*zip-history* {{{1
-    unreleased:
-+       Jul 25, 2026 * support both Windows PowerShell 5 and pwsh 7+
-        Sep 19, 2025 * support PowerShell Core
-        Jul 12, 2025 * drop ../ on write to prevent path traversal attacks
-        Mar 11, 2025 * handle filenames with leading '-' correctly
+-Windows scroll when using the autocmd window.  #12085
+-in restore_snapshot_rec() restore more values from the snapshot, instead of
+-calling frame_new_height() and frame_new_width(), especially w_topline and
+-w_skipcol.
++Using the autocmd window resets w_skipcol when the cursor is in a long
++wrapped line.  In restore_snapshot_rec() restore more values from the
++snapshot, instead of calling frame_new_height() and frame_new_width(),
++especially w_skipcol.
+ 
+ Check places that source "path/*.vim" to not match other extensions, e.g.
+ .vim9, on MS-Windows (short file name match, gets expanded to long file name).
