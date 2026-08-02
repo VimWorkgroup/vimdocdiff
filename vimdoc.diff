@@ -1,14 +1,19 @@
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 4789b8c3b..3b2f65a9c 100644
+index 3b2f65a9c..a277a260f 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
-@@ -44,10 +44,6 @@ calling frame_new_height() and frame_new_width(), especially w_skipcol.
- With 'splitkeep' "screen" the scroll position is lost when splitting and
- closing a window, win_fix_cursor() moves the cursor to another line.
+@@ -1,4 +1,4 @@
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 01
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
  
--Check places that source "path/*.vim" to not match other extensions, e.g.
--.vim9, on MS-Windows (short file name match, gets expanded to long file name).
--E.g. for startup files, plugins, packs, etc.
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -41,9 +41,6 @@ squeezed to a couple of lines, for example ":help" followed by ":close".  In
+ restore_snapshot_rec() restore more values from the snapshot, instead of
+ calling frame_new_height() and frame_new_width(), especially w_skipcol.
+ 
+-With 'splitkeep' "screen" the scroll position is lost when splitting and
+-closing a window, win_fix_cursor() moves the cursor to another line.
 -
  When a help item can't be found, then open 'helpfile'.  Search for the tag in
  that file and gtive E149 only when not found.  Helps for a tiny Vim installed
