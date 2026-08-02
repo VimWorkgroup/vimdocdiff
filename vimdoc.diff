@@ -1,21 +1,20 @@
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 6329ac24a..38b6ae454 100644
+index 38b6ae454..2698ad6ff 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Jul 30
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Jul 31
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Jul 31
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -36,10 +36,6 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
+@@ -57,9 +57,6 @@ Virtual text problems:
+    #12232)
+ -  truncated Virtual text below an empty line causes display error #12493
  
--Mapping with modifier is not recognized after a partial mapping.  Probably
--because the typeahead was simplified when looking for a matching mapping.
--Need to somehow undo the simplification.  #12002
+-When 'virtualedit' is "all" and 'cursorcolumn' is set, the wrong column may be
+-highlighted. (van-de-bugger, 2018 Jan 23, #2576)
 -
- With 'smoothscroll' the scroll position is lost when a window is temporarily
- squeezed to a couple of lines, for example ":help" followed by ":close".  In
- restore_snapshot_rec() restore more values from the snapshot, instead of
+ Errors when running tests with valgrind:
+ - test_codestyle.vim:  e.g.:
+     command line..script /home/mool/vim/vim91/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 6: keycode_check.vim: space before tab: Expected 0 but got 7
