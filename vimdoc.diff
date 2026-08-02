@@ -1,14 +1,15 @@
 diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 2698ad6ff..4789b8c3b 100644
+index 4789b8c3b..3b2f65a9c 100644
 --- a/runtime/doc/todo.txt
 +++ b/runtime/doc/todo.txt
-@@ -58,9 +58,6 @@ Virtual text problems:
- -  truncated Virtual text below an empty line causes display error #12493
+@@ -44,10 +44,6 @@ calling frame_new_height() and frame_new_width(), especially w_skipcol.
+ With 'splitkeep' "screen" the scroll position is lost when splitting and
+ closing a window, win_fix_cursor() moves the cursor to another line.
  
- Errors when running tests with valgrind:
--- test_codestyle.vim:  e.g.:
--    command line..script /home/mool/vim/vim91/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 6: keycode_check.vim: space before tab: Expected 0 but got 7
--    command line..script /home/mool/vim/vim91/src/testdir/runtest.vim[569]..function RunTheTest[52]..Test_test_files line 10: setup.vim: trailing white space: Expected 0 but got 23
- - test_gui.vim:
-     Found errors in Test_gui_mouse_event():
- 
+-Check places that source "path/*.vim" to not match other extensions, e.g.
+-.vim9, on MS-Windows (short file name match, gets expanded to long file name).
+-E.g. for startup files, plugins, packs, etc.
+-
+ When a help item can't be found, then open 'helpfile'.  Search for the tag in
+ that file and gtive E149 only when not found.  Helps for a tiny Vim installed
+ without all the help files.
