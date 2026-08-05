@@ -1,25 +1,18 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index b3d1deb25..7a1df5c46 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 7b555d3ca..80f9baa4a 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*	For Vim version 9.2.  Last change: 2026 May 23
-+*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Jul 29
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -103,6 +103,14 @@ triggered.
- 		  setlocal matchpairs+=<:>
- 		  /<start
- 		}
-+<This also works when the `:autocmd` is itself the command of another
-+`:autocmd` or `:command`: >
-+	au FileType xml au BufWinEnter * ++once {
-+		  setlocal matchpairs+=<:>
-+		}
-+<Note that the "{" must be the whole command, a command that happens to end in
-+"{", such as "normal! {", does not start a block.  Nesting the commands works,
-+nesting the blocks themselves does not, see |:command-repl|.
+@@ -4156,6 +4156,7 @@ Some folding is now supported with when 'foldmethod' is set to "syntax": >
+    g:vimsyn_folding =~# 'P' : fold Python   heredocs
+    g:vimsyn_folding =~# 'r' : fold Ruby     heredocs
+    g:vimsyn_folding =~# 't' : fold Tcl      heredocs
++   g:vimsyn_folding =~# 'T' : fold :append, :change and :insert
+ <
  
- The |autocmd_add()| function can be used to add a list of autocmds and autocmd
- groups from a Vim script.  It is preferred if you have anything that would
+ By default, g:vimsyn_folding is unset.  Concatenate the indicated characters
