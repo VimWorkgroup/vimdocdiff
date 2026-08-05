@@ -1,30 +1,38 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index a8f9dff8e..ea57dfaab 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
+index 89fdb0137..7f77539ad 100644
+--- a/runtime/doc/gui.txt
++++ b/runtime/doc/gui.txt
 @@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 03
+-*gui.txt*	For Vim version 9.2.  Last change: 2026 Jun 02
++*gui.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -36,19 +36,10 @@ browser use: https://github.com/vim/vim/issues/1234
- 							*known-bugs*
- -------------------- Known bugs and current work -----------------------
+@@ -1167,7 +1167,7 @@ Examples: >
+     :set guifont=Andale_Mono:h7.5:w4.5
+     :set guifont=Cascadia_Code:h14:fss19=1:fcalt=1:fliga=1
  
--With 'smoothscroll' the scroll position is lost when a window is temporarily
--squeezed to a couple of lines, for example ":help" followed by ":close".  In
--restore_snapshot_rec() restore more values from the snapshot, instead of
--calling frame_new_height() and frame_new_width(), especially w_skipcol.
--
- When a help item can't be found, then open 'helpfile'.  Search for the tag in
- that file and gtive E149 only when not found.  Helps for a tiny Vim installed
- without all the help files.
+-See also |font-sizes|.
++See also |font-sizes|, 'guiligatures' and 'renderoptions' (MS-Windows only).
  
--Virtual text problems:
---  Virtual text aligned "above": Wrong indentation when using tabs  (Issue
--   #12232)
--
- Errors when running tests with valgrind:
- - test_gui.vim:
-     Found errors in Test_gui_mouse_event():
+ Note on Weights: Fonts often come with a variety of weights.  "Normal" weights
+ in Windows have a value of 400 and, left unspecified, this is the value that
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index a9d8f06f5..521446ada 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
++*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -7341,7 +7341,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    emoji might be rendered beyond the bounding box of drawing
+ 		    cell.
+ 
+-	Other render types are currently not supported.
++	Other render types are currently not supported.  See also 'guiligatures'.
+ 
+ 						*'report'*
+ 'report'		number	(default 2)
