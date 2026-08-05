@@ -1,38 +1,25 @@
-diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
-index 89fdb0137..7f77539ad 100644
---- a/runtime/doc/gui.txt
-+++ b/runtime/doc/gui.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index b3d1deb25..7a1df5c46 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*gui.txt*	For Vim version 9.2.  Last change: 2026 Jun 02
-+*gui.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
+-*autocmd.txt*	For Vim version 9.2.  Last change: 2026 May 23
++*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1167,7 +1167,7 @@ Examples: >
-     :set guifont=Andale_Mono:h7.5:w4.5
-     :set guifont=Cascadia_Code:h14:fss19=1:fcalt=1:fliga=1
+@@ -103,6 +103,14 @@ triggered.
+ 		  setlocal matchpairs+=<:>
+ 		  /<start
+ 		}
++<This also works when the `:autocmd` is itself the command of another
++`:autocmd` or `:command`: >
++	au FileType xml au BufWinEnter * ++once {
++		  setlocal matchpairs+=<:>
++		}
++<Note that the "{" must be the whole command, a command that happens to end in
++"{", such as "normal! {", does not start a block.  Nesting the commands works,
++nesting the blocks themselves does not, see |:command-repl|.
  
--See also |font-sizes|.
-+See also |font-sizes|, 'guiligatures' and 'renderoptions' (MS-Windows only).
- 
- Note on Weights: Fonts often come with a variety of weights.  "Normal" weights
- in Windows have a value of 400 and, left unspecified, this is the value that
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index a9d8f06f5..521446ada 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7341,7 +7341,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    emoji might be rendered beyond the bounding box of drawing
- 		    cell.
- 
--	Other render types are currently not supported.
-+	Other render types are currently not supported.  See also 'guiligatures'.
- 
- 						*'report'*
- 'report'		number	(default 2)
+ The |autocmd_add()| function can be used to add a list of autocmds and autocmd
+ groups from a Vim script.  It is preferred if you have anything that would
