@@ -1,21 +1,13 @@
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 4db123621..330b552db 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 06
+diff --git a/runtime/doc/pi_netrw.txt b/runtime/doc/pi_netrw.txt
+index e3c06852c..9a0533bc4 100644
+--- a/runtime/doc/pi_netrw.txt
++++ b/runtime/doc/pi_netrw.txt
+@@ -2609,7 +2609,7 @@ your browsing preferences.  (see also: |netrw-settings|)
+ 				 otherwise                     "dir"
  
+   *g:netrw_glob_escape*		='[]*?`{~$'  (unix)
+-				='[]*?`{$'  (windows
++				='[]*?`{$'  (windows)
+ 				These characters in directory names are
+ 				escaped before applying glob()
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52741,6 +52741,10 @@ Highlighting: ~
- |hl-PopupBorder|	Popup window border.
- |hl-PopupTitle|		Popup window title.
- 
-+Configure Switches: ~
-+
-+--enable-hardcopy-pango	Enable the pango |:hardcopy| backend |pango-printing|
-+
- ==============================================================================
- PATCHES						*patches-9.3* *bug-fixes-9.3*
- 						*patches-after-9.2*
