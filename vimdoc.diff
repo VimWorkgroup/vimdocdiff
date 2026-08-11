@@ -1,50 +1,80 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 222dbcc2a..b8f6219e4 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/gui_x11.txt b/runtime/doc/gui_x11.txt
+index 3bb469cec..f199801ee 100644
+--- a/runtime/doc/gui_x11.txt
++++ b/runtime/doc/gui_x11.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 08
-+*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 10
+-*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Jul 27
++*gui_x11.txt*	For Vim version 9.2.  Last change: 2026 Aug 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1703,7 +1703,7 @@ number
- ------
- number			number constant			*expr-number*
+@@ -304,7 +304,7 @@ If a name is used that exists on other systems, but not in X11, the default
+ "arrow" pointer is used.
  
--			*0x* *hex-number* *0o* *octal-number* *binary-number*
-+			*0x* *hex-number* *0o* *octal-number* *0b* *binary-number*
- Integer numbers can be written in multiple forms:
+ ==============================================================================
+-5. GTK version					*gui-gtk* *GTK+* *GTK* *GTK3*
++5. GTK version				*gui-gtk* *GTK+* *GTK* *GTK3* *GTK4*
  
- 	{N}		decimal
-@@ -1715,9 +1715,6 @@ Integer numbers can be written in multiple forms:
- {N} is a sequence of decimal digits (0-9), hexadecimal digits (0-9, a-f and
- A-F), octal digits (0-7) or binary digits (0 or 1).
+ The GTK version of the GUI works a little bit different.
  
--Note: A leading "-" or "+" is not part of the number, it is the unary operator
--|expr9| applied to it.
--
- Assuming 64 bit numbers are used (see |v:numbersize|) an unsigned number is
- truncated to 0x7fffffffffffffff or 9223372036854775807.  You can use -1 to get
- 0xffffffffffffffff.
-@@ -1725,6 +1722,9 @@ truncated to 0x7fffffffffffffff or 9223372036854775807.  You can use -1 to get
- In |scriptversion-4| and in |Vim9| script, single quotes may appear between digits
- to improve readability; these are ignored.
+@@ -680,7 +680,11 @@ X11R5 with a library for X11R6 probably doesn't work (although the linking
+ won't give an error message, Vim will crash later).
  
-+A leading "+" or "-" is not part of an integer literal.  E.g., -123 is an
-+expression, the unary operator |expr-unary--| applied to the number 123.
+ 							*gui-wayland*
+-Support for the Wayland display server protocol has landed in patch 9.1.0064.
++Support for the Wayland display server protocol has landed in patch 9.1.0064,
++for the GTK3 GUI. It is recommended to use the GTK4 GUI if you want a better
++Wayland experience however, as the GTK3 GUI is heavily built around X11
++specific features and API calls.
 +
- Examples:
- 	0xDEAD
- 	57005
-@@ -1751,6 +1751,10 @@ locale is.
- In |scriptversion-4| and in |Vim9| script, single quotes may appear between the
- digits in {N} to improve readability; these are ignored.
  
-+A leading "+" or "-" is not part of a floating point literal.  E.g., -1.0e-3
-+is an expression, the unary operator |expr-unary--| applied to the float 1.0e-3.
-+The "-" in the exponent is part of the literal.
+ Note: The Wayland protocol is subject to some restrictions, so the following
+ functions won't work: |getwinpos()|, |getwinposx()|, |getwinposy()| and the
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 521446ada..869cc9f98 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
++*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 10
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4494,7 +4494,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 						*'guiheadroom'* *'ghr'*
+ 'guiheadroom' 'ghr'	number	(default 50)
+ 			global
+-			{only for GTK and X11 GUI}
++			{only for GTK and X11 GUI, except GTK4 GUI}
+ 	The number of pixels subtracted from the screen height when fitting
+ 	the GUI window on the screen.  Set this before the GUI is started,
+ 	e.g., in your |gvimrc| file.  When zero, the whole screen height will
+@@ -5030,6 +5030,9 @@ A jump table for the options with a short description can be found at |Q_op|.
+ <	"S-space" means shift+space.  This is the activation key for kinput2 +
+ 	canna (Japanese), and ami (Korean).
+ 
++	Note that when using the GTK4 GUI, this option is not supported. The
++	only valid value for this option will be an empty string.
 +
- Examples:
- 	123.456
- 	0.0001
+ 				*'imcmdline'* *'imc'* *'noimcmdline'* *'noimc'*
+ 'imcmdline' 'imc'	boolean (default off)
+ 			global
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 330b552db..ef371b569 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52587,10 +52587,11 @@ work in progress.
+ 
+ GUI ~
+ -----
+-- Added support for the GTK 4 GUI (via patch 9.2.0501).  Enable with
+-  `--enable-gui=gtk4` configure switch at build time.
++- Added support for the GTK 4 GUI (via patch 9.2.0501), stablized as of
++  patch 9.2.0931.  Enable with `--enable-gui=gtk4` configure switch at build
++  time.
+ - Add support for fullscreen mode in the GTK UI |'go-s'|.
+-- Enable native printing diaglog for the GTK4 UI using pango library, see
++- Enable native printing dialog for the GTK4 UI using pango library, see
+   |pango-printing|.
+ 
+ Popups ~
