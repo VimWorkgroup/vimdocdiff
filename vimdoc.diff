@@ -1,19 +1,22 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index b8f6219e4..fe3545e3d 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index ef371b569..ab0e93657 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 10
-+*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 13
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 06
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3056,7 +3056,7 @@ v:wayland_display
- 		If this is empty, then Vim is not connected to any display.
+@@ -52587,9 +52587,8 @@ work in progress.
  
- 					*v:windowid* *windowid-variable*
--v:windowid	When any X11/Wayland based GUI is running or when running in a
-+v:windowid	When any X11 based GUI is running or when running in a
- 		terminal and Vim connects to the X server (|-X|) this will be
- 		set to the window ID.
- 		When an MS-Windows GUI is running this will be set to the
+ GUI ~
+ -----
+-- Added support for the GTK 4 GUI (via patch 9.2.0501), stablized as of
+-  patch 9.2.0931.  Enable with `--enable-gui=gtk4` configure switch at build
+-  time.
++- Added experimental support for the GTK 4 GUI (via patch 9.2.0501 and many
++  following), enable with `--enable-gui=gtk4` configure switch at build time.
+ - Add support for fullscreen mode in the GTK UI |'go-s'|.
+ - Enable native printing dialog for the GTK4 UI using pango library, see
+   |pango-printing|.
