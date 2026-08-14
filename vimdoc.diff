@@ -1,24 +1,19 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 1f14e7528..d88d5deac 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
+index b8f6219e4..fe3545e3d 100644
+--- a/runtime/doc/eval.txt
++++ b/runtime/doc/eval.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Jul 25
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug 11
+-*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 10
++*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2526,7 +2526,12 @@ diff_filler({lnum})					*diff_filler()*
- 		display but don't exist in the buffer.
- 		{lnum} is used like with |getline()|.  Thus "." is the current
- 		line, "'m" mark m, etc.
--		Returns 0 if the current window is not in diff mode.
-+
-+		To get the filler lines after the last buffer line, use: >
-+			echo diff_filler(line('$')+1)
-+<
-+		Returns 0 if the current window is not in diff mode or filler
-+		lines have been disabled using 'diffopt'.
+@@ -3056,7 +3056,7 @@ v:wayland_display
+ 		If this is empty, then Vim is not connected to any display.
  
- 		Can also be used as a |method|: >
- 			GetLnum()->diff_filler()
+ 					*v:windowid* *windowid-variable*
+-v:windowid	When any X11/Wayland based GUI is running or when running in a
++v:windowid	When any X11 based GUI is running or when running in a
+ 		terminal and Vim connects to the X server (|-X|) this will be
+ 		set to the window ID.
+ 		When an MS-Windows GUI is running this will be set to the
