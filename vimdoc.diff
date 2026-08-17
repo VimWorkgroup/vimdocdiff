@@ -1,133 +1,26 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index fe3545e3d..d2b5bb478 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index be987bf02..e69b62acd 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 13
-+*eval.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 Jul 29
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1703,7 +1703,8 @@ number
- ------
- number			number constant			*expr-number*
+@@ -583,6 +583,15 @@ possible.  Each variable can have a type or infer it from the value: >
+ Use this only when there is a list with values, declaring one variable per
+ line is much easier to read and change later.
  
--			*0x* *hex-number* *0o* *octal-number* *0b* *binary-number*
-+					*0x* *hex-number* *0o* *octal-number*
-+					*0b* *binary-number*
- Integer numbers can be written in multiple forms:
++The type of a variable that does not have a declared type is the type of the
++value it gets.  The variable after the ";" gets the remaining items: for a
++list this is a list of the same member type, for a tuple this is a tuple of
++the types of the remaining items: >
++	var [v1; v2] = [1, 2, 3]          # v2 has type list<number>
++	var [v3; v4] = (1, 'a', true)     # v4 has type tuple<string, bool>
++When the value has type "any" the item types are not known and every variable
++gets type "any".
++
  
- 	{N}		decimal
-@@ -1719,8 +1720,8 @@ Assuming 64 bit numbers are used (see |v:numbersize|) an unsigned number is
- truncated to 0x7fffffffffffffff or 9223372036854775807.  You can use -1 to get
- 0xffffffffffffffff.
- 
--In |scriptversion-4| and in |Vim9| script, single quotes may appear between digits
--to improve readability; these are ignored.
-+In |scriptversion-4| and in |Vim9| script, single quotes may appear between
-+digits to improve readability; these are ignored.
- 
- A leading "+" or "-" is not part of an integer literal.  E.g., -123 is an
- expression, the unary operator |expr-unary--| applied to the number 123.
-@@ -1741,9 +1742,9 @@ Floating point numbers can be written in two forms:
- 	{N}.{M}
- 	{N}.{M}[eE][-+]{exp}
- 
--{N} and {M} are sequences of decimal digits.  In |scriptversion-1| (the default)
--{N} and {M} must be present.  In |scriptversion-2| or higher and in |Vim9| script
--{N} is optional.
-+{N} and {M} are sequences of decimal digits.  In |scriptversion-1| (the
-+default) {N} and {M} must be present.  In |scriptversion-2| or higher and in
-+|Vim9| script {N} is optional.
- {exp} is the exponent, power of 10.
- Only a decimal point is accepted, not a comma.  No matter what the current
- locale is.
-@@ -1752,8 +1753,8 @@ In |scriptversion-4| and in |Vim9| script, single quotes may appear between the
- digits in {N} to improve readability; these are ignored.
- 
- A leading "+" or "-" is not part of a floating point literal.  E.g., -1.0e-3
--is an expression, the unary operator |expr-unary--| applied to the float 1.0e-3.
--The "-" in the exponent is part of the literal.
-+is an expression, the unary operator |expr-unary--| applied to the float
-+1.0e-3.  The "-" in the exponent is part of the literal.
- 
- Examples:
- 	123.456
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 869cc9f98..64ab68123 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 10
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -7344,7 +7344,8 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    emoji might be rendered beyond the bounding box of drawing
- 		    cell.
- 
--	Other render types are currently not supported.  See also 'guiligatures'.
-+	Other render types are currently not supported.  See also
-+	'guiligatures'.
- 
- 						*'report'*
- 'report'		number	(default 2)
-diff --git a/runtime/doc/print.txt b/runtime/doc/print.txt
-index 392ad2687..3d5b8bdce 100644
---- a/runtime/doc/print.txt
-+++ b/runtime/doc/print.txt
-@@ -1,4 +1,4 @@
--*print.txt*	For Vim version 9.2.  Last change: 2026 Aug 02
-+*print.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -404,8 +404,8 @@ of |:hardcopy|:
- 			first line on a new page.
-   format:postscript (default)
- 			Output format: Postscript
--  format:{name}		Output format from this table (only used when compiled
--			with |+pango| feature):
-+  format:{name}		Output format from this table:
-+			{only available when compiled with |+pango| feature}
- 			{name}		meaning ~
- 			postscript	Generate Postscript
- 			pdf		Generate Adobe PDF
-@@ -739,7 +739,7 @@ If Vim is compiled with |+pango|, then it will render pages using Pango (a
- text handling library), and Cairo (a graphics library).  The benefit of this
- is that Unicode is fully supported.  Postscript files will still be generated
- using Cairo.  Additionally, PDF files can be emitted as well, see the
--"format" key in |popt-option|
-+"format" key in |popt-option|.
- 
- When using the GTK GUI, |+pango| is always enabled and used.  On terminal
- builds of Vim, "--enable-hardcopy-pango" must be passed to the configure
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index ab0e93657..f38fe1693 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 13
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52590,7 +52590,7 @@ GUI ~
- - Added experimental support for the GTK 4 GUI (via patch 9.2.0501 and many
-   following), enable with `--enable-gui=gtk4` configure switch at build time.
- - Add support for fullscreen mode in the GTK UI |'go-s'|.
--- Enable native printing dialog for the GTK4 UI using pango library, see
-+- Enable native printing dialog for the GTK4 UI using Pango library, see
-   |pango-printing|.
- 
- Popups ~
-@@ -52743,7 +52743,7 @@ Highlighting: ~
- 
- Configure Switches: ~
- 
----enable-hardcopy-pango	Enable the pango |:hardcopy| backend |pango-printing|
-+--enable-hardcopy-pango	Enable the Pango |:hardcopy| backend |pango-printing|
- 
- ==============================================================================
- PATCHES						*patches-9.3* *bug-fixes-9.3*
+ Constants ~
+ 						*vim9-const* *vim9-final*
