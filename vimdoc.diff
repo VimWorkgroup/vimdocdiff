@@ -1,23 +1,18 @@
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 082b9ba85..505482684 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -914,8 +914,16 @@ Notes:
- 	echo [1, 2]
- 		[3, 4]
- - In some cases it is difficult for Vim to parse a command, especially when
--  commands are used as an argument to another command, such as `:windo`.  In
--  those cases the line continuation with a backslash has to be used.
-+  commands are used as an argument to another command, such as `:windo`,
-+  `:command` or `:autocmd`.  In those cases the line continuation with a
-+  backslash has to be used.  For example: >
-+	command! Foo call Bar('x', {
-+	      \ 'key': 'value',
-+	      \ })
-+	autocmd BufWritePre * call Bar('x', {
-+	      \ 'key': 'value',
-+	      \ })
-+<
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 64ab68123..08f286782 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
+@@ -1,4 +1,4 @@
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
++*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 19
  
  
- White space ~
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3986,7 +3986,6 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The function should return a List, which is handled similarly to the
+ 	return value of a |:command-completion-customlist| function.
+ 
+-	The function is called only once per |:find| command invocation.
+ 	The function can process all the directories specified in 'path'.
+ 
+ 	If a match is found, the function should return a |List| containing
