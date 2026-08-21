@@ -1,27 +1,40 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 737cac1fe..9effcec54 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 08f286782..ecccba92a 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug 18
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug 20
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 19
++*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -9984,9 +9984,13 @@ setbufline({buf}, {lnum}, {text})			*setbufline()*
- setbufvar({buf}, {varname}, {val})			*setbufvar()*
- 		Set option or local variable {varname} in buffer {buf} to
- 		{val}.
--		This also works for a global or local window option, but it
--		doesn't work for a global or local window variable.
--		For a local window option the global value is unchanged.
-+		This also works for a global option or a window-local option,
-+		but it doesn't work for a global or local window variable.  A
-+		window-local option is set in a window of the current tab page
-+		that displays {buf}, and the global value is unchanged.  When
-+		no window in the current tab page displays {buf} the option is
-+		not set and no error is given; use |setwinvar()| or
-+		|win_execute()| for that.
- 		For the use of {buf}, see |bufname()| above.
- 		The {varname} argument is a string.
- 		Note that the variable name without "b:" must be used.
+@@ -3583,6 +3583,10 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	To ignore all but some events, a "-" prefix can be used: >
+ 	    :set ei=all,-WinLeave
+ <
++	Events that are triggered by comparing the current state against a
++	stored one, such as |CursorMoved| and |TextChanged|, are not triggered
++	afterwards for what happened while they were ignored.
++
+ 						*'eventignorewin'* *'eiw'*
+ 'eventignorewin' 'eiw'	string	(default "")
+ 			window-local
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index e2675c5f2..c0f746f2c 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 18
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 20
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52703,6 +52703,8 @@ Changed ~
+ - |listener_add()| accepts a Dictionary of options and can include the
+   resulting text of a change |listener-text|.
+ - |extend()| and |extendnew()| also accept |Blobs|.
++- events like |CursorMoved| are no longer triggered for what happened while
++  they were ignored with 'eventignore'.
+ 
+ 
+ 							*added-9.3*
