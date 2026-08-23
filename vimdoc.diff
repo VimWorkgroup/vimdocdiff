@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/version5.txt b/runtime/doc/version5.txt
-index 0efbd5b82..c65dd5b9a 100644
---- a/runtime/doc/version5.txt
-+++ b/runtime/doc/version5.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index bc0979c5f..0424c7b7e 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*version5.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*version5.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
+-*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
++*change.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4418,7 +4418,7 @@ Now map <xF4> to <F4>, so that the user can override this.
- When compiling os_win32.c with MIN_FEAT the apply_autocmds() should not be
- used. (Aaron)
+@@ -915,7 +915,7 @@ either the first or second pattern in parentheses did not match, so either
  
--This autocommand looped forever: ":au FileChangedShell * ++nested e <afile>"
-+This autocommand looped forever: ":au FileChangedShell * nested e <afile>"
- Now FileChangeShell never nests. (Roemer)
+ These commands repeat the previous `:substitute` command with the given flags.
+ The first letter is always "s", followed by one or two of the possible flag
+-characters.  For example `:sce` works like `:s///ce`.  The table lists the
++characters.  For example ":sce" works like ":s ce".  The table lists the
+ possible combinations, not all flags are possible, because the command is
+ short for another command.
  
- When evaluating an ":elseif" that was not going to matter anyway, ignore
