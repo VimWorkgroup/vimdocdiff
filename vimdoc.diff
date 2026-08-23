@@ -1,19 +1,38 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index bc0979c5f..0424c7b7e 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
+index 839dcc296..ee0fe673b 100644
+--- a/runtime/doc/channel.txt
++++ b/runtime/doc/channel.txt
+@@ -812,6 +812,13 @@ ch_sendexpr({handle}, {expr} [, {options}])			*ch_sendexpr()*
+ 		If a response message is not expected for {expr}, then don't
+ 		specify the "callback" item in {options}.
+ 
++		In "lsp" mode an "id" item in {expr} is sent as it is when no
++		response is expected, which is how a request from the server
++		is answered; it may be of any type the server used.  When a
++		response is expected, with |ch_evalexpr()| or with the
++		"callback" item, Vim assigns the ID itself and the item must
++		be a |Number|.
++
+ 		Can also be used as a |method|: >
+ 			GetChannel()->ch_sendexpr(expr)
+ <
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index c0f746f2c..768f9e12a 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*change.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
-+*change.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 20
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -915,7 +915,7 @@ either the first or second pattern in parentheses did not match, so either
+@@ -52705,7 +52705,8 @@ Changed ~
+ - |extend()| and |extendnew()| also accept |Blobs|.
+ - events like |CursorMoved| are no longer triggered for what happened while
+   they were ignored with 'eventignore'.
+-
++- |ch_sendexpr()| accepts a non-Number "id" in "lsp" mode when no response is
++  expected, so a request from the server can be answered.
  
- These commands repeat the previous `:substitute` command with the given flags.
- The first letter is always "s", followed by one or two of the possible flag
--characters.  For example `:sce` works like `:s///ce`.  The table lists the
-+characters.  For example ":sce" works like ":s ce".  The table lists the
- possible combinations, not all flags are possible, because the command is
- short for another command.
- 
+ 							*added-9.3*
+ Added ~
