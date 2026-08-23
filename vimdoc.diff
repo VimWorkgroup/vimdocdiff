@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/sign.txt b/runtime/doc/sign.txt
-index 22233efb4..1bf7e42b5 100644
---- a/runtime/doc/sign.txt
-+++ b/runtime/doc/sign.txt
+diff --git a/runtime/doc/version5.txt b/runtime/doc/version5.txt
+index 0efbd5b82..c65dd5b9a 100644
+--- a/runtime/doc/version5.txt
++++ b/runtime/doc/version5.txt
 @@ -1,4 +1,4 @@
--*sign.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*sign.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
+-*version5.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*version5.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
  
  
- 		  VIM REFERENCE MANUAL	  by Gordon Prieur
-@@ -690,7 +690,7 @@ sign_placelist({list})				*sign_placelist()*
- 		Can also be used as a |method|: >
- 			GetSignlist()->sign_placelist()
- <
--		Return type: |Number|
-+		Return type: list<number> or list<any>
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -4418,7 +4418,7 @@ Now map <xF4> to <F4>, so that the user can override this.
+ When compiling os_win32.c with MIN_FEAT the apply_autocmds() should not be
+ used. (Aaron)
  
+-This autocommand looped forever: ":au FileChangedShell * ++nested e <afile>"
++This autocommand looped forever: ":au FileChangedShell * nested e <afile>"
+ Now FileChangeShell never nests. (Roemer)
  
- sign_undefine([{name}])					*sign_undefine()*
+ When evaluating an ":elseif" that was not going to matter anyway, ignore
