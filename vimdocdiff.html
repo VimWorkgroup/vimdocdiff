@@ -54,7 +54,7 @@
     <div id="diff">
       <div class="d2h-file-list-wrapper d2h-auto-color-scheme">
     <div class="d2h-file-list-header">
-        <span class="d2h-file-list-title">Files changed (1)</span>
+        <span class="d2h-file-list-title">Files changed (2)</span>
         <a class="d2h-file-switch d2h-hide">hide</a>
         <a class="d2h-file-switch d2h-show">show</a>
     </div>
@@ -66,8 +66,20 @@
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
       </svg>      <a href="#d2h-229033" class="d2h-file-name">runtime/doc/builtin.txt</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+6</span>
-          <span class="d2h-lines-deleted">-2</span>
+          <span class="d2h-lines-added">+1</span>
+          <span class="d2h-lines-deleted">-1</span>
+      </span>
+    </span>
+</li>
+<li class="d2h-file-list-line">
+    <span class="d2h-file-name-wrapper">
+      <svg aria-hidden="true" class="d2h-icon d2h-changed" height="16" title="modified" version="1.1"
+           viewBox="0 0 14 16" width="14">
+          <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
+      </svg>      <a href="#d2h-251895" class="d2h-file-name">runtime/doc/usr_51.txt</a>
+      <span class="d2h-file-stats">
+          <span class="d2h-lines-added">+3</span>
+          <span class="d2h-lines-deleted">-3</span>
       </span>
     </span>
 </li>
@@ -93,6 +105,189 @@
                     <tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
+        <div class="d2h-code-side-line">@@ -8798,7 +8798,7 @@ readdir({directory} [, {expr} [, {dict}]])		*readdir()*</div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8798
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		Each time {expr} is evaluated |v:val| is set to the entry name.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8799
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		When {expr} is a function the name is passed as the argument.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8800
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		For example, to get a list of files ending in &quot;.txt&quot;: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      8801
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		  readdir(dirname, {n -&gt; n =~ &#x27;.txt$&#x27;})</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8802
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;		To skip hidden and backup files: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8803
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		  readdir(dirname, {n -&gt; n !~ &#x27;^\.\|\~$&#x27;})</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8804
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;								*E857*</span>
+        </div>
+    </td>
+</tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="d2h-file-side-diff">
+            <div class="d2h-code-wrapper">
+                <table class="d2h-diff-table">
+                    <tbody class="d2h-diff-tbody">
+                    <tr>
+    <td class="d2h-code-side-linenumber d2h-info"></td>
+    <td class="d2h-info">
+        <div class="d2h-code-side-line">&nbsp;</div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8798
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		Each time {expr} is evaluated |v:val| is set to the entry name.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8799
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		When {expr} is a function the name is passed as the argument.</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8800
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		For example, to get a list of files ending in &quot;.txt&quot;: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      8801
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">		  readdir(dirname, {n -&gt; n =~ &#x27;<ins>\</ins>.txt$&#x27;})</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8802
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;		To skip hidden and backup files: &gt;</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8803
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">		  readdir(dirname, {n -&gt; n !~ &#x27;^\.\|\~$&#x27;})</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      8804
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">&lt;								*E857*</span>
+        </div>
+    </td>
+</tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="d2h-251895" class="d2h-file-wrapper" data-lang="txt">
+    <div class="d2h-file-header">
+      <span class="d2h-file-name-wrapper">
+    <svg aria-hidden="true" class="d2h-icon" height="16" version="1.1" viewBox="0 0 12 16" width="12">
+        <path d="M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z"></path>
+    </svg>    <span class="d2h-file-name">runtime/doc/usr_51.txt</span>
+    <span class="d2h-tag d2h-changed d2h-changed-tag">CHANGED</span></span>
+<label class="d2h-file-collapse">
+    <input class="d2h-file-collapse-input" type="checkbox" name="viewed" value="viewed">
+    Viewed
+</label>
+    </div>
+    <div class="d2h-files-diff">
+        <div class="d2h-file-side-diff">
+            <div class="d2h-code-wrapper">
+                <table class="d2h-diff-table">
+                    <tbody class="d2h-diff-tbody">
+                    <tr>
+    <td class="d2h-code-side-linenumber d2h-info"></td>
+    <td class="d2h-info">
         <div class="d2h-code-side-line">@@ -1,4 +1,4 @@</div>
     </td>
 </tr><tr>
@@ -102,7 +297,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug <del>20</del></span>
+            <span class="d2h-code-line-ctn">*usr_51.txt*	For Vim version 9.2.  Last change: 2026 <del>Jun</del> <del>03</del></span>
         </div>
     </td>
 </tr><tr>
@@ -132,122 +327,92 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
+            <span class="d2h-code-line-ctn">		     VIM USER MANUAL	by Bram Moolenaar</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -9929,7 +9929,11 @@ server2client({clientid}, {string})			*server2client()*</div>
+        <div class="d2h-code-side-line">@@ -346,8 +346,8 @@ Here is the resulting complete example: &gt;</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9929
+      346
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">serverlist([{dict}])					*serverlist()*</span>
+            <span class="d2h-code-line-ctn"> 26	noremap &lt;SID&gt;Add  :call &lt;SID&gt;Add(expand(&quot;&lt;cword&gt;&quot;), true)&lt;CR&gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9930
+      347
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		Return a list of available server names, one per line.</span>
+            <span class="d2h-code-line-ctn"> 27</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9931
+      348
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		When there are no servers or the information is not available</span>
+            <span class="d2h-code-line-ctn"> 28	def Add(from: string, correct: bool)</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      9932
+      349
     </td>
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">		an empty string is returned<del>.</del></span>
+            <span class="d2h-code-line-ctn"> 29	  var to = input(&quot;type the correction for <del>&quot; .. </del>from<del> .. &quot;</del>: &quot;)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      350
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"> 30	  exe &quot;:iabbrev <del>&quot; .. </del>from <del>.. &quot; &quot; .. </del>to</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9933
+      351
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		{only available when compiled with the |+clientserver| feature}</span>
+            <span class="d2h-code-line-ctn"> 31	  if correct | exe &quot;normal viws\&lt;C-R&gt;\&quot; \b\e&quot; | endif</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9934
+      352
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn"> 32	  count += 1</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9935
+      353
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		If {dict} is given, then it is a |Dictionary| supporting the</span>
+            <span class="d2h-code-line-ctn"> 33	  echo &quot;you now have &quot; .. count .. &quot; corrections&quot;</span>
         </div>
     </td>
 </tr>
@@ -271,7 +436,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug <ins>23</ins></span>
+            <span class="d2h-code-line-ctn">*usr_51.txt*	For Vim version 9.2.  Last change: 2026 <ins>Aug</ins> <ins>23</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -301,7 +466,7 @@
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		  VIM REFERENCE MANUAL	  by Bram Moolenaar</span>
+            <span class="d2h-code-line-ctn">		     VIM USER MANUAL	by Bram Moolenaar</span>
         </div>
     </td>
 </tr><tr>
@@ -311,112 +476,82 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9929
+      346
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">serverlist([{dict}])					*serverlist()*</span>
+            <span class="d2h-code-line-ctn"> 26	noremap &lt;SID&gt;Add  :call &lt;SID&gt;Add(expand(&quot;&lt;cword&gt;&quot;), true)&lt;CR&gt;</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9930
+      347
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		Return a list of available server names, one per line.</span>
+            <span class="d2h-code-line-ctn"> 27</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9931
+      348
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		When there are no servers or the information is not available</span>
+            <span class="d2h-code-line-ctn"> 28	def Add(from: string, correct: bool)</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      9932
+      349
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		an empty string is returned<ins>, or an empty |List| when the</ins></span>
+            <span class="d2h-code-line-ctn"> 29	  var to = input(<ins>$</ins>&quot;type the correction for <ins>{</ins>from<ins>}</ins>: &quot;)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      9933
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      350
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		&quot;list&quot; option below is used.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      9934
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      9935
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		When the server cannot be reached, no error will be given and</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      9936
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">		the result is an empty string or |List|.</span>
+            <span class="d2h-code-line-ctn"> 30	  exe <ins>$</ins>&quot;:iabbrev <ins>{</ins>from<ins>}</ins> <ins>{</ins>to<ins>}&quot;</ins></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9937
+      351
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		{only available when compiled with the |+clientserver| feature}</span>
+            <span class="d2h-code-line-ctn"> 31	  if correct | exe &quot;normal viws\&lt;C-R&gt;\&quot; \b\e&quot; | endif</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9938
+      352
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn"> 32	  count += 1</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      9939
+      353
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">		If {dict} is given, then it is a |Dictionary| supporting the</span>
+            <span class="d2h-code-line-ctn"> 33	  echo &quot;you now have &quot; .. count .. &quot; corrections&quot;</span>
         </div>
     </td>
 </tr>
