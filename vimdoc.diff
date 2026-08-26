@@ -1,45 +1,27 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index f38a06657..c37b7b0d0 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -2063,8 +2063,10 @@ complete_info([{what}])					*complete_info()*
- 				the currently selected index item.
- 		   items	List of all completion candidates.  Each item
- 				is a dictionary containing the entries "word",
--				"abbr", "menu", "kind", "info" and
--				"user_data".
-+				"abbr", "menu", "kind", "info", "abbr_hlgroup",
-+				"kind_hlgroup" and "user_data".  The highlight
-+				group entries hold the name that the item was
-+				added with, or an empty string.
- 				See |complete-items|.
- 		   matches	Same as "items", but only returns items that
- 				are matching current query.  If both "matches"
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index f581d50cf..18408dfe8 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
+index c1ecf81b2..05ca990d0 100644
+--- a/runtime/doc/usr_41.txt
++++ b/runtime/doc/usr_41.txt
 @@ -1,4 +1,4 @@
--*insert.txt*	For Vim version 9.2.  Last change: 2026 Jul 22
-+*insert.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
+-*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Aug 18
++*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1264,13 +1264,15 @@ items:
- 			|hl-PmenuMatchSel| and |hl-PmenuMatch| highlight
- 			attributes in the popup menu to apply cterm and gui
- 			properties (with higher priority) like strikethrough
--			to the completion items abbreviation
-+			to the completion items abbreviation.
-+			The group can be defined later.
- 	kind_hlgroup	an additional highlight group specifically for setting
- 			the highlight attributes of the completion kind.  When
- 			this field is present, it will override the
- 			|hl-PmenuKind| highlight group, allowing for the
- 			customization of ctermfg and guifg properties for the
--			completion kind
-+			completion kind.
-+			The group can be defined later.
- 	match		See "matches" in |complete_info()|.
- 
- All of these except "icase", "equal", "dup" and "empty" must be a string.  If
+ 		     VIM USER MANUAL	by Bram Moolenaar
+@@ -936,9 +936,13 @@ Blob manipulation:					*blob-functions*
+ 	foreach()		apply function to Blob bytes
+ 	reduce()		reduce a Blob to a value
+ 	slice()			take a slice of a Blob
+-	blob2list()		get a list of numbers from a blob
+-	list2blob()		get a blob from a list of numbers
+-	reverse()		reverse the order of numbers in a blob
++	blob2list()		get a list of numbers from a Blob
++	list2blob()		get a Blob from a list of numbers
++	blob2str()		get a list of strings from a Blob
++	str2blob()		get a Blob from a list of strings
++	base64_encode()		encode a Blob into a base64 String
++	base64_decode()		decode a base64 String into a Blob
++	reverse()		reverse the order of bytes in a Blob
+ 	string()		String representation of a Blob
+ 	index()			index of a value in a Blob
+ 	indexof()		index in a Blob where an expression is true
