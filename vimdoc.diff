@@ -1,27 +1,42 @@
-diff --git a/runtime/doc/usr_41.txt b/runtime/doc/usr_41.txt
-index c1ecf81b2..05ca990d0 100644
---- a/runtime/doc/usr_41.txt
-+++ b/runtime/doc/usr_41.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index c37b7b0d0..6627469cd 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Aug 18
-+*usr_41.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
  
  
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -936,9 +936,13 @@ Blob manipulation:					*blob-functions*
- 	foreach()		apply function to Blob bytes
- 	reduce()		reduce a Blob to a value
- 	slice()			take a slice of a Blob
--	blob2list()		get a list of numbers from a blob
--	list2blob()		get a blob from a list of numbers
--	reverse()		reverse the order of numbers in a blob
-+	blob2list()		get a list of numbers from a Blob
-+	list2blob()		get a Blob from a list of numbers
-+	blob2str()		get a list of strings from a Blob
-+	str2blob()		get a Blob from a list of strings
-+	base64_encode()		encode a Blob into a base64 String
-+	base64_decode()		decode a base64 String into a Blob
-+	reverse()		reverse the order of bytes in a Blob
- 	string()		String representation of a Blob
- 	index()			index of a value in a Blob
- 	indexof()		index in a Blob where an expression is true
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -2059,6 +2059,12 @@ complete_info([{what}])					*complete_info()*
+ 		Returns a |Dictionary| with information about Insert mode
+ 		completion.  See |ins-completion|.
+ 		The items are:
++		   auto		|TRUE| when Vim started this completion by
++				itself, which is what 'autocomplete' does,
++				and |FALSE| when a key asked for it, such as
++				|i_CTRL-X_CTRL-O|.  A |complete-functions|
++				function can read this to tell the two apart.
++				Returned only when asked for in {what}.
+ 		   completed	Return a dictionary containing the entries of
+ 				the currently selected index item.
+ 		   items	List of all completion candidates.  Each item
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 768f9e12a..6ecfd04c0 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52707,6 +52707,8 @@ Changed ~
+   they were ignored with 'eventignore'.
+ - |ch_sendexpr()| accepts a non-Number "id" in "lsp" mode when no response is
+   expected, so a request from the server can be answered.
++- |complete_info()| can distinguish between manual and automatic triggered
++  completions via the "auto" item.
+ 
+ 							*added-9.3*
+ Added ~
