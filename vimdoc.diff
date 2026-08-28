@@ -1,150 +1,31 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index 7ef2ff00b..e70da1f3b 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index a16c123d1..9a8df69e3 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
+-*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
++*terminal.txt*	For Vim version 9.2.  Last change: 2026 Aug 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -299,10 +299,10 @@ the following pattern is used: >
- 	^\w\+@\w\+:\f\+\$\s
- 
- This is meant to match a default bash prompt.  If it doesn't match your
--prompt, you can change the regex with the `shell_prompt` key from the
-+prompt, you can change the regexp with the `shell_prompt` key from the
- `g:helptoc` dictionary variable: >
- 
--	let g:helptoc = {'shell_prompt': 'regex matching your shell prompt'}
-+	let g:helptoc = {'shell_prompt': 'regexp matching your shell prompt'}
- 
- Tip: After inserting a pattern to look for with the `/` command, if you press
- <Esc> instead of <CR>, you can then get more context for each remaining entry
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 18408dfe8..07ec6d518 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
-@@ -1,4 +1,4 @@
--*insert.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
-+*insert.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1798,9 +1798,9 @@ autoload/syntaxcomplete.vim) to add items.  Looking at the output from
-     htmlArg,htmlTag,htmlTagName,javaScriptStatement,javaScriptGlobalObjects
- 
- To pick up any JavaScript and HTML keyword syntax groups while editing a PHP
--file, you can use 3 different regexs, one for each language.  Or you can
-+file, you can use 3 different regexps, one for each language.  Or you can
- simply restrict the include groups to a particular value, without using
--a regex string: >
-+a regexp string: >
-     let g:omni_syntax_group_include_php = 'php\w\+,javaScript\w\+,html\w\+'
-     let g:omni_syntax_group_include_php = 'phpFunctions,phpMethods'
+@@ -866,6 +866,8 @@ term_setapi({buf}, {expr})				*term_setapi()*
  <
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index ecccba92a..a6de39886 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
-@@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 20
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
+ 		The default is "Tapi_".  When {expr} is an empty string then
+ 		no |terminal-api| function can be used for {buf}.
++		Setting the API only affects the "call" part, "drop" is always
++		allowed.
  
+ 		When used as a method the base is used for {buf}: >
+ 			GetBufnr()->term_setapi({expr})
+@@ -1081,6 +1083,11 @@ The body is always a list, making it easy to find the end: ]<07>.
+ The <Esc>]51;msg<07> sequence is reserved by xterm for "Emacs shell", which is
+ similar to what we are doing here.
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -10522,7 +10522,7 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	  exacttext	When this flag is present, search pattern completion
- 			(e.g., in |/|, |?|, |:s|, |:g|, |:v|, and |:vim|)
- 			shows exact buffer text as menu items, without
--			preserving regex artifacts like position
-+			preserving regexp artifacts like position
- 			anchors (e.g., |/\<|).  This provides more intuitive
- 			menu items that match the actual buffer text.
- 			However, searches may be less accurate since the
-diff --git a/runtime/doc/pattern.txt b/runtime/doc/pattern.txt
-index 18d7a4112..3be214525 100644
---- a/runtime/doc/pattern.txt
-+++ b/runtime/doc/pattern.txt
-@@ -1,4 +1,4 @@
--*pattern.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*pattern.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
++Note that any output appearing in a terminal window is checked for this
++escape sequence, thus the job can make Vim open a file with the "drop"
++command below.  |term_setapi()| only restricts which functions the "call"
++command may use, it does not affect the "drop" API.
++
+ Currently supported commands:
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1370,7 +1370,7 @@ Suppose B is a base character and x and y are composing characters:
- ==============================================================================
- 9. Compare with Perl patterns				*perl-patterns*
- 
--Vim's regexes are most similar to Perl's, in terms of what you can do.  The
-+Vim's regexps are most similar to Perl's, in terms of what you can do.  The
- difference between them is mostly just notation;  here's a summary of where
- they differ:
- 
-@@ -1401,7 +1401,7 @@ by giving you the \_ "modifier":  put it in front of a . or a character
- class, and they will match newlines as well.
- 
- Finally, these constructs are unique to Perl:
--- execution of arbitrary code in the regex:  (?{perl code})
-+- execution of arbitrary code in the regexp:  (?{perl code})
- - conditional expressions:  (?(condition)true-expr|false-expr)
- 
- ...and these are unique to Vim:
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index ea57dfaab..8ce7f1fdd 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 03
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1199,7 +1199,7 @@ Regexp problems:
-   character, search fails.  E.g. "รรีบ" in "การรีบรักใคร". (agguser, #2312)
- - [:space:] only matches ASCII spaces.  Add [:white:] for all space-like
-   characters, esp. including 0xa0.  Use character class zero.
--- Since 7.4.704 the old regex engine fails to match [[:print:]] in 0xf6.
-+- Since 7.4.704 the old regexp engine fails to match [[:print:]] in 0xf6.
-   (Manuel Ortega, 2016 Apr 24)
-   Test fails on Mac.  Avoid using isalpha(), isalnum(), etc?  Depends on
-   LC_CTYPE
-@@ -1637,8 +1637,8 @@ Patch to support 'u' in interactive substitute. (Christian Brabandt, 2012 Sep
- 
- Dialog is too big on Linux too. (David Fishburn, 2013 Sep 2)
- 
---   Add regex for 'paragraphs' and 'sections': 'parare' and 'sectre'.  Combine
--    the two into a regex for searching. (Ned Konz)
-+-   Add regexp for 'paragraphs' and 'sections': 'parare' and 'sectre'.
-+    Combine the two into a regexp for searching. (Ned Konz)
- Patch by Christian Brabandt, 2013 Apr 20, unfinished.
- 
- Bug: findfile("any", "file:///tmp;") does not work.
-@@ -6077,7 +6077,7 @@ From Elvis:
- 
- From xvi:
- -   CTRL-_ : swap 8th bit of character.
---   Add egrep-like regex type, like xvi (Ned Konz) or Perl (Emmanuel Mogenet)
-+-   Add egrep-like regexp type, like xvi (Ned Konz) or Perl (Emmanuel Mogenet)
- 
- 
- From vile:
-diff --git a/runtime/doc/usr_02.txt b/runtime/doc/usr_02.txt
-index 4f83a8f57..7ad54f534 100644
---- a/runtime/doc/usr_02.txt
-+++ b/runtime/doc/usr_02.txt
-@@ -1,4 +1,4 @@
--*usr_02.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*usr_02.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
- 
- 
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -581,7 +581,7 @@ Summary:					*help-summary*  >
-     starting with "z".
- 
- 11) Regexp items always start with /.  So to get help for the "\+" quantifier
--    in Vim regexes: >
-+    in Vim regexps: >
- 	:help /\+
- <    If you need to know everything about regular expressions, start reading
-     at: >
+ 	call {funcname} {argument}
