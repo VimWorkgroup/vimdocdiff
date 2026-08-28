@@ -1,31 +1,19 @@
-diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
-index a16c123d1..9a8df69e3 100644
---- a/runtime/doc/terminal.txt
-+++ b/runtime/doc/terminal.txt
+diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
+index f0d9afaf1..03ddab926 100644
+--- a/runtime/doc/windows.txt
++++ b/runtime/doc/windows.txt
 @@ -1,4 +1,4 @@
--*terminal.txt*	For Vim version 9.2.  Last change: 2026 Jun 26
-+*terminal.txt*	For Vim version 9.2.  Last change: 2026 Aug 27
+-*windows.txt*	For Vim version 9.2.  Last change: 2026 May 01
++*windows.txt*	For Vim version 9.2.  Last change: 2026 Aug 27
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -866,6 +866,8 @@ term_setapi({buf}, {expr})				*term_setapi()*
- <
- 		The default is "Tapi_".  When {expr} is an empty string then
- 		no |terminal-api| function can be used for {buf}.
-+		Setting the API only affects the "call" part, "drop" is always
-+		allowed.
+@@ -969,7 +969,7 @@ settings.  The option is a comma-separated list of values:
  
- 		When used as a method the base is used for {buf}: >
- 			GetBufnr()->term_setapi({expr})
-@@ -1081,6 +1083,11 @@ The body is always a list, making it easy to find the end: ]<07>.
- The <Esc>]51;msg<07> sequence is reserved by xterm for "Emacs shell", which is
- similar to what we are doing here.
+ Example: >
+ 	:set previewpopup=height:10,width:60
+-	:set previewpopup=border:single,borderhilight:PmenuBorder
++	:set previewpopup=border:single,borderhighlight:PmenuBorder
+ 	:set previewpopup=border:custom:─;│;─;│;┌;┐;┘;└
+ 	:set previewpopup=border:round,opacity:80
  
-+Note that any output appearing in a terminal window is checked for this
-+escape sequence, thus the job can make Vim open a file with the "drop"
-+command below.  |term_setapi()| only restricts which functions the "call"
-+command may use, it does not affect the "drop" API.
-+
- Currently supported commands:
- 
- 	call {funcname} {argument}
