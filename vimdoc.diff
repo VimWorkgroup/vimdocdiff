@@ -1,19 +1,22 @@
-diff --git a/runtime/doc/windows.txt b/runtime/doc/windows.txt
-index f0d9afaf1..03ddab926 100644
---- a/runtime/doc/windows.txt
-+++ b/runtime/doc/windows.txt
+diff --git a/runtime/doc/terminal.txt b/runtime/doc/terminal.txt
+index 9a8df69e3..db626dd64 100644
+--- a/runtime/doc/terminal.txt
++++ b/runtime/doc/terminal.txt
 @@ -1,4 +1,4 @@
--*windows.txt*	For Vim version 9.2.  Last change: 2026 May 01
-+*windows.txt*	For Vim version 9.2.  Last change: 2026 Aug 27
+-*terminal.txt*	For Vim version 9.2.  Last change: 2026 Aug 27
++*terminal.txt*	For Vim version 9.2.  Last change: 2026 Aug 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -969,7 +969,7 @@ settings.  The option is a comma-separated list of values:
+@@ -381,6 +381,11 @@ job.  That includes the cursor position.  Typed keys are sent to the job.
+ The terminal contents can change at any time.  This is called Terminal-Job
+ mode.
  
- Example: >
- 	:set previewpopup=height:10,width:60
--	:set previewpopup=border:single,borderhilight:PmenuBorder
-+	:set previewpopup=border:single,borderhighlight:PmenuBorder
- 	:set previewpopup=border:custom:─;│;─;│;┌;┐;┘;└
- 	:set previewpopup=border:round,opacity:80
- 
++In Terminal-Job mode the cursor position you see belongs to the terminal job,
++not to Vim.  The window's cursor position is only updated when Vim takes over
++in |Terminal-Normal| mode, so the 'ruler' and the 'statusline' show a stale
++cursor position.
++
+ Use CTRL-W N (or 'termwinkey' N) to switch to Terminal-Normal mode.  Now the
+ contents of the terminal window is under control of Vim, the job output is
+ suspended.  CTRL-\ CTRL-N does the same.
