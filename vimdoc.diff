@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index b13bf6b4f..e4e35752d 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/print.txt b/runtime/doc/print.txt
+index 3d5b8bdce..3dbe15fa5 100644
+--- a/runtime/doc/print.txt
++++ b/runtime/doc/print.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
+-*print.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
++*print.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2242,7 +2242,7 @@ cosh({expr})						*cosh()*
- 			:echo cosh(0.5)
- <			1.127626 >
- 			:echo cosh(-0.5)
--<			-1.127626
-+<			1.127626
+@@ -200,7 +200,7 @@ font may be named, and the special "guifont=*" syntax is not available.
  
- 		Can also be used as a |method|: >
- 			Compute()->cosh()
+ In the Win32 GUI version this specifies a font name with its extra attributes,
+ as with the 'guifont' option.  When |+pango| is enabled, the format is the
+-same as 'guifont' for the GTK GUI (e.g. "Courier New 10").
++same as 'guifont' for the GTK GUI (e.g. "Courier 10").
+ 
+ For other systems, only ":h11" is recognized, where "11" is the point size of
+ the font.  When omitted, the point size is 10.
