@@ -1,19 +1,61 @@
-diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index c0e368793..32478ee3b 100644
---- a/runtime/doc/term.txt
-+++ b/runtime/doc/term.txt
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 95ccbb668..8efb68856 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
 @@ -1,4 +1,4 @@
--*term.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
-+*term.txt*	For Vim version 9.2.  Last change: 2026 Sep 10
+-*repeat.txt*	For Vim version 9.2.  Last change: 2026 May 31
++*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -694,7 +694,7 @@ The entry of a direct color terminal, such as "xterm-direct", has 16777216
- colors.  Then 't_Co' is 16777216 and |terminalprops()| reports "rgb" as 'y'.
- Vim does not set 'termguicolors' by itself.  To have it set for such a
- terminal, put this in the vimrc: >
--	if terminalprops().rgb == 'y'
-+	if get(terminalprops(), 'rgb', 'n')  == 'y'
- 	  set termguicolors
- 	endif
- <
+@@ -239,6 +239,37 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			will be adjusted to the start and end of the fold,
+ 			but only if a two line specifiers range was used.
+ 
++						*:source-dryrun*
++:so[urce] ++dryrun {file}
++:[range]so[urce] ++dryrun
++			Read the script without running it: only what
++			defines something is executed, then every |:def|
++			function in it is compiled and the errors are reported
++			as usual.
++			What is executed: `vim9script`, `import`, `def`,
++			`function`, `class`, `interface`, `enum`, `type` and a
++			declaration with `var`, `const` or `final`.  The
++			declared variable gets the type from the declaration,
++			or "any" when there is none, and a zero value; the
++			expression is not evaluated.  A static class variable
++			is treated the same way and an enum value is not
++			created.
++			Everything else is skipped, also `finish` and the
++			condition of an `if`, `while` or `for`; a definition
++			inside such a block is executed whether the condition
++			holds or not.  A function may therefore be defined
++			twice, the last definition counts.
++			A script that is imported is read the same way, but an
++			autoload script is not loaded.  No |SourceCmd|,
++			|SourcePre| or |SourcePost| autocommand is triggered.
++			A class or enum in an autoload script is defined again
++			by a dry run, and after one by a normal load, since no
++			object was made from it; see |vim9-reload|.
++			Note: An error in a definition does not stop the
++			reading, the rest of the script is read as well.  And
++			an error in a line of a function does not stop
++			compiling it, every line with an error is reported.
++
+ 							*:source!*
+ :so[urce]! {file}	Read Vim commands from {file}.  These are commands
+ 			that are executed from Normal mode, like you type
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 59cfb7f78..c88f71f8e 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52661,6 +52661,8 @@ Other ~
+   |:mkview| and |:mkvimrc|
+ - The "term_finish" option of term_start() supports a "noclose" value.
+ - Control Vim via a channel using stdin/stdout |channel-stdio|.
++- Add the "++dryrun" argument to |:source| so a script can be sourced without
++  executing it to check for errors |:source-dryrun|.
+ 
+ Platform specific ~
+ -----------------
