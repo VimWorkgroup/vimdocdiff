@@ -1,61 +1,24 @@
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index 95ccbb668..8efb68856 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index f04300148..a1bd1f4f4 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*repeat.txt*	For Vim version 9.2.  Last change: 2026 May 31
-+*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 12
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Aug 24
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 12
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -239,6 +239,37 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
- 			will be adjusted to the start and end of the fold,
- 			but only if a two line specifiers range was used.
+@@ -2012,9 +2012,11 @@ You can also disable this rendering by adding the following line to your
+ vimrc file: >
+ 	:let html_no_rendering=1
  
-+						*:source-dryrun*
-+:so[urce] ++dryrun {file}
-+:[range]so[urce] ++dryrun
-+			Read the script without running it: only what
-+			defines something is executed, then every |:def|
-+			function in it is compiled and the errors are reported
-+			as usual.
-+			What is executed: `vim9script`, `import`, `def`,
-+			`function`, `class`, `interface`, `enum`, `type` and a
-+			declaration with `var`, `const` or `final`.  The
-+			declared variable gets the type from the declaration,
-+			or "any" when there is none, and a zero value; the
-+			expression is not evaluated.  A static class variable
-+			is treated the same way and an enum value is not
-+			created.
-+			Everything else is skipped, also `finish` and the
-+			condition of an `if`, `while` or `for`; a definition
-+			inside such a block is executed whether the condition
-+			holds or not.  A function may therefore be defined
-+			twice, the last definition counts.
-+			A script that is imported is read the same way, but an
-+			autoload script is not loaded.  No |SourceCmd|,
-+			|SourcePre| or |SourcePost| autocommand is triggered.
-+			A class or enum in an autoload script is defined again
-+			by a dry run, and after one by a normal load, since no
-+			object was made from it; see |vim9-reload|.
-+			Note: An error in a definition does not stop the
-+			reading, the rest of the script is read as well.  And
-+			an error in a line of a function does not stop
-+			compiling it, every line with an error is reported.
-+
- 							*:source!*
- :so[urce]! {file}	Read Vim commands from {file}.  These are commands
- 			that are executed from Normal mode, like you type
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 59cfb7f78..c88f71f8e 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52661,6 +52661,8 @@ Other ~
-   |:mkview| and |:mkvimrc|
- - The "term_finish" option of term_start() supports a "noclose" value.
- - Control Vim via a channel using stdin/stdout |channel-stdio|.
-+- Add the "++dryrun" argument to |:source| so a script can be sourced without
-+  executing it to check for errors |:source-dryrun|.
- 
- Platform specific ~
- -----------------
+-By default Vim synchronises the syntax to 250 lines before the first displayed
+-line.  This can be configured using: >
++By default Vim starts parsing 1.5 times "html_minlines" lines before the first
++displayed line, and searches a further "html_maxlines" lines back for a
++synchronization point.  These values can be configured using: >
+ 	:let html_minlines = 500
++	:let html_maxlines = 750
+ <
+ HTML comments are rather special (see an HTML reference document for the
+ details), and the syntax coloring scheme will highlight all errors.
