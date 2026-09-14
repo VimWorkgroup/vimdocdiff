@@ -1,54 +1,19 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 93d543d23..4cfb79071 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 06
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -12196,6 +12196,7 @@ terminalprops()						*terminalprops()*
- 		   mouse		mouse type supported
- 		   kitty		whether Kitty terminal was detected
- 		   decrqm		whether sending DECRQM sequences work
-+		   rgb			whether the terminal has true color  **
- 
- 		** value 'u' for unknown, 'y' for yes, 'n' for no
- 
-@@ -12218,6 +12219,9 @@ terminalprops()						*terminalprops()*
- 		If "decrqm" is 'y', then Vim will query support for the
- 		'termsync' and 'termresize' ("inband") options.
- 
-+		"rgb" is 'y' when 't_Co' is 16777216, as it is for the
-+		"xterm-direct" terminal entry.  See |xterm-true-color|.
-+
- 		Also see:
- 		- 'ambiwidth' - detected by using |t_u7|.
- 		- |v:termstyleresp| and |v:termblinkresp| for the response to
 diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
-index a20143efa..c0e368793 100644
+index c0e368793..32478ee3b 100644
 --- a/runtime/doc/term.txt
 +++ b/runtime/doc/term.txt
 @@ -1,4 +1,4 @@
--*term.txt*	For Vim version 9.2.  Last change: 2026 Jul 25
-+*term.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
+-*term.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
++*term.txt*	For Vim version 9.2.  Last change: 2026 Sep 10
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -690,6 +690,15 @@ work the 'termguicolors' option needs to be set.
- See https://github.com/termstandard/colors for a list of terminals that
- support true colors.
- 
-+The entry of a direct color terminal, such as "xterm-direct", has 16777216
-+colors.  Then 't_Co' is 16777216 and |terminalprops()| reports "rgb" as 'y'.
-+Vim does not set 'termguicolors' by itself.  To have it set for such a
-+terminal, put this in the vimrc: >
-+	if terminalprops().rgb == 'y'
-+	  set termguicolors
-+	endif
-+<
-+
- For telling the terminal what RGB color to use the |t_8f|, |t_8b|, and |t_8u|
- termcap entries are used.  These are set by default to values that work for
- most terminals.  If that does not work for your terminal you can set them
+@@ -694,7 +694,7 @@ The entry of a direct color terminal, such as "xterm-direct", has 16777216
+ colors.  Then 't_Co' is 16777216 and |terminalprops()| reports "rgb" as 'y'.
+ Vim does not set 'termguicolors' by itself.  To have it set for such a
+ terminal, put this in the vimrc: >
+-	if terminalprops().rgb == 'y'
++	if get(terminalprops(), 'rgb', 'n')  == 'y'
+ 	  set termguicolors
+ 	endif
+ <
