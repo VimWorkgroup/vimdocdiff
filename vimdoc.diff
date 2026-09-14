@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/print.txt b/runtime/doc/print.txt
-index 3d5b8bdce..3dbe15fa5 100644
---- a/runtime/doc/print.txt
-+++ b/runtime/doc/print.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index e4e35752d..c0dcf09e2 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*print.txt*	For Vim version 9.2.  Last change: 2026 Aug 16
-+*print.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 06
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -200,7 +200,7 @@ font may be named, and the special "guifont=*" syntax is not available.
- 
- In the Win32 GUI version this specifies a font name with its extra attributes,
- as with the 'guifont' option.  When |+pango| is enabled, the format is the
--same as 'guifont' for the GTK GUI (e.g. "Courier New 10").
-+same as 'guifont' for the GTK GUI (e.g. "Courier 10").
- 
- For other systems, only ":h11" is recognized, where "11" is the point size of
- the font.  When omitted, the point size is 10.
+@@ -8767,6 +8767,8 @@ range({expr} [, {max} [, {stride}]])			*range()*
+ 		When the maximum is one before the start the result is an
+ 		empty list.  When the maximum is more than one before the
+ 		start this is an error.
++		The list can have at most 2147483647 items and {stride} must
++		fit in a 32 bit number, otherwise |E1510| is given.
+ 		Examples: >
+ 			range(4)		" [0, 1, 2, 3]
+ 			range(2, 4)		" [2, 3, 4]
