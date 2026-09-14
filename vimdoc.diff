@@ -1,24 +1,37 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index f04300148..a1bd1f4f4 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 4cfb79071..0d7110385 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.2.  Last change: 2026 Aug 24
-+*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 12
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 13
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2012,9 +2012,11 @@ You can also disable this rendering by adding the following line to your
- vimrc file: >
- 	:let html_no_rendering=1
- 
--By default Vim synchronises the syntax to 250 lines before the first displayed
--line.  This can be configured using: >
-+By default Vim starts parsing 1.5 times "html_minlines" lines before the first
-+displayed line, and searches a further "html_maxlines" lines back for a
-+synchronization point.  These values can be configured using: >
- 	:let html_minlines = 500
-+	:let html_maxlines = 750
+@@ -6729,7 +6729,7 @@ libcallnr({libname}, {funcname}, {argument})		*libcallnr()*
+ 		third argument: >
+ 			GetValue()->libcallnr("libc.so", "printf")
  <
- HTML comments are rather special (see an HTML reference document for the
- details), and the syntax coloring scheme will highlight all errors.
+-		Return type: |String|
++		Return type: |Number|
+ 
+ 
+ line({expr} [, {winid}])				*line()*
+@@ -8218,7 +8218,7 @@ pow({x}, {y})						*pow()*
+ 		Can also be used as a |method|: >
+ 			Compute()->pow(3)
+ <
+-		Return type: |Number|
++		Return type: |Float|
+ 
+ 
+ preinserted()						*preinserted()*
+@@ -8674,7 +8674,7 @@ pum_getpos()						*pum_getpos()*
+ 		The values are the same as in |v:event| during
+ 		|CompleteChanged|.
+ 
+-		Return type: dict<any>
++		Return type: dict<number>
+ 
+ 
+ pumvisible()						*pumvisible()*
