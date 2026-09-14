@@ -1,19 +1,83 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e4e35752d..c0dcf09e2 100644
+index c0dcf09e2..93d543d23 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
+@@ -5009,7 +5009,8 @@ getqflist([{what}])					*getqflist()*
+ 			valid	|TRUE|: recognized error message
+ 			user_data
+ 				custom data associated with the item, can be
+-				any type.
++				any type.  This entry is present only when
++				user data was set for this item.
+ 
+ 		When there is no error list or it's empty, an empty list is
+ 		returned.  Quickfix list entries with a non-existing buffer
+@@ -5051,6 +5052,11 @@ getqflist([{what}])					*getqflist()*
+ 			qfbufnr number of the buffer displayed in the quickfix
+ 				window.  Returns 0 if the quickfix buffer is
+ 				not present.  See |quickfix-buffer|.
++			quickfixtextfunc
++				function to get the text to display in the
++				quickfix window.  Returns an empty string if
++				this function is not set for the list.  See
++				|quickfix-window-function|.
+ 			size	number of entries in the quickfix list
+ 			title	get the list title |quickfix-title|
+ 			winid	get the quickfix |window-ID|
+@@ -5082,6 +5088,9 @@ getqflist([{what}])					*getqflist()*
+ 				0
+ 			qfbufnr	number of the buffer displayed in the quickfix
+ 				window.  If not present, set to 0.
++			quickfixtextfunc
++				'quickfixtextfunc' setting of the list.  If
++				not present, set to "".
+ 			size	number of entries in the quickfix list.  If
+ 				not present, set to 0.
+ 			title	quickfix list title text.  If not present, set
+@@ -10405,7 +10414,10 @@ setqflist({list} [, {action} [, {what}]])		*setqflist()*
+ 				:call setqflist([], 'r')
+ <
+ 		'u'	Like 'r', but tries to preserve the current selection
+-			in the quickfix list.
++			in the quickfix list.  The entry nearest to the
++			previously selected one becomes the current entry.
++			Proximity is determined by comparing the file, then
++			the line number and then the column number.
+ 		'f'	All the quickfix lists in the quickfix stack are
+ 			freed.
+ 
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index 4b24d1298..9bb58b8fe 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 06
+-*quickfix.txt*  For Vim version 9.2.  Last change: 2026 May 28
++*quickfix.txt*  For Vim version 9.2.  Last change: 2026 Sep 05
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -8767,6 +8767,8 @@ range({expr} [, {max} [, {stride}]])			*range()*
- 		When the maximum is one before the start the result is an
- 		empty list.  When the maximum is more than one before the
- 		start this is an error.
-+		The list can have at most 2147483647 items and {stride} must
-+		fit in a 32 bit number, otherwise |E1510| is given.
- 		Examples: >
- 			range(4)		" [0, 1, 2, 3]
- 			range(2, 4)		" [2, 3, 4]
+@@ -687,6 +687,15 @@ to find a window to edit the file:
+ 6. If the above step fails, then a new horizontally split window above the
+    quickfix window is used.
+ 
++						*quickfix-winfixbuf*
++When 'winfixbuf' is set for the window that would be used to display the
++error, jumping to an error in another buffer is not possible in that window.
++For a quickfix list Vim then looks for another suitable window, using the
++previously accessed window if it does not have 'winfixbuf' set, and otherwise
++splits a new window.  For a location list this fails with |E1513|, because a
++location list is tied to its window and cannot move to or split off another
++one.  Using [!] skips these checks.
++
+ 					*CTRL-W_<Enter>* *CTRL-W_<CR>*
+ You can use CTRL-W <Enter> to open a new window and jump to the error there.
+ 
+@@ -1833,6 +1842,8 @@ Basic items
+ 			    w - warning message
+ 			    i - info message
+ 			    n - note message
++			The uppercase letters E, W, I and N are also
++			recognized and have the same meaning.
+ 	%n		error number (finds a number)
+ 	%m		error message (finds a string)
+ 	%r		matches the "rest" of a single-line file message %O/P/Q
