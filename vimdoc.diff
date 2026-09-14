@@ -1,105 +1,54 @@
-diff --git a/runtime/doc/channel.txt b/runtime/doc/channel.txt
-index ee0fe673b..a413da082 100644
---- a/runtime/doc/channel.txt
-+++ b/runtime/doc/channel.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 93d543d23..4cfb79071 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*channel.txt*	For Vim version 9.2.  Last change: 2026 Apr 29
-+*channel.txt*	For Vim version 9.2.  Last change: 2026 Sep 08
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 06
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -139,6 +139,24 @@ From another Vim instance (or any program) you can connect to it: >
+@@ -12196,6 +12196,7 @@ terminalprops()						*terminalprops()*
+ 		   mouse		mouse type supported
+ 		   kitty		whether Kitty terminal was detected
+ 		   decrqm		whether sending DECRQM sequences work
++		   rgb			whether the terminal has true color  **
  
- When done, close the server channel: >
- 	call ch_close(server)
-+<
-+							*channel-stdio*
-+Vim can also be the other end of a channel on its own stdin and stdout, like a
-+language server that is started by an editor.  Start Vim with
-+|--stdio-channel| and a script that opens the channel: >
-+	vim --stdio-channel -S server.vim
-+And in server.vim: >
-+	func OnMessage(ch, msg)
-+	  ...
-+	endfunc
-+	let ch = ch_open('stdio', #{mode: 'lsp', callback: 'OnMessage'})
-+<
-+							*E1582* *E1583*
-+The address "stdio" can only be used when Vim was started with
-+|--stdio-channel|, and only once.  The stdin and stdout of Vim are then
-+redirected to the null device, so that messages from Vim and from the commands
-+it starts do not get into the channel.  Stderr is left alone and can be used
-+for error messages.
+ 		** value 'u' for unknown, 'y' for yes, 'n' for no
  
- ==============================================================================
- 3. Opening a channel					*channel-open*
-@@ -152,11 +170,12 @@ Use |ch_status()| to see if the channel could be opened.
+@@ -12218,6 +12219,9 @@ terminalprops()						*terminalprops()*
+ 		If "decrqm" is 'y', then Vim will query support for the
+ 		'termsync' and 'termresize' ("inband") options.
  
- 					*channel-address*
- {address} can be a domain name or an IP address, followed by a port number, or
--a Unix-domain socket path prefixed by "unix:".  E.g. >
-+a Unix-domain socket path prefixed by "unix:", or "stdio".  E.g. >
-     www.example.com:80   " domain + port
-     127.0.0.1:1234       " IPv4 + port
-     [2001:db8::1]:8765   " IPv6 + port
-     unix:/tmp/my-socket  " Unix-domain socket path
-+    stdio                " stdin and stdout of Vim, see |channel-stdio|
- 
- When a domain name resolves to multiple addresses (e.g., both IPv6 and IPv4),
- Vim tries each address in order.  If a connection is slow or unreachable, it
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index 840b065ed..da01ad674 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
-@@ -1,4 +1,4 @@
--*starting.txt*	For Vim version 9.2.  Last change: 2026 Jun 02
-+*starting.txt*	For Vim version 9.2.  Last change: 2026 Sep 08
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -443,6 +443,16 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- --ttyfail	When the stdin or stdout is not a terminal (tty) then exit
- 		right away.
- 
-+							*--stdio-channel*
-+--stdio-channel	Use the stdin and stdout of Vim for a channel instead of for a
-+		terminal.  Implies "-es": nothing is displayed, no Ex commands
-+		are read and the GUI is not started.  A script opens the
-+		channel with |ch_open()| and the address "stdio".
-+		See |channel-stdio|.
-+		After the startup commands and scripts have been executed Vim
-+		waits for messages on the channel and exits when it is closed.
-+		{only available when compiled with the |+channel| feature}
++		"rgb" is 'y' when 't_Co' is 16777216, as it is for the
++		"xterm-direct" terminal entry.  See |xterm-true-color|.
 +
- 							*-d*
- -d		Start in diff mode, like |vimdiff|.
- 		{not available when compiled without the |+diff| feature}
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 0f5bb70a9..59cfb7f78 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+ 		Also see:
+ 		- 'ambiwidth' - detected by using |t_u7|.
+ 		- |v:termstyleresp| and |v:termblinkresp| for the response to
+diff --git a/runtime/doc/term.txt b/runtime/doc/term.txt
+index a20143efa..c0e368793 100644
+--- a/runtime/doc/term.txt
++++ b/runtime/doc/term.txt
 @@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 07
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 08
+-*term.txt*	For Vim version 9.2.  Last change: 2026 Jul 25
++*term.txt*	For Vim version 9.2.  Last change: 2026 Sep 09
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52660,6 +52660,7 @@ Other ~
- - Generated Session and View files are written in Vim9 script, see |:mksession|,
-   |:mkview| and |:mkvimrc|
- - The "term_finish" option of term_start() supports a "noclose" value.
-+- Control Vim via a channel using stdin/stdout |channel-stdio|.
+@@ -690,6 +690,15 @@ work the 'termguicolors' option needs to be set.
+ See https://github.com/termstandard/colors for a list of terminals that
+ support true colors.
  
- Platform specific ~
- -----------------
-@@ -52754,6 +52755,10 @@ Highlighting: ~
- |hl-PopupBorder|	Popup window border.
- |hl-PopupTitle|		Popup window title.
- 
-+Vim Arguments: ~
-+|--stdio-channel|	Control Vim via a channel using stdin/stdout
-+			|channel-stdio|
++The entry of a direct color terminal, such as "xterm-direct", has 16777216
++colors.  Then 't_Co' is 16777216 and |terminalprops()| reports "rgb" as 'y'.
++Vim does not set 'termguicolors' by itself.  To have it set for such a
++terminal, put this in the vimrc: >
++	if terminalprops().rgb == 'y'
++	  set termguicolors
++	endif
++<
 +
- Configure Switches: ~
- 
- --enable-hardcopy-pango	Enable the Pango |:hardcopy| backend |pango-printing|
+ For telling the terminal what RGB color to use the |t_8f|, |t_8b|, and |t_8u|
+ termcap entries are used.  These are set by default to values that work for
+ most terminals.  If that does not work for your terminal you can set them
