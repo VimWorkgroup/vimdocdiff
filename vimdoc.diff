@@ -1,13 +1,12 @@
-diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
-index 06786363e..b5d876598 100644
---- a/runtime/doc/quickfix.txt
-+++ b/runtime/doc/quickfix.txt
-@@ -246,7 +246,7 @@ processing a quickfix or location list command, it will be aborted.
- 			execute the command, etc.
- 			{N} can also be zero, in which case Vim exits
- 			normally.
--			WARNING: This abandons changes in all files, using
-+			WARNING: This abandons changes in all files, like
- 			|:qall|!.
- 			The [!] does not change this.  Vim returns a non-zero
- 			exit code, unless {N} is zero.
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index c88f71f8e..1eb5de422 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -52663,6 +52663,7 @@ Other ~
+ - Control Vim via a channel using stdin/stdout |channel-stdio|.
+ - Add the "++dryrun" argument to |:source| so a script can be sourced without
+   executing it to check for errors |:source-dryrun|.
++- 'tagfunc' is now also used for :tag completion.
+ 
+ Platform specific ~
+ -----------------
