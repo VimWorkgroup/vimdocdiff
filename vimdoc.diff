@@ -1,24 +1,52 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 6044e5711..493412810 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
+index 8437531a8..9c6016554 100644
+--- a/runtime/doc/filetype.txt
++++ b/runtime/doc/filetype.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 21
-+*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
+-*filetype.txt*	For Vim version 9.2.  Last change: 2026 Aug 08
++*filetype.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2305,11 +2305,11 @@ cycles for such a feature to become either integrated into the platform or
- withdrawn from this effort.  To cater for early adopters, there is optional
- support in Vim for syntax related preview features that are implemented.  You
- can request it by specifying a list of preview feature numbers as follows: >
--	:let g:java_syntax_previews = [530]
-+	:let g:java_syntax_previews = [532]
+@@ -799,6 +799,15 @@ To force another recomputation, do: >
+ [0] https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
+ [1] https://en.wikipedia.org/wiki/Dangling_else
  
- The supported JEP numbers are to be drawn from this table:
- 	`430`: String Templates [JDK 21]
--	`530`: Primitive types in Patterns, instanceof, and switch
-+	`532`: Primitive types in Patterns, instanceof, and switch
++ICALENDAR			    *ft-icalendar-plugin* *g:icalendar_folding*
++
++You can enable folding of iCalendar components (BEGIN: and END: pairs)
++using |fold-expr| by: >
++
++	let g:icalendar_folding = 1
++<
++Nested components, such as a VALARM inside a VEVENT, produce nested folds.
++
+ IDRIS2							*ft-idris2-plugin*
  
- Note that as soon as the particular preview feature will have been integrated
- into the Java platform, its entry will be removed from the table and related
+ By default the following options are set: >
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 493412810..01d131c6f 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
+@@ -2084,6 +2084,21 @@ To have *.inc files be recognized as IA64, add this to your .vimrc file: >
+ 	:let g:filetype_inc = "ia64"
+ 
+ 
++
++ICALENDAR				*icalendar.vim* *ft-icalendar-syntax*
++
++Highlighting for iCalendar files (RFC 5545), as used by calendaring
++applications with an ".ics" extension.
++
++Component boundaries (BEGIN: and END:), property names, property
++parameters and recurrence rule parts are highlighted separately.  A content
++line may be split across several lines by inserting a line break followed
++by a space or a tab; such folded lines are highlighted as a single logical
++line.
++
++Folding of components is provided by the filetype plugin and is off by
++default; see |ft-icalendar-plugin|.
++
+ INFORM						*inform.vim* *ft-inform-syntax*
+ 
+ Inform highlighting includes symbols provided by the Inform Library, as
