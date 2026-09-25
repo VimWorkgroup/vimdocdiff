@@ -1,43 +1,24 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index c72a7f2ba..058821ff4 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
-@@ -9546,6 +9546,9 @@ screenpos({winid}, {lnum}, {col})			*screenpos()*
- 		as if 'conceallevel' is zero.  You can set the cursor to the
- 		right position and use |screencol()| to get the value with
- 		|conceal| taken into account.
-+		|virtual-text| above the line occupies its own screen line and
-+		is counted: the first character of the line is then on the
-+		screen line below it.
- 		If the position is in a closed fold the screen position of the
- 		first character is returned, {col} is not used.
- 		Returns an empty Dict if {winid} is invalid.
-@@ -12743,6 +12746,10 @@ virtcol({expr} [, {list} [, {winid}]])			*virtcol()*
- 		beyond the end of the line can be returned.  Also see
- 		'virtualedit'
- 
-+		|virtual-text| above the line occupies its own screen line and
-+		is counted like a wrapped line: with a window 80 columns wide
-+		the first character of the line is then in virtual column 81.
-+
- 		If {list} is present and non-zero then virtcol() returns a
- 		List with the first and last screen position occupied by the
- 		character.
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 1eb5de422..e7ff81a2c 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 6044e5711..493412810 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 08
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 21
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52718,6 +52718,7 @@ Changed ~
-   autocommand.
- - The highlighting groups |hl-CursorLineFold| and |hl-CursorLineSign| are
-   always used when 'cursorline' is set.
-+- Virtual text above a line is now counted by |screenpos()| and |virtcol()|.
+@@ -2305,11 +2305,11 @@ cycles for such a feature to become either integrated into the platform or
+ withdrawn from this effort.  To cater for early adopters, there is optional
+ support in Vim for syntax related preview features that are implemented.  You
+ can request it by specifying a list of preview feature numbers as follows: >
+-	:let g:java_syntax_previews = [530]
++	:let g:java_syntax_previews = [532]
  
- 							*added-9.3*
- Added ~
+ The supported JEP numbers are to be drawn from this table:
+ 	`430`: String Templates [JDK 21]
+-	`530`: Primitive types in Patterns, instanceof, and switch
++	`532`: Primitive types in Patterns, instanceof, and switch
+ 
+ Note that as soon as the particular preview feature will have been integrated
+ into the Java platform, its entry will be removed from the table and related
