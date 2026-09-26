@@ -1,19 +1,180 @@
 diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index 058821ff4..c2c6ce1d8 100644
+index c2c6ce1d8..968ffb785 100644
 --- a/runtime/doc/builtin.txt
 +++ b/runtime/doc/builtin.txt
+@@ -5233,7 +5233,7 @@ getregionpos({pos1}, {pos2} [, {opts}])			*getregionpos()*
+ 		describing the buffer text segments bound by {pos1} and
+ 		{pos2}.
+ 		The segments are a pair of positions for every line: >
+-			[[{start_pos}, {end_pos}], ...]
++			[[{startpos}, {endpos}], ...]
+ <
+ 		The position is a |List| with four numbers:
+ 		    [bufnum, lnum, col, off]
+@@ -5263,13 +5263,13 @@ getregionpos({pos1}, {pos2} [, {opts}])			*getregionpos()*
+ 			bounds		If |TRUE|, return only the outer
+ 					bounds of the region as a single
+ 					pair: >
+-						[[{start_pos}, {end_pos}]]
+-<					{start_pos} is the start position on
++						[[{startpos}, {endpos}]]
++<					{startpos} is the start position on
+ 					the first line of the region and
+-					{end_pos} the end position on its
+-					last line.  The lines in between are
+-					not visited, which is much faster for
+-					a large region.
++					{endpos} the end position on its last
++					line.  The lines in between are not
++					visited, which is much faster for a
++					large region.
+ 					(default: |FALSE|)
+ 
+ 		Using "bounds" with the same {opts} is equivalent to taking
+@@ -5283,7 +5283,7 @@ getregionpos({pos1}, {pos2} [, {opts}])			*getregionpos()*
+ 		a blockwise region they are the start of the first line and
+ 		the end of the last line, not the corners of the block.
+ 		Likewise, when the first line is empty and "eol" is |FALSE|,
+-		{start_pos} has a "col" of 0 while {end_pos} may not.
++		{startpos} has a "col" of 0 while {endpos} may not.
+ 
+ 		Can also be used as a |method|: >
+ 			getpos('.')->getregionpos(getpos("'a"))
+diff --git a/runtime/doc/quickfix.txt b/runtime/doc/quickfix.txt
+index b5d876598..e4f4f3eb6 100644
+--- a/runtime/doc/quickfix.txt
++++ b/runtime/doc/quickfix.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 14
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
+-*quickfix.txt*  For Vim version 9.2.  Last change: 2026 Sep 14
++*quickfix.txt*  For Vim version 9.2.  Last change: 2026 Sep 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -10112,6 +10112,8 @@ setcellwidths({list})					*setcellwidths()*
- 		match with what Vim knows about each emoji.  If it doesn't
- 		look right you need to adjust the {list} argument.
+@@ -110,16 +110,16 @@ processing a quickfix or location list command, it will be aborted.
+ 						*:cn* *:cne* *:cnext* *E553*
+ :[count]cn[ext][!]	Display the [count] next error in the list that
+ 			includes a file name.  Entries without a file name are
+-			skipped, since Vim cannot use them to jump to a file.  If
+-			there are no file names at all, go to the [count] next
+-			error.  See |:cc| for [!] and 'switchbuf'.
++			skipped, since Vim cannot use them to jump to a file.
++			If there are no file names at all, go to the [count]
++			next error.  See |:cc| for [!] and 'switchbuf'.
  
-+		|getcellwidths()| can be used to get the overrides later.
+ :[count]cN[ext][!]		*:cp* *:cprevious*  *:cprev* *:cN* *:cNext*
+ :[count]cp[revious][!]	Display the [count] previous error in the list that
+ 			includes a file name.  Entries without a file name are
+-			skipped, since Vim cannot use them to jump to a file.  If
+-			there are no file names at all, go to the [count] previous
+-			error.  See |:cc| for [!] and 'switchbuf'.
++			skipped, since Vim cannot use them to jump to a file.
++			If there are no file names at all, go to the [count]
++			previous error.  See |:cc| for [!] and 'switchbuf'.
+ 
+ 							*:lne* *:lnext*
+ :[count]lne[xt][!]	Same as ":cnext", except the location list for the
+@@ -294,10 +294,10 @@ processing a quickfix or location list command, it will be aborted.
+ 			current window is used instead of the quickfix list.
+ 
+ The following commands read error messages from a buffer:
+-`:cbuffer` creates a list and jumps to its first error, `:cgetbuffer`
+-creates a list without jumping, and `:caddbuffer` adds entries to the
+-current list without changing the cursor position.  The corresponding
+-commands with an "l" prefix use the location list.
++`:cbuffer` creates a list and jumps to its first error, `:cgetbuffer` creates
++a list without jumping, and `:caddbuffer` adds entries to the current list
++without changing the cursor position.  The corresponding commands with an "l"
++prefix use the location list.
+ 
+ 						*:cb* *:cbuffer* *E681*
+ :[range]cb[uffer][!] [bufnr]
+@@ -519,8 +519,8 @@ To execute a command for entries or files in a list, use:
+ 
+ Use `:cdo` when a command should run for every valid entry, for example
+ `:cdo s/old/new/g` to change each matching line.  Use `:cfdo` when it should
+-run once for each file, for example `:cfdo update` to write each affected
+-file once.  Add the "l" prefix to use the location list instead.
++run once for each file, for example `:cfdo update` to write each affected file
++once.  Add the "l" prefix to use the location list instead.
+ 
+ The commands below describe these differences in more detail.
+ 
+@@ -1129,10 +1129,10 @@ commands can be combined to create a NewGrep command: >
+ 			     matching is used to find matching lines.  The
+ 			     characters in {pattern} must appear in order, but
+ 			     need not be next to each other.  In this case,
+-			     {pattern} is treated as a literal string instead of
+-			     a regular expression.  See
+-			     |fuzzy-matching| for more information about fuzzy
+-			     matching strings.
++			     {pattern} is treated as a literal string instead
++			     of a regular expression.  See |fuzzy-matching|
++			     for more information about fuzzy matching
++			     strings.
+ 
+ 			|QuickFixCmdPre| and |QuickFixCmdPost| are triggered.
+ 			A file that is opened for matching may use a buffer
+@@ -1324,10 +1324,10 @@ The Vim plugins in the "compiler" directory will set options to use the
+ selected compiler.  For `:compiler` local options are set, for `:compiler!`
+ global options.
+ 
+-In normal use, select a compiler with `:compiler {name}` and then run
+-|:make|.  The compiler plugin usually sets 'makeprg' and 'errorformat' so
+-Vim can run the compiler and read its messages.  The descriptions below
+-document options for particular compiler plugins.
++In normal use, select a compiler with `:compiler {name}` and then run |:make|.
++The compiler plugin usually sets 'makeprg' and 'errorformat' so Vim can run
++the compiler and read its messages.  The descriptions below document options
++for particular compiler plugins.
+ 
+ The values set by a compiler plugin can be changed afterwards with |:set| or
+ |:setlocal|.  `:compiler {name}` sets options for the current buffer, while
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index e9231a0d2..5e77a8100 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -245,10 +245,9 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 						*:source-dryrun*
+ :so[urce] ++dryrun {file}
+ :[range]so[urce] ++dryrun
+-			Read the script without running it: only what
+-			defines something is executed, then every |:def|
+-			function in it is compiled and the errors are reported
+-			as usual.
++			Read the script without running it: only what defines
++			something is executed, then every |:def| function in
++			it is compiled and the errors are reported as usual.
+ 			What is executed: `vim9script`, `import`, `def`,
+ 			`function`, `class`, `interface`, `enum`, `type` and a
+ 			declaration with `var`, `const` or `final`.  The
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index e7ff81a2c..fd0178896 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52760,6 +52760,7 @@ Highlighting: ~
+ |hl-PopupTitle|		Popup window title.
+ 
+ Vim Arguments: ~
 +
- 		Return type: void
+ |--stdio-channel|	Control Vim via a channel using stdin/stdout
+ 			|channel-stdio|
  
- 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 13f7ff5fb..bf4d0087e 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -3680,7 +3680,7 @@ compile time, may be used.  For example:
+ 	MyDef()
+ 	var MyVar2: number = 2	# Declared after MyDef() is compiled
+ <
+-<							*E1269*
++							*E1269*
+ Script-local variables in a Vim9 script must be declared at the script
+ level.  They cannot be created in a `:def` function and may not be declared
+ in a legacy function with the "s:" prefix.  For example:
