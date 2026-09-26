@@ -1,52 +1,55 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 8437531a8..9c6016554 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
+index 0424c7b7e..1cc661f84 100644
+--- a/runtime/doc/change.txt
++++ b/runtime/doc/change.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.2.  Last change: 2026 Aug 08
-+*filetype.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
+-*change.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
++*change.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -799,6 +799,15 @@ To force another recomputation, do: >
- [0] https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
- [1] https://en.wikipedia.org/wiki/Dangling_else
+@@ -800,6 +800,9 @@ matched pattern is deleted.  The separator after {pattern} can also be left
+ out then.  Example: >
+ 	:%s/TESTING
+ This deletes "TESTING" from all lines, but only one per line.
++
++If [flags] are omitted the separator after {string} may also be left out.
++
+ 								*E1270*
+ For compatibility with Vi these two exceptions are allowed in legacy Vim
+ script:
+@@ -815,6 +818,9 @@ You can use most characters, but not an alphanumeric character, '\', '"' or
+ '|'.  In Vim9 script you should not use '#' because it may be recognized as
+ the start of a comment.
  
-+ICALENDAR			    *ft-icalendar-plugin* *g:icalendar_folding*
++The closing delimiter is optional for both the pattern and the replacement
++string, if nothing follows.  These then terminate at <EOL>.
 +
-+You can enable folding of iCalendar components (BEGIN: and END: pairs)
-+using |fold-expr| by: >
-+
-+	let g:icalendar_folding = 1
-+<
-+Nested components, such as a VALARM inside a VEVENT, produce nested folds.
-+
- IDRIS2							*ft-idris2-plugin*
- 
- By default the following options are set: >
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 493412810..01d131c6f 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -2084,6 +2084,21 @@ To have *.inc files be recognized as IA64, add this to your .vimrc file: >
- 	:let g:filetype_inc = "ia64"
+ For the definition of a pattern, see |pattern|.  In Visual block mode, use
+ |/\%V| in the pattern to have the substitute work in the block only.
+ Otherwise it works on whole lines anyway.
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 8efb68856..e9231a0d2 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
+@@ -1,4 +1,4 @@
+-*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 12
++*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
  
  
-+
-+ICALENDAR				*icalendar.vim* *ft-icalendar-syntax*
-+
-+Highlighting for iCalendar files (RFC 5545), as used by calendaring
-+applications with an ".ics" extension.
-+
-+Component boundaries (BEGIN: and END:), property names, property
-+parameters and recurrence rule parts are highlighted separately.  A content
-+line may be split across several lines by inserting a line break followed
-+by a space or a tab; such folded lines are highlighted as a single logical
-+line.
-+
-+Folding of components is provided by the filetype plugin and is off by
-+default; see |ft-icalendar-plugin|.
-+
- INFORM						*inform.vim* *ft-inform-syntax*
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -67,10 +67,13 @@ This also makes it faster.
+ Instead of the '/' which surrounds the {pattern}, you can use any other
+ single byte character, but not an alphabetic character, '\', '"', '|' or '!'.
+ This is useful if you want to include a '/' in the search pattern or
+-replacement string.
++replacement string.  The closing delimiter is optional when [cmd] is not
++given, and the pattern then terminates at <EOL>.
  
- Inform highlighting includes symbols provided by the Inform Library, as
+ For the definition of a pattern, see |pattern|.
+ 
++The default [cmd] is |:print|.
++
+ NOTE [cmd] may contain a range; see |collapse| and |edit-paragraph-join| for
+ examples.
+ 
