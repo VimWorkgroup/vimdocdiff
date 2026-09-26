@@ -1,23 +1,19 @@
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index aafa05f06..13f7ff5fb 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 058821ff4..c2c6ce1d8 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
-+*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 14
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4620,6 +4620,12 @@ in Vim9 script.
- 	echo filter([1, 2], 0)
- 	vim9cmd echo filter([1, 2], 0)	# E1024: Using a Number as a String
- <
-+- Assigning a number to an environment variable, a register or a String
-+  v: variable:
-+>vim
-+	let $FOO = 123
-+	vim9cmd $FOO = 123	# E1012: Type mismatch; expected string but ...
-+<
- - Not using a number where a number is expected:
- >vim
- 	" In this example, legacy Vim script treats v:false as 0
+@@ -10112,6 +10112,8 @@ setcellwidths({list})					*setcellwidths()*
+ 		match with what Vim knows about each emoji.  If it doesn't
+ 		look right you need to adjust the {list} argument.
+ 
++		|getcellwidths()| can be used to get the overrides later.
++
+ 		Return type: void
+ 
+ 
