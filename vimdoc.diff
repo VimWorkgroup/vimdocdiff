@@ -1,55 +1,23 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index 0424c7b7e..1cc661f84 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index aafa05f06..13f7ff5fb 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*change.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
-+*change.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -800,6 +800,9 @@ matched pattern is deleted.  The separator after {pattern} can also be left
- out then.  Example: >
- 	:%s/TESTING
- This deletes "TESTING" from all lines, but only one per line.
-+
-+If [flags] are omitted the separator after {string} may also be left out.
-+
- 								*E1270*
- For compatibility with Vi these two exceptions are allowed in legacy Vim
- script:
-@@ -815,6 +818,9 @@ You can use most characters, but not an alphanumeric character, '\', '"' or
- '|'.  In Vim9 script you should not use '#' because it may be recognized as
- the start of a comment.
- 
-+The closing delimiter is optional for both the pattern and the replacement
-+string, if nothing follows.  These then terminate at <EOL>.
-+
- For the definition of a pattern, see |pattern|.  In Visual block mode, use
- |/\%V| in the pattern to have the substitute work in the block only.
- Otherwise it works on whole lines anyway.
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index 8efb68856..e9231a0d2 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
-@@ -1,4 +1,4 @@
--*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 12
-+*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -67,10 +67,13 @@ This also makes it faster.
- Instead of the '/' which surrounds the {pattern}, you can use any other
- single byte character, but not an alphabetic character, '\', '"', '|' or '!'.
- This is useful if you want to include a '/' in the search pattern or
--replacement string.
-+replacement string.  The closing delimiter is optional when [cmd] is not
-+given, and the pattern then terminates at <EOL>.
- 
- For the definition of a pattern, see |pattern|.
- 
-+The default [cmd] is |:print|.
-+
- NOTE [cmd] may contain a range; see |collapse| and |edit-paragraph-join| for
- examples.
- 
+@@ -4620,6 +4620,12 @@ in Vim9 script.
+ 	echo filter([1, 2], 0)
+ 	vim9cmd echo filter([1, 2], 0)	# E1024: Using a Number as a String
+ <
++- Assigning a number to an environment variable, a register or a String
++  v: variable:
++>vim
++	let $FOO = 123
++	vim9cmd $FOO = 123	# E1012: Type mismatch; expected string but ...
++<
+ - Not using a number where a number is expected:
+ >vim
+ 	" In this example, legacy Vim script treats v:false as 0
