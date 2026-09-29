@@ -1,32 +1,86 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 9529699c7..d6d8dc1fb 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 5e77a8100..0436007ff 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Sep 07
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Sep 26
+-*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
++*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 28
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -673,7 +673,7 @@ version 3.0).  Using "ex:" at the start of the line will be ignored (this
- could be short for "example:").
- 
- If the modeline is disabled within a modeline, subsequent modelines will be
--ignored.  This is to allow turning off modeline on a per-file basis.  This is
-+ignored.  This is to allow turning off modeline on a per-file basis, which is
- useful when a line looks like a modeline but isn't.  For example, it would be
- good to start a YAML file containing strings like "vim:" with
-     # vim: nomodeline ~
-@@ -681,6 +681,12 @@ so as to avoid modeline misdetection.  Following options on the same line
- after modeline deactivation, if any, are still evaluated (but you would
- normally not have any).
- 
-+							*modeline-strict*
-+The 'modelinestrict' option restricts which options can be set via a
-+modeline to a fixed whitelist.  This is enabled by default, for security
-+reasons: it avoids unexpected or harmful side effects when opening files
-+from unknown or untrustworthy locations.
+@@ -248,6 +248,7 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			Read the script without running it: only what defines
+ 			something is executed, then every |:def| function in
+ 			it is compiled and the errors are reported as usual.
 +
- 							*modeline-local*
- The options are set like with ":setlocal": The new value only applies to the
- buffer and window that contain the file.  Although it's possible to set global
+ 			What is executed: `vim9script`, `import`, `def`,
+ 			`function`, `class`, `interface`, `enum`, `type` and a
+ 			declaration with `var`, `const` or `final`.  The
+@@ -256,17 +257,27 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
+ 			expression is not evaluated.  A static class variable
+ 			is treated the same way and an enum value is not
+ 			created.
++
+ 			Everything else is skipped, also `finish` and the
+ 			condition of an `if`, `while` or `for`; a definition
+ 			inside such a block is executed whether the condition
+ 			holds or not.  A function may therefore be defined
+ 			twice, the last definition counts.
++
++			In a legacy script `let` is not executed, thus a
++			script variable created by it does not exist.  A
++			|:def| function can use it with "s:", but reading it
++			or calling it without "s:" gives an error.  Defining a
++			function in a Dictionary it holds, such as
++			`function s:obj.Method()`, fails as well.
++
+ 			A script that is imported is read the same way, but an
+ 			autoload script is not loaded.  No |SourceCmd|,
+ 			|SourcePre| or |SourcePost| autocommand is triggered.
+ 			A class or enum in an autoload script is defined again
+ 			by a dry run, and after one by a normal load, since no
+ 			object was made from it; see |vim9-reload|.
++
+ 			Note: An error in a definition does not stop the
+ 			reading, the rest of the script is read as well.  And
+ 			an error in a line of a function does not stop
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index fd0178896..f2145933c 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
+@@ -1,4 +1,4 @@
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -52719,6 +52719,8 @@ Changed ~
+ - The highlighting groups |hl-CursorLineFold| and |hl-CursorLineSign| are
+   always used when 'cursorline' is set.
+ - Virtual text above a line is now counted by |screenpos()| and |virtcol()|.
++- A |:def| function in a legacy script can no longer create a script-local
++  variable by assigning to it, this gives |E1089|.
+ 
+ 							*added-9.3*
+ Added ~
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index bf4d0087e..dd7fef9dd 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
+@@ -1,4 +1,4 @@
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 25
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 28
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -3610,7 +3610,9 @@ or within a `:function`.  The three rules are:
+     regardless of the function's parent context.  Similarly, it gives E1268 in
+     the script-local scope of a Vim9 script.
+  3. In a legacy Vim script, "s:" is optional in a `:def` function, regardless
+-    of the function's parent context.
++    of the function's parent context.  A `:def` function cannot create a
++    script-local variable, assigning to one that does not exist when the
++    function is compiled gives |E1089|.
+ 
+ The following three scripts demonstrate these rules:
+ >vim
