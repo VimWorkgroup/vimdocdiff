@@ -1,22 +1,72 @@
-diff --git a/runtime/doc/if_lua.txt b/runtime/doc/if_lua.txt
-index cd8fdce3e..8b616fbae 100644
---- a/runtime/doc/if_lua.txt
-+++ b/runtime/doc/if_lua.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 8ce7f1fdd..fa2d31ad1 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*if_lua.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*if_lua.txt*	For Vim version 9.2.  Last change: 2026 Sep 29
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
  
  
- 		  VIM REFERENCE MANUAL	  by Luis Carvalho
-@@ -346,8 +346,9 @@ Properties
- ----------
- 	o "#b" is the length of blob "b", equivalent to "len(b)" in Vim.
- 	o "b[k]" returns the k-th item in "b"; "b" is zero-indexed, as in Vim.
--	    To modify the k-th item, simply do "b[k] = number"; in particular,
--	    "b[#b] = number" can append a byte to tail.
-+	    A negative "k" counts from the end, also as in Vim, thus "b[-1]" is
-+	    the last item.  To modify the k-th item, simply do
-+	    "b[k] = number"; "b[#b] = number" can append a byte to tail.
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -44,9 +44,6 @@ Errors when running tests with valgrind:
+ - test_gui.vim:
+     Found errors in Test_gui_mouse_event():
  
- Methods
- -------
+-When every block in if/elseif ends in "throw" or "return" code following after
+-"endif" should give an "unreachable code" error.
+-
+ Upcoming larger works:
+ - Make spell checking work with recent .dic/.aff files, e.g. French.  #4916
+     Make Vim understand the format somehow?   Search for "spell" below.
+diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
+index 666908aa3..367db3d50 100644
+--- a/runtime/doc/userfunc.txt
++++ b/runtime/doc/userfunc.txt
+@@ -1,4 +1,4 @@
+-*userfunc.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
++*userfunc.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -200,8 +200,13 @@ See |:verbose-cmd| for more information.
+ 
+ 			In |Vim9| script:
+ 			- `:return` cannot be shortened, and
+-			- *E1095* is given if unreachable code follows after
+-			  the `:return`.  For example:
++			- *E1095* is given if a command follows an
++			  unconditional `:return` or `:throw`.  A complete
++			  `:if`/`:elseif`/`:else` is also considered to
++			  terminate when every branch ends with `:return` or
++			  `:throw`.  An `:if` without `:else`, or any branch
++			  that can continue normally, does not make following
++			  commands unreachable.  For example:
+ >vim9
+ 			  vim9script
+ 			  var L: func = (): bool => {
+@@ -209,6 +214,25 @@ See |:verbose-cmd| for more information.
+ 			    echo 'no'  # E1095: Unreachable code after :return
+ 			  }
+ 			  echo L()
++<
++			  The same check applies to `:try`: the `:try` body
++			  and all `:catch` blocks must terminate, unless a
++			  terminating `:finally` block overrides them.  In a
++			  loop, `:break` and `:continue` make later commands
++			  in the loop body unreachable, but do not make
++			  commands after the loop unreachable.  For example,
++			  when every branch of an `:if`/`:else` returns, a
++			  command after `:endif` is unreachable:
++>vim9
++			  vim9script
++			  def AllBranchesReturn(n: number): number
++			    if n > 0
++			      return 1
++			    else
++			      return 0
++			    endif
++			    echo 'no'  # E1095: Unreachable code after :return
++			  enddef
+ <
+ 			In legacy Vim script there is no check for unreachable
+ 			lines, thus there is no warning if commands follow
