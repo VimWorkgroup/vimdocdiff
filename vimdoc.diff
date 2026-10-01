@@ -1,72 +1,32 @@
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index 8ce7f1fdd..fa2d31ad1 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index e624269aa..e81e9dfff 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
+-*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Aug 30
++*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -44,9 +44,6 @@ Errors when running tests with valgrind:
- - test_gui.vim:
-     Found errors in Test_gui_mouse_event():
+@@ -623,11 +623,13 @@ line.  If you want to use '|' in an argument, precede it with '\'.
  
--When every block in if/elseif ends in "throw" or "return" code following after
--"endif" should give an "unreachable code" error.
--
- Upcoming larger works:
- - Make spell checking work with recent .dic/.aff files, e.g. French.  #4916
-     Make Vim understand the format somehow?   Search for "spell" below.
-diff --git a/runtime/doc/userfunc.txt b/runtime/doc/userfunc.txt
-index 666908aa3..367db3d50 100644
---- a/runtime/doc/userfunc.txt
-+++ b/runtime/doc/userfunc.txt
-@@ -1,4 +1,4 @@
--*userfunc.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
-+*userfunc.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -200,8 +200,13 @@ See |:verbose-cmd| for more information.
- 
- 			In |Vim9| script:
- 			- `:return` cannot be shortened, and
--			- *E1095* is given if unreachable code follows after
--			  the `:return`.  For example:
-+			- *E1095* is given if a command follows an
-+			  unconditional `:return` or `:throw`.  A complete
-+			  `:if`/`:elseif`/`:else` is also considered to
-+			  terminate when every branch ends with `:return` or
-+			  `:throw`.  An `:if` without `:else`, or any branch
-+			  that can continue normally, does not make following
-+			  commands unreachable.  For example:
- >vim9
- 			  vim9script
- 			  var L: func = (): bool => {
-@@ -209,6 +214,25 @@ See |:verbose-cmd| for more information.
- 			    echo 'no'  # E1095: Unreachable code after :return
- 			  }
- 			  echo L()
-+<
-+			  The same check applies to `:try`: the `:try` body
-+			  and all `:catch` blocks must terminate, unless a
-+			  terminating `:finally` block overrides them.  In a
-+			  loop, `:break` and `:continue` make later commands
-+			  in the loop body unreachable, but do not make
-+			  commands after the loop unreachable.  For example,
-+			  when every branch of an `:if`/`:else` returns, a
-+			  command after `:endif` is unreachable:
-+>vim9
-+			  vim9script
-+			  def AllBranchesReturn(n: number): number
-+			    if n > 0
-+			      return 1
-+			    else
-+			      return 0
-+			    endif
-+			    echo 'no'  # E1095: Unreachable code after :return
-+			  enddef
- <
- 			In legacy Vim script there is no check for unreachable
- 			lines, thus there is no warning if commands follow
+ These commands see the '|' as their argument, and can therefore not be
+ followed by another Vim command:
++    :append
+     :argdo
+     :autocmd
+     :bufdo
+     :cdo
+     :cfdo
++    :change
+     :command
+     :cscope
+     :debug
+@@ -639,6 +641,7 @@ followed by another Vim command:
+     :help
+     :helpfind
+     :helpgrep
++    :insert
+     :lcscope
+     :ldo
+     :lfdo
