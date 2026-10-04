@@ -1,32 +1,19 @@
-diff --git a/runtime/doc/filetype.txt b/runtime/doc/filetype.txt
-index 9c6016554..d8ae6554d 100644
---- a/runtime/doc/filetype.txt
-+++ b/runtime/doc/filetype.txt
+diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
+index 0436007ff..357acc1e3 100644
+--- a/runtime/doc/repeat.txt
++++ b/runtime/doc/repeat.txt
 @@ -1,4 +1,4 @@
--*filetype.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
-+*filetype.txt*	For Vim version 9.2.  Last change: 2026 Oct 01
+-*repeat.txt*	For Vim version 9.2.  Last change: 2026 Sep 28
++*repeat.txt*	For Vim version 9.2.  Last change: 2026 Oct 03
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1003,6 +1003,21 @@ For fish, add to the config file
+@@ -72,7 +72,7 @@ given, and the pattern then terminates at <EOL>.
  
- 	set -x MANPAGER "vim +MANPAGER --not-a-term -"
+ For the definition of a pattern, see |pattern|.
  
-+NOTE: Some man implementations pass a temporary file path to the pager as an
-+argument instead. This includes mandoc's frontend, which is the default on
-+OpenBSD, Alpine Linux and Void Linux for example.
-+
-+In that case adjust the above lines to set the MANPAGER environment variable
-+to "vim +MANPAGER --not-a-term" instead, dropping the final hyphen argument.
-+
-+A way to support both behaviors is to create the following wrapper script:
-+>sh
-+	#!/bin/sh
-+	vim +MANPAGER --not-a-term "${1:--}"
-+<
-+You can set the MANPAGER environment variable to the script name to enable it
-+(if it's not on the PATH you can use the absolute path). Make sure the
-+executable permission bit is set.
+-The default [cmd] is |:print|.
++The default [cmd] is `:print`.
  
- MARKDOWN						*ft-markdown-plugin*
- 
+ NOTE [cmd] may contain a range; see |collapse| and |edit-paragraph-join| for
+ examples.
