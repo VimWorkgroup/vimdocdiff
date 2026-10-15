@@ -1,107 +1,20 @@
-diff --git a/runtime/doc/repeat.txt b/runtime/doc/repeat.txt
-index 357acc1e3..69f10e576 100644
---- a/runtime/doc/repeat.txt
-+++ b/runtime/doc/repeat.txt
+diff --git a/runtime/doc/ft_ada.txt b/runtime/doc/ft_ada.txt
+index 35ab8c8ea..691b244a8 100644
+--- a/runtime/doc/ft_ada.txt
++++ b/runtime/doc/ft_ada.txt
 @@ -1,4 +1,4 @@
--*repeat.txt*	For Vim version 9.2.  Last change: 2026 Oct 03
-+*repeat.txt*	For Vim version 9.2.  Last change: 2026 Oct 13
+-*ft_ada.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
++*ft_ada.txt*	For Vim version 9.2.  Last change: 2026 Oct 14
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -242,47 +242,6 @@ For writing a Vim script, see chapter 41 of the user manual |usr_41.txt|.
- 			will be adjusted to the start and end of the fold,
- 			but only if a two line specifiers range was used.
- 
--						*:source-dryrun*
--:so[urce] ++dryrun {file}
--:[range]so[urce] ++dryrun
--			Read the script without running it: only what defines
--			something is executed, then every |:def| function in
--			it is compiled and the errors are reported as usual.
--
--			What is executed: `vim9script`, `import`, `def`,
--			`function`, `class`, `interface`, `enum`, `type` and a
--			declaration with `var`, `const` or `final`.  The
--			declared variable gets the type from the declaration,
--			or "any" when there is none, and a zero value; the
--			expression is not evaluated.  A static class variable
--			is treated the same way and an enum value is not
--			created.
--
--			Everything else is skipped, also `finish` and the
--			condition of an `if`, `while` or `for`; a definition
--			inside such a block is executed whether the condition
--			holds or not.  A function may therefore be defined
--			twice, the last definition counts.
--
--			In a legacy script `let` is not executed, thus a
--			script variable created by it does not exist.  A
--			|:def| function can use it with "s:", but reading it
--			or calling it without "s:" gives an error.  Defining a
--			function in a Dictionary it holds, such as
--			`function s:obj.Method()`, fails as well.
--
--			A script that is imported is read the same way, but an
--			autoload script is not loaded.  No |SourceCmd|,
--			|SourcePre| or |SourcePost| autocommand is triggered.
--			A class or enum in an autoload script is defined again
--			by a dry run, and after one by a normal load, since no
--			object was made from it; see |vim9-reload|.
--
--			Note: An error in a definition does not stop the
--			reading, the rest of the script is read as well.  And
--			an error in a line of a function does not stop
--			compiling it, every line with an error is reported.
--
- 							*:source!*
- :so[urce]! {file}	Read Vim commands from {file}.  These are commands
- 			that are executed from Normal mode, like you type
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index bfbf9b982..1c5d24996 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Sep 28
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Oct 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52661,8 +52661,6 @@ Other ~
-   |:mkview| and |:mkvimrc|
- - The "term_finish" option of term_start() supports a "noclose" value.
- - Control Vim via a channel using stdin/stdout |channel-stdio|.
--- Add the "++dryrun" argument to |:source| so a script can be sourced without
--  executing it to check for errors |:source-dryrun|.
- - 'tagfunc' is now also used for :tag completion.
- 
- Platform specific ~
-@@ -52719,8 +52717,6 @@ Changed ~
- - The highlighting groups |hl-CursorLineFold| and |hl-CursorLineSign| are
-   always used when 'cursorline' is set.
- - Virtual text above a line is now counted by |screenpos()| and |virtcol()|.
--- A |:def| function in a legacy script can no longer create a script-local
--  variable by assigning to it, this gives |E1089|.
- 
- 							*added-9.3*
- Added ~
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index dd7fef9dd..f7685e414 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.2.  Last change: 2026 Sep 28
-+*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 13
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3610,9 +3610,7 @@ or within a `:function`.  The three rules are:
-     regardless of the function's parent context.  Similarly, it gives E1268 in
-     the script-local scope of a Vim9 script.
-  3. In a legacy Vim script, "s:" is optional in a `:def` function, regardless
--    of the function's parent context.  A `:def` function cannot create a
--    script-local variable, assigning to one that does not exist when the
--    function is compiled gives |E1089|.
-+    of the function's parent context.
- 
- The following three scripts demonstrate these rules:
- >vim
+ 		    ADA FILE TYPE PLUG-INS REFERENCE MANUAL~
+@@ -159,6 +159,9 @@ immediately shows the result. You can set the project file to be used by
+ setting: >
+ 		call g:gnat.Set_Project_File ('my_project.gpr')
+ <
++Project file names containing spaces or shell special characters are
++supported.
++
+ Setting a project file will also create a Vim session (|views-sessions|) so -
+ like with the GPS - opened files, window positions etc. will be remembered
+ separately for all projects.
