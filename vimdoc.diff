@@ -1,183 +1,86 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index b3a6798d1..134a75207 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
+diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
+index 07ec6d518..8f9266e81 100644
+--- a/runtime/doc/insert.txt
++++ b/runtime/doc/insert.txt
 @@ -1,4 +1,4 @@
--*eval.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
-+*eval.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
+-*insert.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
++*insert.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3956,7 +3956,7 @@ text...
- 			this number of seconds.  The last `:echowindow` with a
- 			count matters, it is used once only.
- 			The message window is available when Vim was compiled
--			with the +timer and the +popupwin features.
-+			with the |+timers| and the |+popupwin| features.
- 
- 							*:echoe* *:echoerr*
- :echoe[rr] {expr1} ...	Echo the expression(s) as an error message, saving the
-diff --git a/runtime/doc/gui.txt b/runtime/doc/gui.txt
-index 7f77539ad..ed5014f17 100644
---- a/runtime/doc/gui.txt
-+++ b/runtime/doc/gui.txt
+@@ -969,8 +969,14 @@ CTRL-X CTRL-F		Search for the first file name that starts with the
+ 			file name is inserted in front of the cursor.
+ 			Alphabetic characters and characters in 'isfname'
+ 			are used to decide which characters are included in
+-			the file name.  Note: the 'path' option is not used
+-			here (yet).
++			the file name.
++			When 'completeopt' contains "pathopt", the directories
++			in 'path' are searched as well, like with |gf| and
++			|:find|.  A match found in a directory of 'path' is
++			shortened when possible, such that "gf" can find it
++			again.  A file name starting with "/", "./" or "../"
++			is completed as an absolute or relative path to the
++			current directory, without consulting 'path'.
+ 	CTRL-F	or
+ 	CTRL-N		Search forwards for next matching file name.  This
+ 			file name replaces the previous matching file name.
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index f7a6cbaa5..b066ebb16 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*gui.txt*	For Vim version 9.2.  Last change: 2026 Aug 04
-+*gui.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
++*options.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1205,7 +1205,7 @@ automatically.  If 'guifontwide' is empty Pango/Xft will choose the font for
- characters not available in 'guifont'.  Thus you do not need to set
- 'guifontwide' at all unless you want to override the choice made by Pango/Xft.
+@@ -2335,6 +2335,11 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		    scores when "fuzzy" is enabled.  Candidates will appear
+ 		    in their original order.
  
--Windows +multibyte only:		*guifontwide_win_mbyte*
-+Windows |+multi_byte_ime| only:		*guifontwide_win_mbyte*
- 
- If set and valid, 'guifontwide' is used for IME instead of 'guifont'.
- 
-diff --git a/runtime/doc/os_vms.txt b/runtime/doc/os_vms.txt
-index 7d00b59de..fb0d59fcf 100644
---- a/runtime/doc/os_vms.txt
-+++ b/runtime/doc/os_vms.txt
++	   pathopt  Additionally consult the 'path' option during filename
++		    completion.  Depending on the patterns in 'path', setting
++		    this option may result in performance degradation due to
++		    path expansions |i_CTRL-X_CTRL-F|
++
+ 	   popup    Show extra information about the currently selected
+ 		    completion in a popup window.  Only works in combination
+ 		    with "menu" or "menuone".  Overrides "preview".
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index fa2d31ad1..688ddf15d 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*os_vms.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*os_vms.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
- 
- 
- 		  VIM REFERENCE MANUAL
-@@ -106,7 +106,7 @@ http://www.polarhome.com/ctags/
- 
- Advanced users may try some acrobatics in FEATURE.H file as well.
- 
--It is possible to compile with +xfontset +xim options too, but then you have
-+It is possible to compile with |+xfontset| |+xim| options too, but then you have
- to set up GUI fonts etc. correctly.  See :help xim from Vim command prompt.
- 
- You may want to use GUI with GTK icons, then you have to download and install
-diff --git a/runtime/doc/version5.txt b/runtime/doc/version5.txt
-index c65dd5b9a..dcf8f97e7 100644
---- a/runtime/doc/version5.txt
-+++ b/runtime/doc/version5.txt
-@@ -1,4 +1,4 @@
--*version5.txt*	For Vim version 9.2.  Last change: 2026 Aug 23
-+*version5.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -3215,7 +3215,7 @@ New words for 'sessionoptions':
- - "globals"	Store global variables.
- - "unix"	Use unix file format (<NL> instead of <CR><NL>)
- 
--The ":mksession" and 'sessionoptions' are now in the +mksession feature.
-+The ":mksession" and 'sessionoptions' are now in the |+mksession| feature.
- 
- The top line of the window is also restored when using a session file.
- 
-@@ -3401,7 +3401,7 @@ file even with ":w!".  The |-m| command line option resets 'write'.
- register like "*. (Cortopassi)  Value "autoselect": Like what 'a' in
- 'guioptions' does but works in the terminal.
- 
--'guifontset' option: Specify fonts for the +fontset feature, for the X11 GUI
-+'guifontset' option: Specify fonts for the |+xfontset| feature, for the X11 GUI
- versions.  Allows using normal fonts when vim is compiled with this feature.
- (Nam)
- 
-diff --git a/runtime/doc/version6.txt b/runtime/doc/version6.txt
-index 01acc1a5d..8e91a898a 100644
---- a/runtime/doc/version6.txt
-+++ b/runtime/doc/version6.txt
+@@ -4640,7 +4640,6 @@ Insert mode completion/expansion:
+ -   Make CTRL-X CTRL-L use the 'complete' option?
+ -   Add command in CTRL-X mode to add following words to the completed string
+     (e.g. to complete "Pointer->element" with CTRL-X CTRL-P CTRL-W CTRL-W)
+--   CTRL-X CTRL-F: Use 'path' to find completions.
+ -   CTRL-X CTRL-F: Option to use forward slashes on MS-Windows?
+ -   CTRL-X CTRL-F: Don't replace "$VIM" with the actual value. (Kelly)
+ -   Allow listing all matches in some way (and picking one from the list).
+diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
+index 1c5d24996..1bfa2b247 100644
+--- a/runtime/doc/version9.txt
++++ b/runtime/doc/version9.txt
 @@ -1,4 +1,4 @@
--*version6.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*version6.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
+-*version9.txt*	For Vim version 9.2.  Last change: 2026 Oct 13
++*version9.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -320,7 +320,7 @@ The patterns in 'errorformat' would sometimes ignore case (MS-Windows) and
- sometimes not (Unix).  Now case is always ignored.  Add "\C" to the pattern to
- match case.
+@@ -52662,6 +52662,8 @@ Other ~
+ - The "term_finish" option of term_start() supports a "noclose" value.
+ - Control Vim via a channel using stdin/stdout |channel-stdio|.
+ - 'tagfunc' is now also used for :tag completion.
++- 'completeopt' takes the new value "pathopt" to make the file name completion
++  consult the 'path' option |i_CTRL-X_CTRL-F|.
  
--The 16 bit MS-DOS version is now compiled without the +listcmds feature
-+The 16 bit MS-DOS version is now compiled without the |+listcmds| feature
- (buffer list manipulation commands).  They are not often needed and this
- executable needs to be smaller.
- 
-@@ -2111,11 +2111,11 @@ disables multiple windows for a really small Vim.
- For the tiny version or when FEAT_WINDOWS is not defined: Firstwin and lastwin
- are equal to curwin and don't use w_next and w_prev.
- 
--Added the +listcmds feature.  Can be used to compile without the Vim commands
-+Added the |+listcmds| feature.  Can be used to compile without the Vim commands
- that manipulate the buffer list and argument list (the buffer list itself is
- still there, can't do without it).
- 
--Added the +vreplace feature.  It is disabled in the "small" version to avoid
-+Added the |+vreplace| feature.  It is disabled in the "small" version to avoid
- that the 16 bit DOS version runs out of memory.
- 
- Removed GTK+ support for versions older than 1.1.16.
-@@ -2339,7 +2339,7 @@ name. (Zoltan Arpadffy)
- After ":hi Normal ctermbg=black ctermfg=white" and suspending Vim not all
- characters are redrawn with the right background.
- 
--When doing "make test" without +eval or +windows feature, many tests failed.
-+When doing "make test" without |+eval| or |+windows| feature, many tests failed.
- Now have test1 generate a script to copy the correct output, so that a test
- that doesn't work is skipped.
- 
-@@ -2762,7 +2762,7 @@ all commands that cause too much recursiveness.
- Removed "Failed to open input method" error message, too many people got this
- when they didn't want to use a XIM.
- 
--GUI: When compiled without the +windows feature, the scrollbar would start
-+GUI: When compiled without the |+windows| feature, the scrollbar would start
- below line one.
- 
- Removed the trick with redefining character class functions from regexp.c.
-@@ -3144,7 +3144,7 @@ the Vim window. (Marcin Dalecki)
- Win32 GUI: when setting 'lines' to a huge number, would not compute the
- available space correctly.  Was counting the menu height twice.
- 
--Conversion of the docs to HTML didn't handle the line with the +quickfix tag
-+Conversion of the docs to HTML didn't handle the line with the |+quickfix| tag
- correctly. (Antonio Colombo)
- 
- Win32: fname_case() didn't handle multibyte characters correctly. (Yasuhiro
-diff --git a/runtime/doc/version7.txt b/runtime/doc/version7.txt
-index d8528bb62..485c2458d 100644
---- a/runtime/doc/version7.txt
-+++ b/runtime/doc/version7.txt
-@@ -1,4 +1,4 @@
--*version7.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*version7.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2888,7 +2888,7 @@ using ":normal" to avoid nasty side effects.
- Compilation error on HP-UX, use of "dlerr" must be inside a #ifdef.
- (Gary Johnson)
- 
--Report +reltime feature in ":version" output.
-+Report |+reltime| feature in ":version" output.
- 
- The tar and zip plugins detect failure to get the contents of the archive and
- edit the file as-is.
-diff --git a/runtime/doc/version8.txt b/runtime/doc/version8.txt
-index e8fc0e28a..43a5261fe 100644
---- a/runtime/doc/version8.txt
-+++ b/runtime/doc/version8.txt
-@@ -1,4 +1,4 @@
--*version8.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
-+*version8.txt*	For Vim version 9.2.  Last change: 2026 Oct 17
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -480,7 +480,7 @@ was shut down.  It can now be found at https://github.com/vim/vim.
- Functions now use ANSI-C declarations.  At least a C-89 compatible compiler is
- required.
- 
--The +visual feature is now always included.
-+The |+visual| feature is now always included.
- 
- ==============================================================================
- PATCHES						*patches-8* *bug-fixes-8*
+ Platform specific ~
+ -----------------
