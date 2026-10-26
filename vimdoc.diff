@@ -1,22 +1,29 @@
-diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
-index e81e9dfff..31b295ed7 100644
---- a/runtime/doc/cmdline.txt
-+++ b/runtime/doc/cmdline.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 01d131c6f..19a88ccfa 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
-+*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Sep 24
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -253,8 +253,9 @@ CTRL-M or CTRL-J		*c_CTRL-M* *c_CTRL-J* *c_<NL>* *c_<CR>* *c_CR*
+@@ -6631,9 +6631,17 @@ it took to match them against the text.
+ 					this is not unique.
+ 			PATTERN		The pattern being used.
  
- CTRL-[						*c_CTRL-[* *c_<Esc>* *c_Esc*
- <Esc>		When typed and 'x' not present in 'cpoptions', quit
--		Command-line mode without executing.  In macros or when 'x'
--		present in 'cpoptions', start entered command.
-+		Command-line mode without executing, otherwise start entered
-+		command (this is vi compatible).  Use CTRL-C in a mapping
-+		to abandon the command-line (see below).
- 		Note: If your <Esc> key is hard to hit on your keyboard, train
- 		yourself to use CTRL-[.
- 							*c_CTRL-C*
++							*:syn-performance*
+ Pattern matching gets slow when it has to try many alternatives.  Try to
+ include as much literal text as possible to reduce the number of ways a
+-pattern does NOT match.
++pattern does NOT match.  For example, having "ABC" and "ADC" is faster than a
++"A[BD]C" regex.  If using literal text isn't possible, reducing the amount of
++regex by merging them where in makes sense, like grouping common patterns
++together also helps.
++
++When dealing with heavy backtracking, it's possible to force the old
++backtracking regex engine by using "\%#=1", which is often faster in those
++cases.
+ 
+ When using the "\@<=" and "\@<!" items, add a maximum size to avoid trying at
+ all positions in the current and previous line.  For example, if the item is
