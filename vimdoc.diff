@@ -1,25 +1,19 @@
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 4299ed9ee..4fdacdb9f 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
+diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
+index a78ee204e..c71c63c13 100644
+--- a/runtime/doc/motion.txt
++++ b/runtime/doc/motion.txt
 @@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 20
-+*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
+-*motion.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
++*motion.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1215,9 +1215,14 @@ declared.  They can also be deleted with |:unlet|, for example:
- <
- Declaring any of the following with `:var` gives an error:
- - a global, buffer, tab, or window variable
-+- an environment variable
- - an option, or
- - a register.
- Examples:
-+							*E1000*  >vim9
-+	vim9script
-+	var $X = 1  # E1000: Cannot declare an environment variable: $X
-+<
- 							*E1016*  >vim9
- 	vim9script
- 	var t:err = 'err'  # E1016: Cannot declare a tab variable: t:err
+@@ -86,6 +86,8 @@ A character motion is either inclusive or exclusive.  When inclusive, the
+ start and end position of the motion are included in the operation.  When
+ exclusive, the last character towards the end of the buffer is not included.
+ Linewise motions always include the start and end position.
++For |o_CTRL-V| the motion is always inclusive, unless 'selection' is
++"exclusive".
+ 
+ Which motions are linewise, inclusive or exclusive is mentioned with the
+ command.  There are however, two general exceptions:
