@@ -1,19 +1,22 @@
-diff --git a/runtime/doc/motion.txt b/runtime/doc/motion.txt
-index a78ee204e..c71c63c13 100644
---- a/runtime/doc/motion.txt
-+++ b/runtime/doc/motion.txt
+diff --git a/runtime/doc/cmdline.txt b/runtime/doc/cmdline.txt
+index e81e9dfff..31b295ed7 100644
+--- a/runtime/doc/cmdline.txt
++++ b/runtime/doc/cmdline.txt
 @@ -1,4 +1,4 @@
--*motion.txt*	For Vim version 9.2.  Last change: 2026 Jun 13
-+*motion.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
+-*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
++*cmdline.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -86,6 +86,8 @@ A character motion is either inclusive or exclusive.  When inclusive, the
- start and end position of the motion are included in the operation.  When
- exclusive, the last character towards the end of the buffer is not included.
- Linewise motions always include the start and end position.
-+For |o_CTRL-V| the motion is always inclusive, unless 'selection' is
-+"exclusive".
+@@ -253,8 +253,9 @@ CTRL-M or CTRL-J		*c_CTRL-M* *c_CTRL-J* *c_<NL>* *c_<CR>* *c_CR*
  
- Which motions are linewise, inclusive or exclusive is mentioned with the
- command.  There are however, two general exceptions:
+ CTRL-[						*c_CTRL-[* *c_<Esc>* *c_Esc*
+ <Esc>		When typed and 'x' not present in 'cpoptions', quit
+-		Command-line mode without executing.  In macros or when 'x'
+-		present in 'cpoptions', start entered command.
++		Command-line mode without executing, otherwise start entered
++		command (this is vi compatible).  Use CTRL-C in a mapping
++		to abandon the command-line (see below).
+ 		Note: If your <Esc> key is hard to hit on your keyboard, train
+ 		yourself to use CTRL-[.
+ 							*c_CTRL-C*
