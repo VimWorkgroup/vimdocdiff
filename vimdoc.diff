@@ -1,73 +1,32 @@
-diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
-index e70da1f3b..5b00acc59 100644
---- a/runtime/doc/helphelp.txt
-+++ b/runtime/doc/helphelp.txt
+diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
+index 19a88ccfa..ba9bf9f96 100644
+--- a/runtime/doc/syntax.txt
++++ b/runtime/doc/syntax.txt
 @@ -1,4 +1,4 @@
--*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
-+*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Oct 20
+-*syntax.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
++*syntax.txt*	For Vim version 9.2.  Last change: 2026 Oct 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -482,7 +482,7 @@ annotation (e.g. "vim") after a greater than (>) character.  E.g. >vim
- By default, help files only support Vim script highlighting.  If you need
- syntax highlighting for other languages, add to your |vimrc|: >
- 	:let g:help_example_languages = #{
--	      \	vim: "vim", vim9: "vim", bash: "sh" }
-+	      \	vim: "vim", vim9: "vim", vim9mix: "vim9", bash: "sh" }
- The key represents the annotation marker name, and the value is the 'syntax'
- name.
- 
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 4fdacdb9f..c07b4568c 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -1,4 +1,4 @@
--*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
-+*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 30
+@@ -1043,6 +1043,21 @@ example, FreeBASIC files, use this in your startup vimrc: >
+    :let filetype_bas = "freebasic"
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -320,18 +320,20 @@ A |fold-marker| (i.e., `#{{{`) used to start a fold, is still okay.
- When reading a script, Vim doesn't know whether it is |Vim9| script before
- finding the `vim9script` command.  Before it, comments must use legacy
- syntax, so a quotation mark:
-->vim9
-+>vim9mix
- 	" legacy Vim script comment before vim9script
- 	vim9script
- 	# Vim9 script comment
- <
--That looks ugly (especially with the syntax highlighting not treating the
--initial Vim script comment in Comment highlight group as a command).
--It is better having the `vim9script` command as the first line:
-+You may think that looks peculiar.  Placing all comments after the `vim9script`
-+is tidier.
- >vim9
- 	vim9script
--	# Vim9 script comment
-+	# All comments here
- <
-+	Note that in the |vim9-mix| scenario, legacy Vim script comments cannot
-+	be avoided.
++BATS			*bats.vim* *ft-bats-syntax*
 +
- In legacy Vim script, # is also used for the alternate file name.  In Vim9
- script you must use %% instead.  Instead of ##, use %%%, which stands for
- all arguments.  See |c_%%| and |c_%%%#|.
-@@ -5499,7 +5501,7 @@ In the |vimrc| file sourced on startup this does not happen.
++Bats (Bash Automated Testing System) files are highlighted as Bash (see
++|ft-sh-syntax|), with additional highlighting for the "@test" line and test
++name, "# bats test_tags=" and "# bats file_tags=" comments, and the commands
++provided by bats-core ("run", "skip", "load", ...).
++
++The body of a "@test" block is treated as a function body.  To enable syntax
++folding of test blocks, turn on function folding: >
++	let g:sh_fold_enabled= 1
++<
++See |ft-sh-syntax| for the other folding levels offered by
++g:sh_fold_enabled.
++
++
+ C							*c.vim* *ft-c-syntax*
  
- 							*vim9-mix*
- There is one way to use both legacy and Vim9 syntax in one script file:
-->vim9
-+>vim9mix
- 	" _legacy Vim script_ comments are placed here
- 	if !has('vim9script')
- 	  " _legacy Vim script_ comments and commands are placed here
-@@ -5520,7 +5522,7 @@ To prevent these, a safer check may be |v:version| >= 900 instead (because
- Sometimes it is prudent to cut off even later.  Vim9 script's feature set
- continues to grow so, for example, if tuples are used (introduced in Vim 9.1
- patch 1232), a better condition is:
-->vim9
-+>vim9mix
- 	if !has('patch-9.1.1232')
- 	  echowindow $"Fail: Vim does not have patch 9.1.1232"
- 	  finish
+ A few things in C highlighting are optional.  To enable them assign any value
