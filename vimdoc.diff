@@ -1,86 +1,73 @@
-diff --git a/runtime/doc/insert.txt b/runtime/doc/insert.txt
-index 07ec6d518..8f9266e81 100644
---- a/runtime/doc/insert.txt
-+++ b/runtime/doc/insert.txt
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index e70da1f3b..5b00acc59 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
 @@ -1,4 +1,4 @@
--*insert.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
-+*insert.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
+-*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Aug 25
++*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Oct 20
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -969,8 +969,14 @@ CTRL-X CTRL-F		Search for the first file name that starts with the
- 			file name is inserted in front of the cursor.
- 			Alphabetic characters and characters in 'isfname'
- 			are used to decide which characters are included in
--			the file name.  Note: the 'path' option is not used
--			here (yet).
-+			the file name.
-+			When 'completeopt' contains "pathopt", the directories
-+			in 'path' are searched as well, like with |gf| and
-+			|:find|.  A match found in a directory of 'path' is
-+			shortened when possible, such that "gf" can find it
-+			again.  A file name starting with "/", "./" or "../"
-+			is completed as an absolute or relative path to the
-+			current directory, without consulting 'path'.
- 	CTRL-F	or
- 	CTRL-N		Search forwards for next matching file name.  This
- 			file name replaces the previous matching file name.
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index f7a6cbaa5..b066ebb16 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+@@ -482,7 +482,7 @@ annotation (e.g. "vim") after a greater than (>) character.  E.g. >vim
+ By default, help files only support Vim script highlighting.  If you need
+ syntax highlighting for other languages, add to your |vimrc|: >
+ 	:let g:help_example_languages = #{
+-	      \	vim: "vim", vim9: "vim", bash: "sh" }
++	      \	vim: "vim", vim9: "vim", vim9mix: "vim9", bash: "sh" }
+ The key represents the annotation marker name, and the value is the 'syntax'
+ name.
+ 
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index 4fdacdb9f..c07b4568c 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Oct 30
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -2335,6 +2335,11 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		    scores when "fuzzy" is enabled.  Candidates will appear
- 		    in their original order.
- 
-+	   pathopt  Additionally consult the 'path' option during filename
-+		    completion.  Depending on the patterns in 'path', setting
-+		    this option may result in performance degradation due to
-+		    path expansions |i_CTRL-X_CTRL-F|
+@@ -320,18 +320,20 @@ A |fold-marker| (i.e., `#{{{`) used to start a fold, is still okay.
+ When reading a script, Vim doesn't know whether it is |Vim9| script before
+ finding the `vim9script` command.  Before it, comments must use legacy
+ syntax, so a quotation mark:
+->vim9
++>vim9mix
+ 	" legacy Vim script comment before vim9script
+ 	vim9script
+ 	# Vim9 script comment
+ <
+-That looks ugly (especially with the syntax highlighting not treating the
+-initial Vim script comment in Comment highlight group as a command).
+-It is better having the `vim9script` command as the first line:
++You may think that looks peculiar.  Placing all comments after the `vim9script`
++is tidier.
+ >vim9
+ 	vim9script
+-	# Vim9 script comment
++	# All comments here
+ <
++	Note that in the |vim9-mix| scenario, legacy Vim script comments cannot
++	be avoided.
 +
- 	   popup    Show extra information about the currently selected
- 		    completion in a popup window.  Only works in combination
- 		    with "menu" or "menuone".  Overrides "preview".
-diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
-index fa2d31ad1..688ddf15d 100644
---- a/runtime/doc/todo.txt
-+++ b/runtime/doc/todo.txt
-@@ -1,4 +1,4 @@
--*todo.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
-+*todo.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
+ In legacy Vim script, # is also used for the alternate file name.  In Vim9
+ script you must use %% instead.  Instead of ##, use %%%, which stands for
+ all arguments.  See |c_%%| and |c_%%%#|.
+@@ -5499,7 +5501,7 @@ In the |vimrc| file sourced on startup this does not happen.
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -4640,7 +4640,6 @@ Insert mode completion/expansion:
- -   Make CTRL-X CTRL-L use the 'complete' option?
- -   Add command in CTRL-X mode to add following words to the completed string
-     (e.g. to complete "Pointer->element" with CTRL-X CTRL-P CTRL-W CTRL-W)
---   CTRL-X CTRL-F: Use 'path' to find completions.
- -   CTRL-X CTRL-F: Option to use forward slashes on MS-Windows?
- -   CTRL-X CTRL-F: Don't replace "$VIM" with the actual value. (Kelly)
- -   Allow listing all matches in some way (and picking one from the list).
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 1c5d24996..1bfa2b247 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Oct 13
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52662,6 +52662,8 @@ Other ~
- - The "term_finish" option of term_start() supports a "noclose" value.
- - Control Vim via a channel using stdin/stdout |channel-stdio|.
- - 'tagfunc' is now also used for :tag completion.
-+- 'completeopt' takes the new value "pathopt" to make the file name completion
-+  consult the 'path' option |i_CTRL-X_CTRL-F|.
- 
- Platform specific ~
- -----------------
+ 							*vim9-mix*
+ There is one way to use both legacy and Vim9 syntax in one script file:
+->vim9
++>vim9mix
+ 	" _legacy Vim script_ comments are placed here
+ 	if !has('vim9script')
+ 	  " _legacy Vim script_ comments and commands are placed here
+@@ -5520,7 +5522,7 @@ To prevent these, a safer check may be |v:version| >= 900 instead (because
+ Sometimes it is prudent to cut off even later.  Vim9 script's feature set
+ continues to grow so, for example, if tuples are used (introduced in Vim 9.1
+ patch 1232), a better condition is:
+->vim9
++>vim9mix
+ 	if !has('patch-9.1.1232')
+ 	  echowindow $"Fail: Vim does not have patch 9.1.1232"
+ 	  finish
