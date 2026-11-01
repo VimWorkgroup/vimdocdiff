@@ -1,32 +1,19 @@
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index 19a88ccfa..ba9bf9f96 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index e7fc9b74a..7f25cd990 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
 @@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
-+*syntax.txt*	For Vim version 9.2.  Last change: 2026 Oct 30
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Oct 31
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1043,6 +1043,21 @@ example, FreeBASIC files, use this in your startup vimrc: >
-    :let filetype_bas = "freebasic"
- 
- 
-+BATS			*bats.vim* *ft-bats-syntax*
-+
-+Bats (Bash Automated Testing System) files are highlighted as Bash (see
-+|ft-sh-syntax|), with additional highlighting for the "@test" line and test
-+name, "# bats test_tags=" and "# bats file_tags=" comments, and the commands
-+provided by bats-core ("run", "skip", "load", ...).
-+
-+The body of a "@test" block is treated as a function body.  To enable syntax
-+folding of test blocks, turn on function folding: >
-+	let g:sh_fold_enabled= 1
-+<
-+See |ft-sh-syntax| for the other folding levels offered by
-+g:sh_fold_enabled.
-+
-+
- C							*c.vim* *ft-c-syntax*
- 
- A few things in C highlighting are optional.  To enable them assign any value
+@@ -5352,7 +5352,7 @@ getreginfo([{regname}])					*getreginfo()*
+ 		Dictionary with the following entries:
+ 			regcontents	List of lines contained in register
+ 					{regname}, like
+-					|getreg|({regname}, 1, 1).
++					getreg({regname}, 1, 1), see |getreg()|.
+ 			regtype		the type of register {regname}, as in
+ 					|getregtype()|.
+ 			isunnamed	Boolean flag, v:true if this register
