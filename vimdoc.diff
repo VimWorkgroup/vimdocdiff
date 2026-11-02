@@ -1,24 +1,23 @@
-diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
-index 4c7d7922d..3b1a78108 100644
---- a/runtime/doc/autocmd.txt
-+++ b/runtime/doc/autocmd.txt
+diff --git a/runtime/doc/helphelp.txt b/runtime/doc/helphelp.txt
+index 5b00acc59..a7d2ea54d 100644
+--- a/runtime/doc/helphelp.txt
++++ b/runtime/doc/helphelp.txt
 @@ -1,4 +1,4 @@
--*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
-+*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Nov 01
+-*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Oct 20
++*helphelp.txt*	For Vim version 9.2.  Last change: 2026 Nov 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -535,11 +535,10 @@ BufRead or BufReadPost		When starting to edit a new buffer, after
- 				for when you need to do something after
- 				processing the modelines.
- 				Also triggered:
--				- when writing an unnamed buffer in a way that
--				  the buffer gets a name
- 				- after successfully recovering a file
- 				- for the filetypedetect group when executing
--				  ":filetype detect"
-+				  ":filetype detect" or when writing an
-+				  unnamed buffer in a way that it gets a name
- 				Not triggered:
- 				- for the `:read file` command
- 				- when the file doesn't exist
+@@ -419,9 +419,9 @@ STYLE
+ If your Vim has 'modeline' enabled, Vim should follow the preferred style
+ automatically when editing built-in help files.
+ 
+-Vim help files should be formatted for a 'textwidth' of 78 characters (with
+-'conceal' enabled), so they look good in a typical 80 x 24 terminal window;
+-use `:set colorcolumn=+0` as a visual guide.
++Vim help files should be formatted for a 'textwidth' of 78 characters, so they
++look good in a typical 80 x 24 terminal window; use `:set colorcolumn=+0` as a
++visual guide.
+ 
+ Use two spaces between the final dot of a sentence of the first letter of the
+ next sentence.  Like this.
