@@ -1,19 +1,19 @@
-diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
-index 38e55d795..5e01d16fa 100644
---- a/runtime/doc/vim9.txt
-+++ b/runtime/doc/vim9.txt
-@@ -4573,12 +4573,10 @@ Similarly for a permissive dictionary:
- 	echo de->extend(da)->string()
+diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
+index 7f25cd990..4f3578c6b 100644
+--- a/runtime/doc/builtin.txt
++++ b/runtime/doc/builtin.txt
+@@ -1,4 +1,4 @@
+-*builtin.txt*	For Vim version 9.2.  Last change: 2026 Oct 31
++*builtin.txt*	For Vim version 9.2.  Last change: 2026 Nov 01
+ 
+ 
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -9628,7 +9628,7 @@ remove({blob}, {idx}, {end})
+ 			:echo "last byte: " .. remove(myblob, -1)
+ 			:call remove(mylist, 0, 9)
  <
- And, although tuples themselves are immutable, permissive tuple concatenation
--can be achieved with either "any" or an empty tuple:
-+can be achieved with an empty tuple (a variadic tuple can only be concatenated
-+with a tuple of the same type, see |E1540|):
- >vim9
- 	vim9script
--	var t_any: tuple<...list<any>> = (3, '2')
--	t_any = t_any + (true, )
--	echo t_any
- 	var t_dec_empty = ()
- 	t_dec_empty = t_dec_empty + (3, '2', true)
- 	echo t_dec_empty
+-		Return type: |Number|
++		Return type: |Number| or |Blob|
+ 
+ 
+ remove({dict}, {key})
