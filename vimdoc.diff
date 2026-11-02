@@ -1,19 +1,24 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index e7fc9b74a..7f25cd990 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/autocmd.txt b/runtime/doc/autocmd.txt
+index 4c7d7922d..3b1a78108 100644
+--- a/runtime/doc/autocmd.txt
++++ b/runtime/doc/autocmd.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Sep 30
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Oct 31
+-*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Sep 01
++*autocmd.txt*	For Vim version 9.2.  Last change: 2026 Nov 01
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5352,7 +5352,7 @@ getreginfo([{regname}])					*getreginfo()*
- 		Dictionary with the following entries:
- 			regcontents	List of lines contained in register
- 					{regname}, like
--					|getreg|({regname}, 1, 1).
-+					getreg({regname}, 1, 1), see |getreg()|.
- 			regtype		the type of register {regname}, as in
- 					|getregtype()|.
- 			isunnamed	Boolean flag, v:true if this register
+@@ -535,11 +535,10 @@ BufRead or BufReadPost		When starting to edit a new buffer, after
+ 				for when you need to do something after
+ 				processing the modelines.
+ 				Also triggered:
+-				- when writing an unnamed buffer in a way that
+-				  the buffer gets a name
+ 				- after successfully recovering a file
+ 				- for the filetypedetect group when executing
+-				  ":filetype detect"
++				  ":filetype detect" or when writing an
++				  unnamed buffer in a way that it gets a name
+ 				Not triggered:
+ 				- for the `:read file` command
+ 				- when the file doesn't exist
