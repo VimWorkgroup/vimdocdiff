@@ -1,17 +1,27 @@
-diff --git a/runtime/doc/eval.txt b/runtime/doc/eval.txt
-index 11e44211a..415d3e692 100644
---- a/runtime/doc/eval.txt
-+++ b/runtime/doc/eval.txt
-@@ -1985,6 +1985,12 @@ nesting						*expr-nesting* *E110*
- -------
- (expr1)			nested expression
+diff --git a/runtime/doc/remote.txt b/runtime/doc/remote.txt
+index d33c14eb5..653691f1f 100644
+--- a/runtime/doc/remote.txt
++++ b/runtime/doc/remote.txt
+@@ -1,4 +1,4 @@
+-*remote.txt*	For Vim version 9.2.  Last change: 2026 Jun 05
++*remote.txt*	For Vim version 9.2.  Last change: 2026 Nov 08
  
-+If text follows the expression, E110 includes it, to show where the expression
-+should end: >
-+	echo (0!)
-+<	E110: Missing ')': !) ~
-+Vim expects the ")" where the "!" is.
-+
  
- environment variable					*expr-env*
- --------------------
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -237,9 +237,13 @@ When using the traditional/generic clientserver naming (only available on
+ Unix), sockets are placed in these directories in the following order of
+ availability:
+     1. "$XDG_RUNTIME_DIR/vim" if $XDG_RUNTIME_DIR is set in the environment.
+-    2. "$TMPDIR/vim-[uid]", where "[uid]" is the uid of the user.  This
+-       directory will have the access permissions set to 700 so only the user
+-       can read or write from/to it.  If $TMPDIR is not set, "/tmp" is used.
++    2. "$TMPDIR/vim-[uid]", where "[uid]" is the uid of the user.  If $TMPDIR
+++       is not set, "/tmp" is used.
++						        *E1589*
++The directory is created with permissions 700.  If it already exists, it must
++be a directory (not a symlink), owned by the user and not accessible by group
++or others, otherwise E1589 is given and no socket is created or used there.
++The socket itself is created with permissions 700.
+ 
+ 						    *socketserver-name*
+ When specifying the server id/name, it can be taken as a generic name or an
