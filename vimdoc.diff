@@ -1,19 +1,20 @@
-diff --git a/runtime/doc/remote.txt b/runtime/doc/remote.txt
-index 653691f1f..e1b0ad900 100644
---- a/runtime/doc/remote.txt
-+++ b/runtime/doc/remote.txt
+diff --git a/runtime/doc/vim9.txt b/runtime/doc/vim9.txt
+index c59bbd312..2f1e893e0 100644
+--- a/runtime/doc/vim9.txt
++++ b/runtime/doc/vim9.txt
 @@ -1,4 +1,4 @@
--*remote.txt*	For Vim version 9.2.  Last change: 2026 Nov 08
-+*remote.txt*	For Vim version 9.2.  Last change: 2026 Nov 09
+-*vim9.txt*	For Vim version 9.2.  Last change: 2026 Nov 09
++*vim9.txt*	For Vim version 9.2.  Last change: 2026 Nov 14
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -238,7 +238,7 @@ Unix), sockets are placed in these directories in the following order of
- availability:
-     1. "$XDG_RUNTIME_DIR/vim" if $XDG_RUNTIME_DIR is set in the environment.
-     2. "$TMPDIR/vim-[uid]", where "[uid]" is the uid of the user.  If $TMPDIR
--+       is not set, "/tmp" is used.
-+       is not set, "/tmp" is used.
- 						        *E1589*
- The directory is created with permissions 700.  If it already exists, it must
- be a directory (not a symlink), owned by the user and not accessible by group
+@@ -893,6 +893,9 @@ another 9 is added to MyList:
+ 	var MyList: list<number> = !exists('MyList') ? [9] : MyList->add(9)
+ 	echo MyList
+ <
++A `:type` in such a script defines the type alias again, like the variable
++declaration does.
++
+ You want to use this in scripts that use a `finish` command to bail out at
+ some point when loaded again.  For example, when a buffer local option is set
+ to a function, the function does not need to be defined more than once:
