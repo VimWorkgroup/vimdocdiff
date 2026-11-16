@@ -64,21 +64,21 @@
       <svg aria-hidden="true" class="d2h-icon d2h-changed" height="16" title="modified" version="1.1"
            viewBox="0 0 14 16" width="14">
           <path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path>
-      </svg>      <a href="#d2h-848751" class="d2h-file-name">runtime/doc/vim9.txt</a>
+      </svg>      <a href="#d2h-005680" class="d2h-file-name">runtime/doc/starting.txt</a>
       <span class="d2h-file-stats">
           <span class="d2h-lines-added">+4</span>
-          <span class="d2h-lines-deleted">-1</span>
+          <span class="d2h-lines-deleted">-2</span>
       </span>
     </span>
 </li>
     </ol>
 </div><div class="d2h-wrapper d2h-auto-color-scheme">
-    <div id="d2h-848751" class="d2h-file-wrapper" data-lang="txt">
+    <div id="d2h-005680" class="d2h-file-wrapper" data-lang="txt">
     <div class="d2h-file-header">
       <span class="d2h-file-name-wrapper">
     <svg aria-hidden="true" class="d2h-icon" height="16" version="1.1" viewBox="0 0 12 16" width="12">
         <path d="M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z"></path>
-    </svg>    <span class="d2h-file-name">runtime/doc/vim9.txt</span>
+    </svg>    <span class="d2h-file-name">runtime/doc/starting.txt</span>
     <span class="d2h-tag d2h-changed d2h-changed-tag">CHANGED</span></span>
 <label class="d2h-file-collapse">
     <input class="d2h-file-collapse-input" type="checkbox" name="viewed" value="viewed">
@@ -102,7 +102,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">*vim9.txt*	For Vim version 9.2.  Last change: 2026 Nov <del>09</del></span>
+            <span class="d2h-code-line-ctn">*starting.txt*	For Vim version 9.2.  Last change: 2026 <del>Sep</del> <del>08</del></span>
         </div>
     </td>
 </tr><tr>
@@ -138,36 +138,46 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -893,6 +893,9 @@ another 9 is added to MyList:</div>
+        <div class="d2h-code-side-line">@@ -446,7 +446,9 @@ a slash.  Thus &quot;-R&quot; means recovery and &quot;-&#x2F;R&quot; readonly.</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      893
+      446
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">	var MyList: list&lt;number&gt; = !exists(&#x27;MyList&#x27;) ? [9] : MyList-&gt;add(9)</span>
+            <span class="d2h-code-line-ctn">							*--stdio-channel*</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      894
+      447
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">	echo MyList</span>
+            <span class="d2h-code-line-ctn">--stdio-channel	Use the stdin and stdout of Vim for a channel instead of for a</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      895
+      448
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">&lt;</span>
+            <span class="d2h-code-line-ctn">		terminal.  Implies &quot;-es&quot;: nothing is displayed, no Ex commands</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      449
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">		are read and the GUI is not started.  <del>A</del> <del>script opens the</del></span>
         </div>
     </td>
 </tr><tr>
@@ -191,43 +201,33 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
-        </div>
-    </td>
-</tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      896
+      450
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">You want to use this in scripts that use a `finish` command to bail out at</span>
+            <span class="d2h-code-line-ctn">		channel with |ch_open()| and the address &quot;stdio&quot;.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      897
+      451
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">some point when loaded again.  For example, when a buffer local option is set</span>
+            <span class="d2h-code-line-ctn">		See |channel-stdio|.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      898
+      452
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">to a function, the function does not need to be defined more than once:</span>
+            <span class="d2h-code-line-ctn">		After the startup commands and scripts have been executed Vim</span>
         </div>
     </td>
 </tr>
@@ -251,7 +251,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">*vim9.txt*	For Vim version 9.2.  Last change: 2026 Nov <ins>14</ins></span>
+            <span class="d2h-code-line-ctn">*starting.txt*	For Vim version 9.2.  Last change: 2026 <ins>Nov</ins> <ins>15</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -291,92 +291,92 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      893
+      446
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">	var MyList: list&lt;number&gt; = !exists(&#x27;MyList&#x27;) ? [9] : MyList-&gt;add(9)</span>
+            <span class="d2h-code-line-ctn">							*--stdio-channel*</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      894
+      447
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">	echo MyList</span>
+            <span class="d2h-code-line-ctn">--stdio-channel	Use the stdin and stdout of Vim for a channel instead of for a</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      895
+      448
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">&lt;</span>
+            <span class="d2h-code-line-ctn">		terminal.  Implies &quot;-es&quot;: nothing is displayed, no Ex commands</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      449
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">		are read and the GUI is not started.  <ins>The</ins> <ins>|--servername|</ins></span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins">
-      896
+      450
     </td>
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">A `:type` in such a script defines the type alias again, like the variable</span>
+            <span class="d2h-code-line-ctn">		argument is ignored and no server is started, the</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins">
-      897
+      451
     </td>
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">declaration does.</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      898
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><br></span>
+            <span class="d2h-code-line-ctn">		|--remote| arguments cannot be used.  A script opens the</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      899
+      452
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">You want to use this in scripts that use a `finish` command to bail out at</span>
+            <span class="d2h-code-line-ctn">		channel with |ch_open()| and the address &quot;stdio&quot;.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      900
+      453
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">some point when loaded again.  For example, when a buffer local option is set</span>
+            <span class="d2h-code-line-ctn">		See |channel-stdio|.</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      901
+      454
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">to a function, the function does not need to be defined more than once:</span>
+            <span class="d2h-code-line-ctn">		After the startup commands and scripts have been executed Vim</span>
         </div>
     </td>
 </tr>
