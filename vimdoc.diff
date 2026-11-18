@@ -1,21 +1,28 @@
-diff --git a/runtime/doc/starting.txt b/runtime/doc/starting.txt
-index da01ad674..996d24e69 100644
---- a/runtime/doc/starting.txt
-+++ b/runtime/doc/starting.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index b066ebb16..7805ad78d 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*starting.txt*	For Vim version 9.2.  Last change: 2026 Sep 08
-+*starting.txt*	For Vim version 9.2.  Last change: 2026 Nov 15
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
++*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 17
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -446,7 +446,9 @@ a slash.  Thus "-R" means recovery and "-/R" readonly.
- 							*--stdio-channel*
- --stdio-channel	Use the stdin and stdout of Vim for a channel instead of for a
- 		terminal.  Implies "-es": nothing is displayed, no Ex commands
--		are read and the GUI is not started.  A script opens the
-+		are read and the GUI is not started.  The |--servername|
-+		argument is ignored and no server is started, the
-+		|--remote| arguments cannot be used.  A script opens the
- 		channel with |ch_open()| and the address "stdio".
- 		See |channel-stdio|.
- 		After the startup commands and scripts have been executed Vim
+@@ -685,7 +685,8 @@ normally not have any).
+ The 'modelinestrict' option restricts which options can be set via a
+ modeline to a fixed whitelist.  This is enabled by default, for security
+ reasons: it avoids unexpected or harmful side effects when opening files
+-from unknown or untrustworthy locations.
++from unknown or untrustworthy locations.  When 'verbose' is non-zero a message
++is given for each option that is ignored.
+ 
+ 							*modeline-local*
+ The options are set like with ":setlocal": The new value only applies to the
+@@ -6263,6 +6264,7 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	The following options are allowed:
+ 		'autoindent'
+ 		'cindent'
++		'colorcolumn'
+ 		'commentstring'
+ 		'expandtab'
+ 		'filetype'
