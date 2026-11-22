@@ -1,81 +1,19 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index 7805ad78d..d59b21395 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/todo.txt b/runtime/doc/todo.txt
+index 688ddf15d..3ec7568e8 100644
+--- a/runtime/doc/todo.txt
++++ b/runtime/doc/todo.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 17
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 21
+-*todo.txt*	For Vim version 9.2.  Last change: 2026 Oct 25
++*todo.txt*	For Vim version 9.2.  Last change: 2026 Nov 05
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1094,6 +1094,14 @@ A jump table for the options with a short description can be found at |Q_op|.
- 	screen is redrawn.  This may have side effects, make |t_RB| empty in
- 	your .vimrc if you suspect this problem.  The response to |t_RB| can
- 	be found in |v:termrbgresp|.
-+							*background-flash*
-+	By default Vim does not wait for this response during startup.  If you
-+	see a light-background flash in a dark terminal, set 'termbackgroundwait'
-+	in your vimrc to wait briefly before the first screen clear.  For
-+	example: >
-+		set termbackgroundwait=100
-+<	This may delay startup by up to 100 ms.  If the response arrives later,
-+	the colors are adjusted then, so a flash may still occur.
+@@ -361,8 +361,6 @@ When scheme can't be found by configure there is no clear "not found" message:
  
- 	When starting the GUI, the default value for 'background' will be
- 	"light".  When the value is not set in the .gvimrc, and Vim detects
-@@ -9339,6 +9347,25 @@ A jump table for the options with a short description can be found at |Q_op|.
- 		:set term=$TERM
- <	See |termcap|.
+ Can "CSI nr X" be used instead of outputting spaces?  Is it faster?  #8002
  
-+					*'termbackgroundwait'* *'tbw'*
-+'termbackgroundwait' 'tbw' number (default 0)
-+			global
-+			{only available when compiled with the |+termresponse|
-+			feature}
-+	Maximum time in milliseconds to wait for the terminal background color
-+	response during interactive startup, before the first screen clear.
-+	Zero (the default) defers the query until after startup commands and
-+	disables waiting.  A positive value sends the query before the first
-+	screen clear.  The value must not be negative.  See |background-flash|
-+	for an example.
-+
-+	Vim only waits when 'background' has not been explicitly set, |t_RB| is
-+	not empty, and both input and output are terminals.  Waiting ends early
-+	when a response, typed input, or an interrupt is received.  Responses
-+	arriving after the timeout are still used to adjust 'background', so
-+	this option cannot prevent every flash.  It has no effect in the GUI
-+	or after startup.
-+
- 						*'termbidi'* *'tbidi'*
- 						*'notermbidi'* *'notbidi'*
- 'termbidi' 'tbidi'	boolean (default off, on for "mlterm")
-diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
-index 863761065..f163adbf1 100644
---- a/runtime/doc/quickref.txt
-+++ b/runtime/doc/quickref.txt
-@@ -1,4 +1,4 @@
--*quickref.txt*	For Vim version 9.2.  Last change: 2026 May 17
-+*quickref.txt*	For Vim version 9.2.  Last change: 2026 Oct 31
+-Typed keys invisible after calling interrupt() from a timer. #10631
+-
+ With a window height of 6 and 'scrolloff' set to 3, using "j" does not scroll
+ evenly. (#10545)  Need to handle this in scroll_cursor_bot().
  
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -965,6 +965,7 @@ Short explanation of each option:		*option-list*
- 'tagstack'	  'tgst'    push tags onto the tag stack
- 'tcldll'		    name of the Tcl dynamic library
- 'term'			    name of the terminal
-+'termbackgroundwait' 'tbw'   time to wait for background detection at startup
- 'termbidi'	  'tbidi'   terminal takes care of bi-directionality
- 'termencoding'	  'tenc'    character encoding used by the terminal
- 'termguicolors'	  'tgc'     use GUI colors for the terminal
-diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index 43f922f9a..d997e7f76 100644
---- a/runtime/doc/version9.txt
-+++ b/runtime/doc/version9.txt
-@@ -52759,6 +52759,7 @@ Options: ~
- 't_BS'			Begin synchronized update.
- 't_ES'			End synchronized update.
- 'tagsecure'		Do not open remote files using tag commands
-+'termbackgroundwait'	time to wait for background detection at startup
- 'termresize'		Method for handling terminal resize events.
- 'termsync'		Enable support for terminal DEC 2026 sync mode.
- 'winhighlight'		Window-local highlight group mappings.
