@@ -1,112 +1,81 @@
-diff --git a/runtime/doc/change.txt b/runtime/doc/change.txt
-index f14d7fc2f..4e1d23b9a 100644
---- a/runtime/doc/change.txt
-+++ b/runtime/doc/change.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index 7805ad78d..d59b21395 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*change.txt*	For Vim version 9.2.  Last change: 2026 Nov 18
-+*change.txt*	For Vim version 9.2.  Last change: 2026 Nov 21
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 17
++*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 21
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -73,32 +73,27 @@ For inserting text see |insert.txt|.
- 			the end of the line.
+@@ -1094,6 +1094,14 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 	screen is redrawn.  This may have side effects, make |t_RB| empty in
+ 	your .vimrc if you suspect this problem.  The response to |t_RB| can
+ 	be found in |v:termrbgresp|.
++							*background-flash*
++	By default Vim does not wait for this response during startup.  If you
++	see a light-background flash in a dark terminal, set 'termbackgroundwait'
++	in your vimrc to wait briefly before the first screen clear.  For
++	example: >
++		set termbackgroundwait=100
++<	This may delay startup by up to 100 ms.  If the response arrives later,
++	the colors are adjusted then, so a flash may still occur.
  
- 					*:d* *:de* *:del* *:delete* *:dl* *:dp*
--:[range]d[elete] [x]	Delete [range] lines (default: current line) [into
-+:[range]d[elete] [x] [flags]
-+			Delete [range] lines (default: current line) [into
- 			register x].
--			Note these weird abbreviations applicable only to
--			legacy Vim script:
--			  :dl		delete and list
--			  :dell		idem
--			  :delel	idem
--			  :deletl	idem
--			  :deletel	idem
--			  :dp		delete and print
--			  :dep		idem
--			  :delp		idem
--			  :delep	idem
--			  :deletp	idem
--			  :deletep	idem
--			Warning: These give |E492| in |Vim9| script and `:dl`
--			executes as `:dlist`.
--
--:[range]d[elete] [x] {count}
-+			See |ex-flags| for [flags].
+ 	When starting the GUI, the default value for 'background' will be
+ 	"light".  When the value is not set in the .gvimrc, and Vim detects
+@@ -9339,6 +9347,25 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 		:set term=$TERM
+ <	See |termcap|.
+ 
++					*'termbackgroundwait'* *'tbw'*
++'termbackgroundwait' 'tbw' number (default 0)
++			global
++			{only available when compiled with the |+termresponse|
++			feature}
++	Maximum time in milliseconds to wait for the terminal background color
++	response during interactive startup, before the first screen clear.
++	Zero (the default) defers the query until after startup commands and
++	disables waiting.  A positive value sends the query before the first
++	screen clear.  The value must not be negative.  See |background-flash|
++	for an example.
 +
-+:[range]d[elete] [x] {count} [flags]
- 			Delete {count} lines, starting with [range]
- 			(default: current line |cmdline-ranges|) [into
- 			register x].
-+			See |ex-flags| for [flags].
++	Vim only waits when 'background' has not been explicitly set, |t_RB| is
++	not empty, and both input and output are terminals.  Waiting ends early
++	when a response, typed input, or an interrupt is received.  Responses
++	arriving after the timeout are still used to adjust 'background', so
++	this option cannot prevent every flash.  It has no effect in the GUI
++	or after startup.
 +
-+Note: [flags] may also appear immediately after the command name without
-+intervening white space.  E.g., `:dp`, `:d#` or `:dl#` (this is Vi
-+compatible).  The combined command name and flag may not form an abbreviation
-+of the command name itself.  E.g., `:del` is `:delete`, not `:de` with the "l"
-+flag.  In |Vim9| script these combinations are not available (see |E492|) and
-+`:dl` executes as `:dlist`.
+ 						*'termbidi'* *'tbidi'*
+ 						*'notermbidi'* *'notbidi'*
+ 'termbidi' 'tbidi'	boolean (default off, on for "mlterm")
+diff --git a/runtime/doc/quickref.txt b/runtime/doc/quickref.txt
+index 863761065..f163adbf1 100644
+--- a/runtime/doc/quickref.txt
++++ b/runtime/doc/quickref.txt
+@@ -1,4 +1,4 @@
+-*quickref.txt*	For Vim version 9.2.  Last change: 2026 May 17
++*quickref.txt*	For Vim version 9.2.  Last change: 2026 Oct 31
  
- These commands delete text.  You can repeat them with the `.` command
--(except `:d`) and undo them.  Use Visual mode to delete blocks of text.  See
--|registers| for an explanation of registers.
-+(except `:delete`) and undo them.  Use Visual mode to delete blocks of text.
-+See |registers| for an explanation of registers.
- 							*d-special*
- An exception for the d{motion} command: If the motion is not linewise, the
- start and end of the motion are not in the same line, and there are only
-@@ -1097,9 +1092,9 @@ inside of strings can change!  Also see 'softtabstop' option. >
  
- 							*v_zy*
- {Visual}["x]zy		Yank the highlighted text [into register x].  Trailing
--			whitespace at the end of each line of a selected block
--			won't be yanked.  Especially useful in combination
--			with `zp`.  (for {Visual} see |Visual-mode|)
-+			white space at the end of each line of a selected
-+			block won't be yanked.  Especially useful in
-+			combination with `zp` (for {Visual} see |Visual-mode|).
- 
- 							*:y* *:yank* *E850*
- :[range]y[ank] [x]	Yank [range] lines [into register x].  Yanking to the
-@@ -1544,7 +1539,7 @@ $VIMRUNTIME/ftplugin directory, sets the 'formatexpr' option to: >
- That means, you will find the corresponding script, defining the
- xmlformat#Format() function, in the file `$VIMRUNTIME/autoload/xmlformat.vim`
- 
--Here is an example script that removes trailing whitespace from the selected
-+Here is an example script that removes trailing white space from the selected
- text.  Put it in your autoload directory, e.g. ~/.vim/autoload/format.vim:
- >vim
-   func! format#Format()
-@@ -1569,9 +1564,9 @@ Note: this function explicitly returns non-zero when called from insert mode
- causes Vim to fall back to reformat the text by using the internal formatter.
- 
- However, if the |gq| command is used to reformat the text, the function
--will receive the selected lines, trim trailing whitespace from those lines and
--put them back in place.  If you are going to split single lines into multiple
--lines, be careful not to overwrite anything.
-+will receive the selected lines, trim trailing white space from those lines
-+and put them back in place.  If you are going to split single lines into
-+multiple lines, be careful not to overwrite anything.
- 
- If you want to allow reformatting of text from insert or replace mode, one has
- to be very careful, because the function might be called recursively.  For
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -965,6 +965,7 @@ Short explanation of each option:		*option-list*
+ 'tagstack'	  'tgst'    push tags onto the tag stack
+ 'tcldll'		    name of the Tcl dynamic library
+ 'term'			    name of the terminal
++'termbackgroundwait' 'tbw'   time to wait for background detection at startup
+ 'termbidi'	  'tbidi'   terminal takes care of bi-directionality
+ 'termencoding'	  'tenc'    character encoding used by the terminal
+ 'termguicolors'	  'tgc'     use GUI colors for the terminal
 diff --git a/runtime/doc/version9.txt b/runtime/doc/version9.txt
-index bac50a672..43f922f9a 100644
+index 43f922f9a..d997e7f76 100644
 --- a/runtime/doc/version9.txt
 +++ b/runtime/doc/version9.txt
-@@ -1,4 +1,4 @@
--*version9.txt*	For Vim version 9.2.  Last change: 2026 Nov 18
-+*version9.txt*	For Vim version 9.2.  Last change: 2026 Nov 21
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -52723,6 +52723,8 @@ Changed ~
-   parameters of the color for |underline| and |undercurl|.
- - Joining lines with |fo-j| keeps a comment string with the 'f' flag in
-   'comments'.
-+- |:delete| accepts |ex-flags| after the register and count also without
-+  white space.
- 
- 							*added-9.3*
- Added ~
+@@ -52759,6 +52759,7 @@ Options: ~
+ 't_BS'			Begin synchronized update.
+ 't_ES'			End synchronized update.
+ 'tagsecure'		Do not open remote files using tag commands
++'termbackgroundwait'	time to wait for background detection at startup
+ 'termresize'		Method for handling terminal resize events.
+ 'termsync'		Enable support for terminal DEC 2026 sync mode.
+ 'winhighlight'		Window-local highlight group mappings.
