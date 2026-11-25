@@ -1,53 +1,26 @@
-diff --git a/runtime/doc/builtin.txt b/runtime/doc/builtin.txt
-index b32fa1db0..d8e259cd3 100644
---- a/runtime/doc/builtin.txt
-+++ b/runtime/doc/builtin.txt
+diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
+index d59b21395..f3d5741bb 100644
+--- a/runtime/doc/options.txt
++++ b/runtime/doc/options.txt
 @@ -1,4 +1,4 @@
--*builtin.txt*	For Vim version 9.2.  Last change: 2026 Nov 02
-+*builtin.txt*	For Vim version 9.2.  Last change: 2026 Nov 23
+-*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 21
++*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -12521,6 +12521,7 @@ terminalprops()						*terminalprops()*
- 		   kitty		whether Kitty terminal was detected
- 		   decrqm		whether sending DECRQM sequences work
- 		   rgb			whether the terminal has true color  **
-+		   undercurl		whether "\e[4:3m" gives undercurl  **
+@@ -10538,12 +10538,13 @@ A jump table for the options with a short description can be found at |Q_op|.
+ 			line.  If both "noinsert" and "noselect" are present,
+ 			"noselect" takes precedence.
+ 	If only one match exists, it is completed fully, unless "noselect" or
+-	"noinsert" is specified.
++	"noinsert" is specified without "longest".
  
- 		** value 'u' for unknown, 'y' for yes, 'n' for no
- 
-@@ -12538,6 +12539,11 @@ terminalprops()						*terminalprops()*
- 		When "underline_rgb" is not 'y', then |t_8u| will be made empty.
- 		This avoids sending it to xterm, which would clear the colors.
- 
-+		When |t_Cs| is empty, Vim asks the terminal whether it takes
-+		"\e[4:3m" for the curly underline.  When "undercurl" is 'y'
-+		then |t_Cs| is set to "\e[4:3m" and |t_Ce| to "\e[4:0m", unless
-+		they were set.
-+
- 		For "mouse" the value 'u' is unknown
- 
- 		If "decrqm" is 'y', then Vim will query support for the
-diff --git a/runtime/doc/syntax.txt b/runtime/doc/syntax.txt
-index ba9bf9f96..202245cf1 100644
---- a/runtime/doc/syntax.txt
-+++ b/runtime/doc/syntax.txt
-@@ -1,4 +1,4 @@
--*syntax.txt*	For Vim version 9.2.  Last change: 2026 Oct 30
-+*syntax.txt*	For Vim version 9.2.  Last change: 2026 Nov 23
- 
- 
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -5724,8 +5724,10 @@ term={attr-list}			*attr-list* *highlight-term* *E418*
- 	"undercurl" is a curly underline.  When "undercurl" is not possible
- 	then "underline" is used.  In general "undercurl" and "strikethrough"
- 	are only available in the GUI and some terminals.  The color is set
--	with |highlight-guisp| or |highlight-ctermul|.  You can try these
--	termcap entries to make undercurl work in a terminal: >
-+	with |highlight-guisp| or |highlight-ctermul|.  When the terminal
-+	answers that it takes the curly underline, Vim sets |t_Cs| and |t_Ce|
-+	itself, see |terminalprops()|.  Otherwise you can try these termcap
-+	entries to make undercurl work in a terminal: >
- 	    let &t_Cs = "\e[4:3m"
- 	    let &t_Ce = "\e[4:0m"
- 
+ 	Some useful combinations of colon-separated values:
+ 	"longest:full"		Start with the longest common string and show
+ 				'wildmenu' (if enabled).  Does not cycle
+-				through full matches.
++				through full matches, "longest:noselect"
++				and "longest:noinsert" work the same.
+ 	"list:full"		List all matches and complete first match.
+ 	"list:longest"		List all matches and complete till the longest
+ 				common prefix.
