@@ -1,26 +1,20 @@
-diff --git a/runtime/doc/options.txt b/runtime/doc/options.txt
-index d59b21395..f3d5741bb 100644
---- a/runtime/doc/options.txt
-+++ b/runtime/doc/options.txt
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index 58458b627..ef66fdcdf 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
 @@ -1,4 +1,4 @@
--*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 21
-+*options.txt*	For Vim version 9.2.  Last change: 2026 Nov 24
+-*vim9class.txt*	For Vim version 9.2.  Last change: 2026 May 21
++*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Nov 24
  
  
  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -10538,12 +10538,13 @@ A jump table for the options with a short description can be found at |Q_op|.
- 			line.  If both "noinsert" and "noselect" are present,
- 			"noselect" takes precedence.
- 	If only one match exists, it is completed fully, unless "noselect" or
--	"noinsert" is specified.
-+	"noinsert" is specified without "longest".
+@@ -1040,7 +1040,8 @@ an enum is changed, then their ordinal values will also change.
  
- 	Some useful combinations of colon-separated values:
- 	"longest:full"		Start with the longest common string and show
- 				'wildmenu' (if enabled).  Does not cycle
--				through full matches.
-+				through full matches, "longest:noselect"
-+				and "longest:noinsert" work the same.
- 	"list:full"		List all matches and complete first match.
- 	"list:longest"		List all matches and complete till the longest
- 				common prefix.
+ 						*enum-values*
+ All the values in an enum can be accessed using the "values" class variable
+-which is a List of the enum objects.  This is a readonly variable.
++which is a List of the enum objects.  This is a readonly variable.  An enum
++value cannot be named "values".
+ 
+ Example: >
+     enum Planet
