@@ -1,25 +1,21 @@
-diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
-index 01b4cdecb..0f527dc86 100644
---- a/runtime/doc/usr_05.txt
-+++ b/runtime/doc/usr_05.txt
+diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
+index ef66fdcdf..f1637a2d7 100644
+--- a/runtime/doc/vim9class.txt
++++ b/runtime/doc/vim9class.txt
 @@ -1,4 +1,4 @@
--*usr_05.txt*	For Vim version 9.2.  Last change: 2026 Aug 30
-+*usr_05.txt*	For Vim version 9.2.  Last change: 2026 Nov 25
+-*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Nov 24
++*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Nov 25
  
  
- 		     VIM USER MANUAL	by Bram Moolenaar
-@@ -525,9 +525,13 @@ The following configuration variables can be used are "g:hlput_hlgroup" and
- Adding the osc52 package		*osc52-install* *package-osc52*
- ------------------------------------------------------------------------------
- 
--To start using this plugin, add one line to your vimrc file: >
-+To start using this plugin, add these lines to your vimrc file: >
- 	packadd! osc52
-+	autocmd VimEnter * ++once set clipmethod+=osc52
+ 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+@@ -350,6 +350,10 @@ of class variable initializers and of lambda expressions and nested functions:
+ 	enddef
+     endclass
  <
-+The "osc52" clipboard provider is defined when the plugin is loaded,
-+therefore 'clipmethod' is set on |VimEnter|.
-+
- The osc52.vim package provides support for the OSC 52 terminal command, which
- allows an application to access the clipboard by communicating directly with
- your terminal.
++							*E1440*
++The class variables are initialized in the order they are declared.  Using a
++class variable in the initializer of an earlier one, or an enum value in the
++constructor of an earlier enum value, is an error.
+ 
+ Just like object methods the access can be made protected by using an
+ underscore as the first character in the method name: >
