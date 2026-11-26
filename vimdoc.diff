@@ -1,20 +1,25 @@
-diff --git a/runtime/doc/vim9class.txt b/runtime/doc/vim9class.txt
-index 58458b627..ef66fdcdf 100644
---- a/runtime/doc/vim9class.txt
-+++ b/runtime/doc/vim9class.txt
+diff --git a/runtime/doc/usr_05.txt b/runtime/doc/usr_05.txt
+index 01b4cdecb..0f527dc86 100644
+--- a/runtime/doc/usr_05.txt
++++ b/runtime/doc/usr_05.txt
 @@ -1,4 +1,4 @@
--*vim9class.txt*	For Vim version 9.2.  Last change: 2026 May 21
-+*vim9class.txt*	For Vim version 9.2.  Last change: 2026 Nov 24
+-*usr_05.txt*	For Vim version 9.2.  Last change: 2026 Aug 30
++*usr_05.txt*	For Vim version 9.2.  Last change: 2026 Nov 25
  
  
- 		  VIM REFERENCE MANUAL	  by Bram Moolenaar
-@@ -1040,7 +1040,8 @@ an enum is changed, then their ordinal values will also change.
+ 		     VIM USER MANUAL	by Bram Moolenaar
+@@ -525,9 +525,13 @@ The following configuration variables can be used are "g:hlput_hlgroup" and
+ Adding the osc52 package		*osc52-install* *package-osc52*
+ ------------------------------------------------------------------------------
  
- 						*enum-values*
- All the values in an enum can be accessed using the "values" class variable
--which is a List of the enum objects.  This is a readonly variable.
-+which is a List of the enum objects.  This is a readonly variable.  An enum
-+value cannot be named "values".
- 
- Example: >
-     enum Planet
+-To start using this plugin, add one line to your vimrc file: >
++To start using this plugin, add these lines to your vimrc file: >
+ 	packadd! osc52
++	autocmd VimEnter * ++once set clipmethod+=osc52
+ <
++The "osc52" clipboard provider is defined when the plugin is loaded,
++therefore 'clipmethod' is set on |VimEnter|.
++
+ The osc52.vim package provides support for the OSC 52 terminal command, which
+ allows an application to access the clipboard by communicating directly with
+ your terminal.
